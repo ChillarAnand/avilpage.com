@@ -1,0 +1,46 @@
+{#  -*- coding: utf-8 -*- #}
+{% import 'post_helper.tmpl' as helper with context %}
+{% import 'comments_helper.tmpl' as comments with context %}
+
+{% extends 'base.tmpl' %}
+
+{% block extra_head %}
+    {{ helper.twitter_card_information(post) }}
+    {% if post.meta('keywords') %}
+        <meta name="keywords" content="{{ post.meta('keywords')|e }}">
+    {% endif %}
+    {{ helper.meta_translations(post) }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="postbox">
+
+
+        <article class="postbox post-{{ post.meta('type') }}">
+            <div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                {{ helper.html_title() }}
+                <hr>
+                <div class="e-content" itemprop="articleBody text">
+                    {{ post.text() }}
+                </div>
+                {% if post.description() %}
+                    <meta content="{{ post.description() }}" itemprop="description">
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <a href="/">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="/rss.xml">
+                <h3>RSS</h3>
+            </a>
+
+
+        </article>
+    </div>
+
+{% endblock %}
