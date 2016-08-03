@@ -1,27 +1,20 @@
 {#  -*- coding: utf-8 -*- #}
-{% extends 'base.tmpl' %}
+{% extends 'core.tmpl' %}
 
-{% block content %}
+{% block data %}
 
-    <!--Body content-->
-    <div class="postbox">
-        <h3>Articles</h3>
+    {% if posts %}
 
-        <hr>
+        {% for post in posts %}
+            {% if year == post.date.year %}
+            {% else %}
+                {% set year = post.date.year %}
+                <h4>{{year}}</h4>
+            {% endif %}
+            <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
+            <br />
+            <br />
+        {% endfor %}
+    {% endif %}
 
-        {% if posts %}
-
-            {% for post in posts %}
-                {% if year == post.date.year %}
-                {% else %}
-                    {% set year = post.date.year %}
-                    <h4>{{year}}</h4>
-                {% endif %}
-                <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
-                <br />
-                <br />
-            {% endfor %}
-        {% endif %}
-    </div>
-    <!--End of body content-->
 {% endblock %}

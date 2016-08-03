@@ -172,6 +172,9 @@ OLD_URLS = [
     '/2016/04/emacs-browsing-projects-with-etags.html',
     '/2016/05/concurrent-downloads-bash-vs-python.html',
     '/2016/06/auto-completion-for-custom-search.html',
+
+    # pages
+    '/p/about-avilpage.html'
 ]
 
 # OLD_URLS = [
@@ -205,6 +208,10 @@ for label in labels:
         '/search/label/{}/index.html'.format(label),
         '/categories/{}.html'.format(label),
     ))
+
+# CUSTOM_REDIRECTIONS = [
+#     ('/p/about-avilpage.html', '/about')
+# ]
 
 REDIRECT = OLD_URL_REDIRECTIONS + LABEL_REDIRECTIONS
 # REDIRECT = LABEL_REDIRECTIONS
