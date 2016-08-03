@@ -206,7 +206,7 @@ LABEL_REDIRECTIONS = []
 for label in labels:
     LABEL_REDIRECTIONS.append((
         '/search/label/{}/index.html'.format(label),
-        '/categories/{}.html'.format(label),
+        '/categories/{}'.format(label),
     ))
 
 # CUSTOM_REDIRECTIONS = [
