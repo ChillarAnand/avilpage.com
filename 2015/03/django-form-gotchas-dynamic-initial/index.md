@@ -112,4 +112,4 @@ Out[24]: '<p>Name: <input maxlength="10" name="name" type="text" value="override
 
 Read official docs about [django forms](https://docs.djangoproject.com/en/1.7/ref/forms/api/).
 
-Read more [articles about Python](http://www.avilpage.com/search/label/python)!
+Read more [articles about Python](/search/label/python)!
