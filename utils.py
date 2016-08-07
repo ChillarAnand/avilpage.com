@@ -177,13 +177,6 @@ OLD_URLS = [
     '/p/about-avilpage.html'
 ]
 
-# OLD_URLS = [
-#     '/2016/04/emacs-browsing-projects-with-etags.html',
-#     '/2016/05/concurrent-downloads-bash-vs-python.html',
-#     '/2016/06/auto-completion-for-custom-search.html',
-# ]
-
-
 OLD_URL_REDIRECTIONS = []
 
 for url in OLD_URLS:
@@ -195,11 +188,12 @@ for url in OLD_URLS:
     # OLD_URL_REDIRECTIONS.append((slug, slug_only))
 
 
-
 labels = [
     'python',
     'emacs',
     'zen',
+    'django',
+    'chrome',
 ]
 
 LABEL_REDIRECTIONS = []
