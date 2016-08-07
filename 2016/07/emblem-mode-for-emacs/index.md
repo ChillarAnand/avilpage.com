@@ -10,9 +10,6 @@
 -->
 
 
-
-# emblem-mode for Emacs!
-
 Emblem.js is a ember friendly templating engine used as an alternative for handlebars.js.
 
 Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.
