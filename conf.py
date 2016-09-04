@@ -181,18 +181,17 @@ THEME_COLOR = '#5670d4'
 #
 
 POSTS = (
-            ("posts/*.txt", "", "post.tmpl"),
-            ("posts/*.rst", "", "post.tmpl"),
-            ("posts/*.html", "", "post.tmpl"),
-            ("posts/*.md", "", "post.tmpl"),
-            )
+    ("posts/*.html", "", "post.tmpl"),
+    ("posts/*.md", "", "post.tmpl"),
+    ("*.md", "", "post.tmpl"),
+)
 
 PAGES = (
-            ("articles/*.txt", "", "story.tmpl"),
-            ("articles/*.rst", "", "story.tmpl"),
-            ("articles/*.html", "", "story.tmpl"),
-            ("articles/*.md", "", "story.tmpl"),
-            )
+    ("articles/*.txt", "", "story.tmpl"),
+    ("articles/*.rst", "", "story.tmpl"),
+    ("articles/*.html", "", "story.tmpl"),
+    ("articles/*.md", "", "story.tmpl"),
+)
 
 
 # Below this point, everything is optional
@@ -263,10 +262,10 @@ JS_DATE_FORMAT = 'YYYY-MM-DD'
 # 'markdown' is MarkDown
 # 'html' assumes the file is HTML and just copies it
 COMPILERS = {
-            "rest": ('.txt', '.rst'),
-            "markdown": ('.md', '.mdown', '.markdown', '.wp'),
-            "html": ('.html', '.htm')
-            }
+    "rest": ('.txt', '.rst'),
+    "markdown": ('.md', '.mdown', '.markdown', '.wp'),
+    "html": ('.html', '.htm')
+}
 
 
 # Create by default posts in one file format?
@@ -351,12 +350,12 @@ POSTS_SECTIONS = True
 # output / TRANSLATION[lang] / TAG_PATH / index.html (list of tags)
 # output / TRANSLATION[lang] / TAG_PATH / tag.html (list of posts for a tag)
 # output / TRANSLATION[lang] / TAG_PATH / tag.xml (RSS feed for a tag)
- # (translatable)
+# (translatable)
 # TAG_PATH = "categories"
 
 # See TAG_PATH's "list of tags" for the default setting value. Can be overwritten
 # here any path relative to the output directory.
- # (translatable)
+# (translatable)
 # TAGS_INDEX_PATH = "tags.html"
 
 # If TAG_PAGES_ARE_INDEXES is set to True, each tag's page will contain
