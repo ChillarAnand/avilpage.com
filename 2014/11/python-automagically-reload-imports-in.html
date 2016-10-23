@@ -1,10 +1,97 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Redirecting...</title>
-<meta name="robots" content="noindex">
-<meta http-equiv="refresh" content="0; url=python-automagically-reload-imports-in">
+<meta name="author" content="Chillar Anand">
+<title>[Python] Automagically Reload Imports In iPython! | Avil Page</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="http://www.avilpage.com/2014/11/python-automagically-reload-imports-in.html">
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 </head>
 <body>
-<p>Page moved <a href="python-automagically-reload-imports-in">here</a>.</p>
-</body>
+        <div id="">
+            <div id="container">
+                <!-- <h1 id="blog-title">
+                     <a href="http://www.avilpage.com/" title="Avil Page" rel="home">Avil Page</a>
+                     </h1> -->
+
+
+
+    <div class="postbox">
+
+
+        <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <h1 class="p-name" itemprop="headline name">[Python] Automagically Reload Imports In iPython!</h1>
+
+                <hr>
+<div class="e-content" itemprop="articleBody text">
+                    <div dir="ltr" style="text-align: left;" trbidi="on">If you are using iPython, you will be importing some of the modules you have written. While playing with them, you may want to change them or if there is a bug, you will have to fix them. Since you have changed your code, you have to exit and start new instance of the interpreter or you can reload the module.<br><br>To reload the already imported modules:<br><br>In Python 2.x, you can do directly run<br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">&gt;&gt;&gt; imp.reload(module)<br></pre></div>In Python 3.0–3.3 you have to use  <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">&gt;&gt;&gt; imp.reload(module)<br></pre></div>In Python 3.4 you have to use  <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">&gt;&gt;&gt; importlib.reload(module)<br></pre></div>If you are developing something this will be annoying because for every small change you need to reload the module.    iPython has a cool extension called autoreload which automatically reloads modules. You can load it with    <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [15]: %load_ext autoreload<br><br>In [16]: %autoreload?<br><br>%autoreload =&gt; Reload modules automatically<br><br>%autoreload<br><br>Reload all modules (except those excluded by %aimport) automatically now.<br><br>%autoreload 0<br><br>Disable automatic reloading.<br><br>%autoreload 1<br><br>Reload all modules imported with %aimport every time before executing<br><br>the Python code typed.<br><br>%autoreload 2<br><br>Reload all modules (except those excluded by %aimport) every time<br><br>before executing the Python code typed.<br></pre></div>
+<div></div>So, if you set autoreload to 2 it reloads modules everytime before executing code.<br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;"> In [15]: %autoreload 2<br></pre></div>
+<br><div></div>
+<div>You can do this everytime you start iPython or you can add config iPython to that automatically.</div>
+<div></div>
+<div>Create a default profile using this command</div>
+<div></div>
+<div><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;"><span style="background-color: transparent;">$ ipython profile create</span><br></pre></div></div>
+<div></div>
+<div>Go to your default profile at ~/.ipython/profile_default/ipython_config.py  and find these two lines</div>
+<div>
+<div></div>
+<div><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">c.InteractiveShellApp.extensions = []<br>c.InteractiveShellApp.exec_lines = []<br></pre></div></div>
+<div>
+<div></div>
+<div>and change them to </div>
+</div>
+<div></div>
+<div><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">c.InteractiveShellApp.extensions = ['autoreload']<br>c.InteractiveShellApp.exec_lines = ['%autoreload 2']</pre></div></div>
+</div>
+<br>Also note that reload doesn't reloads c extensions automatically.</div>
+                </div>
+            </div>
+
+            <hr>
+<a href="../../">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="../../rss.xml">
+                <h3>RSS</h3>
+            </a>
+
+
+        </article>
+</div>
+
+
+                <br>
+</div>
+
+
+            <!--Sidebar content-->
+            <!-- <ul class="unstyled">
+                     
+
+                                 <li><a href="/">Articles</a>
+                <li><a href="/about">About.html</a>
+                <li><a href="/rss.xml">RSS</a>
+
+                 </ul> -->
+            <br>
+</div>
+    </body>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-81644162-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</html>

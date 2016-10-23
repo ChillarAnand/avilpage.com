@@ -1,10 +1,93 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Redirecting...</title>
-<meta name="robots" content="noindex">
-<meta http-equiv="refresh" content="0; url=python-unix-timestamp-utc-and-their">
+<meta name="author" content="Chillar Anand">
+<title>Unix Timestamp, UTC And Their Conversions In Python! | Avil Page</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="http://www.avilpage.com/2014/11/python-unix-timestamp-utc-and-their.html">
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
 </head>
 <body>
-<p>Page moved <a href="python-unix-timestamp-utc-and-their">here</a>.</p>
-</body>
+        <div id="">
+            <div id="container">
+                <!-- <h1 id="blog-title">
+                     <a href="http://www.avilpage.com/" title="Avil Page" rel="home">Avil Page</a>
+                     </h1> -->
+
+
+
+    <div class="postbox">
+
+
+        <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <h1 class="p-name" itemprop="headline name">Unix Timestamp, UTC And Their Conversions In Python!</h1>
+
+                <hr>
+<div class="e-content" itemprop="articleBody text">
+                    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="text-align: left;">Recently I started messing with Nidaba. Nidaba is a data analytics project devoted to analysing and making use of the freely available information on Stack Overflow, in particular when relating to the Python programming language. SO gives all time objects in  Unix time format. For analysis, it is required to convert it into human readable format to figure out the day it corresponds to. Let us take a look at UTC &amp; Unix timestamps.<br><br>
+</div>
+<h3 style="text-align: left;">Coordinated Universal Time(UTC):</h3>
+<div style="text-align: left;">It is the primary time standard by which the world regulates clocks and time.</div>
+<div style="text-align: left;"><br></div>
+<div style="text-align: left;">To get current UTC time in Python, You can use datetime module.</div>
+<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [5]: import datetime<br><br>In [6]: datetime.datetime.now(datetime.timezone.utc)<br>Out[6]: datetime.datetime(2014, 11, 22, 14, 42, 21, 34435, tzinfo=datetime.timezone.utc)<br></pre></div>
+<br><h3 style="text-align: left;">Unix time / POSIX time / Epoch time: </h3>
+<div>It is a system for describing instants in time, defined as the number of seconds that have elapsed since 00:00:00 Coordinated Universal Time (UTC), Thursday, 1 January 1970, not counting leap seconds.</div>
+<div><br></div>
+<div>To get Unix timestamp, you can use time module.</div>
+<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [8]: import time<br><br>In [9]: time.time()<br>Out[9]: 1416667432.5664258<br><br>In [10]: int(time.time())<br>Out[10]: 1416667766</pre></div>If You are using Pyhon 3.4, you can use <i>timestamp </i>function to convert it <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [13]: datetime.datetime.utcnow().timestamp()<br>Out[13]: 1416649608.58369<br></pre></div>
+<h3 style="text-align: left;">Conversions:</h3>
+<div>To convert Unix timestamp to UTC You can use <i>utcfromtimestamp</i> function.</div>
+<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [21]: datetime.datetime.utcfromtimestamp(1416668401)<br>Out[21]: datetime.datetime(2014, 11, 22, 15, 0, 1)<br></pre></div>To convert UTC time object to Unix time, you can use strftime function. <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [38]: dt = datetime.datetime.now()<br><br>In [39]: dt.strftime("%s")<br>Out[39]: '1416668938'<br></pre></div>Alternatively You can use <i>calendar.timegen </i>function also.<br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [46]: import calendar<br><br>In [47]: dt = datetime.datetime.utcnow()<br><br>In [48]: calendar.timegm(dt.utctimetuple())<br>Out[48]: 1416669150<br></pre></div>
+</div>
+                </div>
+            </div>
+
+            <hr>
+<a href="../../">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="../../rss.xml">
+                <h3>RSS</h3>
+            </a>
+
+
+        </article>
+</div>
+
+
+                <br>
+</div>
+
+
+            <!--Sidebar content-->
+            <!-- <ul class="unstyled">
+                     
+
+                                 <li><a href="/">Articles</a>
+                <li><a href="/about">About.html</a>
+                <li><a href="/rss.xml">RSS</a>
+
+                 </ul> -->
+            <br>
+</div>
+    </body>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-81644162-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</html>
