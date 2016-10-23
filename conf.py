@@ -533,8 +533,8 @@ CREATE_SINGLE_ARCHIVE = True
 
 
 # checkout utils.py script in the same folder for a list of redirections
-from utils import REDIRECT # noqa
-REDIRECTIONS = REDIRECT
+# from utils import REDIRECT # noqa
+# REDIRECTIONS = REDIRECT
 
 
 
@@ -923,7 +923,7 @@ STRIP_INDEXES = True
 # This can be disabled on a per-page/post basis by adding
 #    .. pretty_url: False
 # to the metadata.
-PRETTY_URLS = True
+PRETTY_URLS = False
 
 # If True, publish future dated posts right away instead of scheduling them.
 # Defaults to False.
