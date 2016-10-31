@@ -533,8 +533,8 @@ CREATE_SINGLE_ARCHIVE = True
 
 
 # checkout utils.py script in the same folder for a list of redirections
-# from utils import REDIRECT # noqa
-# REDIRECTIONS = REDIRECT
+from utils import REDIRECT # noqa
+REDIRECTIONS = REDIRECT
 
 
 

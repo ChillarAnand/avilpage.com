@@ -199,16 +199,16 @@ labels = [
 LABEL_REDIRECTIONS = []
 for label in labels:
     LABEL_REDIRECTIONS.append((
-        '/search/label/{}/index.html'.format(label),
-        '/categories/{}'.format(label),
+        '/search/label/{}'.format(label),
+        '/categories/{}.html'.format(label),
     ))
 
 # CUSTOM_REDIRECTIONS = [
 #     ('/p/about-avilpage.html', '/about')
 # ]
 
-REDIRECT = OLD_URL_REDIRECTIONS + LABEL_REDIRECTIONS
-# REDIRECT = LABEL_REDIRECTIONS
+# REDIRECT = OLD_URL_REDIRECTIONS + LABEL_REDIRECTIONS
+REDIRECT = LABEL_REDIRECTIONS
 
 # REDIRECT.extend(
 #     [(('/2016/06/auto-completion-for-custom-search/index.html',
