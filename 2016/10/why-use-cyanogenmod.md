@@ -9,8 +9,6 @@
 .. type: text
 -->
 
-Customization is one of the main reason I use CyanogenMod.
-
 When listening to music, to switch tracks I want to use volume buttons. For this I have to use [Pocket Skip Track](https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&hl=en) app.
 CyanogenMod has inbuilt support for that.
 
@@ -30,8 +28,11 @@ Auto brighness stopped working after I have rooted Moto G4 plus. I had to use [t
 
 With stock android, auto rotate won't work in all directions. [Set orientation](https://play.google.com/store/apps/details?id=com.googlecode.eyesfree.setorientation) app is required for that. CyanogenMod has inbuilt support for that.
 
+To adapt mobile display to the time of the day, flux app is required on stock android. CyanogenMod has inbuilt option for this.
+
+To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run `adb` as root on stock android, `adbd insecure` app is required. CyanogenMod works without it.
 
 Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.
 
 
-There are several other things where CyanogenMod excels when compared to stock android like inbuilt root, themes, privacy guard e.t.c. Excellent customization is the main reason for me to use CyanogenMod.
+There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, excellent customization is the main reason for me to use CyanogenMod.
