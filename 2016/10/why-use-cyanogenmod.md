@@ -35,4 +35,4 @@ To get superuser permissions, I have to root stock android. CyanogenMod comes wi
 Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.
 
 
-There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, excellent customization is the main reason for me to use CyanogenMod.
+There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.
