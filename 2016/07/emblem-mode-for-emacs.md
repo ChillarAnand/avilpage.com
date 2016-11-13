@@ -2,8 +2,8 @@
 .. title: emblem-mode for Emacs!
 .. slug: emblem-mode-for-emacs
 .. date: 2016-07-25 17:32:35 UTC
-.. tags:
-.. category: tech, emacs, ember, programming
+.. tags: emblem, slim-mode
+.. category: tech, programming, emacs
 .. link:
 .. description: How write emblem in emacs?
 .. type: text

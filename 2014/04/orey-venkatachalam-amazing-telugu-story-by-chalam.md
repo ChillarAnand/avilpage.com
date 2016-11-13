@@ -2,8 +2,8 @@
 .. title: చలం కథలు - ఒరెయ్ వెంకటచలం
 .. slug: orey-venkatachalam-amazing-telugu-story-by-chalam
 .. date: 2014-04-16 17:05:00 UTC
-.. tags: chalam, telugu, story
-.. category: chalam, telugu, story
+.. tags: chalam
+.. category: story, telugu
 .. description: Amazing telugu short story by Gudipati Venkatachalam
 .. type: text
 -->

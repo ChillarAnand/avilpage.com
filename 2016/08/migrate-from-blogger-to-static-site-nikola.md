@@ -2,8 +2,8 @@
 .. title: Migrate From Blogger To Static Site (Nikola)
 .. slug: migrate-from-blogger-to-static-site-nikola
 .. date: 2016-08-07 11:32:15 UTC
-.. tags:
-.. category: tech, emacs, ember, programming
+.. tags: nikola, blogger
+.. category: tech, blogging
 .. link:
 .. description:
 .. type: text
