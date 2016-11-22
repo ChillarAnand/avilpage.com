@@ -29,28 +29,223 @@
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/03/a-slice-of-python-intelligence-behind.html" class="u-url">A Slice of Python - The Intelligence Behind Python Slices!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/03/a-slice-of-python-intelligence-behind.html" class="u-url">The Intelligence Behind Python Slices!</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script><script src="//cdnjs.cloudflare.com/ajax/libs/gist-embed/2.1/gist-embed.min.js" type="text/javascript"></script><br><div dir="ltr" style="text-align: left;" trbidi="on">I attended attended <a href="http://www.meetup.com/BangPypers/events/177630452/" target="_blank">Python Gotchas workshop</a> by <a href="https://twitter.com/skeptichacker" target="_blank">Anand B. Pillai</a>. He showed a lot of gotchas with Python. During gotchas with lists, he showed this.<br><br><code data-gist-file="1.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code>Also let us consider some other cases.<br><br><code data-gist-file="7.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code> If we look at above cases, we can see that indexing works within the range of length of object, otherwise it throws error. On the other hand, slicing returns an empty list instead of throwing error. Also slicing intelligently figures out missing parameters.<br><br>This post shows basics of slicing &amp; some other interesting things about slicing.<br><br><br><h3 style="text-align: left;">Slicing Is NOT Indexing:</h3>
-<div><br></div>
-<div>
-<a href="https://wiki.python.org/moin/MovingToPythonFromOtherLanguages" target="_blank">Wiki Python</a> has this amazing picture which clearly distinguishes indexing and slicing.</div>
-<div><br></div>
-<div>
-<div class="separator" style="clear: both; text-align: center;"></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-K6RrYmwPtA8/VQ6pajsmvFI/AAAAAAAANtg/jxYu0IvY56w/s1600/slices-python.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-K6RrYmwPtA8/VQ6pajsmvFI/AAAAAAAANtg/jxYu0IvY56w/s1600/slices-python.png" height="163" width="400"></a></div>
-<br>It is a list with 6 elements in it. To understand slicing better, consider that list as a set of six boxes placed together. Each box has an alphabet in it.</div>
-<div>
-<br>Indexing is like dealing with the contents of box. You can check contents of any box. But You can't check contents of multiple boxes at once. You can even replace contents of the box. But You can't place 2 balls in 1 box or replace 2 balls at a time.<br><br><code data-gist-file="2.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code> <br>Slicing is like dealing with boxes itself. You can pickup first box and place it on another table. To pickup the box all You need to know is the position of beginning  &amp; ending of the box.<br><br>You can even pickup first 3 boxes or last 2 boxes or all boxes between 1 &amp; 4. So, You can pick any set of boxes if You know beginning &amp; ending. This positions are called start &amp; stop positions.<br><br>The interesting thing is that You can replace multiple boxes at once. Also You can place multiple boxes where ever You like.<br><br><code data-gist-file="3.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-highlight-line="9,14" data-gist-id="2abf4ecc6066bbc6b22a"></code> <br><h3 style="text-align: left;">Slicing With Step:</h3>
-<div><br></div>Till now You have picked boxes continuously. But some times You need to pickup discretely. For example You can pickup every second box. You can even pickup every third box from the end. This value is called step size. This represents the gap between Your successive pickups. The step size should be positive if You are picking boxes from the beginning to end and vice versa.<br><br><code data-gist-file="4.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code> </div>
-<br><h3>How Python Figures Out Missing Parameters:</h3>
-<div>
-<br>When slicing if You leave out any parameter, Python tries to figure it out automatically.<br><br>If You check source code of CPython, You will find a function called <a href="https://github.com/python/cpython/blob/f7bfa54898598a0da46fdb1e0436d5f9e04c9007/Objects/sliceobject.c#L192" target="_blank">PySlice_GetIndicesEx</a> which figures out indices to a slice for any given parameters. Here is the logical equivalent code in Python.<br><br>This function takes a Python object &amp; optional parameters for slicing and returns start, stop, step &amp; slice length for the requested slice.<br><br><code data-gist-file="5.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code>This is the intelligence that is present behind slices. Since Python has inbuilt function called slice, You can pass some parameters &amp; check how smartly it calculates missing parameters.<br><br><code data-gist-file="6.py" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="2abf4ecc6066bbc6b22a"></code> <br>As You know basics of slicing, You can start tweaking with it or You can write Your own custom slicer!<br><br>If You find any mistake with above function, feel free to <a href="https://gist.github.com/ChillarAnand/2abf4ecc6066bbc6b22a#file-5-py" target="_blank">update it</a>.<br><br><h3 style="text-align: left;">References:</h3>
-<br>Wiki Python: <a href="https://wiki.python.org/moin/">https://wiki.python.org/moin/</a><br>CPython repo: <a href="https://github.com/python/cpython">https://github.com/python/cpython</a><br>Slice on SO: <a href="http://stackoverflow.com/questions/509211/explain-pythons-slice-notation">http://stackoverflow.com/questions/509211/explain-pythons-slice-notation</a><br>Docs for slice: <a href="https://docs.python.org/3.4/library/functions.html#slice">https://docs.python.org/3.4/library/functions.html#slice</a><br>Python/C API for slice: <a href="https://docs.python.org/3.4/c-api/slice.html">https://docs.python.org/3.4/c-api/slice.html</a><br><br>Thanks to <a href="https://twitter.com/skeptichacker" target="_blank">Anand B. Pillai</a> &amp; <a href="https://twitter.com/kracetheking" target="_blank">Krace Kumar</a> for the meetup &amp; encouraging to checkout Python source code.<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/python" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Python</a><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">!</span>
-</div>
-</div>
+        <div>
+<p>When getting items from a list, if no index is supplied or an invalid index is given, Python throws error.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span>  <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
+<span class="o">---------------------------------------------------------------------------</span>
+<span class="ne">IndexError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">5</span><span class="o">-</span><span class="mi">3</span><span class="n">b7fb56a1ede</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
+
+<span class="ne">IndexError</span><span class="p">:</span> <span class="nb">list</span> <span class="n">index</span> <span class="n">out</span> <span class="n">of</span> <span class="nb">range</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[]</span>
+  <span class="n">File</span> <span class="s2">"&lt;ipython-input-6-a17d5cfb2c2f&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span>
+    <span class="n">alpha</span><span class="p">[]</span>
+          <span class="o">^</span>
+<span class="ne">SyntaxError</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">syntax</span>
+</pre>
+
+
+<p>When slicing a list, if start/stop/step values are not supplied or invalid values are provided, Python figures out appropriate values and returns relevant items or an empty list depending on the values.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">170</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">170</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">172</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">172</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">173</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">173</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">174</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">174</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">175</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">175</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">176</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="mi">100000000000000000000000000000000000000000000000</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">176</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">177</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::</span><span class="mi">1000000000</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">177</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">178</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">178</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">]</span>
+</pre>
+
+
+<p>There is something interesting happening with python slicing. Lets see how python slicing works and what happens behind the scenes.</p>
+<h4>Slicing Is NOT Indexing:</h4>
+<p><a href="https://wiki.python.org/moin/MovingToPythonFromOtherLanguages">Wiki Python</a>
+has this amazing picture which clearly distinguishes indexing and slicing.</p>
+<p><img alt="python-slicing" src="http://2.bp.blogspot.com/-K6RrYmwPtA8/VQ6pajsmvFI/AAAAAAAANtg/jxYu0IvY56w/s1600/slices-python.png"></p>
+<p>It is a list with 6 elements in it. To understand slicing better, consider that list as a set of six boxes placed together. Each box has an alphabet in it.</p>
+<p>Indexing is like dealing with the contents of box. You can check
+contents of any box. But You can't check contents of multiple boxes at
+once. You can even replace contents of the box. But You can't place 2
+balls in 1 box or replace 2 balls at a time.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">122</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">123</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">123</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">124</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">124</span><span class="p">]:</span> <span class="s1">'a'</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">127</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'A'</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">128</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">128</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">129</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="o">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span>                                 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">129</span><span class="o">-</span><span class="n">c7eb16585371</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">list</span> <span class="n">indices</span> <span class="n">must</span> <span class="n">be</span> <span class="n">integers</span><span class="p">,</span> <span class="ow">not</span> <span class="nb">tuple</span>
+</pre>
+
+
+<p>Slicing is like dealing with boxes itself. You can pickup first box and
+place it on another table. To pickup the box all You need to know is the
+position of beginning &amp; ending of the box.</p>
+<p>You can even pickup first 3 boxes or last 2 boxes or all boxes between 1
+&amp; 4. So, You can pick any set of boxes if You know beginning &amp; ending.
+This positions are called start &amp; stop positions.</p>
+<p>The interesting thing is that You can replace multiple boxes at once.
+Also You can place multiple boxes where ever You like.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">130</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">130</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">131</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'a'</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">132</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">132</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">133</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">134</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">134</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">135</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">136</span><span class="p">]:</span> <span class="n">alpha</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">136</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+</pre>
+
+
+<h4>Slicing With Step:</h4>
+<p>Till now You have picked boxes continuously. But some times You need to
+pickup discretely. For example You can pickup every second box. You can
+even pickup every third box from the end. This value is called step
+size. This represents the gap between Your successive pickups. The step
+size should be positive if You are picking boxes from the beginning to
+end and vice versa.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">137</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">142</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">142</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'b'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">143</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">143</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">144</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">144</span><span class="p">]:</span> <span class="p">[]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">145</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">145</span><span class="p">]:</span> <span class="p">[]</span>
+</pre>
+
+
+<h4>How Python Figures Out Missing Parameters:</h4>
+<p>When slicing if You leave out any parameter, Python tries to figure it
+out automatically.</p>
+<p>If You check source code of CPython, You will find a function called
+<a href="https://github.com/python/cpython/blob/f7bfa54898598a0da46fdb1e0436d5f9e04c9007/Objects/sliceobject.c#L192">PySlice_GetIndicesEx</a> which
+figures out indices to a slice for any given parameters. Here is the
+logical equivalent code in Python.</p>
+<p>This function takes a Python object &amp; optional parameters for slicing
+and returns start, stop, step &amp; slice length for the requested slice.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">py_slice_get_indices_ex</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Step cannot be zero."</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">+=</span> <span class="n">length</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">length</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">+=</span> <span class="n">length</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">stop</span> <span class="o">&gt;=</span> <span class="n">length</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">stop</span><span class="p">):</span>
+        <span class="n">slice_length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">slice_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slice_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">slice_length</span><span class="p">)</span>
+</pre>
+
+
+<p>This is the intelligence that is present behind slices. Since Python has inbuilt function called slice, You can pass some parameters &amp; check how smartly it calculates missing parameters.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">22</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">23</span><span class="p">]:</span> <span class="n">s</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">23</span><span class="p">]:</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">26</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">28</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">29</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">29</span><span class="p">]:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre>
+
+
+<p>This is how Python is able to figure out missing parameters from slices.</p>
+<p>I started digging this after attending a talk by <a href="https://twitter.com/skeptichacker">Anand B. Pillai</a> on python gotchas. Thanks to Anand B. Pillai &amp; Krace Kumar for conducting BangPypers meetup &amp; encouraging to checkout Python source code.</p>
+<h4>References:</h4>
+<p>Wiki Python: <a href="https://wiki.python.org/moin/">https://wiki.python.org/moin/</a></p>
+<p>CPython repo: <a href="https://github.com/python/cpython">https://github.com/python/cpython</a></p>
+<p>Slice on SO: <a href="http://stackoverflow.com/questions/509211/explain-pythons-slice-notation">http://stackoverflow.com/questions/509211/explain-pythons-slice-notation</a></p>
+<p>Docs for slice: <a href="https://docs.python.org/3.4/library/functions.html#slice">https://docs.python.org/3.4/library/functions.html#slice</a></p>
+<p>Python/C API for slice: <a href="https://docs.python.org/3.4/c-api/slice.html">https://docs.python.org/3.4/c-api/slice.html</a></p>
 </div>
         </div>
             
