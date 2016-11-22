@@ -1,5 +1,5 @@
 <!--
-.. title: The Intelligence Behind Python Slices!
+.. title: The Intelligence Behind Python Slices
 .. slug: a-slice-of-python-intelligence-behind
 .. date: 2015-03-22 16:01:00
 .. tags: slices
@@ -62,7 +62,9 @@ There is something interesting happening with python slicing. Lets see how pytho
 [Wiki Python](https://wiki.python.org/moin/MovingToPythonFromOtherLanguages)
 has this amazing picture which clearly distinguishes indexing and slicing.
 
-![python-slicing](http://2.bp.blogspot.com/-K6RrYmwPtA8/VQ6pajsmvFI/AAAAAAAANtg/jxYu0IvY56w/s1600/slices-python.png)
+<p align="center">
+<img alt="python-slicing" src="/python-slicing.png" />
+</p>
 
 It is a list with 6 elements in it. To understand slicing better, consider that list as a set of six boxes placed together. Each box has an alphabet in it.
 
