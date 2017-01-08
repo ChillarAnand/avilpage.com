@@ -1,6 +1,6 @@
 <!--
 .. title: What Is The Meaning Of Life?
-.. slug: what-is-the-meaning-of-life
+.. slug: index
 .. date: 2016-12-25 18:29:23 UTC
 .. tags: life
 .. category: general, philosophy
@@ -10,10 +10,12 @@
 -->
 
 
-As per oxford dictionary, the meaning of life is
+The meaning of life is
 
 <blockquote cite="https://en.oxforddictionaries.com/definition/life">
 
 the condition that distinguishes animals and plants from inorganic matter, including the capacity for growth, reproduction, functional activity, and continual change preceding death.
 
 </blockquote>
+
+Source: Oxford Dictionary
