@@ -5,16 +5,14 @@
 
     {% if posts %}
 
-        {% for post in posts %}
-            {% if year == post.date.year %}
-            {% else %}
-                {% set year = post.date.year %}
-                <h4>{{year}}</h4>
-            {% endif %}
-            <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
-            <br />
-            <br />
+        {% for group in posts|groupby('date.year')|reverse %}
+            <h4>{{ group.grouper }}</h4>
+            {% for post in group.list %}
+                <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
+                <br /><br />
+            {% endfor %}
         {% endfor %}
+
     {% endif %}
 
 {% endblock %}
