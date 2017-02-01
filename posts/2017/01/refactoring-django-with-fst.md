@@ -19,7 +19,7 @@ class Foo:
         super(Foo, self).__init__()
 ```
 
-In Python 3 `super` can be invoked without arguments and it will choose right class & instance automatically.
+In Python 3, `super` can be invoked without arguments and it will choose right class & instance automatically.
 
 ```python
 class Foo:
@@ -38,7 +38,7 @@ Changes has to be scripted. I wrote a [simple script][2]{:target="_blank"} to re
 
 To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).
 
-Python has [ast module][3]{:target="_blank"} to convert code to AST but it can't convert AST back to code. There are 3rd party packages like astor which can do this.
+Python has [ast module][3]{:target="_blank"} to convert code to AST but it can't convert AST back to code. There are 3rd party packages like [astor](https://pypi.python.org/pypi/astor){:target="_blank"} which can do this.
 
 
 ```python
@@ -71,7 +71,7 @@ fst_to_code(code_to_fst(source_code)) == source_code
 
 With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took [less than 10 lines][6]{:target="_blank"} of code.
 
-RedBaron has good documentation with relveant examples and its api is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.
+RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.
 
 Thanks to [Tim Graham](https://github.com/timgraham){:target="_blank"} & [Aymeric Augustin](https://github.com/aaugustin){:target="_blank"} for [reviewing the patch](https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310){:target="_blank"}.
 
