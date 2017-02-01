@@ -1,5 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2017)</title><link>http://www.avilpage.com</link><description></description><atom:link type="application/rss+xml" rel="self" href="http://www.avilpage.com/2017/rss.xml"></atom:link><language>en</language><lastBuildDate>Sun, 08 Jan 2017 17:57:48 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Why Blog Posts Are Better Than Scientific Papers?</title><link>http://www.avilpage.com/2017/01/blog_posts_are_better_than_scientific_papers/</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Titus Brown wrote a blog post on why &lt;a href="http://ivory.idyll.org/blog/2017-top-ten-reasons-blog-posts.html"&gt;blog posts are better than scientific papers&lt;/a&gt;. Here are few more reasons for that.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Avil Page (2017)</title><link>http://www.avilpage.com</link><description></description><atom:link type="application/rss+xml" rel="self" href="http://www.avilpage.com/2017/rss.xml"></atom:link><language>en</language><lastBuildDate>Wed, 01 Feb 2017 17:15:46 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Refactoring Django With FST</title><link>http://www.avilpage.com/2017/01/refactoring-django-with-fst.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django developers decided to &lt;a href="https://code.djangoproject.com/ticket/23919" target="_blank"&gt;drop Python 2 compatability&lt;/a&gt; in Django 2.0. There are serveral things that should be refactored/removed.&lt;/p&gt;
+&lt;p&gt;For example, in Python 2, programmers has to explicitly specify the class &amp;amp; instance when invoking &lt;code&gt;super&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;In Python 3, &lt;code&gt;super&lt;/code&gt; can be invoked without arguments and it will choose right class &amp;amp; instance automatically.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;For this refactoring, a simple &lt;code&gt;sed&lt;/code&gt; search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, &lt;code&gt;sed&lt;/code&gt; won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;→ grep -rI &lt;span class="s2"&gt;"super("&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; wc -l
+   1364
+&lt;/pre&gt;
+
+
+&lt;p&gt;Changes has to be scripted. I wrote a &lt;a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank"&gt;simple script&lt;/a&gt; to replace super calls by class names. This worked only for 50% of the cases. It failed to capture classes which had comments on top of them, classes with decorators and nested classes.&lt;/p&gt;
+&lt;p&gt;To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).&lt;/p&gt;
+&lt;p&gt;Python has &lt;a href="https://docs.python.org/3/library/ast.html" target="_blank"&gt;ast module&lt;/a&gt; to convert code to AST but it can't convert AST back to code. There are 3rd party packages like &lt;a href="https://pypi.python.org/pypi/astor" target="_blank"&gt;astor&lt;/a&gt; which can do this.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# this is a comment&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+
+   &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s2"&gt;"hello world"&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Converting above code to AST and then converting back gives this&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'hello world'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Code to AST is a lossy transformation as they cannot preserve empty lines, comments and code formatting.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;ast_to_code&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;code_to_ast&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;source_code&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;source_code&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;For lossless transformation, FST(Full Syntax Trees) packages like &lt;a href="https://github.com/PyCQA/baron" target="_blank"&gt;Baron&lt;/a&gt; or &lt;a href="https://github.com/PyCQA/redbaron" target="_blank"&gt;RedBaron&lt;/a&gt; should be used.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;fst_to_code&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;code_to_fst&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;source_code&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;source_code&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took &lt;a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank"&gt;less than 10 lines&lt;/a&gt; of code.&lt;/p&gt;
+&lt;p&gt;RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.&lt;/p&gt;
+&lt;p&gt;Thanks to &lt;a href="https://github.com/timgraham" target="_blank"&gt;Tim Graham&lt;/a&gt; &amp;amp; &lt;a href="https://github.com/aaugustin" target="_blank"&gt;Aymeric Augustin&lt;/a&gt; for &lt;a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank"&gt;reviewing the patch&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>python</category><guid>http://www.avilpage.com/2017/01/refactoring-django-with-fst.html</guid><pubDate>Sun, 29 Jan 2017 17:51:37 GMT</pubDate></item><item><title>Why Blog Posts Are Better Than Scientific Papers?</title><link>http://www.avilpage.com/2017/01/blog_posts_are_better_than_scientific_papers/</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Titus Brown wrote a blog post on why &lt;a href="http://ivory.idyll.org/blog/2017-top-ten-reasons-blog-posts.html"&gt;blog posts are better than scientific papers&lt;/a&gt;. Here are few more reasons for that.&lt;/p&gt;
 &lt;h3&gt;Fast&lt;/h3&gt;
 &lt;p&gt;Publishing blog posts is lightning fast(how fast can you type?). You can just publish it with a click after writing. However with scientific papers you have to wait months to get your work published.&lt;/p&gt;
 &lt;h3&gt;Mutability&lt;/h3&gt;
