@@ -1,5 +1,5 @@
 <!--
-.. title: emblem-mode for Emacs!
+.. title: emblem-mode for Emacs
 .. slug: emblem-mode-for-emacs
 .. date: 2016-07-25 17:32:35 UTC
 .. tags: emblem, slim-mode
@@ -14,16 +14,18 @@ Emblem.js is a ember friendly templating engine used as an alternative for handl
 
 Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.
 
-You get slim-mode from melpa. Install with
+`slim-mode` is available on melpa. To install it, run
 
 ```el
 M-x install-package slim-mode
 ```
 
-Now we have to activate slim-mode for emblem files which will be ending with `.em` or `.emblem`. We can use `auto-mode-alist` to set major modes that needs to activated for files with specific extension.
+After installing it, activate `slim-mode` by running `M-x slim-mode`.
+
+Instead of activating manually, `auto-mode-alist` can be used to set major modes that needs to activated for files with specific extension. To activate slim-mode for emblem files which will be ending with `.em` or `.emblem`, use
 
 ```lisp
-(add-to-list 'auto-mode-alist '("\\.\\(em\\|emblem\\)\\'" . slim-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(em\\|emblem\\)" . slim-mode))
 ```
 
-We can add this to emacs configuration which automatically activates slim mode for emblem.js files.
+By adding this line to emacs configuration file, slim-mode gets activated for emblem.js files.
