@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="description" content="How to reload python imports without restarting the interpreter.">
+<meta name="description" content="Reload imports automatically in ipython shell">
 <meta name="author" content="Chillar Anand">
-<title>Automagically Reload Imports In IPython | Avil Page</title>
+<title>Automagically Reload Imports In iPython! | Avil Page</title>
 <link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
@@ -48,48 +48,46 @@
     <div class="postbox">
 
         <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
-                    <h1 class="p-name" itemprop="headline name">Automagically Reload Imports In IPython</h1>
+                    <h1 class="p-name" itemprop="headline name">Automagically Reload Imports In iPython!</h1>
 
                 <hr>
 <div class="e-content" itemprop="articleBody text">
                     <div>
-<p>If you are using IPython, you will be importing some of the modules you have written. While playing with them, you may want to change them or if there is a bug, you will have to fix them.</p>
-<p>Once you changed your code, you have to exit and start new interpreter or you can reload the module.</p>
-<p>To reload the already imported modules:</p>
+<p>When using iPython, users can import required modules to test them. After importing them, if they get modified either by user or some other process, users have to reload it for futher usage.</p>
+<p>Depending on the Python version, appropriate <code>reload</code> function can reload modules.</p>
 <pre class="code literal-block"><span></span><span class="c1"># Python 2.x</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
 <span class="c1"># Python 3.0–3.3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="n">imp</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
 <span class="c1"># Python 3.4+</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 </pre>
 
 
-<p>If you are developing something this will be annoying because for every small change you need to reload the module. IPython has <code>autoreload</code> magic which automatically reloads modules. You can enable it with</p>
+<p>Instead of manually reloading, ipython has <code>autoreload</code> extention which can auto reload modules. For that, load the extention and activate it.</p>
 <pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="o">%</span><span class="n">load_ext</span> <span class="n">autoreload</span>
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="o">%</span><span class="n">autoreload</span> <span class="mi">2</span>
 </pre>
 
 
-<p>You can do this everytime you start IPython or you can configure IPython to that automatically.</p>
-<p>Create a default profile using this command</p>
+<p>This can be added to ipython config file so that autoreload gets activated, whenver it starts.</p>
 <pre class="code literal-block"><span></span>$ ipython profile create
 </pre>
 
 
-<p>Go to your default profile at <code>~/.ipython/profile_default/ipython_config.py</code> and add these two lines at the end.</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'autoreload'</span><span class="p">]</span>
-<span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'%autoreload 2'</span><span class="p">]</span>
+<p>This creates a default config file. Open config file which is present at <code>~/.ipython/profile_default/ipython_config.py</code>  and add these two lines to it.</p>
+<pre class="code literal-block"><span></span>c.InteractiveShellApp.extensions = ['autoreload']
+c.InteractiveShellApp.exec_lines = ['%autoreload 2']
 </pre>
 
 
-<p>Nex time when you start IPython, autoreload will be enabled by default. Also note that reload doesn't reloads c extensions automatically.</p>
+<p>Note that it won't reloads c extensions automatically.</p>
 </div>
                 </div>
-                    <meta content="How to reload python imports without restarting the interpreter." itemprop="description">
+                    <meta content="Reload imports automatically in ipython shell" itemprop="description">
 </div>
 
             <br><hr>
