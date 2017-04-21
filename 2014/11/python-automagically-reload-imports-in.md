@@ -1,32 +1,30 @@
 <!--
-.. title: Automagically Reload Imports In IPython
+.. title: Automagically Reload Imports In iPython!
 .. slug: python-automagically-reload-imports-in
 .. date: 2014-11-19 17:21:00
-.. tags: ipython, python-tips
-.. category: programming, python
+.. tags: productivity, ipython
+.. category: programming
 .. link:
-.. description: How to reload python imports without restarting the interpreter.
+.. description: Reload imports automatically in ipython shell
 .. type: text
 -->
 
-If you are using IPython, you will be importing some of the modules you have written. While playing with them, you may want to change them or if there is a bug, you will have to fix them.
+When using iPython, users can import required modules to test them. After importing them, if they get modified either by user or some other process, users have to reload it for futher usage.
 
-Once you changed your code, you have to exit and start new interpreter or you can reload the module.
-
-To reload the already imported modules:
+Depending on the Python version, appropriate `reload` function can reload modules.
 
 ```py
 # Python 2.x
->>> imp.reload(module)
+In [15]: imp.reload(module)
 
 # Python 3.0–3.3
->>> imp.reload(module)
+In [15]: imp.reload(module)
 
 # Python 3.4+
->>> importlib.reload(module)
+In [15]: importlib.reload(module)
 ```
 
-If you are developing something this will be annoying because for every small change you need to reload the module. IPython has `autoreload` magic which automatically reloads modules. You can enable it with
+Instead of manually reloading, ipython has `autoreload` extention which can auto reload modules. For that, load the extention and activate it.
 
 ```py
 In [15]: %load_ext autoreload
@@ -34,19 +32,17 @@ In [15]: %load_ext autoreload
 In [16]: %autoreload 2
 ```
 
-You can do this everytime you start IPython or you can configure IPython to that automatically.
+This can be added to ipython config file so that autoreload gets activated, whenver it starts.
 
-Create a default profile using this command
-
-```
+```sh
 $ ipython profile create
 ```
 
-Go to your default profile at `~/.ipython/profile_default/ipython_config.py` and add these two lines at the end.
+This creates a default config file. Open config file which is present at `~/.ipython/profile_default/ipython_config.py`  and add these two lines to it.
 
-```py
+```
 c.InteractiveShellApp.extensions = ['autoreload']
 c.InteractiveShellApp.exec_lines = ['%autoreload 2']
 ```
 
-Nex time when you start IPython, autoreload will be enabled by default. Also note that reload doesn't reloads c extensions automatically.
+Note that it won't reloads c extensions automatically.
