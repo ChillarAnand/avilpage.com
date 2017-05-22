@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Avil Page (2017)</title><link>http://www.avilpage.com</link><description></description><atom:link href="http://www.avilpage.com/2017/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 21 Apr 2017 03:46:56 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django Auth Plugin For HTTPie</title><link>http://www.avilpage.com/2017/04/django-auth-plugin-for-httpie.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/httpie"&gt;HTTPie&lt;/a&gt; is an alternative to curl for interacting with web services from CLI. It provides a simple and intuitive interface and it is handy to send arbitrary HTTP requests while testing/debugging APIs.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (2017)</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/2017/rss.xml"></atom:link><language>en</language><lastBuildDate>Mon, 22 May 2017 01:42:24 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;celery worker -l info -A foo --autoreload
+&lt;/pre&gt;
+
+
+&lt;p&gt;Unfortunately, it doesn't work as expected and &lt;a href="https://github.com/celery/celery/issues/1658"&gt;it is deprecated&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/watchdog"&gt;Watchdog&lt;/a&gt; provides Python API and shell utilities to monitor file system events. We can install it with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;pip install watchdog
+&lt;/pre&gt;
+
+
+&lt;p&gt;Watchdog provides &lt;code&gt;watchmedo&lt;/code&gt; a shell utilitiy to perform actions based on file events. It has &lt;code&gt;auto-restart&lt;/code&gt; subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -- celery worker -l info -A foo
+&lt;/pre&gt;
+
+
+&lt;p&gt;By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
+&lt;/pre&gt;
+
+
+&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes. The same functionality can be used to reload celery workers.&lt;/p&gt;
+&lt;p&gt;Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.core.management.base&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseCommand&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.utils&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;autoreload&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'pkill -9 celery'&lt;/span&gt;
+    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'celery worker -l info -A foo'&lt;/span&gt;
+    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseCommand&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Starting celery worker with autoreload...'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;autoreload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a elery worker and autoreload it when codebase changes.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>celery</category><guid>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item><item><title>Django Auth Plugin For HTTPie</title><link>http://www.avilpage.com/2017/04/django-auth-plugin-for-httpie.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/httpie"&gt;HTTPie&lt;/a&gt; is an alternative to curl for interacting with web services from CLI. It provides a simple and intuitive interface and it is handy to send arbitrary HTTP requests while testing/debugging APIs.&lt;/p&gt;
 &lt;p&gt;When working with web applications that require authentication, using httpie is  difficult as authentication mechanism will be different for different applications. httpie has in built support for &lt;code&gt;basic&lt;/code&gt; &amp;amp; &lt;code&gt;digest&lt;/code&gt; authentication.&lt;/p&gt;
 &lt;p&gt;To authenticate with Django apps, a user needs to make a &lt;code&gt;GET&lt;/code&gt; request to login page. Django sends login form with a CSRF token. User can submit this form with valid credentials and a session will be initiated.&lt;/p&gt;
 &lt;p&gt;Establish session manually is boring and it gets tedious when working with multiple apps in multiple environments(development, staging, production).&lt;/p&gt;
@@ -152,24 +198,26 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 &lt;p&gt;How can BMTC charge 5₹ for the first 1.2KM and 7₹ for the subsequent 0.2KM?  If BMTC charges, 5₹ for 1st stage. Then it should charge 5₹ + extra for next stage. But it shouldn't be more than 10₹.&lt;/p&gt;
 &lt;p&gt;You can just take 1 ticket(5₹) for 1st stage(1.2KM) and one more ticket(5₹)  for the next stage(0.2KM).  You can just travel 2 stages with 2 tickets for 10₹.&lt;/p&gt;
 &lt;p&gt;Turnsout BMTC is charging 3₹ extra on every ticket which covers atleast 2 stages.  As lakhs of people travel in BMTC buses daily, in a month, this 3₹ turns into crores of rupees.&lt;/p&gt;
-&lt;p&gt;I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.&lt;/p&gt;&lt;/div&gt;</description><category>bangalore</category><guid>http://www.avilpage.com/2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html</guid><pubDate>Sun, 05 Feb 2017 17:08:16 GMT</pubDate></item><item><title>Refactoring Django With FST</title><link>http://www.avilpage.com/2017/01/refactoring-django-with-fst.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django developers decided to &lt;a href="https://code.djangoproject.com/ticket/23919" target="_blank"&gt;drop Python 2 compatability&lt;/a&gt; in Django 2.0. There are serveral things that should be refactored/removed.&lt;/p&gt;
+&lt;p&gt;I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.&lt;/p&gt;
+&lt;h3&gt;Update:&lt;/h3&gt;
+&lt;p&gt;After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to &lt;a href="https://twitter.com/philentropist"&gt;Gopala Kallapura&lt;/a&gt;, &lt;a href="https://twitter.com/kracetheking"&gt;Krace Kumar&lt;/a&gt; &amp;amp; &lt;a href="https://twitter.com/thej"&gt;Thegesh GN&lt;/a&gt; for supporting the issue.&lt;/p&gt;&lt;/div&gt;</description><category>bangalore</category><guid>http://www.avilpage.com/2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html</guid><pubDate>Sun, 05 Feb 2017 17:08:16 GMT</pubDate></item><item><title>Refactoring Django With FST</title><link>http://www.avilpage.com/2017/01/refactoring-django-with-fst.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django developers decided to &lt;a href="https://code.djangoproject.com/ticket/23919" target="_blank"&gt;drop Python 2 compatability&lt;/a&gt; in Django 2.0. There are serveral things that should be refactored/removed.&lt;/p&gt;
 &lt;p&gt;For example, in Python 2, programmers has to explicitly specify the class &amp;amp; instance when invoking &lt;code&gt;super&lt;/code&gt;.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;In Python 3, &lt;code&gt;super&lt;/code&gt; can be invoked without arguments and it will choose right class &amp;amp; instance automatically.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;For this refactoring, a simple &lt;code&gt;sed&lt;/code&gt; search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, &lt;code&gt;sed&lt;/code&gt; won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;→ grep -rI &lt;span class="s2"&gt;"super("&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; wc -l
-   1364
+   &lt;span class="m"&gt;1364&lt;/span&gt;
 &lt;/pre&gt;
 
 

@@ -22,7 +22,61 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/04/django-auth-plugin-for-httpie.html" class="u-url">Django Auth Plugin For HTTPie</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/05/how-to-auto-reload-celery-workers-in-development.html" class="u-url">How To Auto Reload Celery Workers In Development?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>We can pass <code>--autoreload</code> option when starting celery worker. This will restart worker when codebase changes.</p>
+<pre class="code literal-block"><span></span>celery worker -l info -A foo --autoreload
+</pre>
+
+
+<p>Unfortunately, it doesn't work as expected and <a href="https://github.com/celery/celery/issues/1658">it is deprecated</a>.</p>
+<p>During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.</p>
+<p><a href="https://pypi.python.org/pypi/watchdog">Watchdog</a> provides Python API and shell utilities to monitor file system events. We can install it with</p>
+<pre class="code literal-block"><span></span>pip install watchdog
+</pre>
+
+
+<p>Watchdog provides <code>watchmedo</code> a shell utilitiy to perform actions based on file events. It has <code>auto-restart</code> subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -- celery worker -l info -A foo
+</pre>
+
+
+<p>By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
+</pre>
+
+
+<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes. The same functionality can be used to reload celery workers.</p>
+<p>Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">autoreload</span>
+
+
+<span class="k">def</span> <span class="nf">restart_celery</span><span class="p">():</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'pkill -9 celery'</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'celery worker -l info -A foo'</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">'Starting celery worker with autoreload...'</span><span class="p">)</span>
+        <span class="n">autoreload</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">restart_celery</span><span class="p">)</span>
+</pre>
+
+
+<p>Now you can run celery worker with <code>python manage.py celery</code> which will start a elery worker and autoreload it when codebase changes.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/04/django-auth-plugin-for-httpie.html" class="u-url">Django Auth Plugin For HTTPie</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -203,6 +257,8 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 <p>You can just take 1 ticket(5₹) for 1st stage(1.2KM) and one more ticket(5₹)  for the next stage(0.2KM).  You can just travel 2 stages with 2 tickets for 10₹.</p>
 <p>Turnsout BMTC is charging 3₹ extra on every ticket which covers atleast 2 stages.  As lakhs of people travel in BMTC buses daily, in a month, this 3₹ turns into crores of rupees.</p>
 <p>I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.</p>
+<h3>Update:</h3>
+<p>After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to <a href="https://twitter.com/philentropist">Gopala Kallapura</a>, <a href="https://twitter.com/kracetheking">Krace Kumar</a> &amp; <a href="https://twitter.com/thej">Thegesh GN</a> for supporting the issue.</p>
 </div>
         </div>
             
@@ -213,21 +269,21 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 <p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
 <p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
 <pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
-   1364
+   <span class="m">1364</span>
 </pre>
 
 
@@ -411,42 +467,6 @@ CyanogenMod has inbuilt circle/text indicators.</p>
 <p>To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run <code>adb</code> as root on stock android, <code>adbd insecure</code> app is required. CyanogenMod works without it.</p>
 <p>Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.</p>
 <p>There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/09/remove-clock-lock-screen-status-bar-android.html" class="u-url">Remove Clock From LockScreen/StatusBar On Android</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. Recently <a href="https://github.com/viren-nadkarni">Viren</a> showed me Xposed framework and some xposed modules which will help to remove clock from lock screen and status bar.</p>
-<p>Before proceeding, make sure your phone is <a href="http://www.xda-developers.com/root/">rooted</a> and <a href="http://repo.xposed.info/module/de.robv.android.xposed.installer">Xposed framework</a> is installed.</p>
-<h4>Remove Clock From LockScreen</h4>
-<p>To remove clock from lockscreen, download <a href="http://repo.xposed.info/module/com.ssrdroide.lockscreenwidgets">Lock screen widgets</a> module and activate it.</p>
-<p>If you open it, it has an option to hide date and time.</p>
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_0.png" height="400px" width="220"></p>
-
-<h4>Remove Time From StatusBar</h4>
-<p>To remove clock from status bar, you have to install <a href="http://repo.xposed.info/module/com.ceco.marshmallow.gravitybox">GravityBox</a>. Open GravityBox and goto statusbar settings</p>
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_3.png" height="400px" width="220"></p>
-
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_4.png" height="400px" width="220"></p>
-
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_5.png" height="400px" width="220"></p>
-
-<p>If you are already using CyanogenMod, there is an option to hide time in settings.</p>
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_1.png" height="400px" width="220"></p>
-
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_2.png" height="400px" width="220"></p>
-
-<p>Once you do this, you will have a neat lockscreen without any time on it.</p>
-<p align="center">
-<img src="../remove_clock_android/remove_clock_anrdoid_6.png" height="400px" width="220"></p>
 </div>
         </div>
             
