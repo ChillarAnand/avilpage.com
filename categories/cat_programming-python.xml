@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about programming, python)</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/categories/cat_programming-python.xml"></atom:link><language>en</language><lastBuildDate>Mon, 22 May 2017 01:42:23 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;celery worker -l info -A foo --autoreload
+&lt;/pre&gt;
+
+
+&lt;p&gt;Unfortunately, it doesn't work as expected and &lt;a href="https://github.com/celery/celery/issues/1658"&gt;it is deprecated&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/watchdog"&gt;Watchdog&lt;/a&gt; provides Python API and shell utilities to monitor file system events. We can install it with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;pip install watchdog
+&lt;/pre&gt;
+
+
+&lt;p&gt;Watchdog provides &lt;code&gt;watchmedo&lt;/code&gt; a shell utilitiy to perform actions based on file events. It has &lt;code&gt;auto-restart&lt;/code&gt; subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -- celery worker -l info -A foo
+&lt;/pre&gt;
+
+
+&lt;p&gt;By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
+&lt;/pre&gt;
+
+
+&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes. The same functionality can be used to reload celery workers.&lt;/p&gt;
+&lt;p&gt;Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.core.management.base&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseCommand&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.utils&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;autoreload&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'pkill -9 celery'&lt;/span&gt;
+    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'celery worker -l info -A foo'&lt;/span&gt;
+    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseCommand&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Starting celery worker with autoreload...'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;autoreload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a elery worker and autoreload it when codebase changes.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>celery</category><guid>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item></channel></rss>

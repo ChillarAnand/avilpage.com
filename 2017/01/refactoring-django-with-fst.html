@@ -56,21 +56,21 @@
 <p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
 <p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
 <pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
-   1364
+   <span class="m">1364</span>
 </pre>
 
 
