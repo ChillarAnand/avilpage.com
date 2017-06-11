@@ -16,11 +16,11 @@ When building a registry, programmers have to explicitly register each object wi
 A commonly used approach is to use inheritance as an organizing mechanism. Create [a meta class which will auto register](https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses) classes and then create base class with this meta class.
 
 ```python
-registry = {}
+REGISTRY = {}
 
 
 def register_class(target_class):
-    registry[target_class.__name__] = target_class
+    REGISTRY[target_class.__name__] = target_class
 
 
 class MetaRegistry(type):
@@ -51,7 +51,7 @@ Eventhough it solves registration problem, it is hard to understand the code unl
 A simple alternative for this is to use `__subclasses__()` to get subclasess and register them.
 
 ```python
-registry = {cls.__name__: cls for cls in BaseClass.__subclasses__()}
+REGISTRY = {cls.__name__: cls for cls in BaseClass.__subclasses__()}
 ```
 
 This will work only for direct subclasses and won't with indirect subclasses like this.
@@ -79,7 +79,7 @@ def subclasses(cls, registry=None):
             yield sub
 
 
-registry = {cls.__name__: cls for cls in subclasses(BaseClass)}
+REGISTRY = {cls.__name__: cls for cls in subclasses(BaseClass)}
 ```
 
 This code is more readable than first example and we have avoided metaclasses to auto register classes.
