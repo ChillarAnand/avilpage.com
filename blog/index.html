@@ -22,7 +22,80 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/05/how-to-auto-reload-celery-workers-in-development.html" class="u-url">How To Auto Reload Celery Workers In Development?</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/06/auto-register-subclasess-without-metaclass.html" class="u-url">Auto Register Subclasess Without Metaclass in Python</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>In registry pattern, a <code>registry</code> maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.</p>
+<p>When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.</p>
+<p>A commonly used approach is to use inheritance as an organizing mechanism. Create <a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses">a meta class which will auto register</a> classes and then create base class with this meta class.</p>
+<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">target_class</span><span class="p">):</span>
+    <span class="n">REGISTRY</span><span class="p">[</span><span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_class</span>
+
+
+<span class="k">class</span> <span class="nc">MetaRegistry</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span>
+
+
+<span class="k">class</span> <span class="nc">BaseClass</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaRegistry</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre>
+
+
+<p>Now whenever you subclass <code>BaseClass</code>, it gets registered in the global registry. In the above example, <code>Foo</code>, <code>Bar</code> gets registered automatically.</p>
+<p>Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.</p>
+<p>A simple alternative for this is to use <code>__subclasses__()</code> to get subclasess and register them.</p>
+<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
+</pre>
+
+
+<p>This will work only for direct subclasses and won't with indirect subclasses like this.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre>
+
+
+<p>To solve this, we can use a function to recursively retrieve all subclasses of a class.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">registry</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">subs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">sub</span>
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">sub</span>
+
+
+<span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">)}</span>
+</pre>
+
+
+<p>This code is more readable than first example and we have avoided metaclasses to auto register classes.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/05/how-to-auto-reload-celery-workers-in-development.html" class="u-url">How To Auto Reload Celery Workers In Development?</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -43,13 +116,13 @@
 </pre>
 
 
-<p>By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
+<p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
 </pre>
 
 
-<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes. The same functionality can be used to reload celery workers.</p>
-<p>Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
+<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
+<p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
 <pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
@@ -269,21 +342,21 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 <p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
 <p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
 <pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
 </pre>
 
 
 <p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
 <pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
-   <span class="m">1364</span>
+   1364
 </pre>
 
 
@@ -448,25 +521,6 @@ the condition that distinguishes animals and plants from inorganic matter, inclu
 <p align="center">Skew corrected image</p>
 
 <p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>When listening to music, to switch tracks I want to use volume buttons. For this I have to use <a href="https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&amp;hl=en">Pocket Skip Track</a> app.
-CyanogenMod has inbuilt support for that.</p>
-<p>To interact with mobile from computer over wifi, <a href="https://play.google.com/store/apps/details?id=com.ttxapps.wifiadb">wifi adb</a> is required. CyanogenMod provides an option to enable this in <code>Developer Options</code>.</p>
-<p>To put mobile in recovery mode, <a href="http://repo.xposed.info/module/com.ceco.kitkat.gravitybox">Gravity Box</a> is required. This should be used only after installing Xposed framework. CyanogenMod has <code>Advanced reboot</code> which provides option to put phone in recovery mode.</p>
-<p>Battery icon in status bar is very small. Having a text percentage indicator will be more useful. For this <a href="https://play.google.com/store/apps/details?id=de.kroegerama.android4batpercent">battery percentage</a> is required.
-CyanogenMod has inbuilt circle/text indicators.</p>
-<p>Auto brighness stopped working after I have rooted Moto G4 plus. I had to use <a href="https://play.google.com/store/apps/details?id=com.urbandroid.lux">twilight</a> for auto brighness adjustment. With CyanogenMod, it is working fine. It also has a night mode option.</p>
-<p>With stock android, auto rotate won't work in all directions. <a href="https://play.google.com/store/apps/details?id=com.googlecode.eyesfree.setorientation">Set orientation</a> app is required for that. CyanogenMod has inbuilt support for that.</p>
-<p>To adapt mobile display to the time of the day, flux app is required on stock android. CyanogenMod has inbuilt option for this.</p>
-<p>To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run <code>adb</code> as root on stock android, <code>adbd insecure</code> app is required. CyanogenMod works without it.</p>
-<p>Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.</p>
-<p>There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.</p>
 </div>
         </div>
             

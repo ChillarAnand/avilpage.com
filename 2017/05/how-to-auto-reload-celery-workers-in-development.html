@@ -70,13 +70,13 @@
 </pre>
 
 
-<p>By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
+<p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
 </pre>
 
 
-<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes. The same functionality can be used to reload celery workers.</p>
-<p>Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
+<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
+<p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
 <pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 

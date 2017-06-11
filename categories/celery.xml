@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about celery)</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/categories/celery.xml"></atom:link><language>en</language><lastBuildDate>Mon, 22 May 2017 01:42:24 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"><channel><title>Avil Page (Posts about celery)</title><link>http://www.avilpage.com</link><description></description><atom:link href="http://www.avilpage.com/categories/celery.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 11 Jun 2017 04:27:22 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;celery worker -l info -A foo --autoreload
 &lt;/pre&gt;
 
@@ -16,13 +16,13 @@
 &lt;/pre&gt;
 
 
-&lt;p&gt;By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
+&lt;p&gt;By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -d . -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
 &lt;/pre&gt;
 
 
-&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes. The same functionality can be used to reload celery workers.&lt;/p&gt;
-&lt;p&gt;Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
+&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes.&lt;/p&gt;
+&lt;p&gt;The same functionality can be used to reload celery workers. Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
 
