@@ -31,15 +31,15 @@ Watchdog provides `watchmedo` a shell utilitiy to perform actions based on file 
 watchmedo auto-restart -- celery worker -l info -A foo
 ```
 
-By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.
+By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.
 
 ```shell
-watchmedo auto-restart -p '*.py' -- celery worker -l info -A foo
+watchmedo auto-restart -d . -p '*.py' -- celery worker -l info -A foo
 ```
 
-If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by `runserver` to restart WSGI server when code changes. The same functionality can be used to reload celery workers.
+If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by `runserver` to restart WSGI server when code changes.
 
-Create a seperate management command called `celery`. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.
+The same functionality can be used to reload celery workers. Create a seperate management command called `celery`. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.
 
 ```python
 import shlex

@@ -1,5 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/rss.xml"></atom:link><language>en</language><lastBuildDate>Mon, 22 May 2017 01:42:23 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://www.avilpage.com</link><description></description><atom:link type="application/rss+xml" href="http://www.avilpage.com/rss.xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 11 Jun 2017 16:59:25 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Auto Register Subclasess Without Metaclass in Python</title><link>http://www.avilpage.com/2017/06/auto-register-subclasess-without-metaclass.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In registry pattern, a &lt;code&gt;registry&lt;/code&gt; maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.&lt;/p&gt;
+&lt;p&gt;When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.&lt;/p&gt;
+&lt;p&gt;A commonly used approach is to use inheritance as an organizing mechanism. Create &lt;a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses"&gt;a meta class which will auto register&lt;/a&gt; classes and then create base class with this meta class.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;REGISTRY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;register_class&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;target_class&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;REGISTRY&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;target_class&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;target_class&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MetaRegistry&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__new__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bases&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;class_dict&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;cls&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__new__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;meta&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bases&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;class_dict&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;register_class&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;cls&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BaseClass&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;metaclass&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;MetaRegistry&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;pass&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseClass&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;pass&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseClass&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;pass&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Now whenever you subclass &lt;code&gt;BaseClass&lt;/code&gt;, it gets registered in the global registry. In the above example, &lt;code&gt;Foo&lt;/code&gt;, &lt;code&gt;Bar&lt;/code&gt; gets registered automatically.&lt;/p&gt;
+&lt;p&gt;Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.&lt;/p&gt;
+&lt;p&gt;A simple alternative for this is to use &lt;code&gt;__subclasses__()&lt;/code&gt; to get subclasess and register them.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;REGISTRY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="bp"&gt;cls&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;BaseClass&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__subclasses__&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will work only for direct subclasses and won't with indirect subclasses like this.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Baz&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Bar&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;pass&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;To solve this, we can use a function to recursively retrieve all subclasses of a class.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;subclasses&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;cls&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;registry&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;registry&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;subs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__subclasses__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;sub&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;subs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;sub&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt;
+        &lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;yield&lt;/span&gt; &lt;span class="n"&gt;sub&lt;/span&gt;
+        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;sub&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;subclasses&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;yield&lt;/span&gt; &lt;span class="n"&gt;sub&lt;/span&gt;
+
+
+&lt;span class="n"&gt;REGISTRY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="bp"&gt;cls&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="bp"&gt;cls&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;subclasses&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseClass&lt;/span&gt;&lt;span class="p"&gt;)}&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This code is more readable than first example and we have avoided metaclasses to auto register classes.&lt;/p&gt;&lt;/div&gt;</description><category>design patterns</category><category>metaclass</category><guid>http://www.avilpage.com/2017/06/auto-register-subclasess-without-metaclass.html</guid><pubDate>Sat, 10 Jun 2017 15:30:27 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;celery worker -l info -A foo --autoreload
 &lt;/pre&gt;
 
@@ -16,13 +81,13 @@
 &lt;/pre&gt;
 
 
-&lt;p&gt;By default it will watch for all files in current directory. We can limit this by setting file atterns to watch for.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
+&lt;p&gt;By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;watchmedo auto-restart -d . -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
 &lt;/pre&gt;
 
 
-&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes. The same functionality can be used to reload celery workers.&lt;/p&gt;
-&lt;p&gt;Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
+&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes.&lt;/p&gt;
+&lt;p&gt;The same functionality can be used to reload celery workers. Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
 
@@ -203,21 +268,21 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 &lt;p&gt;After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to &lt;a href="https://twitter.com/philentropist"&gt;Gopala Kallapura&lt;/a&gt;, &lt;a href="https://twitter.com/kracetheking"&gt;Krace Kumar&lt;/a&gt; &amp;amp; &lt;a href="https://twitter.com/thej"&gt;Thegesh GN&lt;/a&gt; for supporting the issue.&lt;/p&gt;&lt;/div&gt;</description><category>bangalore</category><guid>http://www.avilpage.com/2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html</guid><pubDate>Sun, 05 Feb 2017 17:08:16 GMT</pubDate></item><item><title>Refactoring Django With FST</title><link>http://www.avilpage.com/2017/01/refactoring-django-with-fst.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django developers decided to &lt;a href="https://code.djangoproject.com/ticket/23919" target="_blank"&gt;drop Python 2 compatability&lt;/a&gt; in Django 2.0. There are serveral things that should be refactored/removed.&lt;/p&gt;
 &lt;p&gt;For example, in Python 2, programmers has to explicitly specify the class &amp;amp; instance when invoking &lt;code&gt;super&lt;/code&gt;.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;In Python 3, &lt;code&gt;super&lt;/code&gt; can be invoked without arguments and it will choose right class &amp;amp; instance automatically.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;/pre&gt;
 
 
 &lt;p&gt;For this refactoring, a simple &lt;code&gt;sed&lt;/code&gt; search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, &lt;code&gt;sed&lt;/code&gt; won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;→ grep -rI &lt;span class="s2"&gt;"super("&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; wc -l
-   &lt;span class="m"&gt;1364&lt;/span&gt;
+   1364
 &lt;/pre&gt;
 
 
@@ -362,15 +427,4 @@ the condition that distinguishes animals and plants from inorganic matter, inclu
 
 &lt;p align="center"&gt;Skew corrected image&lt;/p&gt;
 
-&lt;p&gt;Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.&lt;/p&gt;&lt;/div&gt;</description><category>image processing</category><category>ocr</category><category>skew</category><guid>http://www.avilpage.com/2016/11/detect-correct-skew-images-python.html</guid><pubDate>Sat, 12 Nov 2016 12:11:17 GMT</pubDate></item><item><title>Why I Use CyanogenMod?</title><link>http://www.avilpage.com/2016/10/why-use-cyanogenmod.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;When listening to music, to switch tracks I want to use volume buttons. For this I have to use &lt;a href="https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&amp;amp;hl=en"&gt;Pocket Skip Track&lt;/a&gt; app.
-CyanogenMod has inbuilt support for that.&lt;/p&gt;
-&lt;p&gt;To interact with mobile from computer over wifi, &lt;a href="https://play.google.com/store/apps/details?id=com.ttxapps.wifiadb"&gt;wifi adb&lt;/a&gt; is required. CyanogenMod provides an option to enable this in &lt;code&gt;Developer Options&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;To put mobile in recovery mode, &lt;a href="http://repo.xposed.info/module/com.ceco.kitkat.gravitybox"&gt;Gravity Box&lt;/a&gt; is required. This should be used only after installing Xposed framework. CyanogenMod has &lt;code&gt;Advanced reboot&lt;/code&gt; which provides option to put phone in recovery mode.&lt;/p&gt;
-&lt;p&gt;Battery icon in status bar is very small. Having a text percentage indicator will be more useful. For this &lt;a href="https://play.google.com/store/apps/details?id=de.kroegerama.android4batpercent"&gt;battery percentage&lt;/a&gt; is required.
-CyanogenMod has inbuilt circle/text indicators.&lt;/p&gt;
-&lt;p&gt;Auto brighness stopped working after I have rooted Moto G4 plus. I had to use &lt;a href="https://play.google.com/store/apps/details?id=com.urbandroid.lux"&gt;twilight&lt;/a&gt; for auto brighness adjustment. With CyanogenMod, it is working fine. It also has a night mode option.&lt;/p&gt;
-&lt;p&gt;With stock android, auto rotate won't work in all directions. &lt;a href="https://play.google.com/store/apps/details?id=com.googlecode.eyesfree.setorientation"&gt;Set orientation&lt;/a&gt; app is required for that. CyanogenMod has inbuilt support for that.&lt;/p&gt;
-&lt;p&gt;To adapt mobile display to the time of the day, flux app is required on stock android. CyanogenMod has inbuilt option for this.&lt;/p&gt;
-&lt;p&gt;To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run &lt;code&gt;adb&lt;/code&gt; as root on stock android, &lt;code&gt;adbd insecure&lt;/code&gt; app is required. CyanogenMod works without it.&lt;/p&gt;
-&lt;p&gt;Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.&lt;/p&gt;
-&lt;p&gt;There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.&lt;/p&gt;&lt;/div&gt;</description><category>customization</category><category>cyanogenmod</category><category>xposed</category><guid>http://www.avilpage.com/2016/10/why-use-cyanogenmod.html</guid><pubDate>Mon, 31 Oct 2016 14:05:09 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.&lt;/p&gt;&lt;/div&gt;</description><category>image processing</category><category>ocr</category><category>skew</category><guid>http://www.avilpage.com/2016/11/detect-correct-skew-images-python.html</guid><pubDate>Sat, 12 Nov 2016 12:11:17 GMT</pubDate></item></channel></rss>
