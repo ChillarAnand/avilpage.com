@@ -2,10 +2,10 @@
 .. title: How To Auto Reload Celery Workers In Development?
 .. slug: how-to-auto-reload-celery-workers-in-development
 .. date: 2017-05-07 04:22:47 UTC
-.. tags:
-.. category:
+.. tags: celery, automation
+.. category: programming, python
 .. link:
-.. description:
+.. description: How to automaically reload celery workers in development environment.
 .. type: text
 -->
 
@@ -17,9 +17,15 @@ celery worker -l info -A foo --autoreload
 
 Unfortunately, it doesn't work as expected and [it is deprecated](https://github.com/celery/celery/issues/1658).
 
-During development, we will be making several changes to code. Manually restarting them everytime is tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.
+During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.
 
-[Watchdog](https://pypi.python.org/pypi/watchdog) provides Python API and shell utilities to monitor file system events. It provides `watchmedo` a shell utilitiy to perform actions based on file events. It has `auto-restart` subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.
+[Watchdog](https://pypi.python.org/pypi/watchdog) provides Python API and shell utilities to monitor file system events. We can install it with
+
+```sh
+pip install watchdog
+```
+
+Watchdog provides `watchmedo` a shell utilitiy to perform actions based on file events. It has `auto-restart` subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.
 
 ```shell
 watchmedo auto-restart -- celery worker -l info -A foo
@@ -57,4 +63,4 @@ class Command(BaseCommand):
         autoreload.main(restart_celery)
 ```
 
-Now you can run celery worker with `python manage.py celery` which will autoreload when codebase changes.
+Now you can run celery worker with `python manage.py celery` which will start a elery worker and autoreload it when codebase changes.
