@@ -2,7 +2,7 @@
 .. title: Auto Register Subclasess Without Metaclass in Python
 .. slug: auto-register-subclasess-without-metaclass
 .. date: 2017-06-10 15:30:27 UTC
-.. tags: metaclass, design patterns,
+.. tags: metaclass, design patterns, python
 .. category: programming, python
 .. link:
 .. description: How to auto register subclasses without using metaclasses
@@ -82,4 +82,16 @@ def subclasses(cls, registry=None):
 REGISTRY = {cls.__name__: cls for cls in subclasses(BaseClass)}
 ```
 
-This code is more readable than first example and we have avoided metaclasses to auto register classes.
+[PEP 487](https://www.python.org/dev/peps/pep-0487/) provides `__init_subclass__` hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this `__init_subclass__` hook.
+
+```python
+class BaseClass:
+    def __init_subclass__(cls, **kwargs):
+        if cls not in registry:
+            register_class(cls)
+        super().__init_subclass__(**kwargs)
+
+print(registry)
+```
+
+This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.
