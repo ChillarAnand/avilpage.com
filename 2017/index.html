@@ -93,7 +93,18 @@
 </pre>
 
 
-<p>This code is more readable than first example and we have avoided metaclasses to auto register classes.</p>
+<p><a href="https://www.python.org/dev/peps/pep-0487/">PEP 487</a> provides <code>__init_subclass__</code> hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this <code>__init_subclass__</code> hook.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
+            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
+</pre>
+
+
+<p>This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.</p>
 </div>
         </div>
             
