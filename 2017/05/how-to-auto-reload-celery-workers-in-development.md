@@ -63,4 +63,4 @@ class Command(BaseCommand):
         autoreload.main(restart_celery)
 ```
 
-Now you can run celery worker with `python manage.py celery` which will start a elery worker and autoreload it when codebase changes.
+Now you can run celery worker with `python manage.py celery` which will start a celery worker and autoreload it when codebase changes.

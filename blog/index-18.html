@@ -22,7 +22,121 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/12/" class="u-url">What Is The Meaning Of Life?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>The meaning of life is</p>
+<blockquote cite="https://en.oxforddictionaries.com/definition/life">
+
+the condition that distinguishes animals and plants from inorganic matter, including the capacity for growth, reproduction, functional activity, and continual change preceding death.
+
+</blockquote>
+
+<p>Source: Oxford Dictionary</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/11/detect-correct-skew-images-python.html" class="u-url">Detect &amp; Correct Skew In Images Using Python</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>When scanning a document, a slight skew gets into the scanned image. If you are using the scanned image to extract information from it, detecting and correcting skew is crucial.</p>
+<p>There are several techniques that are used to skew correction.</p>
+<ul>
+<li>Projection profile method</li>
+<li>
+<p>Hough transform</p>
+</li>
+<li>
+<p>Topline method</p>
+</li>
+<li>
+<p>Scanline method</p>
+</li>
+</ul>
+<p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
+<p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
+
+<span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+
+<span class="c1"># convert to binary</span>
+<span class="n">wd</span><span class="p">,</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'1'</span><span class="p">)</span><span class="o">.</span><span class="n">getdata</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">bin_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ht</span><span class="p">,</span> <span class="n">wd</span><span class="p">))</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'binary.png'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
+
+
+<span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">limit</span><span class="p">,</span> <span class="n">limit</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">find_score</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+<span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">'Best angle: {}'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
+
+<span class="c1"># correct skew</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
+</pre>
+
+
+<p><strong>Results:</strong></p>
+<p align="center"><img align="center" src="../skew_python/original.png"></p>
+
+<p align="center">Original Image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/gray.png"></p>
+
+<p align="center">Black &amp; white image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
+
+<p align="center">Histogram of image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
+
+<p align="center">Scores at various angles</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
+
+<p align="center">Histogram at 2° (best angle)</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
+
+<p align="center">Skew corrected image</p>
+
+<p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -88,12 +202,12 @@ monitor will print the received events <span class="k">for</span>:
 UDEV - the event which udev sends out after rule processing
 KERNEL - the kernel uevent
 
-KERNEL<span class="o">[</span>4336.899091<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
-KERNEL<span class="o">[</span>4336.899774<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
-KERNEL<span class="o">[</span>4336.902553<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
-UDEV  <span class="o">[</span>4336.911201<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
-UDEV  <span class="o">[</span>4336.936453<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
-UDEV  <span class="o">[</span>4337.947174<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.899091<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.899774<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.902553<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.911201<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.936453<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4337</span>.947174<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
 </pre>
 
 
