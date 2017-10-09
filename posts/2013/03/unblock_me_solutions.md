@@ -2,8 +2,8 @@
 .. title: Unblock Me Puzzle Solutions
 .. slug: avil-page-unblock-me-all-solutions
 .. date: 2013-03-21 12:12:00
-.. tags: unblock me, cheats, screencast
-.. Categories: games, puzzles
+.. tags: unblock me
+.. Categories: gaming
 .. description: All cheats for unblock me iOS/Andoid puzzle game.
 -->
 

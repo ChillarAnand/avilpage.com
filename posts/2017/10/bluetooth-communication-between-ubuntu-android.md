@@ -2,16 +2,16 @@
 .. title: Bluetooth Serial Communication Between Ubuntu & Android
 .. slug: bluetooth-communication-between-ubuntu-android
 .. date: 2017-10-03 14:53:04 UTC
-.. tags:
-.. category:
+.. tags: android, bluetooth, ubuntu
+.. category: tech, how-to
 .. link:
 .. description: How to do bluetooth serial communication from ubuntu laptop to android smart phone or bluetooth device like HC-05
 .. type: text
 -->
 
-Most laptops and smart phone(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.
+Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.
 
-In this article, we will learn how to send messages via bluetooth from laptop to android phone.
+In this article, we will learn how to send data between laptop and android bluetooth.
 
 First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.
 
@@ -51,13 +51,13 @@ To communicate with paired devices, we will use [RFCOMM protocol](https://en.wik
 From ubuntu, lets open a port for communication.
 
 ```sh
-sudo rfcomm listen /dev/rfcomm0 3
+$ sudo rfcomm listen /dev/rfcomm0 3
 ```
 
 From Android, we have to connect to ubuntu. For this, we can use [Roboremo](https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&hl=en) app which supports RFCOMM.
 
 ```sh
-sudo rfcomm listen /dev/rfcomm0 3
+$ sudo rfcomm listen /dev/rfcomm0 3
 Waiting for connection on channel 3
 Connection from 88:79:7E:7B:4C:87 to /dev/rfcomm0
 Press CTRL-C for hangup
