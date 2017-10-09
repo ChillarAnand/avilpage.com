@@ -12,7 +12,7 @@
 <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
     <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<link rel="alternate" type="application/rss+xml" title="RSS for section_index 2017" hreflang="en" href="rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS for section_index 2017" href="rss.xml">
 </head>
 <body>
         <div id="">
@@ -25,15 +25,85 @@
 
 <div class="sectionindex">
     <header><h2><a href=".">2017</a></h2>
-        <div class="metadata">
-                            <p class="feedlink">
-                                    <a href="rss.xml" hreflang="en" type="application/rss+xml">RSS feed</a>
+                    <p class="feedlink">
+                    <a href="rss.xml" type="application/rss+xml">RSS feed</a>
+            </p>
 
-                </p>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="10/bluetooth-communication-between-ubuntu-android.html" class="u-url">Bluetooth Serial Communication Between Ubuntu &amp; Android</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.</p>
+<p>In this article, we will learn how to send data between laptop and android bluetooth.</p>
+<p>First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.</p>
+<pre class="code literal-block"><span></span>$ bluetoothctl
+<span class="o">[</span>NEW<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC asus <span class="o">[</span>default<span class="o">]</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A DESKTOP-C4ECO3K
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 athene
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:65:2D:8C:2E:10 OnePlus <span class="m">5</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:0C:A5:61:D5:64 Lenovo VIBE K5 Plus
+<span class="o">[</span>NEW<span class="o">]</span> Device AC:C3:3A:A0:CE:EF Galaxy J2
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:D3:35:71:02:B3 HC-05
 
-            
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># power on</span>
+Changing power on succeeded
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># agent on</span>
+Agent registered
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># default-agent</span>
+Default agent request successful
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># scan on</span>
+Discovery started
+<span class="o">[</span>CHG<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC Discovering: yes
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A RSSI: -88
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 RSSI: -66
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># pair 88:79:7E:7B:4C:87</span>
+Attempting to pair with <span class="m">88</span>:79:7E:7B:4C:87
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 Paired: yes
+Pairing successful
+</pre>
+
+
+<p>To communicate with paired devices, we will use <a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols">RFCOMM protocol</a>. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.</p>
+<p>From ubuntu, lets open a port for communication.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+</pre>
+
+
+<p>From Android, we have to connect to ubuntu. For this, we can use <a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;hl=en">Roboremo</a> app which supports RFCOMM.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+Waiting <span class="k">for</span> connection on channel <span class="m">3</span>
+Connection from <span class="m">88</span>:79:7E:7B:4C:87 to /dev/rfcomm0
+Press CTRL-C <span class="k">for</span> hangup
+</pre>
+
+
+<p>Once the connection is established, we can communicate between devices.</p>
+<p>In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to send message to bluetooth</span>
+$ <span class="nb">echo</span> <span class="s1">'hello from ubuntu'</span> &gt; /dev/rfcomm0
+</pre>
+
+
+<p>We can see the received messages on Android</p>
+<p align="center">
+<img src="../images/arduino-ubuntu-bluetooth.jpg"></p>
+
+<p>We can also send messages from android and read from ubuntu.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to read messages from bluetooth</span>
+$ cat /dev/rfcomm0
+hello from android
+</pre>
+
+
+<p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
+</div>
         </div>
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="09/amazon-india-artificial-intelligence-aiai-summit.html" class="u-url">Amazon India Artificial Intelligence (AIAI) Summit</a></h1>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="09/amazon-india-artificial-intelligence-aiai-summit.html" class="u-url">Amazon India Artificial Intelligence (AIAI) Summit</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -414,65 +484,6 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 <p>I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.</p>
 <h3>Update:</h3>
 <p>After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to <a href="https://twitter.com/philentropist">Gopala Kallapura</a>, <a href="https://twitter.com/kracetheking">Krace Kumar</a> &amp; <a href="https://twitter.com/thej">Thegesh GN</a> for supporting the issue.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With FST</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
-<p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
-
-<p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
-
-<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
-<pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
-   <span class="m">1364</span>
-</pre>
-
-
-<p>Changes has to be scripted. I wrote a <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple script</a> to replace super calls by class names. This worked only for 50% of the cases. It failed to capture classes which had comments on top of them, classes with decorators and nested classes.</p>
-<p>To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).</p>
-<p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
-<pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
-<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
-
-   <span class="k">print</span><span class="p">(</span>
-    <span class="s2">"hello world"</span>
-<span class="p">)</span>
-</pre>
-
-
-<p>Converting above code to AST and then converting back gives this</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">)</span>
-</pre>
-
-
-<p>Code to AST is a lossy transformation as they cannot preserve empty lines, comments and code formatting.</p>
-<pre class="code literal-block"><span></span><span class="n">ast_to_code</span><span class="p">(</span><span class="n">code_to_ast</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">!=</span> <span class="n">source_code</span>
-</pre>
-
-
-<p>For lossless transformation, FST(Full Syntax Trees) packages like <a href="https://github.com/PyCQA/baron" target="_blank">Baron</a> or <a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> should be used.</p>
-<pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
-</pre>
-
-
-<p>With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
-<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.</p>
-<p>Thanks to <a href="https://github.com/timgraham" target="_blank">Tim Graham</a> &amp; <a href="https://github.com/aaugustin" target="_blank">Aymeric Augustin</a> for <a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank">reviewing the patch</a>.</p>
 </div>
         </div>
             
