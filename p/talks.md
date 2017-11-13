@@ -47,7 +47,7 @@
 
 
 ### [Python Traceback For Humans!](http://chillaranand.github.io/py-trace/)
-@ [PyCon India 2015]() [ [Code](https://github.com/ChillarAnand/py-trace/tree/gh-pages/code) ] [ [Video](https://www.youtube.com/watch?v=EGhG8VEatBE) ]
+@ [PyCon India]() [ [Code](https://github.com/ChillarAnand/py-trace/tree/gh-pages/code) ] [ [Video](https://www.youtube.com/watch?v=EGhG8VEatBE) ]
 <br />
 <br />
 
