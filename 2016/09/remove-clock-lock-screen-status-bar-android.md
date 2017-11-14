@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. Recently [Viren][] showed me Xposed framework and some xposed modules which will help to remove clock from lock screen and status bar.
+I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. With Xposed framework we can remove clock from lock screen and status bar.
 
 Before proceeding, make sure your phone is [rooted][] and [Xposed framework][xposed] is installed.
 
@@ -57,8 +57,6 @@ Once you do this, you will have a neat lockscreen without any time on it.
 <img src="/remove_clock_android/remove_clock_anrdoid_6.png" height="400px" width="220" />
 </p>
 
-
-[Viren]: https://github.com/viren-nadkarni
 [GravityBox]: http://repo.xposed.info/module/com.ceco.marshmallow.gravitybox
 [xposed]: http://repo.xposed.info/module/de.robv.android.xposed.installer
 [rooted]: http://www.xda-developers.com/root/
