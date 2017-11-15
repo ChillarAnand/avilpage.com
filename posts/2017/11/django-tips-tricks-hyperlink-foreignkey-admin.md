@@ -1,7 +1,7 @@
 <!--
-.. title: Django Tips & Tricks #3 - Hyperlink Foreignkey Fields In Admin
-.. slug: django-tips-tricks-hyperlink-foreignkey-fields-in-admin
-.. date: 2017-11-15 02:22:59 UTC
+.. title: Django Tips & Tricks #8 - Hyperlink Foreignkey Fields In Admin
+.. slug: django-tips-tricks-hyperlink-foreignkey-admin
+.. date: 2017-11-15 22:22:59 UTC
 .. tags: python, django, django-tips-tricks
 .. category: tech, programming, python
 .. link:
