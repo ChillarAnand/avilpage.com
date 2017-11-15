@@ -2,8 +2,8 @@
 .. title: How To Remove Clock From LockScreen/StatusBar?
 .. slug: how-to-remove-clock-lock-screen-status-bar
 .. date: 2017-11-13 20:24:38 UTC
-.. tags:
-.. category: tech, android, how-to
+.. tags: how-to, android
+.. category: tech, android
 .. link:
 .. description: How to remove/hide date and time from lock screen and status bar on android phones
 .. type: text
