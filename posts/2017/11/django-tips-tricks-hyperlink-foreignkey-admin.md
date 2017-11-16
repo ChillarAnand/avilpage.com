@@ -1,7 +1,7 @@
 <!--
 .. title: Django Tips & Tricks #8 - Hyperlink Foreignkey Fields In Admin
 .. slug: django-tips-tricks-hyperlink-foreignkey-admin
-.. date: 2017-11-15 22:22:59 UTC
+.. date: 2017-11-14 21:21:21 UTC
 .. tags: python, django, django-tips-tricks
 .. category: tech, programming, python
 .. link:
@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-Consider two models which are linked with a foreignkey.
+Consider `Book` model which has `Author` as foreignkey.
 
 ```py
 from django.db import models
@@ -23,7 +23,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author)
 ```
 
-These models can be registered with admin interface as follows.
+We can register these models with admin interface as follows.
 
 ```py
 from django.contrib import admin
@@ -44,9 +44,9 @@ Once they are registed, admin page shows `Book` model like this.
 </p>
 
 
-Now to go to coresponding author, we have to previous page, go to `Author` model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, author field can be hyperlinked so that we can directly go to its change view.
+While browing books, to go to a particular author, we have to previous page, go to `Author` model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, if author field has a hyperlink, we can directly go to its page.
 
-Django provides an option to [access admin views by its URL](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls) reversing system. For example to get add view of author model in book app, we can do `reverse("admin:book_author_add")`.
+Django provides an option to [access admin views by its URL](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls) reversing system. For example, we can get add view of author model in book app from `reverse("admin:book_author_add")`.
 
 To hyperlink author field in book admin, get url from reversing `book_author_change` with its id and return required html.
 
@@ -61,8 +61,8 @@ class BookAdmin(admin.ModelAdmin):
     author_link.short_description = 'Author'
 ```
 
+Now in the book admin view, author field will be hyperlinked and we can visit just by clicking it.
+
 <p align="center">
 <img src="/images/django-tips-tricks-2.png" />
 </p>
-
-Now in the book admin view, author field will be hyperlinked and we can visit it just by clicking it.
