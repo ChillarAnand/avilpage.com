@@ -22,7 +22,61 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/how-to-remove-clock-lock-screen-status-bar.html" class="u-url">How To Remove Clock From LockScreen/StatusBar?</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html" class="u-url">Django Tips &amp; Tricks #8 - Hyperlink Foreignkey Fields In Admin</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Consider <code>Book</code> model which has <code>Author</code> as foreignkey.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
+</pre>
+
+
+<p>We can register these models with admin interface as follows.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">BookAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,</span> <span class="p">)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">BookAdmin</span><span class="p">)</span>
+</pre>
+
+
+<p>Once they are registed, admin page shows <code>Book</code> model like this.</p>
+<p align="center">
+<img src="../images/django-tips-tricks-1.png"></p>
+
+<p>While browing books, to go to a particular author, we have to previous page, go to <code>Author</code> model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, if author field has a hyperlink, we can directly go to its page.</p>
+<p>Django provides an option to <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls">access admin views by its URL</a> reversing system. For example, we can get add view of author model in book app from <code>reverse("admin:book_author_add")</code>.</p>
+<p>To hyperlink author field in book admin, get url from reversing <code>book_author_change</code> with its id and return required html.</p>
+<pre class="code literal-block"><span></span><span class="kr">class</span> <span class="nx">BookAdmin</span><span class="p">(</span><span class="nx">admin</span><span class="p">.</span><span class="nx">ModelAdmin</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author_link'</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="nx">def</span> <span class="nx">author_link</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">book</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">link</span> <span class="o">=</span> <span class="nx">reverse</span><span class="p">(</span><span class="s2">"admin:book_author_change"</span><span class="p">,</span> <span class="nx">args</span><span class="o">=</span><span class="p">[</span><span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nx">u</span><span class="s1">'&lt;a href="%s"&gt;%s&lt;/a&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="nx">link</span><span class="p">,</span> <span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+    <span class="nx">author_link</span><span class="p">.</span><span class="nx">allow_tags</span> <span class="o">=</span> <span class="nx">True</span>
+    <span class="nx">author_link</span><span class="p">.</span><span class="nx">short_description</span> <span class="o">=</span> <span class="s1">'Author'</span>
+</pre>
+
+
+<p>Now in the book admin view, author field will be hyperlinked and we can visit just by clicking it.</p>
+<p align="center">
+<img src="../images/django-tips-tricks-2.png"></p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/how-to-remove-clock-lock-screen-status-bar.html" class="u-url">How To Remove Clock From LockScreen/StatusBar?</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -327,7 +381,7 @@ hello from android
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/04/django-auth-plugin-for-httpie.html" class="u-url">Django Auth Plugin For HTTPie</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/04/django-auth-plugin-for-httpie.html" class="u-url">Django Tips &amp; Tricks #7 - Django Auth Plugin For HTTPie</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -442,52 +496,6 @@ hello from android
 
 
 <p>These are some tips to become more productive with your shell when working on python projects.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.</p>
-<h3>Why Ansible?</h3>
-<p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
-<h3>Writing A Playbook</h3>
-<p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
-<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
-<span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
-
-<span class="n">tasks</span><span class="o">:</span>
-  <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
-    <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
-</pre>
-
-
-<p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/setup.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
-<pre class="code literal-block"><span></span>ansible-playbook laptop-setup.yml -i localhost, -c local
-</pre>
-
-
-<h3>Bootstrap Script</h3>
-<p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
-<pre class="code literal-block"><span></span>sudo apt update --yes
-sudo apt install --yes python python-pip
-
-sudo apt install --yes libssl-dev
-sudo -H pip install ansible
-
-wget -c https://path/to/playbook.yml
-
-sudo ansible-playbook setup.yml -i localhost, -c local
-</pre>
-
-
-<p>Now, to provision a laptop, just run the bootstrap script.</p>
-<pre class="code literal-block"><span></span>sh -c "$(wget https://path/to/bootstrap_script.sh"
-</pre>
-
-
-<p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
 </div>
         </div>
             

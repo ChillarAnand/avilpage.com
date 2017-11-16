@@ -22,7 +22,53 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html" class="u-url">How BMTC Is Exploiting Crores From Bangalore Citizens?</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.</p>
+<h3>Why Ansible?</h3>
+<p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
+<h3>Writing A Playbook</h3>
+<p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
+<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
+<span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
+
+<span class="n">tasks</span><span class="o">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
+    <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
+</pre>
+
+
+<p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/setup.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
+<pre class="code literal-block"><span></span>ansible-playbook laptop-setup.yml -i localhost, -c local
+</pre>
+
+
+<h3>Bootstrap Script</h3>
+<p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
+<pre class="code literal-block"><span></span>sudo apt update --yes
+sudo apt install --yes python python-pip
+
+sudo apt install --yes libssl-dev
+sudo -H pip install ansible
+
+wget -c https://path/to/playbook.yml
+
+sudo ansible-playbook setup.yml -i localhost, -c local
+</pre>
+
+
+<p>Now, to provision a laptop, just run the bootstrap script.</p>
+<pre class="code literal-block"><span></span>sh -c "$(wget https://path/to/bootstrap_script.sh"
+</pre>
+
+
+<p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html" class="u-url">How BMTC Is Exploiting Crores From Bangalore Citizens?</a></h1>
         <hr>
 <div class="e-content">
         <div>
