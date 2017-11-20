@@ -22,7 +22,101 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/super-charge-your-shell-for-python-development.html" class="u-url">Super Charge Your Shell For Python Development</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Last month, I gave a lightning talk about supercharging your shell for python development at <a href="http://www.meetup.com/BangPypers/">BangPypers meetup</a>.</p>
+<iframe width="600" height="350" src="https://www.youtube.com/embed/lvmJ0tWCjFA" frameborder="0" allowfullscreen></iframe>
+
+<p>This is a detailed blog post on how to setup your laptop for the same.</p>
+<h3>Autojump</h3>
+<p>When working on terminal, <code>cd</code> is used to traverse directories.</p>
+<pre class="code literal-block"><span></span><span class="nb">cd</span> ~/projects/python/django
+</pre>
+
+
+<p><code>cd</code> is inefficient to quickly traverse directories which are in different paths and far away from each other.</p>
+<pre class="code literal-block"><span></span><span class="nb">cd</span> /var/lib/elasticsearch/
+<span class="nb">cd</span> ~/sandbox/channels/demo
+</pre>
+
+
+<p><code>z</code>, a oh-my-zsh plugin is efficient for traversing directories. With <code>z</code>, directory can be changed by typing name of directory.</p>
+<pre class="code literal-block"><span></span>z junction
+</pre>
+
+
+<p>Instead of full name, just a substring would do.</p>
+<pre class="code literal-block"><span></span>z ju
+</pre>
+
+
+<p><code>z</code> keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.</p>
+<p>To install <code>z</code>, install <a href="../2015/03/install-oh-my-zsh-on-ubuntu.html">oh-my-zsh</a> and add <code>z</code> to plugins in <code>.zshrc</code> file.</p>
+<pre class="code literal-block"><span></span><span class="nv">plugins</span><span class="o">=(</span>git z<span class="o">)</span>
+</pre>
+
+
+<h3>Aliases</h3>
+<p>Read this old blog post on how <a href="../2014/10/useful-shell-aliases-for-python-and.html">aliases will improve your productivity</a>.</p>
+<h3>Autoenv</h3>
+<p>When working on multiple projects, it becomes necessary to use virtualenvs so that multiple versions of same package can be used. In addition to that, it be necessary to set environment variables on a per project basis.</p>
+<p>To automate all these things, <a href="https://pypi.python.org/pypi/autoenv/">autoenv</a> provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.</p>
+<p>If you have file named <code>.env</code> in a directory, autoenv will automatically source that file whenever user enters into it.</p>
+<p><code>autoenv</code> is a python package. It can be installed with</p>
+<pre class="code literal-block"><span></span>pip install autoenv
+</pre>
+
+
+<p>It provides a shell script which needs to sourced.</p>
+<pre class="code literal-block"><span></span><span class="nb">echo</span> <span class="s2">"source `which activate.sh`"</span> &gt;&gt; ~/.bashrc
+</pre>
+
+
+<p>You can create a .env file like this in project root.</p>
+<pre class="code literal-block"><span></span><span class="nb">source</span> ~/.virtualenvs/exp/bin/activate
+<span class="nb">export</span> <span class="nv">SECRET_KEY</span><span class="o">=</span>foobar
+</pre>
+
+
+<p>Next time, when your enter into that directory, <code>autoenv</code> finds <code>.env</code> file and it will source it automatically.</p>
+<h3>Autoreload</h3>
+<p>I have written a sepeate blog post on how to <a href="../2014/11/python-automagically-reload-imports-in.html">automagically reload imports</a> long time back.</p>
+<h3>Autoimports</h3>
+<p>When you copy code and paste it in ipython interpreter, it might fail with <code>ImportError</code> if required modules aren't already imported by the interpreter.</p>
+<p>Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.</p>
+<p>You can write an init script which will do all these things and load it automatically when ipython starts.</p>
+<p>Here is a <a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py">simple init script</a> which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.</p>
+<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'ipython_init.py'</span><span class="p">)]</span>
+</pre>
+
+
+<h3>Autocall</h3>
+<p>When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.</p>
+<p>IPython provides <code>autocall</code> option to make functions callable without typing parenthesis. This can be activate with <code>%autocall</code> magic.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="o">%</span><span class="n">autocall</span> <span class="mi">1</span>
+<span class="n">Automatic</span> <span class="n">calling</span> <span class="ow">is</span><span class="p">:</span> <span class="n">Smart</span>
+</pre>
+
+
+<p>Now functions can be called without parenthesis.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span> <span class="mi">5</span>
+<span class="o">------&gt;</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre>
+
+
+<p>You can also enable this by default by activating it in ipython config file.</p>
+<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'%autocall  1'</span><span class="p">]</span>
+</pre>
+
+
+<p>These are some tips to become more productive with your shell when working on python projects.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
         <hr>
 <div class="e-content">
         <div>
