@@ -1,5 +1,5 @@
 <!--
-.. title: Refactoring Django With FST
+.. title: Refactoring Django With Full Syntax Tree
 .. slug: refactoring-django-with-fst
 .. date: 2017-01-29 17:51:37 UTC
 .. tags: python, django
