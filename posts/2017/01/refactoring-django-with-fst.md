@@ -27,16 +27,16 @@ class Foo:
         super().__init__()
 ```
 
-For this refactoring, a simple `sed` search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, `sed` won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.
+For this refactoring, a simple `sed` search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, `sed` won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.
 
 ```sh
 → grep -rI "super(" | wc -l
    1364
 ```
 
-Changes has to be scripted. I wrote a [simple script][2]{:target="_blank"} to replace super calls by class names. This worked only for 50% of the cases. It failed to capture classes which had comments on top of them, classes with decorators and nested classes.
+So changes has to be scripted. A [simple python script][2]{:target="_blank"} to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.
 
-To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).
+To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.
 
 Python has [ast module][3]{:target="_blank"} to convert code to AST but it can't convert AST back to code. There are 3rd party packages like [astor](https://pypi.python.org/pypi/astor){:target="_blank"} which can do this.
 
@@ -63,15 +63,15 @@ Code to AST is a lossy transformation as they cannot preserve empty lines, comme
 ast_to_code(code_to_ast(source_code)) != source_code
 ```
 
-For lossless transformation, FST(Full Syntax Trees) packages like [Baron][4]{:target="_blank"} or [RedBaron][5]{:target="_blank"} should be used.
+For lossless transformation, FST(Full Syntax Trees) is needed.
 
 ```python
 fst_to_code(code_to_fst(source_code)) == source_code
 ```
 
-With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took [less than 10 lines][6]{:target="_blank"} of code.
+[RedBaron][5]{:target="_blank"} package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in [less than 10 lines][6]{:target="_blank"} of code.
 
-RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.
+RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.
 
 Thanks to [Tim Graham](https://github.com/timgraham){:target="_blank"} & [Aymeric Augustin](https://github.com/aaugustin){:target="_blank"} for [reviewing the patch](https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310){:target="_blank"}.
 
