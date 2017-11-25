@@ -29,7 +29,31 @@
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="03/super-charge-your-shell-for-python-development.html" class="u-url">Super Charge Your Shell For Python Development</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/django-auth-plugin-for-httpie.html" class="u-url">Django Tips &amp; Tricks #7 - Django Auth Plugin For HTTPie</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p><a href="https://pypi.python.org/pypi/httpie">HTTPie</a> is an alternative to curl for interacting with web services from CLI. It provides a simple and intuitive interface and it is handy to send arbitrary HTTP requests while testing/debugging APIs.</p>
+<p>When working with web applications that require authentication, using httpie is  difficult as authentication mechanism will be different for different applications. httpie has in built support for <code>basic</code> &amp; <code>digest</code> authentication.</p>
+<p>To authenticate with Django apps, a user needs to make a <code>GET</code> request to login page. Django sends login form with a CSRF token. User can submit this form with valid credentials and a session will be initiated.</p>
+<p>Establish session manually is boring and it gets tedious when working with multiple apps in multiple environments(development, staging, production).</p>
+<p>I have written a plugin called <a href="https://pypi.python.org/pypi/httpie-django-auth">httpie-django-auth</a> which automates django authentication. It can be installed with pip</p>
+<pre class="code literal-block"><span></span>pip install httpie-django-auth
+</pre>
+
+
+<p>By default, it uses <code>/admin/login</code> to login. If you need to use some other URL for logging, set <code>HTTPIE_DJANGO_AUTH_URL</code> environment variable.</p>
+<pre class="code literal-block"><span></span><span class="nb">export</span> <span class="nv">HTTPIE_DJANGO_AUTH_URL</span><span class="o">=</span><span class="s1">'/accounts/login/'</span>
+</pre>
+
+
+<p>Now you can send authenticated requests to any URL as</p>
+<pre class="code literal-block"><span></span>http :8000/profile -A<span class="o">=</span>django --auth<span class="o">=</span><span class="s1">'username:password'</span>
+</pre>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="03/super-charge-your-shell-for-python-development.html" class="u-url">Super Charge Your Shell For Python Development</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -191,7 +215,7 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With FST</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With Full Syntax Tree</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -210,14 +234,14 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 </pre>
 
 
-<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
+<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.</p>
 <pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
    <span class="m">1364</span>
 </pre>
 
 
-<p>Changes has to be scripted. I wrote a <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple script</a> to replace super calls by class names. This worked only for 50% of the cases. It failed to capture classes which had comments on top of them, classes with decorators and nested classes.</p>
-<p>To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).</p>
+<p>So changes has to be scripted. A <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple python script</a> to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.</p>
+<p>To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.</p>
 <p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
 <pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
 <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
@@ -239,13 +263,13 @@ sudo ansible-playbook setup.yml -i localhost, -c local
 </pre>
 
 
-<p>For lossless transformation, FST(Full Syntax Trees) packages like <a href="https://github.com/PyCQA/baron" target="_blank">Baron</a> or <a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> should be used.</p>
+<p>For lossless transformation, FST(Full Syntax Trees) is needed.</p>
 <pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
 </pre>
 
 
-<p>With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
-<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.</p>
+<p><a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
+<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.</p>
 <p>Thanks to <a href="https://github.com/timgraham" target="_blank">Tim Graham</a> &amp; <a href="https://github.com/aaugustin" target="_blank">Aymeric Augustin</a> for <a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank">reviewing the patch</a>.</p>
 </div>
         </div>

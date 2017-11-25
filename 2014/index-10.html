@@ -29,25 +29,60 @@
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/python-unix-timestamp-utc-and-their.html" class="u-url">Unix Timestamp, UTC And Their Conversions In Python!</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/python-unix-timestamp-utc-and-their.html" class="u-url">Unix Timestamp, UTC And Their Conversions In Python</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-<div style="text-align: left;">Recently I started messing with Nidaba. Nidaba is a data analytics project devoted to analysing and making use of the freely available information on Stack Overflow, in particular when relating to the Python programming language. SO gives all time objects in  Unix time format. For analysis, it is required to convert it into human readable format to figure out the day it corresponds to. Let us take a look at UTC &amp; Unix timestamps.<br><br>
-</div>
-<h3 style="text-align: left;">Coordinated Universal Time(UTC):</h3>
-<div style="text-align: left;">It is the primary time standard by which the world regulates clocks and time.</div>
-<div style="text-align: left;"><br></div>
-<div style="text-align: left;">To get current UTC time in Python, You can use datetime module.</div>
-<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [5]: import datetime<br><br>In [6]: datetime.datetime.now(datetime.timezone.utc)<br>Out[6]: datetime.datetime(2014, 11, 22, 14, 42, 21, 34435, tzinfo=datetime.timezone.utc)<br></pre></div>
-<br><h3 style="text-align: left;">Unix time / POSIX time / Epoch time: </h3>
-<div>It is a system for describing instants in time, defined as the number of seconds that have elapsed since 00:00:00 Coordinated Universal Time (UTC), Thursday, 1 January 1970, not counting leap seconds.</div>
-<div><br></div>
-<div>To get Unix timestamp, you can use time module.</div>
-<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [8]: import time<br><br>In [9]: time.time()<br>Out[9]: 1416667432.5664258<br><br>In [10]: int(time.time())<br>Out[10]: 1416667766</pre></div>If You are using Pyhon 3.4, you can use <i>timestamp </i>function to convert it <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [13]: datetime.datetime.utcnow().timestamp()<br>Out[13]: 1416649608.58369<br></pre></div>
-<h3 style="text-align: left;">Conversions:</h3>
-<div>To convert Unix timestamp to UTC You can use <i>utcfromtimestamp</i> function.</div>
-<div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [21]: datetime.datetime.utcfromtimestamp(1416668401)<br>Out[21]: datetime.datetime(2014, 11, 22, 15, 0, 1)<br></pre></div>To convert UTC time object to Unix time, you can use strftime function. <br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [38]: dt = datetime.datetime.now()<br><br>In [39]: dt.strftime("%s")<br>Out[39]: '1416668938'<br></pre></div>Alternatively You can use <i>calendar.timegen </i>function also.<br><div style="background-color: #eeffcc;"><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">In [46]: import calendar<br><br>In [47]: dt = datetime.datetime.utcnow()<br><br>In [48]: calendar.timegm(dt.utctimetuple())<br>Out[48]: 1416669150<br></pre></div>
+        <div>
+<h4>Coordinated Universal Time(UTC):</h4>
+<p>It is the primary time standard by which the world regulates clocks and time. To get current UTC time in Python, we can use <code>datetime</code> module.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">34435</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+</pre>
+
+
+<h4>Unix time / POSIX time / Epoch time:</h4>
+<p>It is a system for describing instants in time, defined as the number of seconds that have elapsed since 00:00:00 Coordinated Universal Time (UTC), Thursday, 1 January 1970, not counting leap seconds. To get Unix timestamp, we can use <code>time</code> module.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="mf">1416667432.5664258</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="mi">1416667766</span>
+</pre>
+
+
+<p>With Pyhon 3.4, we can directly get timestamp from UTC.</p>
+<pre class="code literal-block"><span></span>In [13]: datetime.datetime.utcnow().timestamp()
+Out[13]: 1416649608.58369
+</pre>
+
+
+<h4>Conversions:</h4>
+<p>To convert Unix timestamp to UTC we can use <code>utcfromtimestamp</code> function.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="mi">1416668401</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre>
+
+
+<p>To convert UTC time object to Unix time, we can use <code>strftime</code> function.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">38</span><span class="p">]:</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">39</span><span class="p">]:</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">39</span><span class="p">]:</span> <span class="s1">'1416668938'</span>
+</pre>
+
+
+<p>Alternatively, we can use <code>calendar.timegen</code> function.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">46</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">calendar</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">47</span><span class="p">]:</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">48</span><span class="p">]:</span> <span class="n">calendar</span><span class="o">.</span><span class="n">timegm</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">utctimetuple</span><span class="p">())</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">48</span><span class="p">]:</span> <span class="mi">1416669150</span>
+</pre>
 </div>
         </div>
             

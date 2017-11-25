@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="description" content="Writing python code to modify code using Full Syntax Trees">
 <meta name="author" content="Chillar Anand">
-<title>Refactoring Django With FST | Avil Page</title>
+<title>Refactoring Django With Full Syntax Tree | Avil Page</title>
 <link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
@@ -48,7 +48,13 @@
     <div class="postbox">
 
         <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
-                    <h1 class="p-name" itemprop="headline name">Refactoring Django With FST</h1>
+                    <h1 class="p-name" itemprop="headline name">Refactoring Django With Full Syntax Tree</h1>
+
+
+
+
+                3 min read
+
 
                 <hr>
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><!-- avilpage.com top --><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8127755709093749" data-ad-slot="6914930471" data-ad-format="auto"></ins>
@@ -71,14 +77,14 @@
 </pre>
 
 
-<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. Also it is very hard to refactor them manually and much harder for reviewers to review it as there are 1364 super calls in code base.</p>
+<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.</p>
 <pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
    <span class="m">1364</span>
 </pre>
 
 
-<p>Changes has to be scripted. I wrote a <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple script</a> to replace super calls by class names. This worked only for 50% of the cases. It failed to capture classes which had comments on top of them, classes with decorators and nested classes.</p>
-<p>To handle all these cases, a normal python script gets more complicated and there is no guarantee that it can handle all edge cases. So, I experimented with AST(Abstract Syntax Trees).</p>
+<p>So changes has to be scripted. A <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple python script</a> to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.</p>
+<p>To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.</p>
 <p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
 <pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
 <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
@@ -100,19 +106,24 @@
 </pre>
 
 
-<p>For lossless transformation, FST(Full Syntax Trees) packages like <a href="https://github.com/PyCQA/baron" target="_blank">Baron</a> or <a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> should be used.</p>
+<p>For lossless transformation, FST(Full Syntax Trees) is needed.</p>
 <pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
 </pre>
 
 
-<p>With RedBaron FST, just locate super calls, find nearest class node, check class name with super and replace accordingly. It took <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
-<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. Next time when writing code that modifies code consider using RedBaron.</p>
+<p><a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
+<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.</p>
 <p>Thanks to <a href="https://github.com/timgraham" target="_blank">Tim Graham</a> &amp; <a href="https://github.com/aaugustin" target="_blank">Aymeric Augustin</a> for <a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank">reviewing the patch</a>.</p>
 </div>
                 </div>
 
                     <meta content="Writing python code to modify code using Full Syntax Trees" itemprop="description">
 </div>
+
+                <b> Tags: </b>
+                    <a href="../../tags/django.html">django</a>
+                        |
+                    <a href="../../tags/python.html">python</a>
 
             <br><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><!-- avilpage.com bottom --><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8127755709093749" data-ad-slot="5818660596" data-ad-format="auto"></ins>
             <script>
