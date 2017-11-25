@@ -2,8 +2,8 @@
 .. title: Arduino Programming From Text Editor & CLI
 .. slug: arduino-programming-from-text-editor-cli
 .. date: 2017-08-24 13:29:59 UTC
-.. tags:
-.. category: programming, arduino
+.. tags: arduino, cli
+.. category: tech, programming, arduino
 .. link:
 .. description: how to use a text editor like emacs or vim for arduino programming and uploading code from command line interface
 .. type: text
@@ -36,7 +36,8 @@ pip install platformio
 Once it is installed, code can be directly uploaded using `ci` command.
 
 ```sh
-platformio ci --board=mega foo.ino
+pio ci --board=megaatmega2560 --project-option="upload_port=/dev/ttyACM0" --project-option="targets=upload" foo.ino
+
 ```
 
 By this we can use text editor to write code and arduino/platformio to upload code to arduino board.
