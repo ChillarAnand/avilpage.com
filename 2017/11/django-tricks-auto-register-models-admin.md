@@ -79,8 +79,8 @@ class CustomApp(AppConfig):
                 pass
 ```
 
+Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.
+
 <p align="center">
 <img src="/images/django-admin-auto-2.png" width="600px" />
 </p>
-
-Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.
