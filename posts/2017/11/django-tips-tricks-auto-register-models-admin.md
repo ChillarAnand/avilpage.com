@@ -1,7 +1,7 @@
 <!--
 .. title: Django Tips & Tricks #9 - Auto Register Models In Admin
 .. slug: django-tricks-auto-register-models-admin
-.. date: 2017-11-19 21:21:21 UTC
+.. date: 2017-11-24 21:21:21 UTC
 .. tags: python, django, django-tips-tricks
 .. category: tech, programming, python
 .. link:
@@ -52,7 +52,7 @@ Now all models will get registed automatically. If we go to a model page in admi
 </p>
 
 
-This is not informative for the users who want to see the data. We can create a mixin which will list all the fields of the models. We can create a new class which will subclass `ModelAdmin` & `ListAdminMixin` and use this admin class when we are registering the model.
+This is not informative for the users who want to see the data. We can create a `ListAdminMixin`,  which will populate `list_display` with all the fields in the model. We can create a new admin class which will subclass `ListAdminMixin` & `ModelAdmin`. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.
 
 
 ```python
@@ -79,8 +79,8 @@ class CustomApp(AppConfig):
                 pass
 ```
 
+Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.
+
 <p align="center">
 <img src="/images/django-admin-auto-2.png" width="600px" />
 </p>
-
-Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.
