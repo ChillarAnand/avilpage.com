@@ -1,7 +1,7 @@
 <!--
 .. title: Automatic Magnetometer Calibration With Arduino
 .. slug: automatic-magnetometer-calibration-with-arduino
-.. date: 2017-12-02 01:13:54 UTC
+.. date: 2017-12-02 21:21:21 UTC
 .. tags: arduino, how-to
 .. category: tech, arduino
 .. link:
@@ -11,9 +11,9 @@
 
 If we take readings from a 3-axis [magnetometers](https://en.wikipedia.org/wiki/Magnetometer) like HMC5883L, AK8963C (used in MPU9250) or LSM303DLHC and plot them, its response should be a sphere with ceter at origin.
 
-In practice, due to the presence of hard and soft iron distortions, the response will be a an ellipsiod with its center shifted away from origin. We need to calibrate the magnetometer to nullify the distortions.
+In practice, due to the presence of hard and soft iron distortions, the response will be an ellipsiod with its center shifted away from origin. We need to calibrate the magnetometer to nullify the distortions.
 
-Depending on the magnetometer, we need to connect it to magnetometer and take a bunch of readings by rotating it to capture readings at various positions.
+First we need to get sample readings of magnetometer in various positions. Depending on the magnetometer, we need to connect it to arduino and take readings by rotating it in 8 shape.
 
 
 ### Calibration
@@ -57,4 +57,4 @@ my_calibrated = avg_scale/(my - my_offset);
 mz_calibrated = avg_scale/(mz - mz_offset);
 ```
 
-We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime.
+We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime. We can also write an auto update function which will recalibrate offsets & scale for every new reading.
