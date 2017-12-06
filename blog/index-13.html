@@ -22,113 +22,363 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/bangpypers-dev-sprint.html" class="u-url">BangPypers Dev Sprint!</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html" class="u-url">How BMTC Is Exploiting Crores From Bangalore Citizens?</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-<div class="separator" style="clear: both; text-align: left;">Here is the definition of <a href="http://en.wikipedia.org/wiki/Sprint_(software_development)" target="_blank">sprint from Wikipedia</a>:</div>
-<div class="separator" style="clear: both; text-align: left;"><br></div>
-<div class="separator" style="clear: both; text-align: center;"></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-BLq7LzyL2zk/VJgS391dgyI/AAAAAAAANfM/9XFQ2TIQJHY/s1600/bangpypers-sprint2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-BLq7LzyL2zk/VJgS391dgyI/AAAAAAAANfM/9XFQ2TIQJHY/s1600/bangpypers-sprint2.png" height="88" width="640"></a></div>
-<div style="text-align: center;"><br></div>
-<div><br></div>On 3rd Saturday of every month there will be a meetup for <a href="http://www.meetup.com/BangPypers/" target="_blank">Python developers in Bangalore</a>(BangPypers) to have talks and workshops. This month instead of talks/workshops, a dev sprint was held. The basic idea was to encourage Python developers to contribute to any open source projects or work on their open source projects.<div>
-<div><br></div>
-<div>I was working on Nidaba, a project to extract information from StackOverflow dumps. I went to the meetup and gave a brief description about it. Several people were interested to work. I helped them a bit on getting started and the issues to solve. </div>
-<div><br></div>
-<div>By the end of event, I got one pull request which fixed a typo in setup file. Few people helped in adding couple of utility functions for the project. A couple of them were interested to continue working on with it in the coming weekends. In the end PSSI sponsored T-shirt :) </div>
-<div><br></div>
-<div>Here are a few snapshots of event.</div>
-<div><br></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-5MxNXfwVqbo/VJgZhMXYInI/AAAAAAAANfg/itJLP-R4NYA/s1600/bangpypers-meetup22.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-5MxNXfwVqbo/VJgZhMXYInI/AAAAAAAANfg/itJLP-R4NYA/s1600/bangpypers-meetup22.png" height="425" width="640"></a></div>
-<br><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-_d98prRclZM/VJgZg7bN_sI/AAAAAAAANfc/Hnsz1pBPIhk/s1600/bangpypers-meetup.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-_d98prRclZM/VJgZg7bN_sI/AAAAAAAANfc/Hnsz1pBPIhk/s1600/bangpypers-meetup.JPG" height="424" width="640"></a></div>
-<br><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-oU-4mZ_Kaw8/VJgZhLuWhRI/AAAAAAAANfo/iyEzB3o-Eyo/s1600/bangpypers-sprint3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-oU-4mZ_Kaw8/VJgZhLuWhRI/AAAAAAAANfo/iyEzB3o-Eyo/s1600/bangpypers-sprint3.png" height="426" width="640"></a></div>
-<div style="text-align: center;"><br></div>
-</div>
+        <div>
+<p><a href="http://mybmtc.com" target="_blank">BMTC</a> (Bengaluru Metropolitan Transport Corporation) is a government agency which operates the public transport bus service in Bangalore, India. It holds monopoly as it is the only choice for public transportation.</p>
+<h3>Fare Calculation</h3>
+<p>BMTC considers ~2KM distance as a stage and the <a href="https://www.mybmtc.com/general-service?fareid=gns&amp;qt-home_quick_tab_bottom=2" target="_blank">fares for each stage</a> are as follows.</p>
+<p align="center">
+<img src="../bmtc-fare-charges.png" width="600px"></p>
+
+<p>Let's say, you want to travel from Indira Nagar to BTM Layout, it will cover 5 stages. So, BMTC charges 19₹ for that.</p>
+<h3>Exploitation?</h3>
+<p>If you travel from Indira Nagar KFC signal to Doopanahalli Arch(1.2KM), which comes under 1 stage, you have to pay 5₹.  On the other hand, if you travel Indira Nagar KFC signal to Doopanahalli bustop(1.4KM), you have to pay 12₹.</p>
+<p>How can BMTC charge 5₹ for the first 1.2KM and 7₹ for the subsequent 0.2KM?  If BMTC charges, 5₹ for 1st stage. Then it should charge 5₹ + extra for next stage. But it shouldn't be more than 10₹.</p>
+<p>You can just take 1 ticket(5₹) for 1st stage(1.2KM) and one more ticket(5₹)  for the next stage(0.2KM).  You can just travel 2 stages with 2 tickets for 10₹.</p>
+<p>Turnsout BMTC is charging 3₹ extra on every ticket which covers atleast 2 stages.  As lakhs of people travel in BMTC buses daily, in a month, this 3₹ turns into crores of rupees.</p>
+<p>I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.</p>
+<h3>Update:</h3>
+<p>After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to <a href="https://twitter.com/philentropist">Gopala Kallapura</a>, <a href="https://twitter.com/kracetheking">Krace Kumar</a> &amp; <a href="https://twitter.com/thej">Thegesh GN</a> for supporting the issue.</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/python-paradox.html" class="u-url">ది పైథాన్ పారడాక్స్ (The Python Paradox)</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With Full Syntax Tree</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">ఆగస్టు 2004 లో ఈ వ్యాసం <a href="http://paulgraham.com/pypar.html" target="_blank">పాల్ గ్రాహం</a>  ఆంగ్లం లో వ్రాసారు. ఇది తెలుగు అనువాదం.<br><br>"మీరు ఒక Java ప్రాజెక్ట్  కన్నా Python ప్రాజెక్ట్ మీద పని చేయడానికి తెలివైన  ప్రోగ్రామర్లను  పొందవచ్చు" అని నేను <a href="http://paulgraham.com/gh.html" target="_blank">ఇటీవల చర్చ </a>లో అన్న మాటలకు ప్రజలు చాలా  అప్సెట్ అయ్యారు.<br><br>దానికి అర్థం  Java  ప్రోగ్రామర్లు మొద్దు అని కాదు. Python ప్రోగ్రామర్లు స్మార్ట్ గా  ఉంటారు అని. ఒక కొత్త ప్రోగ్రామింగ్ భాష నేర్చుకోవడం కష్టమైన పని. ప్రజలు ఒక ఉద్యోగం పొందటానికి Python నేర్చుకోరు. వారు పైథాన్ ఎందుకు నేర్చుకుంటారంటే వారికి స్వచ్ఛంగా ప్రోగ్రామ్మింగ్ అంటే  ఇష్టం మరియు వారికి ఇప్పటికే తెలిసిన భాషలు సంతృప్తి ఇవ్వకపోవడం వలన. అందువల్లే  కంపెనీలు Python ప్రోగ్రామర్లను నియమించుకుంటాయి. ఈ concept కి ఒక మంచి పేరు ఏది తట్టలేదు, అందుకే నేను దీన్నిPython పారడాక్స్ అని పిలుస్తాను.  ఒక సంస్థ software వ్రాయడానికి తులనాత్మకంగా esoteric భాషను  ఎంచుకుంటే, వారు మంచి ప్రోగ్రామర్లను  నియమించుకుంటారు. ఎందుకంటే అలాంటి బాష నేర్చుకోవాలని చాలా కొద్ది మందే కుతూహలంగా ఉంటారు. ప్రోగ్రామర్లకి ఈ పారడాక్స్ మరింత వర్తిస్తుంది. మీరు ఒక మంచి ఉద్యోగం పొందడానికి నేర్చుకునే భాష, ప్రజలు కేవలం ఉద్యోగం పొందడానికి  మాత్రమే నేర్చుకోలేదు.<br><br>కేవలం కొన్ని తెలివైన కంపెనీలు మాత్రమె ఇప్పటివరకు ఈ విషయాన్ని గ్రహించాయి. కానీ ఇక్కడ ఇంకో రకమైన ఎంపిక జరగుతోంది. సరిగ్గా  అటువంటి కంపెనీలలోనే  ప్రోగ్రామర్లు పని చేయాలనీ కోరుకుంటున్నారు. ఉదాహరణకు, గూగుల్ Java ప్రోగ్రామింగ్ ఉద్యోగాలు ప్రకటన ఇచ్చినప్పుడు, వారు Python అనుభవం తప్పనిసరిగా అడుగుతున్నారు.<br><br>అన్ని భాషలు విస్తృతంగా ఉపయోగించిన  నా  స్నేహితుడు, దాదాపు అన్ని ప్రాజెక్ట్ ల  కొరకు Python ఉపయోగిస్తాడు. అందుకు ప్రధాన కారణం source code చదవటానికి చాల అనువుగా ఉండటం. ఆ ఒక్క కారణానికి మరొక భాషను ఎంచుకోవడం ఒక అల్పమైన కారణం అని మీరు అనుకోవచ్చు. కాని అది అనుకున్నంత అల్పమైన కారణం కాదు. ఎందుకంటే source code ను రాయడం కంటే చదవడం లో ఎక్కువ సమయం వెచ్చిస్తారు. ఒక శిల్పి మట్టి ముద్దల్ని పేర్చుకు పోయినట్లు మీరు కూడా source code blobs ని పేర్చుకుంటూపోతారు. అస్తవ్యస్తంగా పేర్చిన మట్టి ముద్దలు శిల్పిని  చికాకుపరిచినట్లే, చదవటానికి అనువుగా లేని ఒక భాష, ప్రోగ్రామర్ ని చికాకు పరుస్తుంది.<br><br>Source code అవలక్షణం ప్రస్తావన వద్ద, ప్రజలు Perl ను గుర్తు చేసుకుంటారు. కానీ నేను మాట్లాడేది Perl యొక్క ఉపరిభాగ సంబంధిత  అందం గురించి కాదు. నిజమైన  అవలక్షణం కఠినంగ కనిపించే వాక్యనిర్మాణం కాదు, కానీ తప్పు patterns ని అనుసరించి ప్రోగ్రమ్స్  వ్రాయటం. Perl ఒక కార్టూన్ పాత్ర తిట్లు వల్లే  ఉండవచ్చు, కానీ కొన్ని చోట్ల అది Python ను అధిగమించిన <a href="http://paulgraham.com/icad.html" target="_blank">సందర్భాలు</a> ఉన్నాయి.<br><br>ఇప్పటివరకు, ఏమైనప్పటికీ. రెండు భాషలు <a href="http://paulgraham.com/hundred.html" target="_blank">కదిలే లక్ష్యాలు </a>.  కానీ ఈ రెండు భాషలు కుడా Ruby, (Icon, Joy, J , Lisp &amp; Small Talk) మాదిరి,  నిజంగా ప్రోగ్రామింగ్ పట్టించుకుని,  ఉపయోగించే   ప్రజలచే రూపొందించబడినవి అన్న సత్యాన్ని గుర్తిస్తున్నాయి.<br><br>
+        <div>
+<p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
+<p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</pre>
+
+
+<p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</pre>
+
+
+<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.</p>
+<pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
+   <span class="m">1364</span>
+</pre>
+
+
+<p>So changes has to be scripted. A <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple python script</a> to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.</p>
+<p>To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.</p>
+<p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
+<pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+
+   <span class="k">print</span><span class="p">(</span>
+    <span class="s2">"hello world"</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>Converting above code to AST and then converting back gives this</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">)</span>
+</pre>
+
+
+<p>Code to AST is a lossy transformation as they cannot preserve empty lines, comments and code formatting.</p>
+<pre class="code literal-block"><span></span><span class="n">ast_to_code</span><span class="p">(</span><span class="n">code_to_ast</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">!=</span> <span class="n">source_code</span>
+</pre>
+
+
+<p>For lossless transformation, FST(Full Syntax Trees) is needed.</p>
+<pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
+</pre>
+
+
+<p><a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
+<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.</p>
+<p>Thanks to <a href="https://github.com/timgraham" target="_blank">Tim Graham</a> &amp; <a href="https://github.com/aaugustin" target="_blank">Aymeric Augustin</a> for <a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank">reviewing the patch</a>.</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/generate-sphinx-friendly-docstrings-for.html" class="u-url">Generate Sphinx Friendly Docstrings For Python Functions In Emacs!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/blog_posts_are_better_than_scientific_papers/" class="u-url">Why Blog Posts Are Better Than Scientific Papers?</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-<div dir="ltr" style="text-align: left;" trbidi="on">
-<div class="separator" style="clear: both; text-align: left;">Today, I went to <a href="http://www.meetup.com/Bangalore-Django-User-Group/events/219082263/" target="_blank">Django REST Framework Workshop</a>. After the workshop is completed,  and we were discussing about Emacs, <a href="http://www.kracekumar.com/" target="_blank">Krace</a> showed this cool plugin <a href="https://github.com/naiquevin/sphinx-doc.el" target="_blank">sphinx-doc</a>, it inserts docstring skeleton for Python functions/methods as per the requirement of the Sphinx documentation generator.</div>
-<div class="separator" style="clear: both; text-align: center;"><br></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-FHLnsul5mEg/VIxxkDO3ttI/AAAAAAAANeI/Q8xYC9S-MMg/s1600/emacs-python-sphinx.gif" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-FHLnsul5mEg/VIxxkDO3ttI/AAAAAAAANeI/Q8xYC9S-MMg/s1600/emacs-python-sphinx.gif" height="560" width="640"></a></div>
-<div style="text-align: center;"><br></div>
-<h3 style="text-align: left;">Installation:</h3>To install it from MELPA, run <i>"M-x package-list-packages"</i>, search for <i>"sphinx-doc" , m</i>ark it with i and press x to install.<br><br><h3 style="text-align: left;">Configuration:</h3>Add these lines to Your emacs config to enable sphinx-doc-mode.<br><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">(add-hook 'python-mode-hook (lambda ()<br>                  (require 'sphinx-doc)<br>                  (sphinx-doc-mode t)))</pre>
-</div>If you document your code(infact you should), this plugin saves quite a few strokes!  </div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/django-check-app-ready-production.html" class="u-url">Django Tips &amp; Tricks #2 - Quickly Check If Your App Is Ready For Production</a></h1>
-        <hr>
-<div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">Before deploying Your Django app, You need to make sure security, logging and other issues are taken care. Django provides a simple <a href="https://docs.djangoproject.com/en/dev/howto/deployment/checklist/" target="_blank">deployment checklist</a> which helps a lot. In <a href="https://docs.djangoproject.com/en/dev/ref/django-admin/#django-admin-option---deploy" target="_blank">development version</a> Django provides <i>--deploy </i>option, which does some security checks. You can run it with<br><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">python manage.py check --deploy --settings=production_settings</pre>
-<div>I have just created a new project and Django identified 6 security issues in it.</div>
-<div>
-<div><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">→ python manage.py check --deploy                               <br>System check identified some issues:<br>WARNINGS:<br>?: (security.W001) You do not have 'django.middleware.security.SecurityMiddleware' in your MIDDLEWARE_CLASSES so the SECURE_HSTS_SECONDS, SECURE_CONTENT_TYPE_NOSNIFF, SECURE_BROWSER_XSS_FILTER, and SECURE_SSL_REDIRECT settings will have no effect.?: (security.W012) SESSION_COOKIE_SECURE is not set to True. Using a secure-only session cookie makes it more difficult for network traffic sniffers to hijack user sessions.<br>?: (security.W016) You have 'django.middleware.csrf.CsrfViewMiddleware' in your MIDDLEWARE_CLASSES, but you have not set CSRF_COOKIE_SECURE to True. Using a secure-only CSRF cookie makes it more difficult for network traffic sniffers to steal the CSRF token.<br>?: (security.W017) You have 'django.middleware.csrf.CsrfViewMiddleware' in your MIDDLEWARE_CLASSES, but you have not set CSRF_COOKIE_HTTPONLY to True. Using an HttpOnly CSRF cookie makes it more difficult for cross-site scripting attacks to steal the CSRF token.<br>?: (security.W018) You should not have DEBUG set to True in deployment.<br>?: (security.W019) You have 'django.middleware.clickjacking.XFrameOptionsMiddleware' in your MIDDLEWARE_CLASSES, but X_FRAME_OPTIONS is not set to 'DENY'. The default is 'SAMEORIGIN', but unless there is a good reason for your site to serve other parts of itself in a frame, you should change it to 'DENY'.<br><br>System check identified 6 issues (0 silenced).</pre></div>
-<br>However this doesn't identify issues like absence of 404.html, 500.html templates, email setup, admin emails,  presence of print, pdb statements. There is a Django package called <a href="https://github.com/agiliq/django-production-ready" target="_blank">django-production-ready</a> which checks for these issues.<br><br>To the new project just created, I have added a new file, which has a print &amp; pdb statements. I have installed django-production ready, added <i>prodready </i> to installed apps and ran <i>is_it_ready </i>management command which produced a neat log of all issues.<br><pre style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px; border: 1px solid rgb(170, 204, 153); font-family: monospace, sans-serif; font-size: 15px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">→ python manage.py is_it_ready<br>--------------------<br>Production ready: No<br>--------------------<br>Possible errors:<br>    * Enter valid email address in ADMINS section<br>    * Enter valid email address in MANAGERS section<br>    * Template 404.html does not exist<br>    * Template 500.html does not exist<br>    * Setup E-mail host<br>    * Set a valid email for SERVER_EMAIL<br>    * Set a valid email for DEFAULT_FROM_EMAIL<br>    * You have one or more ipdb import  statements<br>    * You have one or more print statements<br></pre>
-<div>This comes in handy to quickly make sure a lot of issues are taken care and the app is ready for deployment!</div>
-</div>
+        <div>
+<p>Titus Brown wrote a blog post on why <a href="http://ivory.idyll.org/blog/2017-top-ten-reasons-blog-posts.html">blog posts are better than scientific papers</a>. Here are few more reasons for that.</p>
+<h3>Fast</h3>
+<p>Publishing blog posts is lightning fast(how fast can you type?). You can just publish it with a click after writing. However with scientific papers you have to wait months to get your work published.</p>
+<h3>Mutability</h3>
+<p>Blog posts are easy to edit. If you are using a version controlled system like git, any one can easily collaborate. You can also leave comments on (most) blog posts and can have discussion with the author and/or others. Scientific papers once published are hard to change.</p>
+<h3>No Gatekeepers</h3>
+<p>To publish blog posts, you can setup your own blog or use services like <a href="http://medium.com">medium</a>. There are no gatekeepers who says that you can't publish a blog post because they thinks its not worth it.</p>
+<h3>Organic</h3>
+<p>Blog posts tend to be casual and organic. You can crack a joke and readers will enjoy it. Scientific papers are formal. You spray some sarcasm and your paper never gets published.</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/zen-story-knowing.html" class="u-url">[Zen Story] Knowing!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/12/" class="u-url">What Is The Meaning Of Life?</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">One day Chuang Tzu and a friend were walking by a river.<br><br>"Look at the fish swimming about," said Chuang Tzu, "They are really enjoying themselves."<br><br>"You are not a fish," replied the friend, "So you can't truly know that they are enjoying themselves."<br><br>"You are not me," said Chuang Tzu. "So how do you know that I do not know that the fish are enjoying themselves?"<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;">=================================================================</span><br><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><a href="../2014/12/categories/zen.html" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;">More Zen Stories</a>
+        <div>
+<p>The meaning of life is</p>
+<blockquote cite="https://en.oxforddictionaries.com/definition/life">
+
+the condition that distinguishes animals and plants from inorganic matter, including the capacity for growth, reproduction, functional activity, and continual change preceding death.
+
+</blockquote>
+
+<p>Source: Oxford Dictionary</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/zen-story-surprising-master.html" class="u-url">[Zen Story] Surprising the Master!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/11/detect-correct-skew-images-python.html" class="u-url">Detect &amp; Correct Skew In Images Using Python</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">The students in the monastery were in total awe of the elder monk, not because he was strict, but because nothing ever seemed to upset or ruffle him. So they found him a bit unearthly and even frightening.<br><br>One day they decided to put him to a test. A bunch of them very quietly hid in a dark corner of one of the hallways, and waited for the monk to walk by. Within moments, the old man appeared, carrying a cup of hot tea. Just as he passed by, the students all rushed out at him screaming as loud as they could.<br><br>But the monk showed no reaction whatsoever. He peacefully made his way to a small table at the end of the hall, gently placed the cup down, and then, leaning against the wall, cried out with shock, "Ohhhhh!"<br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;">========================================================================</span><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;"><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;">Source: </span><a href="http://goto.bilkent.edu.tr/gunes/ZEN/zenstories.htm" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;" target="_blank">Zen Stories</a><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><a href="../2014/12/categories/zen.html" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;">More Zen Stories</a><br><br>
+        <div>
+<p>When scanning a document, a slight skew gets into the scanned image. If you are using the scanned image to extract information from it, detecting and correcting skew is crucial.</p>
+<p>There are several techniques that are used to skew correction.</p>
+<ul>
+<li>Projection profile method</li>
+<li>
+<p>Hough transform</p>
+</li>
+<li>
+<p>Topline method</p>
+</li>
+<li>
+<p>Scanline method</p>
+</li>
+</ul>
+<p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
+<p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
+
+<span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+
+<span class="c1"># convert to binary</span>
+<span class="n">wd</span><span class="p">,</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'1'</span><span class="p">)</span><span class="o">.</span><span class="n">getdata</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">bin_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ht</span><span class="p">,</span> <span class="n">wd</span><span class="p">))</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'binary.png'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
+
+
+<span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">limit</span><span class="p">,</span> <span class="n">limit</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">find_score</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+<span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">'Best angle: {}'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
+
+<span class="c1"># correct skew</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
+</pre>
+
+
+<p><strong>Results:</strong></p>
+<p align="center"><img align="center" src="../skew_python/original.png"></p>
+
+<p align="center">Original Image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/gray.png"></p>
+
+<p align="center">Black &amp; white image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
+
+<p align="center">Histogram of image</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
+
+<p align="center">Scores at various angles</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
+
+<p align="center">Histogram at 2° (best angle)</p>
+
+<hr>
+<p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
+
+<p align="center">Skew corrected image</p>
+
+<p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/get-mobile-notifications-in-desktop.html" class="u-url">Get Mobile Notifications In Desktop With Push Bullet!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">How many times You have unlocked Your phone to receive OTP(One Time Password)? Also when You are doing something on Your computer and received a message, You need to check the phone and may be You need to send a reply.<br><br><a href="http://pushbullet.com/" target="_blank">Pushbullet</a> saves You time by moving your notifications to desktop. You can automatically see all of your iPhone/Android phone's notifications like who's calling or read and reply to text messages even if your phone is on silent or in another room.<br><br>It also makes it easy to send pictures, files, links, and more to your devices and friends. You can push a link to your phone by just right-clicking on it on your computer. You can then go right to the link by tapping on the notification.<br><br>Just install app in Your phone  <a href="https://itunes.apple.com/us/app/pushbullet/id810352052" target="_blank">iPhone</a>  <a href="https://play.google.com/store/apps/details?id=com.pushbullet.android" target="_blank">Android</a><br>Install extension in Your browser  <a href="https://chrome.google.com/webstore/detail/pushbullet/chlffgpmiacpedhhbkiomidkjlcfhogd" target="_blank">Chrome</a>  <a href="https://addons.mozilla.org/en-US/firefox/addon/pushbullet/versions/" target="_blank">Firefox</a><br><br>Now sign in Google Plus account on all Your devices and You are done! You will get all Your mobile notifications in Your computer and You can share files between them easily!!<br><br>A few screenshots of Push Bullet in action!<br><br><div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-1PKuuoBXdSw/VIit6sM1HaI/AAAAAAAANdo/DV3C9ZeoTlI/s1600/push-bullet23.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-1PKuuoBXdSw/VIit6sM1HaI/AAAAAAAANdo/DV3C9ZeoTlI/s1600/push-bullet23.png"></a></div>
-<br><div class="separator" style="clear: both; text-align: center;"><a href="http://4.bp.blogspot.com/-MBm2zo3Xh4w/VIiuc1lwnyI/AAAAAAAANd4/2R_ynoquv1Q/s1600/push-bullet3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-MBm2zo3Xh4w/VIiuc1lwnyI/AAAAAAAANd4/2R_ynoquv1Q/s1600/push-bullet3.png"></a></div>
-<div style="text-align: center;"><br></div>
-<div style="text-align: center;"><br></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-zboZG3xozUo/VIit64uNKtI/AAAAAAAANds/ZZ4F-7pNdxo/s1600/push-bullet.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-zboZG3xozUo/VIit64uNKtI/AAAAAAAANds/ZZ4F-7pNdxo/s1600/push-bullet.png"></a></div>
-<div style="text-align: center;">
-<div style="text-align: left;">
-<br class="Apple-interchange-newline">========================================================================</div>
-<div style="text-align: left;"><br></div>
-<div style="text-align: left;"><a href="http://www.avilpage.com/search/label/chrome%20extensions">More Chrome Extensions</a></div>
-</div>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/zen-story-it-will-pass.html" class="u-url">[Zen Story] It Will Pass!</a></h1>
-        <hr>
-<div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">A student went to his meditation teacher and said, "My meditation is horrible! I feel so distracted, or my legs ache, or I'm constantly falling asleep. It's just horrible!"<br><br>"It will pass," the teacher said matter-of-factly.<br><br>A week later, the student came back to his teacher. "My meditation is wonderful! I feel so aware, so<br>peaceful, so alive! It's just wonderful!'<br><br>"It will pass," the teacher replied matter-of-factly.<br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;">========================================================================</span><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><a href="../2014/12/categories/zen.html" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;">More Zen Stories</a>
+        <div>
+<p>When listening to music, to switch tracks I want to use volume buttons. For this I have to use <a href="https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&amp;hl=en">Pocket Skip Track</a> app.
+CyanogenMod has inbuilt support for that.</p>
+<p>To interact with mobile from computer over wifi, <a href="https://play.google.com/store/apps/details?id=com.ttxapps.wifiadb">wifi adb</a> is required. CyanogenMod provides an option to enable this in <code>Developer Options</code>.</p>
+<p>To put mobile in recovery mode, <a href="http://repo.xposed.info/module/com.ceco.kitkat.gravitybox">Gravity Box</a> is required. This should be used only after installing Xposed framework. CyanogenMod has <code>Advanced reboot</code> which provides option to put phone in recovery mode.</p>
+<p>Battery icon in status bar is very small. Having a text percentage indicator will be more useful. For this <a href="https://play.google.com/store/apps/details?id=de.kroegerama.android4batpercent">battery percentage</a> is required.
+CyanogenMod has inbuilt circle/text indicators.</p>
+<p>Auto brighness stopped working after I have rooted Moto G4 plus. I had to use <a href="https://play.google.com/store/apps/details?id=com.urbandroid.lux">twilight</a> for auto brighness adjustment. With CyanogenMod, it is working fine. It also has a night mode option.</p>
+<p>With stock android, auto rotate won't work in all directions. <a href="https://play.google.com/store/apps/details?id=com.googlecode.eyesfree.setorientation">Set orientation</a> app is required for that. CyanogenMod has inbuilt support for that.</p>
+<p>To adapt mobile display to the time of the day, flux app is required on stock android. CyanogenMod has inbuilt option for this.</p>
+<p>To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run <code>adb</code> as root on stock android, <code>adbd insecure</code> app is required. CyanogenMod works without it.</p>
+<p>Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.</p>
+<p>There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.</p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/zen-story-teaching-zen.html" class="u-url">[Zen Story] Teaching Zen!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/09/remove-clock-lock-screen-status-bar-android.html" class="u-url">Remove Clock From LockScreen/StatusBar On Android</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">A new student asked master: "I have just entered the monastery. Please teach me".<br><br>Master asked: "Have you eaten your rice porridge?"<br><br>The student replied: "I have eaten."<br><br>Master said: "Then You better wash your bowl".<br><br>At that moment the student was enlightened.<br><br><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;">========================================================================</span><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;"><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><a href="../2014/12/categories/zen.html" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;">More Zen Stories</a>
+        <div>
+<p>I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. With Xposed framework we can remove clock from lock screen and status bar.</p>
+<p>Before proceeding, make sure your phone is <a href="http://www.xda-developers.com/root/">rooted</a> and <a href="http://repo.xposed.info/module/de.robv.android.xposed.installer">Xposed framework</a> is installed.</p>
+<h4>Remove Clock From LockScreen</h4>
+<p>To remove clock from lockscreen, download <a href="http://repo.xposed.info/module/com.ssrdroide.lockscreenwidgets">Lock screen widgets</a> module and activate it.</p>
+<p>If you open it, it has an option to hide date and time.</p>
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_0.png" height="400px" width="220"></p>
+
+<h4>Remove Time From StatusBar</h4>
+<p>To remove clock from status bar, you have to install <a href="http://repo.xposed.info/module/com.ceco.marshmallow.gravitybox">GravityBox</a>. Open GravityBox and goto statusbar settings</p>
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_3.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_4.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_5.png" height="400px" width="220"></p>
+
+<p>If you are already using CyanogenMod, there is an option to hide time in settings.</p>
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_1.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_2.png" height="400px" width="220"></p>
+
+<p>Once you do this, you will have a neat lockscreen without any time on it.</p>
+<p align="center">
+<img src="../remove_clock_android/remove_clock_anrdoid_6.png" height="400px" width="220"></p>
 </div>
         </div>
             
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2014/12/zen-story-teaching-ultimate.html" class="u-url">[Zen Story] Teaching The Ultimate!</a></h1>
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/09/detecting-device-events-in-ubuntu-with-python.html" class="u-url">Detecting USB Events In Ubuntu With Python</a></h1>
         <hr>
 <div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">In early times in Japan, bamboo-and-paper lanterns were used with candles inside. A blind man, visiting a friend one night, was offered a lantern to carry home with him.<br><br>"I do not need a lantern," he said. "Darkness or light is all the same to me."<br><br>"I know you do not need a lantern to find your way," his friend replied, "but if you don't have one, someone else may run into you. So you must take it."<br><br>The blind man started off with the lantern and before he had walked very far someone ran squarely into him. "Look out where you are going!" he exclaimed to the stranger. "Can't you see this lantern?"<br><br>"Your candle has burned out, brother," replied the stranger.<br><br><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;">========================================================================</span><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-align: justify;"><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;">Source: </span><a href="http://www.101zenstories.com/" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;" target="_blank">101 Zen Stories</a><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><br style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px;"><a href="../2014/12/categories/zen.html" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 17px; line-height: 20.1599979400635px; text-decoration: none;">More Zen Stories</a>
+        <div>
+<p><a href="https://en.wikipedia.org/wiki/Udev">udev</a> is responsible for managing devices on Linux. It provides <code>udevadm</code>, a CLI utility to monitor and control devices.</p>
+<p>If we run <code>udevadm monitor</code> on terminal and connect a USB drive or hard disk or a mobile via USB to your computer, it will show that kernel has detected the device and it will send a signal to udev about it.</p>
+<pre class="code literal-block"><span></span>→ udevadm monitor
+monitor will print the received events <span class="k">for</span>:
+UDEV - the event which udev sends out after rule processing
+KERNEL - the kernel uevent
+
+KERNEL<span class="o">[</span><span class="m">4336</span>.899091<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.899774<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.902553<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.911201<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.936453<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4337</span>.947174<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+</pre>
+
+
+<p><a href="https://pypi.python.org/pypi/pyudev">Pyudev</a>, a third party package provides python bindings for udev. It can be installed with <code>pip install pyudev</code>.</p>
+<p>With this we can create a simple monitor to detect USB events.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pyudev</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+<span class="n">monitor</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Monitor</span><span class="o">.</span><span class="n">from_netlink</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<span class="n">monitor</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">subsystem</span><span class="o">=</span><span class="s1">'usb'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">poll</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'add'</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">'{} connected'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+        <span class="c1"># do something</span>
+</pre>
+
+
+<p>Save this to a file say monitor.py and run it with <code>python monitor.py</code> and connect a mobile or pendrive and it will show something like this.</p>
+<pre class="code literal-block"><span></span>Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'</span><span class="o">)</span> connected
+Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'</span><span class="o">)</span> connected
+</pre>
+
+
+<p>Here we are just detecting <code>add</code> event. Similary we can detect other events like <code>delete</code>.</p>
+<p>This is useful for automatically running shell scripts once the device gets plugged or unplugged.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/08/migrate-from-blogger-to-static-site-nikola.html" class="u-url">Migrate From Blogger To Static Site (Nikola)</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Long back I have started this blog on <a href="https://blogger.com">blogger</a> platform. Now I choose to migrate to a static because of limitations of blogger.</p>
+<p>Blogger has a simple editor in browser to write posts in html. With static site, you can write post in your editor in markdown and keep them in version control system like git.</p>
+<p>Jekyll, Pelican, Lektor were my initial choices for static site generators. Unfortunately, they didn't had any useful plugins for smooth migration of data from blogger. Then I stumbled across <a href="https://plugins.getnikola.com/#import_blogger">import_blogger</a> plugin of <a href="https://getnikola.com">Nikola</a> and it is able to migrate text content, images without any issues. So, I decided to use Nikola.</p>
+<p><a href="https://getnikola.com">Nikola</a> has great documentation and setup was simpler. I used <code>import_blogger</code> plugin and imported all the data. All the posts and pages were working well with exact same urls.</p>
+<p>Blogger tags all posts of particular label under <code>/search/label/foo</code>. I have used these urls in some posts. Nikola shows posts under <code>/categories/foo.html</code>.</p>
+<p>This is where nikola <code>REDIRECTIONS</code> come in handy. Using this, a list of from &amp; to urls can be mapped. I wrote a simple function for redirections and then enabled <code>STRIP_INDEXES</code> which removes trailing <code>.html</code>.</p>
+<pre class="code literal-block"><span></span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'python'</span><span class="p">,</span> <span class="s1">'emacs'</span><span class="p">,</span> <span class="s1">'zen'</span><span class="p">,</span> <span class="s1">'django'</span><span class="p">,</span> <span class="s1">'chrome'</span><span class="p">]</span>
+<span class="n">LABEL_REDIRECTIONS</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+    <span class="n">LABEL_REDIRECTIONS</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+        <span class="s1">'/search/label/{}/index.html'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
+        <span class="s1">'/categories/{}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
+    <span class="p">))</span>
+</pre>
+
+
+<p>Since I stripped <code>.html</code> from urls, old urls broke. So I generated a list of old urls and wrote another function to redirect them to new urls.</p>
+<p>Nikola has few builtin themes. I wanted something minimalistic and so I rolled out custom theme which you are seeing right now.</p>
+<p>Thanks to <a href="https://github.com/punchagan">Puneeth Chaganti</a>, <a href="https://github.com/Kwpolska">Chris Warrick</a>, <a href="https://github.com/ralsina">Roberto Alsina</a> for helping me with migration.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/07/emblem-mode-for-emacs.html" class="u-url">emblem-mode for Emacs</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Emblem.js is a ember friendly templating engine used as an alternative for handlebars.js.</p>
+<p>Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.</p>
+<p><code>slim-mode</code> is available on melpa. To install it, run</p>
+<pre class="code literal-block"><span></span>M-x install-package slim-mode
+</pre>
+
+
+<p>After installing it, activate <code>slim-mode</code> by running <code>M-x slim-mode</code>.</p>
+<p>Instead of activating manually, <code>auto-mode-alist</code> can be used to set major modes that needs to activated for files with specific extension. To activate slim-mode for emblem files which will be ending with <code>.em</code> or <code>.emblem</code>, use</p>
+<pre class="code literal-block"><span></span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">'auto-mode-alist</span> <span class="o">'</span><span class="p">(</span><span class="s">"\\.\\(em\\|emblem\\)"</span> <span class="o">.</span> <span class="nv">slim-mode</span><span class="p">))</span>
+</pre>
+
+
+<p>By adding this line to emacs configuration file, slim-mode gets activated for emblem.js files.</p>
 </div>
         </div>
             
