@@ -1,5 +1,5 @@
 <!--
-.. title: Start Up Companies In Banglore
+.. title: Start Up Companies In Bangalore
 .. slug: list-of-bangalore-start-up-companies
 .. date: 2014-01-13 16:52:00
 .. tags: bangalore,startups
