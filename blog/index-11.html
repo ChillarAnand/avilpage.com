@@ -22,7 +22,75 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With Full Syntax Tree</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.</p>
+<h3>Why Ansible?</h3>
+<p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
+<h3>Writing A Playbook</h3>
+<p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
+<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
+<span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
+
+<span class="n">tasks</span><span class="o">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
+    <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
+</pre>
+
+
+<p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/setup.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
+<pre class="code literal-block"><span></span>ansible-playbook laptop-setup.yml -i localhost, -c local
+</pre>
+
+
+<h3>Bootstrap Script</h3>
+<p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
+<pre class="code literal-block"><span></span>sudo apt update --yes
+sudo apt install --yes python python-pip
+
+sudo apt install --yes libssl-dev
+sudo -H pip install ansible
+
+wget -c https://path/to/playbook.yml
+
+sudo ansible-playbook setup.yml -i localhost, -c local
+</pre>
+
+
+<p>Now, to provision a laptop, just run the bootstrap script.</p>
+<pre class="code literal-block"><span></span>sh -c "$(wget https://path/to/bootstrap_script.sh"
+</pre>
+
+
+<p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html" class="u-url">How BMTC Is Exploiting Crores From Bangalore Citizens?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p><a href="http://mybmtc.com" target="_blank">BMTC</a> (Bengaluru Metropolitan Transport Corporation) is a government agency which operates the public transport bus service in Bangalore, India. It holds monopoly as it is the only choice for public transportation.</p>
+<h3>Fare Calculation</h3>
+<p>BMTC considers ~2KM distance as a stage and the <a href="https://www.mybmtc.com/general-service?fareid=gns&amp;qt-home_quick_tab_bottom=2" target="_blank">fares for each stage</a> are as follows.</p>
+<p align="center">
+<img src="../bmtc-fare-charges.png" width="600px"></p>
+
+<p>Let's say, you want to travel from Indira Nagar to BTM Layout, it will cover 5 stages. So, BMTC charges 19₹ for that.</p>
+<h3>Exploitation?</h3>
+<p>If you travel from Indira Nagar KFC signal to Doopanahalli Arch(1.2KM), which comes under 1 stage, you have to pay 5₹.  On the other hand, if you travel Indira Nagar KFC signal to Doopanahalli bustop(1.4KM), you have to pay 12₹.</p>
+<p>How can BMTC charge 5₹ for the first 1.2KM and 7₹ for the subsequent 0.2KM?  If BMTC charges, 5₹ for 1st stage. Then it should charge 5₹ + extra for next stage. But it shouldn't be more than 10₹.</p>
+<p>You can just take 1 ticket(5₹) for 1st stage(1.2KM) and one more ticket(5₹)  for the next stage(0.2KM).  You can just travel 2 stages with 2 tickets for 10₹.</p>
+<p>Turnsout BMTC is charging 3₹ extra on every ticket which covers atleast 2 stages.  As lakhs of people travel in BMTC buses daily, in a month, this 3₹ turns into crores of rupees.</p>
+<p>I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.</p>
+<h3>Update:</h3>
+<p>After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to <a href="https://twitter.com/philentropist">Gopala Kallapura</a>, <a href="https://twitter.com/kracetheking">Krace Kumar</a> &amp; <a href="https://twitter.com/thej">Thegesh GN</a> for supporting the issue.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With Full Syntax Tree</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -337,102 +405,6 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
 <p>Nikola has few builtin themes. I wanted something minimalistic and so I rolled out custom theme which you are seeing right now.</p>
 <p>Thanks to <a href="https://github.com/punchagan">Puneeth Chaganti</a>, <a href="https://github.com/Kwpolska">Chris Warrick</a>, <a href="https://github.com/ralsina">Roberto Alsina</a> for helping me with migration.</p>
 </div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/07/emblem-mode-for-emacs.html" class="u-url">emblem-mode for Emacs</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Emblem.js is a ember friendly templating engine used as an alternative for handlebars.js.</p>
-<p>Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.</p>
-<p><code>slim-mode</code> is available on melpa. To install it, run</p>
-<pre class="code literal-block"><span></span>M-x install-package slim-mode
-</pre>
-
-
-<p>After installing it, activate <code>slim-mode</code> by running <code>M-x slim-mode</code>.</p>
-<p>Instead of activating manually, <code>auto-mode-alist</code> can be used to set major modes that needs to activated for files with specific extension. To activate slim-mode for emblem files which will be ending with <code>.em</code> or <code>.emblem</code>, use</p>
-<pre class="code literal-block"><span></span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">'auto-mode-alist</span> <span class="o">'</span><span class="p">(</span><span class="s">"\\.\\(em\\|emblem\\)"</span> <span class="o">.</span> <span class="nv">slim-mode</span><span class="p">))</span>
-</pre>
-
-
-<p>By adding this line to emacs configuration file, slim-mode gets activated for emblem.js files.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/06/auto-completion-for-custom-search.html" class="u-url">Auto Completion For Custom Search Engines In Chrome</a></h1>
-        <hr>
-<div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-    <div dir="ltr" style="text-align: left;" trbidi="on">
-      <span style="font-size: 16px; font-weight: normal; line-height: 25.6px;">If we have to search for a video on YouTube or a product on Amazon, we will open
-      up that site first and then we will search for it.</span>
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    <a href="https://cloud.githubusercontent.com/assets/4463796/15986478/89999bda-3026-11e6-9460-9b0c2d4db4d9.png" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;" target="_blank"><img alt="Chrome-custom-search-autocompletion1" src="https://cloud.githubusercontent.com/assets/4463796/15986478/89999bda-3026-11e6-9460-9b0c2d4db4d9.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a>
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    To avoid this, Chrome allows us to search using custom search engines without visiting the site first. In chrome search settings, we can assign a single
-    letter to a custom search engine.
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    <a href="https://cloud.githubusercontent.com/assets/4463796/15986479/899a642a-3026-11e6-8084-beddf28bf8d6.png" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;" target="_blank"><img alt="Chrome-custom-search-autocompletion1" src="https://cloud.githubusercontent.com/assets/4463796/15986479/899a642a-3026-11e6-8084-beddf28bf8d6.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a>
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    Now if we go to browser, type <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">y</code> and
-    hit <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Tab</code>,
-    it prompts for YouTube search instead of default search.
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    <a href="https://cloud.githubusercontent.com/assets/4463796/15986476/89951240-3026-11e6-99ad-cc8cf9127605.png" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;" target="_blank"><img alt="Chrome-custom-search-autocompletion1" src="https://cloud.githubusercontent.com/assets/4463796/15986476/89951240-3026-11e6-99ad-cc8cf9127605.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a>
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    This is handy. But the major problem with this approach is there won't be autocompletion in chrome address bar.
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    This is where vimium comes into picture. Vimium provides auto completion for custom search engines.
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    You can install it <a href="https://chrome.google.com/webstore/detail/dbepggeogbaibhgnhhndojpepiihcmeb" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;">from chrome webstore</a>. Once it is installed, go to Vimium options and
-    add youtube search to custom search engines.
-    </div>
-    <pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;">
-
-<code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;">y: http://www.youtube.com/results?search_query=%s Youtube<br></code>
-</pre>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    Also add a custom key map for this search.
-    </div>
-    <pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;">
-
-<code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;">map y Vomnibar.activateInNewTab keyword=y<br></code>
-</pre>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    If we just press <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">y</code>,
-    it open youtube custom search with autocompletion.
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-    <a href="https://cloud.githubusercontent.com/assets/4463796/15986477/8996f3e4-3026-11e6-8c83-8a74f0ab84fb.png" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;" target="_blank"><img alt="Chrome-custom-search-autocompletion1" src="https://cloud.githubusercontent.com/assets/4463796/15986477/8996f3e4-3026-11e6-8c83-8a74f0ab84fb.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a>
-    </div>
-
-    <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-        Now in every page, we have autocompletion for custom search engines.<br><br>
-      More articles about <a href="../search/label/chrome/">Chrome</a>.
-
-    </div>
-  </div>
-
         </div>
             
         </article><nav class="postindexpager"><ul class="pager">
