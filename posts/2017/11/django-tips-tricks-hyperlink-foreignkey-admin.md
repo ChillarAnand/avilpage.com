@@ -66,3 +66,23 @@ Now in the book admin view, author field will be hyperlinked and we can visit ju
 <p align="center">
 <img src="/images/django-tips-tricks-2.png" />
 </p>
+
+
+<b>Update:</b>
+
+Django has inbuilt option for this. It provides [`list_display_links`](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display_links), to control which fields should be linked to change page. So, we can just add author field to it.
+
+
+```py
+from django.contrib import admin
+
+from .models import Author, Book
+
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author', )
+    list_display_links = ('name', 'author',)
+
+admin.site.register(Author)
+```
+
+Now, author field will be hyperlinked to its change page.
