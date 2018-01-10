@@ -2,21 +2,26 @@
 .. title: How To Plot Renko Charts With Python?
 .. slug: how-to-plot-renko-charts-with-python
 .. date: 2018-01-10 14:57:23 UTC+05:30
-.. tags: python, trading, programming
+.. tags: python, trading, technical-analysis
 .. category: programming, python
 .. link:
 .. description: How to plot renko charts for stocks using OHLC data with python?
 .. type: text
 -->
 
-Renko charts are time independent of time and are efficient to trade as they eliminate noise. In this article we plot renko charts of an instrument with OHLC data using Python.
+[Renko charts](https://en.wikipedia.org/wiki/Renko) are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.
 
-First we need to calculate bricks from OHLC data. For brick size, we can choose a fix value or calculate it form ATR(Average True Range). Once brick size is selected, we can do diff on shifted close values to get the difference and divide it by brick size to get the bricks.
+First we need to calculate bricks from OHLC data. For brick size, we can choose a fixed value or calculate it based on ATR(Average True Range). Once brick size is selected, we can do diff on shifted close values to get the change in close price and divide it by brick size to get the bricks.
 
 Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.
 
 
 ```python
+import pandas as pd
+from matplotlib.patches import Rectangle
+import matplotlib.pyplot as plt
+
+
 brick_size = 2
 
 
@@ -37,8 +42,6 @@ def plot_renko(data, brick_size):
             bricks.extend([-1]*abs(delta))
 
     for index, number in enumerate(bricks):
-        print((index, number), (1, brick_size), number)
-
         if number == 1:
             facecolor='green'
         else:
@@ -57,7 +60,7 @@ def plot_renko(data, brick_size):
 
 df = pd.read_csv(file)
 
-df['cdiff'] = df[close] - df[close].shift(1)
+df['cdiff'] = df['close'] - df['close'].shift(1)
 df.dropna(inplace=True)
 df['bricks'] = df.loc[:, ('cdiff', )] / brick_size
 

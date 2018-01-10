@@ -31,7 +31,7 @@ tasks:
     apt: name=redis-server update_cache=yes
 ```
 
-Here is [a playbook](https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/setup.yml) which I use to configure my laptop. As the playbook needs to run locally, just run
+Here is [a playbook](https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml) which I use to configure my laptop. As the playbook needs to run locally, just run
 
 ```
 ansible-playbook laptop-setup.yml -i localhost, -c local
