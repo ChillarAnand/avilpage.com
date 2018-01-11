@@ -22,7 +22,72 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html" class="u-url">Automatic Magnetometer Calibration With Arduino</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/01/how-to-plot-renko-charts-with-python.html" class="u-url">How To Plot Renko Charts With Python?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p><a href="https://en.wikipedia.org/wiki/Renko">Renko charts</a> are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.</p>
+<p>First we need to calculate bricks from OHLC data. For brick size, we can choose a fixed value or calculate it based on ATR(Average True Range). Once brick size is selected, we can do diff on shifted close values to get the change in close price and divide it by brick size to get the bricks.</p>
+<p>Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+<span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">plot_renko</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">prev_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">bricks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bricks</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'green'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'red'</span>
+
+        <span class="n">prev_num</span> <span class="o">+=</span> <span class="n">number</span>
+
+        <span class="n">renko</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">prev_num</span> <span class="o">*</span> <span class="n">brick_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">renko</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'cdiff'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s1">'cdiff'</span><span class="p">,</span> <span class="p">)]</span> <span class="o">/</span> <span class="n">brick_size</span>
+
+<span class="n">bricks</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">][</span><span class="s1">'bricks'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">plot_renko</span><span class="p">(</span><span class="n">bricks</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">)</span>
+</pre>
+
+
+<p>Here is a sample renko chart plotted using the above code.</p>
+<p align="center">
+<img src="../images/python-renko3.png"></p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html" class="u-url">Automatic Magnetometer Calibration With Arduino</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -408,90 +473,6 @@ hello from android
 
 <p>Open source OCR software <a href="https://github.com/tmbdev/ocropy/">ocorpy</a> uses BLSTM-CTC for text recognistion. <a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> started using the same in its latest(4.0) version.</p>
 <p>I have <a href="https://github.com/ChillarAnand/likitham">trained a model</a> to recognize Telugu script using ocropy and the accuracy is ~99% which is far better when compared to OCR softwares without CTC which are accurate to ~70%.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/06/auto-register-subclasess-without-metaclass.html" class="u-url">Auto Register Subclasess Without Metaclass in Python</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>In registry pattern, a <code>registry</code> maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.</p>
-<p>When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.</p>
-<p>A commonly used approach is to use inheritance as an organizing mechanism. Create <a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses">a meta class which will auto register</a> classes and then create base class with this meta class.</p>
-<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
-
-
-<span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">target_class</span><span class="p">):</span>
-    <span class="n">REGISTRY</span><span class="p">[</span><span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_class</span>
-
-
-<span class="k">class</span> <span class="nc">MetaRegistry</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span>
-
-
-<span class="k">class</span> <span class="nc">BaseClass</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaRegistry</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
-    <span class="k">pass</span>
-</pre>
-
-
-<p>Now whenever you subclass <code>BaseClass</code>, it gets registered in the global registry. In the above example, <code>Foo</code>, <code>Bar</code> gets registered automatically.</p>
-<p>Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.</p>
-<p>A simple alternative for this is to use <code>__subclasses__()</code> to get subclasess and register them.</p>
-<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
-</pre>
-
-
-<p>This will work only for direct subclasses and won't with indirect subclasses like this.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
-    <span class="k">pass</span>
-</pre>
-
-
-<p>To solve this, we can use a function to recursively retrieve all subclasses of a class.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">registry</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-
-    <span class="n">subs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">registry</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">sub</span>
-        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">sub</span>
-
-
-<span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">)}</span>
-</pre>
-
-
-<p><a href="https://www.python.org/dev/peps/pep-0487/">PEP 487</a> provides <code>__init_subclass__</code> hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this <code>__init_subclass__</code> hook.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-</pre>
-
-
-<p>This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.</p>
 </div>
         </div>
             
