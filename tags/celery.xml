@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about celery)</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" href="http://www.avilpage.com/tags/celery.xml" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Dec 2017 04:44:05 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about celery)</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/tags/celery.xml"></atom:link><language>en</language><lastBuildDate>Sat, 10 Feb 2018 15:55:17 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Load Testing Celery With Different Brokers</title><link>http://www.avilpage.com/2018/02/load-testing-celery-brokers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.&lt;/p&gt;
+&lt;p&gt;Let us take a simple add task and measure queueing time.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;celery&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Celery&lt;/span&gt;
+
+&lt;span class="n"&gt;broker&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'memory://'&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Celery&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;broker&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;broker&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.task&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;
+
+
+&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+&lt;span class="n"&gt;start_time&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_timer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;results&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;duration&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_timer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;start_time&lt;/span&gt;
+&lt;span class="n"&gt;rate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;duration&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"{} tasks/sec"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;On development machine, with AMD A4-5000 CPU, queueing time is as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory ---&amp;gt; 400 tasks/sec&lt;/li&gt;
+&lt;li&gt;rabbitmq ---&amp;gt; 300 tasks/sec&lt;/li&gt;
+&lt;li&gt;redis ---&amp;gt; 250 tasks/sec&lt;/li&gt;
+&lt;li&gt;postgres ---&amp;gt; 30 tasks/sec&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On production machine, with Intel(R) Xeon(R) CPU E5-2676, queueing time is as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory ---&amp;gt; 2000 tasks/sec&lt;/li&gt;
+&lt;li&gt;rabbitmq ---&amp;gt; 1400 tasks/sec&lt;/li&gt;
+&lt;li&gt;redis ---&amp;gt; 1200 tasks/sec&lt;/li&gt;
+&lt;li&gt;postgres ---&amp;gt; 200 tasks/sec&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.&lt;/p&gt;
+&lt;p&gt;Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chunks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.&lt;/p&gt;&lt;/div&gt;</description><category>celery</category><category>python</category><guid>http://www.avilpage.com/2018/02/load-testing-celery-brokers.html</guid><pubDate>Wed, 07 Feb 2018 13:49:18 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://www.avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;celery worker -l info -A foo --autoreload
 &lt;/pre&gt;
 
