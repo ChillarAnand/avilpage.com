@@ -1,7 +1,7 @@
 <!--
 .. title: Load Testing Celery With Different Brokers
 .. slug: load-testing-celery-brokers
-.. date: 2018-02-07 19:19:18 UTC+05:30
+.. date: 2018-02-09 19:19:18 UTC+05:30
 .. tags: python, celery
 .. category:
 .. link:
