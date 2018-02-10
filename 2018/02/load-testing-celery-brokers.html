@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="how to load test celery queuing mechanism?">
+<meta name="author" content="Chillar Anand">
+<title>Load Testing Celery With Different Brokers | Avil Page</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="http://www.avilpage.com/2018/02/load-testing-celery-brokers.html">
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<style>
+     #wrapper {
+         width: 100%;
+         margin: 0;
+     }
+
+     #first-div {
+         width: 16%;
+         height: 90px;
+         /*          margin: 10px 0px 0px 10px; */
+         margin: 0;
+         float: left ;
+     }
+
+     #second-div {
+         width: 84%;
+         height: 72px;
+         margin: 18px 0px 0px 0px;
+         float: left ;
+     }
+    </style>
+</head>
+<body>
+        <div id="">
+            <div id="container">
+                <!-- <h1 id="blog-title">
+                     <a href="http://www.avilpage.com/" title="Avil Page" rel="home">Avil Page</a>
+                     </h1> -->
+
+
+
+
+    <div class="postbox">
+
+        <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <h1 class="p-name" itemprop="headline name">Load Testing Celery With Different Brokers</h1>
+
+
+
+
+                3 min read
+
+
+                <hr>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><!-- avilpage.com top --><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8127755709093749" data-ad-slot="6914930471" data-ad-format="auto"></ins>
+                <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+                </script><div class="e-content" itemprop="articleBody text">
+                    <div>
+<p>Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.</p>
+<p>Let us take a simple add task and measure queueing time.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">timeit</span>
+
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
+
+<span class="n">broker</span> <span class="o">=</span> <span class="s1">'memory://'</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="n">broker</span><span class="o">=</span><span class="n">broker</span><span class="p">)</span>
+
+
+<span class="nd">@app.task</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+
+<span class="n">tasks</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tasks</span><span class="p">)]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+<span class="n">rate</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">//</span><span class="n">duration</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">"{} tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
+</pre>
+
+
+<p>On development machine, with AMD A4-5000 CPU, queueing time is as follows</p>
+<ul>
+<li>memory ---&gt; 400 tasks/sec</li>
+<li>rabbitmq ---&gt; 300 tasks/sec</li>
+<li>redis ---&gt; 250 tasks/sec</li>
+<li>postgres ---&gt; 30 tasks/sec</li>
+</ul>
+<p>On production machine, with Intel(R) Xeon(R) CPU E5-2676, queueing time is as follows</p>
+<ul>
+<li>memory ---&gt; 2000 tasks/sec</li>
+<li>rabbitmq ---&gt; 1400 tasks/sec</li>
+<li>redis ---&gt; 1200 tasks/sec</li>
+<li>postgres ---&gt; 200 tasks/sec</li>
+</ul>
+<p>For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.</p>
+<p>Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.</p>
+<pre class="code literal-block"><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
+</pre>
+
+
+<p>This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.</p>
+</div>
+                </div>
+
+                    <meta content="how to load test celery queuing mechanism?" itemprop="description">
+</div>
+
+                <b> Tags: </b>
+                    <a href="../../tags/celery.html">celery</a>
+                        |
+                    <a href="../../tags/python.html">python</a>
+
+            <br><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><!-- avilpage.com bottom --><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8127755709093749" data-ad-slot="5818660596" data-ad-format="auto"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script><hr>
+<div id="wrapper">
+                <div id="first-div">
+                    <img src="https://s.gravatar.com/avatar/608fa09693cef8d410834bd55755dbed?s=80">
+</div>
+                <div id="second-div">
+                    I am Chillar Anand. I daydream a lot and write about the things that interest me here.
+                    You can read more about <a href="../../p/about-avilpage.html">this blog here</a>.
+                </div>
+            </div>
+
+            <hr>
+<a href="../../">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="../../rss.xml">
+                <h3>RSS Feed for the blog</h3>
+            </a>
+
+            <a href="https://github.com/ChillarAnand/avilpage.com">
+                Edit this page
+            </a>
+
+            <hr></article>
+</div>
+
+
+                <br>
+</div>
+
+
+            <!--Sidebar content-->
+            <!-- <ul class="unstyled">
+                     
+
+                                 <li><a href="/">Articles</a>
+                <li><a href="/about">About.html</a>
+                <li><a href="/rss.xml">RSS</a>
+
+                 </ul> -->
+            <br>
+</div>
+    </body>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-81644162-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</html>

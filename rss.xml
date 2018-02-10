@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0"><channel><title>Avil Page</title><link>http://www.avilpage.com</link><description></description><atom:link type="application/rss+xml" rel="self" href="http://www.avilpage.com/rss.xml"></atom:link><language>en</language><lastBuildDate>Thu, 11 Jan 2018 13:39:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Plot Renko Charts With Python?</title><link>http://www.avilpage.com/2018/01/how-to-plot-renko-charts-with-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Renko"&gt;Renko charts&lt;/a&gt; are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://www.avilpage.com</link><description></description><atom:link rel="self" type="application/rss+xml" href="http://www.avilpage.com/rss.xml"></atom:link><language>en</language><lastBuildDate>Sat, 10 Feb 2018 15:55:19 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Load Testing Celery With Different Brokers</title><link>http://www.avilpage.com/2018/02/load-testing-celery-brokers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.&lt;/p&gt;
+&lt;p&gt;Let us take a simple add task and measure queueing time.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;celery&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Celery&lt;/span&gt;
+
+&lt;span class="n"&gt;broker&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'memory://'&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Celery&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;broker&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;broker&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.task&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;
+
+
+&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;
+&lt;span class="n"&gt;start_time&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_timer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;results&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;span class="n"&gt;duration&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_timer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;start_time&lt;/span&gt;
+&lt;span class="n"&gt;rate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;duration&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"{} tasks/sec"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;On development machine, with AMD A4-5000 CPU, queueing time is as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory ---&amp;gt; 400 tasks/sec&lt;/li&gt;
+&lt;li&gt;rabbitmq ---&amp;gt; 300 tasks/sec&lt;/li&gt;
+&lt;li&gt;redis ---&amp;gt; 250 tasks/sec&lt;/li&gt;
+&lt;li&gt;postgres ---&amp;gt; 30 tasks/sec&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On production machine, with Intel(R) Xeon(R) CPU E5-2676, queueing time is as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory ---&amp;gt; 2000 tasks/sec&lt;/li&gt;
+&lt;li&gt;rabbitmq ---&amp;gt; 1400 tasks/sec&lt;/li&gt;
+&lt;li&gt;redis ---&amp;gt; 1200 tasks/sec&lt;/li&gt;
+&lt;li&gt;postgres ---&amp;gt; 200 tasks/sec&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.&lt;/p&gt;
+&lt;p&gt;Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chunks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.&lt;/p&gt;&lt;/div&gt;</description><category>celery</category><category>python</category><guid>http://www.avilpage.com/2018/02/load-testing-celery-brokers.html</guid><pubDate>Wed, 07 Feb 2018 13:49:18 GMT</pubDate></item><item><title>How To Plot Renko Charts With Python?</title><link>http://www.avilpage.com/2018/01/how-to-plot-renko-charts-with-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Renko"&gt;Renko charts&lt;/a&gt; are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.&lt;/p&gt;
 &lt;p&gt;First we need to calculate bricks from OHLC data. For brick size, we can choose a fixed value or calculate it based on ATR(Average True Range). Once brick size is selected, we can do diff on shifted close values to get the change in close price and divide it by brick size to get the bricks.&lt;/p&gt;
 &lt;p&gt;Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
@@ -382,13 +428,4 @@ hello from android
 &lt;/pre&gt;
 
 
-&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;&lt;/div&gt;</description><category>arduino</category><category>cli</category><guid>http://www.avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item><item><title>Using LSTM-CTC For Complex Script Recognistion</title><link>http://www.avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Most Indian languages have strong consonant-vowel structure which combine to give syllables. These syllables are written as one continuous ligature and they require &lt;a href="https://en.wikipedia.org/wiki/Complex_text_layout"&gt;complex text rendering&lt;/a&gt; (CTL) for type setting.&lt;/p&gt;
-&lt;p&gt;Writing OCR (Optical Character Recognistion) software for CTL scripts is a challenging task as segmentation is hard. Because of this overall accuracy drops drastically.&lt;/p&gt;
-&lt;p&gt;A better approach is to use &lt;a href="ftp://ftp.idsia.ch/pub/juergen/icml2006.pdf"&gt;Connectionist Temporal Classification&lt;/a&gt; (CTC) which can identify unsegmented sequence directly as it has one-to-one correspondence between input samples and output labels.&lt;/p&gt;
-&lt;p&gt;Here is a sample input and output of a &lt;a href="https://github.com/rakeshvar/rnn_ctc"&gt;RNN-CTC&lt;/a&gt; network which takes an unsegmented sequence and outputs labels.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://www.avilpage.com/images/ctc.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Open source OCR software &lt;a href="https://github.com/tmbdev/ocropy/"&gt;ocorpy&lt;/a&gt; uses BLSTM-CTC for text recognistion. &lt;a href="https://github.com/tesseract-ocr/tesseract"&gt;Tesseract&lt;/a&gt; started using the same in its latest(4.0) version.&lt;/p&gt;
-&lt;p&gt;I have &lt;a href="https://github.com/ChillarAnand/likitham"&gt;trained a model&lt;/a&gt; to recognize Telugu script using ocropy and the accuracy is ~99% which is far better when compared to OCR softwares without CTC which are accurate to ~70%.&lt;/p&gt;&lt;/div&gt;</description><guid>http://www.avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html</guid><pubDate>Sat, 22 Jul 2017 14:09:32 GMT</pubDate></item></channel></rss>
+&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;&lt;/div&gt;</description><category>arduino</category><category>cli</category><guid>http://www.avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item></channel></rss>
