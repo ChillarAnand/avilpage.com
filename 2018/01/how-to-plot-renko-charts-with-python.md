@@ -11,7 +11,13 @@
 
 [Renko charts](https://en.wikipedia.org/wiki/Renko) are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.
 
-First we need to calculate bricks from OHLC data. For brick size, we can choose a fixed value or calculate it based on ATR(Average True Range). Once brick size is selected, we can do diff on shifted close values to get the change in close price and divide it by brick size to get the bricks.
+To plot renko charts, we can choose a fixed price as brick value or calculate it based on ATR(Average True Range) of the instrument.
+
+There are two types of Renko charts based on which bricks are calculated.
+
+### Renko chart - Price movement
+
+First one is based on price movement. In this, we will divide the price movement of current duration by brick size to get the bricks.
 
 Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.
 
@@ -68,9 +74,25 @@ bricks = df[df['bricks'] != 0]['bricks'].values
 plot_renko(bricks, brick_size)
 ```
 
-
 Here is a sample renko chart plotted using the above code.
 
 <p align="center">
 <img src="/images/python-renko3.png" />
 </p>
+
+
+### Renko chart - Period close
+
+In this bricks are calculated based on the close price of the instrument. Calculation of bricks is sligtly complex compared to price movement chart. I have created a seperate package called [stocktrends](https://pypi.python.org/pypi/stocktrends) which has this calculation.
+
+
+```python
+from stocktrends import Renko
+
+renko = Renko(df)
+renko.brick_size = 2
+data = renko.get_ohlc_data()
+print(data.tail())
+```
+
+This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.
