@@ -22,7 +22,52 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.</p>
+<p>First install <a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid">SSHDroid</a> app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.</p>
+<p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
+<p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
+<p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
+<pre class="code literal-block"><span></span>rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
+</pre>
+
+
+<p>Now ssh into android, install django and start django server.</p>
+<pre class="code literal-block"><span></span>$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
+</pre>
+
+
+<pre class="code literal-block"><span></span>$ python -m pip install django
+$ <span class="nb">cd</span> /data/local/django-bookmarks
+$ python manage.py runvserver
+</pre>
+
+
+<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
+<pre class="code literal-block"><span></span>$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
+
+Forwarding HTTP traffic from https://incepro.serveo.net
+Press g to start a GUI session and ctrl-c to quit.
+</pre>
+
+
+<p>Now we can share our django app with anyone.</p>
+<p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
+<pre class="code literal-block"><span></span>ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
+-H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
+http://incepro.serveo/list/
+</pre>
+
+
+<p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
+<p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -498,35 +543,6 @@ hello from android
 <p>Amazon team talked about the problems they are solving with machine learning like auto correcting address, suggesting right size for shoes/apparel, answering questions on products e.t.c.</p>
 <p>People from academia talked about the research work they are doing and their results.</p>
 <p>I have been working on Telugu OCR in the past few months. There were 3 poster presentations regarding indic languages. Even though a lot of papers were published in the past, there is no end-to-end OCR with good accuracy (&gt;98%) for Indic languages. It is good to see Indic languages getting traction in deep learning.</p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/08/arduino-programming-from-text-editor-cli.html" class="u-url">Arduino Programming From Text Editor &amp; CLI</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>To program Arduino, we can use <a href="https://www.arduino.cc/en/main/software">Arduino IDE</a> which facilitates writing and uploading code to the board.</p>
-<p>If we are using a text editor for programming, it will have lot of customisations which speed up development process. In such case, it is better to use same text editor for arduino programming too.</p>
-<p>I use Emacs as IDE and there is <a href="https://github.com/bookest/arduino-mode">arduino mode</a> for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.</p>
-<p>Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.</p>
-<p>In Linux system, to upload a file called <code>foo.ino</code>, we can run</p>
-<pre class="code literal-block"><span></span>arduino --port /dev/ttyACM0 --board arduino:avr:mega
- <span class="se">\ </span>--upload foo.ino
-</pre>
-
-
-<p>An alternate way is to use <a href="https://github.com/platformio/platformio-core/">platformio</a>, an opensource tool chain for IoT development.</p>
-<p>It can be installed using pip.</p>
-<pre class="code literal-block"><span></span>pip install platformio
-</pre>
-
-
-<p>Once it is installed, code can be directly uploaded using <code>ci</code> command.</p>
-<pre class="code literal-block"><span></span>pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
-</pre>
-
-
-<p>By this we can use text editor to write code and arduino/platformio to upload code to arduino board.</p>
 </div>
         </div>
             
