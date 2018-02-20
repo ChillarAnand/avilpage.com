@@ -22,7 +22,79 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/09/set-emacs-as-default-file-manager-in.html" class="u-url">Set Emacs As Default File Manager In Ubuntu!</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/02/automate-boring-stuff-accepting.html" class="u-url">Automate Boring Stuff - Accepting Waitlist RSVPs</a></h1>
+        <hr>
+<div class="e-content">
+        <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
+<a href="http://www.meetup.com/" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;">Meetup.com</a> makes it easier to organize events. Before meetup you can specify how many people you can accomodate. Then you send mail to all people so that interested people can RSVP.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">If RSVP is full, people can join waitlist. So if somebody changes <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">RSVP</code> to <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">No</code>, we can accomodate people in waitlist.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">On the otherhand, if you find a place where you can accomodate more number than you have planned, you can accept all people in waitlist.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Unfortunately, there is no option in meetup for that. You have to accept people one by one which is a boring job if there are ~50 people in waitlist.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">This where Python comes to rescue. Python has an excellent package called <a href="https://github.com/asweigart/pyautogui" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;">pyautogui</a> which helps you to automate all boring tasks.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Here is the simple script I have used for this task.</div>
+<div class="highlight highlight-source-python" style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; overflow: auto; padding: 16px; word-break: normal; word-wrap: normal;"><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> time<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> pyautogui<br><br><br><span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">print</span>(<span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>Goto meetup event page and place cursor...<span class="pl-pds" style="box-sizing: border-box;">'</span></span>)<br>time.sleep(<span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">5</span>)<br><br>x, y <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> pyautogui.position()<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">for</span> i <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">in</span> <span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">range</span>(<span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">100</span>):<br>    pyautogui.click(x, y)<br>    time.sleep(<span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">5</span>)</pre></div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">The code is self explanatory. First we are importing <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">pyautogui</code> and then wait for 5 seconds so that we can go to meetup page and point mouse correctly. Get the cursor position and start clicking on that position with a gap of 5 seconds. This gap is needed as meetup shows a notification once you accept  <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">RSVP</code>.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Pyautogui is an interesting package which makes your boring job easier.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
+<div style="box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; line-height: 25.6px; margin-bottom: 16px;"><strong style="box-sizing: border-box;">Update:</strong></div>
+<div style="box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; line-height: 25.6px; margin-bottom: 16px;">Just found that increasing <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Attendee limit</code> auto changes RSVP of waitlist people to <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Yes</code>.<br><br>
+</div>
+<span style='background-color: white; color: #666666; font-family: "trebuchet ms" , "trebuchet" , "verdana" , sans-serif; font-size: 16.8px; line-height: 20.16px;'>Read more </span><a href="http://www.avilpage.com/search/label/python" style="background-color: white; color: #5421bb; cursor: pointer; font-family: 'trebuchet ms', trebuchet, verdana, sans-serif; font-size: 16.8px; line-height: 20.16px; text-decoration: none;">articles about Python</a><span style='background-color: white; color: #666666; font-family: "trebuchet ms" , "trebuchet" , "verdana" , sans-serif; font-size: 16.8px; line-height: 20.16px;'>!</span><a aria-hidden="true" class="anchor" href="http://localhost:6419/#code-highlighting-in-blog-posts" id="user-content-code-highlighting-in-blog-posts" style="box-sizing: border-box; color: #4078c0; cursor: pointer; display: block; left: 0px; line-height: 1; margin-left: -30px; padding-left: 30px; padding-right: 6px; position: absolute; text-decoration: none; top: 0px;"></a>
+</div>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/12/dropbox-as-wormhole-between-ubuntu.html" class="u-url">Dropbox As Wormhole Between Ubuntu &amp; Google Drive!</a></h1>
+        <hr>
+<div class="e-content">
+        <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I use Ubuntu on multiple computers everyday. It is important to keep various files synced across them. I keep most of the public data in github repositories and it is very easy to sync across multiple machines.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
+<a href="https://drive.google.com/" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Google Drive</a> gives 15GB of space with free account. I have multiple accounts and that space is enough to backup my data. I have been storing lots of files in Google Drive from past few years. The main problem is that Google Drive doesn't have a Linux client. To add files, I need to open a web page and then select files to upload and wait until its done. There are few 3rd party clients and none of them work well. So, it is very difficult to sync them across multiple computers.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
+<a href="https://dropbox.com/" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Dropbox</a> gives 5GB of space with free account. It has Linux client and it works very well. But 5GB of space is not sufficient to store my data.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">It is quite difficult to pick one among them as I need benefits of both for free.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Even though I have lot of data, I dont want all of it to sync to all computers everyday. Nearly 90% of data is just backup. Only 10% of data needs to be synced between multiple computers. So I decided to use dropbox as a frontend to google drive.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I have created 2 folders, say <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Daily</code> &amp; <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Backup</code> in Dropbox.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Whatever I add to <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Daily</code> folder will be in Dropbox and it will sync across multiple machines.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">There is an amazing service called <a href="https://ifttt.com/wtf" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">IFTTT</a> which will help you to connect two products/apps. I found a <a href="https://ifttt.com/recipes/54687-sync-new-files-added-to-dropbox-to-google-drive" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">IFTTT recipe</a> which will add dropbox files in one folder to Google drive.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I have connected <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Backup</code> folder in Dropbox to Google Drive. Whenever I add a file to <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Backup</code> folder in Dropbox, it gets added to Google Drive. O<span style="line-height: 25.6px;">nce in a week, I will delete files in </span><code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Backup</code><span style="line-height: 25.6px;"> directory so that Dropbox won't run out of space. So </span><code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Backup</code><span style="line-height: 25.6px;"> folder will serve as a wormhole to transfer files into </span><span style="line-height: 25.6px;">Google Drive from my system.</span><br><span style="line-height: 25.6px;"><br></span><span style="line-height: 25.6px;">Since I have multiple Google accounts, I have created multiple folders in Dropbox and all folders will be synced to corresponding Google Drive folders.</span>
+</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">This setup works well for me as I have Dropbox's Linux client and sufficient storage to backup data to Google Drive.<br><br>
+</div>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/11/book-review-pyscho-path-by-haris.html" class="u-url">Book Review - A Psycho Path By Haris Ibrahim K. V.</a></h1>
+        <hr>
+<div class="e-content">
+        <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I stumbled on haris blog and I am thrilled to find that he wrote a book called <a href="https://sosaysharis.wordpress.com/the-psycho-book/" target="_blank">A Psycho Path</a>. Since ebook was free, I downloaded it and started reading.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I skipped <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Foreward</code>, <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Preface</code> and skimmed through the first story <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Etsuko’s picnic</code>.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">The second story in the book is <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">A surprising blood test</code>. The story is quite impressive and it hooked me in. Before that story I was lying on the bed and reading. After reading it I got up, sat properly and started reading. Among all the stories, I liked it the most.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
+<code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Sound relations</code> is another article which I found very fascinating. I read the article many times... 10 times? 20 times? may be more. Long before reading the book, me &amp; my friends had a similar discussion while discussing about impact of music. This article gave an interesting conclusion to our discussion.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Narration of <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Quito San</code> is interesting.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">The book has ~20 stories/articles. Most stories are short stories(2-4 pages). <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">The Prophecy of Amelyah</code> and <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Quito San</code> are medium sized stories(~20 pages).</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Overall the book is very good.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I got a print book after reading ebook. I would recommend getting a get print book from <a href="http://pothi.com/pothi/book/haris-ibrahim-k-v-psycho-path" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Pothi</a> or <a href="http://www.amazon.in/s/ref=nb_sb_noss?url=me%3DA1F25HUQJ2HQZO&amp;field-keywords=psycho+path" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Amazon</a>. You can also download <a href="https://github.com/harisibrahimkv/psycho-book/blob/master/book.pdf?raw=true" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">free ebook here</a>.</div>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/10/pycon-india-2015-first-pycon-experience.html" class="u-url">PyCon India 2015 - First PyCon Experience!</a></h1>
+        <hr>
+<div class="e-content">
+        <div dir="ltr" style="text-align: left;" trbidi="on">
+<a href="https://in.pycon.org/2015/" target="_blank">PyCon India</a> 2015 was my first PyCon as an attendee, speaker &amp; volunteer.<br><br>When I first heard about PyCon in BangPypers meetup, I thought PyCon India is just like a big meetup with a little bit of planning &amp; preparation. But by the end of conference, I have realised that organising PyCon is a very very huge task. It needs a great deal of preparation, planning up things and dedicated volunteers who are interested and patient enough to spend lots of time to run it.<br><br>Nicholas Tollervey was keynote speaker. He came to venue on October 1st(two days before conference) and helped volunteers with some tasks. He did the same on next day too. I was wondering whether he came for key note speaking or volunteering.<br><br>I have been talking to many people on mailing lists, github and other channels. Finally I was able to meet &amp; talk with many of them in person.<br><br>I was not able to attend all sessions but many people said this<br><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-9VgVTNHxKdw/VhLOzxutSmI/AAAAAAAAN0U/UZO2IrVkYZI/s1600/pycon-india.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="152" src="http://2.bp.blogspot.com/-9VgVTNHxKdw/VhLOzxutSmI/AAAAAAAAN0U/UZO2IrVkYZI/s640/pycon-india.png" width="640"></a></div>
+<br><div class="separator" style="clear: both; text-align: center;"><br></div>It was good to see some of 2nd &amp; 3rd year B.Tech students, who were familiar with django &amp; were contributing to many upstream packages. Some students were even using Emacs as their editor.<br><br>Toddlers were also interested to attend PyCon<br><a href="http://2.bp.blogspot.com/-9qfufBcoa4Y/VhLO1qsFV3I/AAAAAAAAN0c/sHYWrL7h6kc/s1600/pycon-india2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em; text-align: center;"><img border="0" height="111" src="http://2.bp.blogspot.com/-9qfufBcoa4Y/VhLO1qsFV3I/AAAAAAAAN0c/sHYWrL7h6kc/s640/pycon-india2.png" width="640"></a><br><br><br>I have planned to make Python logo mosaic with rubik cubes. I thought it will take ~10 hours to complete it. When I got there with cubes, Vignesh U, Apoorva, Ram Mohan, Sayan Chowday and many other volunteers came forward and completed it in an hour.<br><br><div class="separator" style="clear: both; text-align: center;"><a href="http://2.bp.blogspot.com/-4g9ourILjdA/VhLO3T1XwwI/AAAAAAAAN0k/BJGcFDMALiQ/s1600/rubik-cube-python.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em; text-align: center;"><img border="0" height="546" src="http://2.bp.blogspot.com/-4g9ourILjdA/VhLO3T1XwwI/AAAAAAAAN0k/BJGcFDMALiQ/s640/rubik-cube-python.png" width="640"></a></div>
+<br><br><br>I was eagerly waiting for PyCon India from past few months. PyCon India was just like a cool breeze! Ah...!!<br><br><b>Update:</b><br><b><br></b>How the hell did I forget about swag kit marathon?<br><br>Day before conference, we had to prepare swag kits for participants. I don't know whose idea it was to prepare it like this, that but it was brilliant and most fun part.<br><br><div class="separator" style="clear: both; text-align: center;"><iframe allowfullscreen="" class="YOUTUBE-iframe-video" data-thumbnail-src="https://i.ytimg.com/vi/Ejr6iqqCdhc/0.jpg" frameborder="0" height="350" src="https://www.youtube.com/embed/Ejr6iqqCdhc?feature=player_embedded" width="650"></iframe></div>
+<div style="text-align: center;"><br></div>
+<div><br></div>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/09/set-emacs-as-default-file-manager-in.html" class="u-url">Set Emacs As Default File Manager In Ubuntu!</a></h1>
         <hr>
 <div class="e-content">
         <div dir="ltr" style="text-align: left;" trbidi="on">
@@ -163,384 +235,6 @@
 <br>I hope that explains why We need  to maintain elegant git logs.<br><br><h3 style="text-align: left;">How To Maintain Elegant Logs?</h3>
 <br>First let's see how to write good commit messages. There are several blog  posts  &amp; guides about this. Here is the summary of all those taken from <a href="http://chris.beams.io/posts/git-commit/" target="_blank">this article</a>.<br><br>1. Separate subject from body with a blank line<br>2. Limit the subject line to 50 characters<br>3. Capitalize the subject line<br>4. Do not end the subject line with a period<br>5. Use the imperative mood in the subject line<br>6. Wrap the body at 72 characters<br>7. Use the body to explain what and why vs. how<br><br>If You are doing something hacky, writing a little message in commit on why you did that will help other developers to understand that a lot better. Even if You don't follow all rules, some of them will help you in writing great commit message next time. If You are mainainter of a project, ask Your team members to write meaningful messages.<br><br>The next that need to be taken care is commits. If a team member or someone else has submitted a pull request, once you merge the commit, just rebase it to remove unnecessary merge commits from log. Also make sure to squash  redundant commits and You have almost a linear log.<br><div style="text-align: center;"><br></div>A side benefit of this is, You can see recent commit there instead of merge commit, if your project is hosted on github.<br><br><div style="text-align: center;"><a href="http://1.bp.blogspot.com/-nDLmU2DsDhs/VYGjB86NHJI/AAAAAAAANv4/pba4wkAWiMc/s1600/git-log2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="88" src="http://1.bp.blogspot.com/-nDLmU2DsDhs/VYGjB86NHJI/AAAAAAAANv4/pba4wkAWiMc/s400/git-log2.png" width="400"></a></div>
 <br>The two minutes You spent on writing a meaningful message or maintaining linear log will<br>will help You a  lot few months down the line &amp; will save countless hours and sleepless nights for future contributors.<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/tech" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Technology!</a>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/05/automatically-pep8-your-python-code.html" class="u-url">Automatically PEP8 &amp; Format Your Python Code</a></h1>
-        <hr>
-<div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script><script src="//cdnjs.cloudflare.com/ajax/libs/gist-embed/2.1/gist-embed.min.js" type="text/javascript"></script><br><div dir="ltr" style="text-align: left;" trbidi="on"><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">Even if you don't intend anybody else to read your code, there's still a very good chance that somebody will have to stare at your code and <br>figure out what it does: That person is probably going to be you, <br>twelve months from now<span style="font-size: xx-small;">[1]</span>.</pre></div>or as Zen of Python says "Readability Counts".<br><br><h3 style="text-align: left;">PEP8 Style Guide:</h3>Since code is read more than it is written, it is very important to make sure that the code is readable. Python has coding convetions(<a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">PEP8 style guide</a>) to maintain consistency in code and thereby making it more readable.<br><br>There are lot of tools (like <a href="https://github.com/jcrocholl/pep8" target="_blank">pep8</a>, <a href="https://pypi.python.org/pypi/flake8" target="_blank">flake8</a>, <a href="http://www.pylint.org/" target="_blank">pylint</a>) to check if Your code is in compliance with PEP8. Today most of the IDE/text editors have plugins which check for these errors and report it on the fly. If You are writing code from scratch, You can make sure that You are following coding conventions.<br><br>However once in a while You have to read/bug-fix other people's code who don't follow these conventions(or You might even stumble across Your old piece of code). Once You are accustomed to style guide, it will be uneasy to read inconsistent code. Here is a badly formatted Python file opened in Emacs editor(with flymake &amp; flake8 configured)<br><br><div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/-Kzv9OZt3MV0/VWC-mB4cjlI/AAAAAAAANvU/ZvHSC5aaAnw/s1600/auto-pep8.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="332" src="http://1.bp.blogspot.com/-Kzv9OZt3MV0/VWC-mB4cjlI/AAAAAAAANvU/ZvHSC5aaAnw/s640/auto-pep8.png" width="640"></a></div>
-<div>
-<br><h3 style="text-align: left;">Custom Style Guide:</h3>If You don't like any of PEP8 rules, You can set Your own style guide for Your project. Most developers find limiting line length to 79 characters annoying. So they set their own line limit. You can even configure PEP8 checkers to take You own guidelines and check the code according to it.<br><br>
-</div>
-<h3 style="text-align: left;">Auto PEP8:</h3>Formatting code to PEP8 style is boring &amp; time consuming process. So instead of manually formatting code, You can use <a href="https://pypi.python.org/pypi/autopep8/" target="_blank">autopep8</a> package which automatically formats Python code to conform to the PEP 8 style guide.<br><br>To install the package run<br><div dir="ltr" trbidi="on"><div dir="ltr" trbidi="on"><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">$ <span style="color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px;">pip install autopep8</span></pre></div></div>If You have a file foo.py as show above, You can run<br><div dir="ltr" trbidi="on"><div dir="ltr" trbidi="on"><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">$ autopep8 --in-place --aggressive --aggressive foo.py</pre></div></div>
-<div class="separator" style="clear: both;">which neatly formats the file like this</div>
-<div class="separator" style="clear: both; text-align: center;"><br></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/-wMseYjAAsp0/VWC-mHqkLkI/AAAAAAAANvY/hwOow-QGsxc/s1600/auto-pep8-2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="561" src="http://1.bp.blogspot.com/-wMseYjAAsp0/VWC-mHqkLkI/AAAAAAAANvY/hwOow-QGsxc/s640/auto-pep8-2.png" width="640"></a></div>
-<br><h3 style="text-align: left;">Emacs Integration:</h3>As emacs is extremely configurable editor, with just couple of lines of lisp, we can integrate autopep8 to emacs. Just find where autopep8 is installed; write a function which runs autopep8 on current buffer; bind a key to that function; set a hook, so that when ever You save a file, it will be automatically run the function.<br><br><code data-gist-file="autopep8.el" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-id="0e8c8351799cdd7254d7"></code>This works reasonably well. But I do recommend using <a href="https://github.com/jorgenschaefer/elpy" target="_blank">Elpy</a> for Python developemnt in emacs. I have just sent a <a href="https://github.com/jorgenschaefer/elpy/pull/571" target="_blank">pull request to integrate</a> autopep8 with elpy.<br><br><h3 style="text-align: left;">Formatting:</h3>
-<div>PEP8 formatters like autopep8, pep8ify will remove only lint errors. But they can't beautify code. </div>
-<div><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">little = more[3:   5]<br><br>x = {'a': 37, 'b': 42,<br>     'c': 927}<br></pre></div>
-<div>Above code remains same after pep8ifying also. But the code doesn't look good yet. You can use formatters like <a href="https://pypi.python.org/pypi/yapf" target="_blank">yapf</a>, which will format the code even if the code is PEP8 compliant. </div>
-<div>Above code will be formatted to </div>
-<div><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">little = more[3:5]<br><br>x = {'a': 37, 'b': 42, 'c': 927}</pre></div>
-<div>Some times this even destroys Your manual formatting. For example </div>
-<div><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">BAZ = {<br>    [1, 2, 3, 4],<br>    [5, 6, 7, 8],<br>    [9, 10, 11, 12]<br>}</pre></div>
-<div><div>will be converted to </div></div>
-<div><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">BAZ = {[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]}</pre></div>
-<div>But You can tell it to ignore some parts.</div>
-<div><pre style="border-radius: 3px; border: 1px solid rgb(170, 204, 153); color: #333333; font-family: monospace, sans-serif; font-size: 15.4399995803833px; line-height: 18.5279998779297px; overflow-x: auto; overflow-y: hidden; padding: 5px;">BAZ = {<br>    [1, 2, 3, 4],<br>    [5, 6, 7, 8],<br>    [9, 10, 11, 12]<br>}  # yapf: disable</pre></div>
-<div><div><br></div></div>
-<h3 style="text-align: left;">Beyond PEP8:</h3>As we have learnt to auto PEP8 code, it is the time to look beyond PEP8. There is a good talk by Raymond Hettinger on that - <a href="https://www.youtube.com/watch?v=wf-BqAjZb8M" target="_blank">Beyond PEP8</a>, Best practices for beautiful intelligible code.<br><br>Let Machines take care of PEP8 &amp; Let Humans look Beyond PEP8.<br><br><h3 style="text-align: left;">References:</h3>[1] <a href="http://blogs.msdn.com/b/oldnewthing/archive/2007/04/06/2036150.aspx" target="_blank">Code is read much more often than it is written, so plan accordingly</a>.<br><a href="https://www.python.org/dev/peps/pep-0008/" target="_blank">Python - PEP8 style guide</a>.<br><a href="https://pypi.python.org/pypi/autopep8/" target="_blank">Autopep8 - formats Python code to conform to the PEP 8.</a><br><a href="https://pypi.python.org/pypi/pep8ify" target="_blank">PEP8ify - modifies python source code to conform to PEP8.</a><br><div><a href="https://pypi.python.org/pypi/yapf" target="_blank">yapf - A formatter for Python files.</a></div>
-<div><a href="https://www.youtube.com/watch?v=wf-BqAjZb8M" target="_blank">Beyond PEP8 - Best practices for beautiful intelligible code.</a></div>
-<a href="https://github.com/jorgenschaefer/elpy" target="_blank">Elpy, the Emacs Lisp Python Environment</a>.<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/python" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Python</a><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">!</span><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/emacs" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Emacs</a><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">!</span><br><div><br></div>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/05/whats-so-good-about-django-traceback.html" class="u-url">Whats So Good About Django Traceback?</a></h1>
-        <hr>
-<div class="e-content">
-        <div dir="ltr" style="text-align: left;" trbidi="on">When You are working on django project, if You make any errors, it will throw a simple traceback on the terminal where you started server.<br><br><div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-Qomg2ms9Ij4/VV3m-iGH_uI/AAAAAAAANvA/LT3QzrnMOsg/s1600/django-traceback7.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="171" src="http://3.bp.blogspot.com/-Qomg2ms9Ij4/VV3m-iGH_uI/AAAAAAAANvA/LT3QzrnMOsg/s400/django-traceback7.png" width="400"></a></div>
-<div class="separator" style="clear: both; text-align: center;"></div>
-<div class="separator" style="clear: both; text-align: center;"><br></div>
-<div class="separator" style="clear: both; text-align: center;"></div>
-<div class="separator" style="clear: both; text-align: center;"><br></div>If you go to browser, you will find a rich traceback like this.<br><div style="text-align: center;"></div>
-<div style="-webkit-text-stroke-width: 0px; color: black; font-family: 'Times New Roman'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: auto; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"></div>
-<br><div class="separator" style="-webkit-text-stroke-width: 0px; clear: both; color: black; font-family: 'Times New Roman'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; margin: 0px; orphans: auto; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"><a href="http://2.bp.blogspot.com/-tvh4xHpe3vg/VV3llj9pRjI/AAAAAAAANuc/u4FuL0oQ57A/s1600/django-traceback.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="449" src="http://2.bp.blogspot.com/-tvh4xHpe3vg/VV3llj9pRjI/AAAAAAAANuc/u4FuL0oQ57A/s640/django-traceback.png" width="640"></a></div>
-<br><br>Most Python developers, discover django-extensions within a few weeks after they start working with Django and start using Werkzeug debugger. Werkzeug has lot of advantages when compared to default Django traceback. I also used it for a while. For the same error Werkzeug throws traceback like this.<br><div><br></div>
-<div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-GYBZegc7018/VV3lluQru-I/AAAAAAAANuY/rbH5oVZHT2U/s1600/django-traceback4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="420" src="http://3.bp.blogspot.com/-GYBZegc7018/VV3lluQru-I/AAAAAAAANuY/rbH5oVZHT2U/s640/django-traceback4.png" width="640"></a></div>
-<div><br></div>
-<div><br></div>One thing I really like about Django traceback is, the distinction between user code and the internal Django code. Most of the time, developers were looking for the bug in their code instead of looking for a bug in Django. So, Django makes it easier to skip over the frames that doesn't matter and focus on the one which matters most.<br><br><div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/-ZzMWZjWzo44/VV3moiCWWKI/AAAAAAAANu4/VXHrw1NpA8o/s1600/django-traceback6.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="386" src="http://1.bp.blogspot.com/-ZzMWZjWzo44/VV3moiCWWKI/AAAAAAAANu4/VXHrw1NpA8o/s640/django-traceback6.png" width="640"></a></div>
-<div><br></div>
-<br>It also shows local vars in that frame. With this You instantly look at the variables to find out why error has occured(see this <a href="https://code.djangoproject.com/ticket/11834" target="_blank">Django Ticket #11834:</a> for more discussion about this).<br><br>These two features make it very easy to track down most common errors.<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/python" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Python</a><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">!</span><br><br>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/03/a-slice-of-python-intelligence-behind.html" class="u-url">The Intelligence Behind Python Slices</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>When getting items from a list, if no index is supplied or an invalid index is given, Python throws error.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span>  <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
-<span class="o">---------------------------------------------------------------------------</span>
-<span class="ne">IndexError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">5</span><span class="o">-</span><span class="mi">3</span><span class="n">b7fb56a1ede</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
-<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
-
-<span class="ne">IndexError</span><span class="p">:</span> <span class="nb">list</span> <span class="n">index</span> <span class="n">out</span> <span class="n">of</span> <span class="nb">range</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[]</span>
-  <span class="n">File</span> <span class="s2">"&lt;ipython-input-6-a17d5cfb2c2f&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span>
-    <span class="n">alpha</span><span class="p">[]</span>
-          <span class="o">^</span>
-<span class="ne">SyntaxError</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">syntax</span>
-</pre>
-
-
-<p>When slicing a list, if start/stop/step values are not supplied or invalid values are provided, Python figures out appropriate values and returns relevant items or an empty list depending on the values.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">170</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">170</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">172</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">172</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">173</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">173</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">174</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">174</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">175</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">175</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">176</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[:</span><span class="mi">100000000000000000000000000000000000000000000000</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">176</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">177</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::</span><span class="mi">1000000000</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">177</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">178</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">178</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">]</span>
-</pre>
-
-
-<p>There is something interesting happening with python slicing. Lets see how python slicing works and what happens behind the scenes.</p>
-<h4>Slicing Is NOT Indexing:</h4>
-<p><a href="https://wiki.python.org/moin/MovingToPythonFromOtherLanguages">Wiki Python</a>
-has this amazing picture which clearly distinguishes indexing and slicing.</p>
-<p align="center">
-<img alt="python-slicing" src="../python-slicing.png"></p>
-
-<p>It is a list with 6 elements in it. To understand slicing better, consider that list as a set of six boxes placed together. Each box has an alphabet in it.</p>
-<p>Indexing is like dealing with the contents of box. You can check
-contents of any box. But You can't check contents of multiple boxes at
-once. You can even replace contents of the box. But You can't place 2
-balls in 1 box or replace 2 balls at a time.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">122</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">123</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">123</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">124</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">124</span><span class="p">]:</span> <span class="s1">'a'</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">127</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'A'</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">128</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">128</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">129</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="o">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span>                                 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">129</span><span class="o">-</span><span class="n">c7eb16585371</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
-<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">list</span> <span class="n">indices</span> <span class="n">must</span> <span class="n">be</span> <span class="n">integers</span><span class="p">,</span> <span class="ow">not</span> <span class="nb">tuple</span>
-</pre>
-
-
-<p>Slicing is like dealing with boxes itself. You can pickup first box and
-place it on another table. To pickup the box all You need to know is the
-position of beginning &amp; ending of the box.</p>
-<p>You can even pickup first 3 boxes or last 2 boxes or all boxes between 1
-&amp; 4. So, You can pick any set of boxes if You know beginning &amp; ending.
-This positions are called start &amp; stop positions.</p>
-<p>The interesting thing is that You can replace multiple boxes at once.
-Also You can place multiple boxes where ever You like.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">130</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">130</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">131</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'a'</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">132</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">132</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">133</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">134</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">134</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">135</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">136</span><span class="p">]:</span> <span class="n">alpha</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">136</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-</pre>
-
-
-<h4>Slicing With Step:</h4>
-<p>Till now You have picked boxes continuously. But some times You need to
-pickup discretely. For example You can pickup every second box. You can
-even pickup every third box from the end. This value is called step
-size. This represents the gap between Your successive pickups. The step
-size should be positive if You are picking boxes from the beginning to
-end and vice versa.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">137</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">142</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">142</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'b'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">143</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">143</span><span class="p">]:</span> <span class="p">[</span><span class="s1">'f'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">144</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">144</span><span class="p">]:</span> <span class="p">[]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">145</span><span class="p">]:</span> <span class="n">alpha</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">145</span><span class="p">]:</span> <span class="p">[]</span>
-</pre>
-
-
-<h4>How Python Figures Out Missing Parameters:</h4>
-<p>When slicing if You leave out any parameter, Python tries to figure it
-out automatically.</p>
-<p>If You check source code of CPython, You will find a function called
-<a href="https://github.com/python/cpython/blob/f7bfa54898598a0da46fdb1e0436d5f9e04c9007/Objects/sliceobject.c#L192">PySlice_GetIndicesEx</a> which
-figures out indices to a slice for any given parameters. Here is the
-logical equivalent code in Python.</p>
-<p>This function takes a Python object &amp; optional parameters for slicing
-and returns start, stop, step &amp; slice length for the requested slice.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">py_slice_get_indices_ex</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-
-    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Step cannot be zero."</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">+=</span> <span class="n">length</span>
-        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">stop</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">stop</span> <span class="o">+=</span> <span class="n">length</span>
-        <span class="k">if</span> <span class="n">stop</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="n">stop</span> <span class="o">&gt;=</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">stop</span> <span class="o">=</span> <span class="n">length</span> <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">stop</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">stop</span><span class="p">):</span>
-        <span class="n">slice_length</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">elif</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">slice_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">slice_length</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">slice_length</span><span class="p">)</span>
-</pre>
-
-
-<p>This is the intelligence that is present behind slices. Since Python has inbuilt function called slice, You can pass some parameters &amp; check how smartly it calculates missing parameters.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">22</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">23</span><span class="p">]:</span> <span class="n">s</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">23</span><span class="p">]:</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">26</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">28</span><span class="p">]:</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">29</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)))</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">29</span><span class="p">]:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
-</pre>
-
-
-<p>This is how Python is able to figure out missing parameters from slices.</p>
-<p>I started digging this after attending a talk by <a href="https://twitter.com/skeptichacker">Anand B. Pillai</a> on python gotchas. Thanks to Anand B. Pillai &amp; Krace Kumar for conducting BangPypers meetup &amp; encouraging to checkout Python source code.</p>
-<h4>References:</h4>
-<p>Wiki Python: <a href="https://wiki.python.org/moin/">https://wiki.python.org/moin/</a></p>
-<p>CPython repo: <a href="https://github.com/python/cpython">https://github.com/python/cpython</a></p>
-<p>Slice on SO: <a href="http://stackoverflow.com/questions/509211/explain-pythons-slice-notation">http://stackoverflow.com/questions/509211/explain-pythons-slice-notation</a></p>
-<p>Docs for slice: <a href="https://docs.python.org/3.4/library/functions.html#slice">https://docs.python.org/3.4/library/functions.html#slice</a></p>
-<p>Python/C API for slice: <a href="https://docs.python.org/3.4/c-api/slice.html">https://docs.python.org/3.4/c-api/slice.html</a></p>
-</div>
-        </div>
-            
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2015/03/django-form-gotchas-dynamic-initial.html" class="u-url">Django Tips &amp; Tricks #3 - Dynamic Initial Values In Forms</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<!--
-.. title: Django Gotchas #1 - Dynamic Initial Values In Forms!
-.. slug: django-form-gotchas-dynamic-initial
-.. date: 2015-03-19 18:52:00
-.. tags: tech, django, python
-.. description:
-.. link:
-.. type: text
--->
-
-<p>Django form fields accept initial argument. So You can set a default value for
-a field.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="k">class</span> <span class="nc">SampleForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-   <span class="o">...</span><span class="p">:</span>     <span class="n">name</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="s1">'avil page'</span><span class="p">)</span>
-   <span class="o">...</span><span class="p">:</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">f</span> <span class="o">=</span> <span class="n">SampleForm</span><span class="p">()</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">f</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="sa">u</span><span class="s1">'&lt;p&gt;Name: &lt;input maxlength="10" name="name" type="text" value="avil page" /&gt;&lt;/p&gt;'</span>
-</pre>
-
-
-<p><br></p>
-<p>Sometimes it is required to override <strong>init</strong> method in forms and set field
-initial arguments.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="k">class</span> <span class="nc">AdvancedForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span>  <span class="s1">'override'</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="n">name</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="n">f2</span> <span class="o">=</span> <span class="n">AdvancedForm</span><span class="p">()</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="n">f2</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="s1">'&lt;p&gt;Name: &lt;input maxlength="10" name="name" type="text" value="override" /&gt;&lt;/p&gt;'</span>
-</pre>
-
-
-<p><br></p>
-<p>Now let's pass some initial data to form and see what happens.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="k">class</span> <span class="nc">AdvancedForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="s1">'override'</span>  <span class="c1"># don't try this at home</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="n">name</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="n">f3</span> <span class="o">=</span> <span class="n">AdvancedForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'precedence'</span><span class="p">})</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">20</span><span class="p">]:</span> <span class="n">f3</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">20</span><span class="p">]:</span> <span class="s1">'&lt;p&gt;Name: &lt;input maxlength="10" name="name" type="text" value="precedence" /&gt;&lt;/p&gt;'</span>
-</pre>
-
-
-<p>If You look at the value of input field, it's is NOT the overrided. It
-still has form initial value!</p>
-<p>If You look into <a href="https://github.com/django/django/blob/master/django/forms/forms.py#L631-L633">source code of django forms</a> to find what is happening, You will find this.</p>
-<pre class="code literal-block"><span></span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">bound_data</span><span class="p">(</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">initial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">initial</span><span class="p">)</span>  <span class="c1"># precedence matters!!!!</span>
-<span class="p">)</span>
-</pre>
-
-
-<p>So form's initial value has precedence over fields initial values.</p>
-<p>So You have to override form's initial value instead of fields's initial value
-to make it work as expected.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">22</span><span class="p">]:</span> <span class="k">class</span> <span class="nc">AdvancedForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'override'</span>  <span class="c1"># aha!!!!</span>
-   <span class="o">....</span><span class="p">:</span>
-   <span class="o">....</span><span class="p">:</span>        <span class="n">name</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-   <span class="o">....</span><span class="p">:</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">23</span><span class="p">]:</span> <span class="n">f4</span> <span class="o">=</span> <span class="n">AdvancedForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'precedence'</span><span class="p">})</span>
-
-<span class="n">In</span> <span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="n">f4</span><span class="o">.</span><span class="n">as_p</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="s1">'&lt;p&gt;Name: &lt;input maxlength="10" name="name" type="text" value="override" /&gt;&lt;/p&gt;'</span>
-</pre>
-
-
-<p>Read official docs about <a href="https://docs.djangoproject.com/en/1.7/ref/forms/api/">django forms</a>.</p>
-<p>Read more <a href="../search/label/python">articles about Python</a>!</p>
 </div>
         </div>
             
