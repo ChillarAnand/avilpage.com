@@ -29,7 +29,52 @@
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.</p>
+<p>First install <a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid">SSHDroid</a> app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.</p>
+<p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
+<p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
+<p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
+<pre class="code literal-block"><span></span>rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
+</pre>
+
+
+<p>Now ssh into android, install django and start django server.</p>
+<pre class="code literal-block"><span></span>$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
+</pre>
+
+
+<pre class="code literal-block"><span></span>$ python -m pip install django
+$ <span class="nb">cd</span> /data/local/django-bookmarks
+$ python manage.py runvserver
+</pre>
+
+
+<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
+<pre class="code literal-block"><span></span>$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
+
+Forwarding HTTP traffic from https://incepro.serveo.net
+Press g to start a GUI session and ctrl-c to quit.
+</pre>
+
+
+<p>Now we can share our django app with anyone.</p>
+<p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
+<pre class="code literal-block"><span></span>ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
+-H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
+http://incepro.serveo/list/
+</pre>
+
+
+<p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
+<p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
         <hr>
 <div class="e-content">
         <div>
