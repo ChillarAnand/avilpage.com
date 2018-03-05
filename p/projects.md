@@ -31,19 +31,5 @@ I like working with open source software and I have submitted patches to django,
 <br />
 <br />
 <br />
-
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-
-<br />
-<br />
-<br />
-<br />
-<br />
 <br />
 <br />
