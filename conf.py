@@ -21,10 +21,11 @@ BLOG_AUTHOR = "Chillar Anand"  # (translatable)
 BLOG_TITLE = "Avil Page"  # (translatable)
 # This is the main URL for your site. It will be used
 # in a prominent link. Don't forget the protocol (http/https)!
-SITE_URL = "http://www.avilpage.com"
+SITE_URL = "http://avilpage.com/"
 # This is the URL where Nikola's output will be deployed.
 # If not set, defaults to SITE_URL
-BASE_URL = "http://www.avilpage.com/"
+# BASE_URL = "http://avilpage.com/"
+
 BLOG_EMAIL = ""
 BLOG_DESCRIPTION = ""  # (translatable)
 
