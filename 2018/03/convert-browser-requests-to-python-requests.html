@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to convert a request in browser to curl or equivalent code in Python, Go or Node.js">
+<meta name="author" content="Chillar Anand">
+<title>Convert Browser Requests To Python Requests For Scraping | Avil Page</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html">
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<style>
+     #wrapper {
+         width: 100%;
+         margin: 0;
+     }
+
+     #first-div {
+         width: 16%;
+         height: 90px;
+         /*          margin: 10px 0px 0px 10px; */
+         margin: 0;
+         float: left ;
+     }
+
+     #second-div {
+         width: 84%;
+         height: 72px;
+         margin: 18px 0px 0px 0px;
+         float: left ;
+     }
+    </style>
+</head>
+<body>
+        <div id="">
+            <div id="container">
+                <!-- <h1 id="blog-title">
+                     <a href="http://avilpage.com/" title="Avil Page" rel="home">Avil Page</a>
+                     </h1> -->
+
+
+
+
+    <div class="postbox">
+
+        <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <h1 class="p-name" itemprop="headline name">Convert Browser Requests To Python Requests For Scraping</h1>
+
+
+
+
+                4 min read
+
+
+                <hr>
+<div class="e-content" itemprop="articleBody text">
+                    <div>
+<p>Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.</p>
+<p>If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.</p>
+<p>Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.</p>
+<p>From browser developer options, we can capture <a href="https://curl.haxx.se/">curl</a> equivalent command for any request from <code>Network</code> tab with <code>copy as cURL</code> option.</p>
+<p align="center">
+<img src="../../images/requests-python-browser.png" height="300px" width="600"></p>
+
+<p>Here is one such request.</p>
+<pre class="code literal-block"><span></span><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
+</pre>
+
+
+<p>Once we get curl command, we can directly convert it to python requests using <a href="https://pypi.python.org/pypi/uncurl/">uncurl</a>.</p>
+<pre class="code literal-block"><span></span>$ pip install uncurl
+</pre>
+
+
+<p>Since the copied curl request is in clipboard, we can pipe it to uncurl.</p>
+<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
+
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://avilpage.com/dummy"</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="s1">'page=2&amp;category=python'</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"</span><span class="p">,</span>
+        <span class="s2">"Accept-Encoding"</span><span class="p">:</span> <span class="s2">"gzip, deflate"</span><span class="p">,</span>
+        <span class="s2">"Accept-Language"</span><span class="p">:</span> <span class="s2">"en-US,en;q=0.9,ms;q=0.8,te;q=0.7"</span><span class="p">,</span>
+        <span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"max-age=0"</span><span class="p">,</span>
+        <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/x-www-form-urlencoded"</span><span class="p">,</span>
+        <span class="s2">"Origin"</span><span class="p">:</span> <span class="s2">"http://avilpage.com"</span><span class="p">,</span>
+        <span class="s2">"Referer"</span><span class="p">:</span> <span class="s2">"http://avilpage.com/"</span><span class="p">,</span>
+        <span class="s2">"Upgrade-Insecure-Requests"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"</span>
+    <span class="p">},</span>
+    <span class="n">cookies</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"ASPSESSIONIDSABAAQDA"</span><span class="p">:</span> <span class="s2">"FKOHHAGAFODIIGNNNDFKNGLM"</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>If we have to use some other programming language, we can use <a href="https://curl.trillworks.com/">curlconverter</a> to convert curl command to Go or Node.js equivalent code.</p>
+<p>Now, we can use this code to get contents of current page and then continue scraping from the urls in it.</p>
+</div>
+                </div>
+                    <meta content="How to convert a request in browser to curl or equivalent code in Python, Go or Node.js" itemprop="description">
+</div>
+
+                <b> Tags: </b>
+                    <a href="../../tags/python.html">python</a>
+                        |
+                    <a href="../../tags/scraping.html">scraping</a>
+
+            <br><hr>
+<div id="wrapper">
+                <div id="first-div">
+                    <img src="https://s.gravatar.com/avatar/608fa09693cef8d410834bd55755dbed?s=80">
+</div>
+                <div id="second-div">
+                    I am Chillar Anand. I daydream a lot and write about the things that interest me here.
+                    You can read more about <a href="../../p/about-avilpage.html">this blog here</a>.
+                </div>
+            </div>
+
+            <hr>
+<a href="../../">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="../../rss.xml">
+                <h3>RSS Feed for the blog</h3>
+            </a>
+
+            <a href="https://github.com/ChillarAnand/avilpage.com">
+                Edit this page
+            </a>
+
+            <hr></article>
+</div>
+
+
+                <br>
+</div>
+
+
+            <!--Sidebar content-->
+            <!-- <ul class="unstyled">
+                     
+
+                                 <li><a href="/">Articles</a>
+                <li><a href="/about">About.html</a>
+                <li><a href="/rss.xml">RSS</a>
+
+                 </ul> -->
+            <br>
+</div>
+    </body>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-81644162-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</html>
