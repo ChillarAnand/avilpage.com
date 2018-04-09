@@ -1,5 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 27 Mar 2018 10:16:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Convert Browser Requests To Python Requests For Scraping</title><link>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 09 Apr 2018 09:17:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reliable Way To Test External APIs Without Mocking</title><link>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Let us write a function which retrieves user information from GitHub API.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_github_user_info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;'https://api.github.com/users/{username}'&lt;/span&gt;
+    &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ok&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;To test this function, we can write a test case to call the external API and check if it is returning valid data.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_get_github_user_info&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'ChillarAnand'&lt;/span&gt;
+    &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_github_user_info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'login'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Even though this test case is reliable, this won't be efficient when we have many APIs to test as it sends unwanted requests to external API and makes tests slower due to I/O.&lt;/p&gt;
+&lt;p&gt;A widely used solution to avoid external API calls is &lt;a href="https://en.wikipedia.org/wiki/Mock_object"&gt;mocking&lt;/a&gt;. Instead of getting the response from external API, use a mock object which returns similar data.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;unittest&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;mock&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_get_github_user_info_with_mock&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;mock&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;patch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'requests.get'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;mock_get&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'ChillarAnand'&lt;/span&gt;
+
+        &lt;span class="n"&gt;mock_get&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ok&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
+        &lt;span class="n"&gt;json_response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"login"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="n"&gt;mock_get&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;return_value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json_response&lt;/span&gt;
+
+        &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_github_user_info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'login'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This solves above problems but creates additional problems.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Unreliable. Even though test cases pass, we are not sure if API is up and is returning a valid response.&lt;/li&gt;
+&lt;li&gt;Maintenance. We need to ensure mock responses are up to date with API.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To avoid this, we can cache the responses using &lt;a href="https://pypi.python.org/pypi/requests-cache"&gt;requests-cache&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests_cache&lt;/span&gt;
+
+&lt;span class="n"&gt;requests_cache&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;install_cache&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'github_cache'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_get_github_user_info_without_mock&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'ChillarAnand'&lt;/span&gt;
+    &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_github_user_info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'login'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.&lt;/p&gt;
+&lt;p&gt;When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>python</category><category>testing</category><guid>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</guid><pubDate>Sun, 08 Apr 2018 15:51:21 GMT</pubDate></item><item><title>Convert Browser Requests To Python Requests For Scraping</title><link>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.&lt;/p&gt;
 &lt;p&gt;If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.&lt;/p&gt;
 &lt;p&gt;Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.&lt;/p&gt;
 &lt;p&gt;From browser developer options, we can capture &lt;a href="https://curl.haxx.se/"&gt;curl&lt;/a&gt; equivalent command for any request from &lt;code&gt;Network&lt;/code&gt; tab with &lt;code&gt;copy as cURL&lt;/code&gt; option.&lt;/p&gt;
@@ -464,90 +527,4 @@ http://incepro.serveo/list/
 
 &lt;p&gt;Now you can send authenticated requests to any URL as&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;http :8000/profile -A&lt;span class="o"&gt;=&lt;/span&gt;django --auth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'username:password'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2017/04/django-auth-plugin-for-httpie.html</guid><pubDate>Thu, 20 Apr 2017 15:00:28 GMT</pubDate></item><item><title>Super Charge Your Shell For Python Development</title><link>http://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Last month, I gave a lightning talk about supercharging your shell for python development at &lt;a href="http://www.meetup.com/BangPypers/"&gt;BangPypers meetup&lt;/a&gt;.&lt;/p&gt;
-&lt;iframe width="600" height="350" src="https://www.youtube.com/embed/lvmJ0tWCjFA" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
-
-&lt;p&gt;This is a detailed blog post on how to setup your laptop for the same.&lt;/p&gt;
-&lt;h3&gt;Autojump&lt;/h3&gt;
-&lt;p&gt;When working on terminal, &lt;code&gt;cd&lt;/code&gt; is used to traverse directories.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ~/projects/python/django
-&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;code&gt;cd&lt;/code&gt; is inefficient to quickly traverse directories which are in different paths and far away from each other.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /var/lib/elasticsearch/
-&lt;span class="nb"&gt;cd&lt;/span&gt; ~/sandbox/channels/demo
-&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;code&gt;z&lt;/code&gt;, a oh-my-zsh plugin is efficient for traversing directories. With &lt;code&gt;z&lt;/code&gt;, directory can be changed by typing name of directory.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;z junction
-&lt;/pre&gt;
-
-
-&lt;p&gt;Instead of full name, just a substring would do.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;z ju
-&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;code&gt;z&lt;/code&gt; keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.&lt;/p&gt;
-&lt;p&gt;To install &lt;code&gt;z&lt;/code&gt;, install &lt;a href="http://avilpage.com/2015/03/install-oh-my-zsh-on-ubuntu.html"&gt;oh-my-zsh&lt;/a&gt; and add &lt;code&gt;z&lt;/code&gt; to plugins in &lt;code&gt;.zshrc&lt;/code&gt; file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;plugins&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;git z&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h3&gt;Aliases&lt;/h3&gt;
-&lt;p&gt;Read this old blog post on how &lt;a href="http://avilpage.com/2014/10/useful-shell-aliases-for-python-and.html"&gt;aliases will improve your productivity&lt;/a&gt;.&lt;/p&gt;
-&lt;h3&gt;Autoenv&lt;/h3&gt;
-&lt;p&gt;When working on multiple projects, it becomes necessary to use virtualenvs so that multiple versions of same package can be used. In addition to that, it be necessary to set environment variables on a per project basis.&lt;/p&gt;
-&lt;p&gt;To automate all these things, &lt;a href="https://pypi.python.org/pypi/autoenv/"&gt;autoenv&lt;/a&gt; provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.&lt;/p&gt;
-&lt;p&gt;If you have file named &lt;code&gt;.env&lt;/code&gt; in a directory, autoenv will automatically source that file whenever user enters into it.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;autoenv&lt;/code&gt; is a python package. It can be installed with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;pip install autoenv
-&lt;/pre&gt;
-
-
-&lt;p&gt;It provides a shell script which needs to sourced.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"source `which activate.sh`"&lt;/span&gt; &amp;gt;&amp;gt; ~/.bashrc
-&lt;/pre&gt;
-
-
-&lt;p&gt;You can create a .env file like this in project root.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;source&lt;/span&gt; ~/.virtualenvs/exp/bin/activate
-&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;SECRET_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
-&lt;/pre&gt;
-
-
-&lt;p&gt;Next time, when your enter into that directory, &lt;code&gt;autoenv&lt;/code&gt; finds &lt;code&gt;.env&lt;/code&gt; file and it will source it automatically.&lt;/p&gt;
-&lt;h3&gt;Autoreload&lt;/h3&gt;
-&lt;p&gt;I have written a sepeate blog post on how to &lt;a href="http://avilpage.com/2014/11/python-automagically-reload-imports-in.html"&gt;automagically reload imports&lt;/a&gt; long time back.&lt;/p&gt;
-&lt;h3&gt;Autoimports&lt;/h3&gt;
-&lt;p&gt;When you copy code and paste it in ipython interpreter, it might fail with &lt;code&gt;ImportError&lt;/code&gt; if required modules aren't already imported by the interpreter.&lt;/p&gt;
-&lt;p&gt;Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.&lt;/p&gt;
-&lt;p&gt;You can write an init script which will do all these things and load it automatically when ipython starts.&lt;/p&gt;
-&lt;p&gt;Here is a &lt;a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py"&gt;simple init script&lt;/a&gt; which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_files&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'ipython_init.py'&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h3&gt;Autocall&lt;/h3&gt;
-&lt;p&gt;When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.&lt;/p&gt;
-&lt;p&gt;IPython provides &lt;code&gt;autocall&lt;/code&gt; option to make functions callable without typing parenthesis. This can be activate with &lt;code&gt;%autocall&lt;/code&gt; magic.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;autocall&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;Automatic&lt;/span&gt; &lt;span class="n"&gt;calling&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Smart&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Now functions can be called without parenthesis.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
-&lt;span class="o"&gt;------&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;You can also enable this by default by activating it in ipython config file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_lines&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'%autocall  1'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;These are some tips to become more productive with your shell when working on python projects.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>python</category><category>shell</category><guid>http://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</guid><pubDate>Sun, 26 Mar 2017 02:40:31 GMT</pubDate></item></channel></rss>
+&lt;/pre&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2017/04/django-auth-plugin-for-httpie.html</guid><pubDate>Thu, 20 Apr 2017 15:00:28 GMT</pubDate></item></channel></rss>

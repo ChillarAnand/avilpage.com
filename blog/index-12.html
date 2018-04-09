@@ -22,7 +22,81 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/09/amazon-india-artificial-intelligence-aiai-summit.html" class="u-url">Amazon India Artificial Intelligence (AIAI) Summit</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/10/bluetooth-communication-between-ubuntu-android.html" class="u-url">Bluetooth Serial Communication Between Ubuntu &amp; Android</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.</p>
+<p>In this article, we will learn how to send data between laptop and android bluetooth.</p>
+<p>First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.</p>
+<pre class="code literal-block"><span></span>$ bluetoothctl
+<span class="o">[</span>NEW<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC asus <span class="o">[</span>default<span class="o">]</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A DESKTOP-C4ECO3K
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 athene
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:65:2D:8C:2E:10 OnePlus <span class="m">5</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:0C:A5:61:D5:64 Lenovo VIBE K5 Plus
+<span class="o">[</span>NEW<span class="o">]</span> Device AC:C3:3A:A0:CE:EF Galaxy J2
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:D3:35:71:02:B3 HC-05
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># power on</span>
+Changing power on succeeded
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># agent on</span>
+Agent registered
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># default-agent</span>
+Default agent request successful
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># scan on</span>
+Discovery started
+<span class="o">[</span>CHG<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC Discovering: yes
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A RSSI: -88
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 RSSI: -66
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># pair 88:79:7E:7B:4C:87</span>
+Attempting to pair with <span class="m">88</span>:79:7E:7B:4C:87
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 Paired: yes
+Pairing successful
+</pre>
+
+
+<p>To communicate with paired devices, we will use <a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols">RFCOMM protocol</a>. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.</p>
+<p>From ubuntu, lets open a port for communication.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+</pre>
+
+
+<p>From Android, we have to connect to ubuntu. For this, we can use <a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;hl=en">Roboremo</a> app which supports RFCOMM.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+Waiting <span class="k">for</span> connection on channel <span class="m">3</span>
+Connection from <span class="m">88</span>:79:7E:7B:4C:87 to /dev/rfcomm0
+Press CTRL-C <span class="k">for</span> hangup
+</pre>
+
+
+<p>Once the connection is established, we can communicate between devices.</p>
+<p>In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to send message to bluetooth</span>
+$ <span class="nb">echo</span> <span class="s1">'hello from ubuntu'</span> &gt; /dev/rfcomm0
+</pre>
+
+
+<p>We can see the received messages on Android</p>
+<p align="center">
+<img src="../images/arduino-ubuntu-bluetooth.jpg"></p>
+
+<p>We can also send messages from android and read from ubuntu.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to read messages from bluetooth</span>
+$ cat /dev/rfcomm0
+hello from android
+</pre>
+
+
+<p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/09/amazon-india-artificial-intelligence-aiai-summit.html" class="u-url">Amazon India Artificial Intelligence (AIAI) Summit</a></h1>
         <hr>
 <div class="e-content">
         <div>
