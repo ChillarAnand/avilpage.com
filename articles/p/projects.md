@@ -10,6 +10,8 @@
 -->
 
 
+### Personal Projects
+
 - [fadapa](https://github.com/ChillarAnand/fadapa) - A python package to parse FastQC output data.
 
 - [real-auto-save](https://github.com/ChillarAnand/real-auto-save) - Automatically save buffers at regular intervals in Emacs.
@@ -21,15 +23,12 @@
 - [NetworkInfoWidget](https://github.com/ChillarAnand/NetworkInfoWidget) - Android widget to show network name & ip address.
 
 
-I like working with open source software and I have submitted patches to django, celery, iPython, elpy, junction and other packages.
+### OSS Contributions
 
+- [django/django](https://github.com/django/django/commits?author=ChillarAnand) - The Web framework for perfectionists with deadlines.
 
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
+- [jorgenschaefer/elpy](https://github.com/jorgenschaefer/elpy/commits?author=ChillarAnand) - Emacs Python Development Environment.
+
+- [pythonindia/junction](https://github.com/pythonindia/junction/commits?author=ChillarAnand) - Software to manage conferences.
+
+- Submitted patches to Python, iPython, celery and other packages.

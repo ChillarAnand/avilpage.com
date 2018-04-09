@@ -12,6 +12,13 @@
 
 <br />
 
+### [Python Workshop](https://pythonexpress.in/workshop/260/)
+@ [YIT College - 2 day workshop](http://www.yit.edu.in/) [ [Content](https://github.com/ChillarAnand/python-101) ]
+<br />
+<br />
+
+
+
 ### [How To Build Neural Network From Scratch?](https://github.com/ChillarAnand/neural-networks-101)
 @ [BangPypers Meetup]() [ [Content](https://github.com/ChillarAnand/neural-networks-101) ]
 <br />
