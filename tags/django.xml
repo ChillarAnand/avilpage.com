@@ -1,5 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about django)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/django.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 09 Apr 2018 09:17:48 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reliable Way To Test External APIs Without Mocking</title><link>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Let us write a function which retrieves user information from GitHub API.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about django)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/django.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 19 May 2018 14:27:48 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
+&lt;p&gt;Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.&lt;/p&gt;
+&lt;p&gt;We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.&lt;/p&gt;
+&lt;h4&gt;Nginx Setup&lt;/h4&gt;
+&lt;p&gt;Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;server {&lt;/span&gt;
+&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:80;&lt;/span&gt;
+&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
+
+&lt;span class="x"&gt;    return 301 https://avilpage.com$request_uri;&lt;/span&gt;
+&lt;span class="x"&gt;}&lt;/span&gt;
+
+
+&lt;span class="x"&gt;server {&lt;/span&gt;
+&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:443 ssl;&lt;/span&gt;
+&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
+
+&lt;span class="x"&gt;    ssl_certificate     /root/certs/avilpage.com.chain.crt;&lt;/span&gt;
+&lt;span class="x"&gt;    ssl_certificate_key /root/certs/avilpage.com.key;&lt;/span&gt;
+
+&lt;span class="x"&gt;    access_log /var/log/nginx/avilpage.com.access.log;&lt;/span&gt;
+&lt;span class="x"&gt;    error_log /var/log/nginx/avilpage.com.error.log;&lt;/span&gt;
+
+&lt;span class="x"&gt;    location / {&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:8000;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Host $http_host;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_redirect off;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location /ws/ {&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:9000;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_http_version 1.1;&lt;/span&gt;
+
+&lt;span class="x"&gt;            proxy_read_timeout 86400;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_redirect     off;&lt;/span&gt;
+
+&lt;span class="x"&gt;            proxy_set_header Upgrade $http_upgrade;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Connection "upgrade";&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Host $host;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-Host $server_name;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location /static {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location  /favicon.ico {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;//static/img/favicon.ico;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location  /robots.txt {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static/txt/robots.txt;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;WSGI Server Setup&lt;/h4&gt;
+&lt;p&gt;We will use gunicorn for wsgi server. We can run gunicorn with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ gunicorn avilpage.wsgi --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0:8000 --log-level error --log-file&lt;span class="o"&gt;=&lt;/span&gt;- --settings avilpage.production_settings
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can create a systemd unit file to make it as a service.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;gunicorn&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Service]&lt;/span&gt;
+&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/gunicorn/pid&lt;/span&gt;
+&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
+&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
+&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/gunicorn {{ project_name}}.wsgi --bind 0.0.0.0:8000 --log-level error --log-file=- --workers 5 --preload&lt;/span&gt;
+
+
+&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
+&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Install]&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ sudo service gunicorn restart
+&lt;/pre&gt;
+
+
+&lt;h4&gt;ASGI Server Setup&lt;/h4&gt;
+&lt;p&gt;We will use daphne for ASGI server and it can be started with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ daphne avilpage.asgi:application --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0 --port &lt;span class="m"&gt;9000&lt;/span&gt; --verbosity &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can create a systemd unit file like the previous one to create a service.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;daphne daemon&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Service]&lt;/span&gt;
+&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/daphne/pid&lt;/span&gt;
+&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
+&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
+&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/daphne --bind 0.0.0.0 --port 9000 --verbosity 0 {{project_name}}.asgi:application&lt;/span&gt;
+&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
+&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Install]&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Deployment&lt;/h4&gt;
+&lt;p&gt;Here is &lt;a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml"&gt;an ansible playbook&lt;/a&gt; which is used to deploy these config files to our server. To run the playbook on server &lt;code&gt;avilpage.com&lt;/code&gt;, execute&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ansible-playbook -i avilpage.com, django_setup.yml
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Scaling&lt;/h4&gt;
+&lt;p&gt;Now that we have deployed channels to production, we can do performance test to see how our server performs under load.&lt;/p&gt;
+&lt;p&gt;For WebSockets, we can use &lt;a href="https://www.npmjs.com/package/thor"&gt;Thor&lt;/a&gt; to run performance test.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;thor -C &lt;span class="m"&gt;100&lt;/span&gt; -A &lt;span class="m"&gt;1000&lt;/span&gt; wss://avilpage.com/ws/books/
+&lt;/pre&gt;
+
+
+&lt;p&gt;Our server is able to handle &lt;code&gt;100 requests per second&lt;/code&gt; with a &lt;code&gt;latency of 800ms&lt;/code&gt;. This is good enough for low traffic website.&lt;/p&gt;
+&lt;p&gt;To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using &lt;a href="http://avilpage.com/2018/05/deploying-scaling-django-channels.html"&gt;shared file descriptors&lt;/a&gt;. Unfortunately, it doesn't work as expected. As &lt;a href="https://github.com/django/daphne/issues/182#issuecomment-387507887"&gt;mentioned here&lt;/a&gt;, we can use systemd templates and spawn multiple daphne process.&lt;/p&gt;
+&lt;p&gt;An alternate way is to use &lt;a href="https://pypi.org/project/uvicorn/"&gt;uvicorn&lt;/a&gt; to start multiple workers. Install uvicorn using pip&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install uvicorn
+&lt;/pre&gt;
+
+
+&lt;p&gt;Start uvicorn ASGI server with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ uvicorn avilpage.asgi --log-level critical --workers &lt;span class="m"&gt;4&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</guid><pubDate>Sat, 19 May 2018 13:06:32 GMT</pubDate></item><item><title>Reliable Way To Test External APIs Without Mocking</title><link>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Let us write a function which retrieves user information from GitHub API.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
 
 
@@ -298,4 +452,4 @@ http://incepro.serveo/list/
 &lt;/div&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2015/08/use-for-empty-in-django-templates.html</guid><pubDate>Tue, 04 Aug 2015 12:16:00 GMT</pubDate></item><item><title>Django Tips &amp; Tricks #4 - Make Django Development Server Persistent</title><link>http://avilpage.com/2015/07/django-tips-make-django-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;I use Emacs for writing Python code. I also use &lt;a href="https://github.com/ChillarAnand/real-auto-save" style="box-sizing: border-box; color: #4078c0; text-decoration: none;"&gt;real-auto-save&lt;/a&gt; to save my files after 10 seconds of inactivity.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;While coding, when I stop writing in the middle, after 10 seconds Emacs auto saves the file. Django recognizes this &amp;amp; reloads the development server.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;Once I complete writing code, I go to browser &amp;amp; refresh the page. Since the code I was writing was incomplete somewhere in the middle and had some errors, Django development server was stopped and page won't reload. Now I have to go back to terminal and restart the server and again go back to browser to refresh page.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;To overcome this, Django server must be made persistent. The easiest way to accomplish this is to use a &lt;a href="http://stackoverflow.com/questions/25199550/auto-restart-django-development-server-on-file-save-after-previous-error" style="box-sizing: border-box; color: #4078c0; text-decoration: none;"&gt;simple bash script as described here&lt;/a&gt;.&lt;/div&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"&gt;&lt;code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;"&gt;$ while true; do python manage.py runserver; sleep 4; done&lt;br&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;When Django development server stops, after 4 seconds it tries to start automatically and goes on forever.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;Instead of typing that everytime, it better to write this as a shell script and put it in system path, so that it can be used in any project.&lt;/div&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"&gt;&lt;code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;"&gt;while true; do&lt;br&gt;  echo "Re-starting Django runserver"&lt;br&gt;  python manage.py runserver&lt;br&gt;  sleep 4&lt;br&gt;done&lt;br&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px;"&gt;Save this &amp;amp; make it executable(&lt;code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; margin: 0px; padding: 0.2em 0px;"&gt;chmod +x&lt;/code&gt;), use it is ./filename.sh and to stop use &lt;code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; margin: 0px; padding: 0.2em 0px;"&gt;Ctrl-c Ctrl-c&lt;/code&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2015/07/django-tips-make-django-development.html</guid><pubDate>Mon, 20 Jul 2015 13:11:00 GMT</pubDate></item><item><title>Whats So Good About Django Traceback?</title><link>http://avilpage.com/2015/05/whats-so-good-about-django-traceback.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;When You are working on django project, if You make any errors, it will throw a simple traceback on the terminal where you started server.&lt;br&gt;&lt;br&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;a href="http://3.bp.blogspot.com/-Qomg2ms9Ij4/VV3m-iGH_uI/AAAAAAAANvA/LT3QzrnMOsg/s1600/django-traceback7.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"&gt;&lt;img border="0" height="171" src="http://3.bp.blogspot.com/-Qomg2ms9Ij4/VV3m-iGH_uI/AAAAAAAANvA/LT3QzrnMOsg/s400/django-traceback7.png" width="400"&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;/div&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;br&gt;&lt;/div&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;/div&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;br&gt;&lt;/div&gt;If you go to browser, you will find a rich traceback like this.&lt;br&gt;&lt;div style="text-align: center;"&gt;&lt;/div&gt;&lt;div style="-webkit-text-stroke-width: 0px; color: black; font-family: 'Times New Roman'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: auto; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"&gt;&lt;/div&gt;&lt;br&gt;&lt;div class="separator" style="-webkit-text-stroke-width: 0px; clear: both; color: black; font-family: 'Times New Roman'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; margin: 0px; orphans: auto; text-align: center; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px;"&gt;&lt;a href="http://2.bp.blogspot.com/-tvh4xHpe3vg/VV3llj9pRjI/AAAAAAAANuc/u4FuL0oQ57A/s1600/django-traceback.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"&gt;&lt;img border="0" height="449" src="http://2.bp.blogspot.com/-tvh4xHpe3vg/VV3llj9pRjI/AAAAAAAANuc/u4FuL0oQ57A/s640/django-traceback.png" width="640"&gt;&lt;/a&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;Most Python developers, discover django-extensions within a few weeks after they start working with Django and start using Werkzeug debugger. Werkzeug has lot of advantages when compared to default Django traceback. I also used it for a while. For the same error Werkzeug throws traceback like this.&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;a href="http://3.bp.blogspot.com/-GYBZegc7018/VV3lluQru-I/AAAAAAAANuY/rbH5oVZHT2U/s1600/django-traceback4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"&gt;&lt;img border="0" height="420" src="http://3.bp.blogspot.com/-GYBZegc7018/VV3lluQru-I/AAAAAAAANuY/rbH5oVZHT2U/s640/django-traceback4.png" width="640"&gt;&lt;/a&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;One thing I really like about Django traceback is, the distinction between user code and the internal Django code. Most of the time, developers were looking for the bug in their code instead of looking for a bug in Django. So, Django makes it easier to skip over the frames that doesn't matter and focus on the one which matters most.&lt;br&gt;&lt;br&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;a href="http://1.bp.blogspot.com/-ZzMWZjWzo44/VV3moiCWWKI/AAAAAAAANu4/VXHrw1NpA8o/s1600/django-traceback6.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"&gt;&lt;img border="0" height="386" src="http://1.bp.blogspot.com/-ZzMWZjWzo44/VV3moiCWWKI/AAAAAAAANu4/VXHrw1NpA8o/s640/django-traceback6.png" width="640"&gt;&lt;/a&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;br&gt;It also shows local vars in that frame. With this You instantly look at the variables to find out why error has occured(see this &lt;a href="https://code.djangoproject.com/ticket/11834" target="_blank"&gt;Django Ticket #11834:&lt;/a&gt; for more discussion about this).&lt;br&gt;&lt;br&gt;These two features make it very easy to track down most common errors.&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;"&gt;Read more &lt;/span&gt;&lt;a href="http://www.avilpage.com/search/label/python" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;"&gt;articles about Python&lt;/a&gt;&lt;span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;"&gt;!&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;/div&gt;</description><category>django</category><category>python</category><category>tech</category><guid>http://avilpage.com/2015/05/whats-so-good-about-django-traceback.html</guid><pubDate>Thu, 21 May 2015 09:29:00 GMT</pubDate></item></channel></rss>
+</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2015/07/django-tips-make-django-development.html</guid><pubDate>Mon, 20 Jul 2015 13:11:00 GMT</pubDate></item></channel></rss>

@@ -9,9 +9,6 @@
 .. type: text
 -->
 
-
-<br />
-
 ### [Python Workshop](https://pythonexpress.in/workshop/260/)
 @ [YIT College - 2 day workshop](http://www.yit.edu.in/) [ [Content](https://github.com/ChillarAnand/python-101) ]
 <br />
