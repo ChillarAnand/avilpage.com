@@ -29,7 +29,169 @@
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/reliable-way-to-test-external-apis-without-mocking.html" class="u-url">Reliable Way To Test External APIs Without Mocking</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="05/deploying-scaling-django-channels.html" class="u-url">How To Deploy Django Channels To Production</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>In this article, we will see how to deploy <a href="https://pypi.org/project/channels/">django channels</a> to production and how we can scale it to handle more load. We will be using nginx as proxy server, <a href="https://pypi.org/project/daphne/">daphne</a> as ASGI server, gunicorn as WSGI server and redis for channel back-end.</p>
+<p>Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.</p>
+<p>We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.</p>
+<h4>Nginx Setup</h4>
+<p>Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.</p>
+<pre class="code literal-block"><span></span><span class="x">server {</span>
+<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:80;</span>
+<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+
+<span class="x">    return 301 https://avilpage.com$request_uri;</span>
+<span class="x">}</span>
+
+
+<span class="x">server {</span>
+<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:443 ssl;</span>
+<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+
+<span class="x">    ssl_certificate     /root/certs/avilpage.com.chain.crt;</span>
+<span class="x">    ssl_certificate_key /root/certs/avilpage.com.key;</span>
+
+<span class="x">    access_log /var/log/nginx/avilpage.com.access.log;</span>
+<span class="x">    error_log /var/log/nginx/avilpage.com.error.log;</span>
+
+<span class="x">    location / {</span>
+<span class="x">            proxy_pass http://0.0.0.0:8000;</span>
+<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+<span class="x">            proxy_set_header Host $http_host;</span>
+<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
+<span class="x">            proxy_redirect off;</span>
+<span class="x">    }</span>
+
+<span class="x">    location /ws/ {</span>
+<span class="x">            proxy_pass http://0.0.0.0:9000;</span>
+<span class="x">            proxy_http_version 1.1;</span>
+
+<span class="x">            proxy_read_timeout 86400;</span>
+<span class="x">            proxy_redirect     off;</span>
+
+<span class="x">            proxy_set_header Upgrade $http_upgrade;</span>
+<span class="x">            proxy_set_header Connection "upgrade";</span>
+<span class="x">            proxy_set_header Host $host;</span>
+<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
+<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
+<span class="x">            proxy_set_header X-Forwarded-Host $server_name;</span>
+<span class="x">    }</span>
+
+<span class="x">    location /static {</span>
+<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static;</span>
+<span class="x">    }</span>
+
+<span class="x">    location  /favicon.ico {</span>
+<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">//static/img/favicon.ico;</span>
+<span class="x">    }</span>
+
+<span class="x">    location  /robots.txt {</span>
+<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static/txt/robots.txt;</span>
+<span class="x">    }</span>
+
+<span class="x">}</span>
+</pre>
+
+
+<h4>WSGI Server Setup</h4>
+<p>We will use gunicorn for wsgi server. We can run gunicorn with</p>
+<pre class="code literal-block"><span></span>$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
+</pre>
+
+
+<p>We can create a systemd unit file to make it as a service.</p>
+<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">gunicorn</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+
+
+<span class="k">[Service]</span>
+<span class="na">PIDFile</span><span class="o">=</span><span class="s">/run/gunicorn/pid</span>
+<span class="na">User</span><span class="o">=</span><span class="s">root</span>
+<span class="na">Group</span><span class="o">=</span><span class="s">root</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">{{ project_root }}</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">{{ venv_bin }}/gunicorn {{ project_name}}.wsgi --bind 0.0.0.0:8000 --log-level error --log-file=- --workers 5 --preload</span>
+
+
+<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -s HUP $MAINPID</span>
+<span class="na">ExecStop</span><span class="o">=</span><span class="s">/bin/kill -s TERM $MAINPID</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">on-abort</span>
+<span class="na">PrivateTmp</span><span class="o">=</span><span class="s">true</span>
+
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</pre>
+
+
+<p>Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with</p>
+<pre class="code literal-block"><span></span>$ sudo service gunicorn restart
+</pre>
+
+
+<h4>ASGI Server Setup</h4>
+<p>We will use daphne for ASGI server and it can be started with</p>
+<pre class="code literal-block"><span></span>$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
+</pre>
+
+
+<p>We can create a systemd unit file like the previous one to create a service.</p>
+<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">daphne daemon</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+
+
+<span class="k">[Service]</span>
+<span class="na">PIDFile</span><span class="o">=</span><span class="s">/run/daphne/pid</span>
+<span class="na">User</span><span class="o">=</span><span class="s">root</span>
+<span class="na">Group</span><span class="o">=</span><span class="s">root</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">{{ project_root }}</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">{{ venv_bin }}/daphne --bind 0.0.0.0 --port 9000 --verbosity 0 {{project_name}}.asgi:application</span>
+<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -s HUP $MAINPID</span>
+<span class="na">ExecStop</span><span class="o">=</span><span class="s">/bin/kill -s TERM $MAINPID</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">on-abort</span>
+<span class="na">PrivateTmp</span><span class="o">=</span><span class="s">true</span>
+
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</pre>
+
+
+<h4>Deployment</h4>
+<p>Here is <a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml">an ansible playbook</a> which is used to deploy these config files to our server. To run the playbook on server <code>avilpage.com</code>, execute</p>
+<pre class="code literal-block"><span></span>$ ansible-playbook -i avilpage.com, django_setup.yml
+</pre>
+
+
+<h4>Scaling</h4>
+<p>Now that we have deployed channels to production, we can do performance test to see how our server performs under load.</p>
+<p>For WebSockets, we can use <a href="https://www.npmjs.com/package/thor">Thor</a> to run performance test.</p>
+<pre class="code literal-block"><span></span>thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
+</pre>
+
+
+<p>Our server is able to handle <code>100 requests per second</code> with a <code>latency of 800ms</code>. This is good enough for low traffic website.</p>
+<p>To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using <a href="05/deploying-scaling-django-channels.html">shared file descriptors</a>. Unfortunately, it doesn't work as expected. As <a href="https://github.com/django/daphne/issues/182#issuecomment-387507887">mentioned here</a>, we can use systemd templates and spawn multiple daphne process.</p>
+<p>An alternate way is to use <a href="https://pypi.org/project/uvicorn/">uvicorn</a> to start multiple workers. Install uvicorn using pip</p>
+<pre class="code literal-block"><span></span>$ pip install uvicorn
+</pre>
+
+
+<p>Start uvicorn ASGI server with</p>
+<pre class="code literal-block"><span></span>$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
+</pre>
+
+
+<p>This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).</p>
+</div>
+        </div>
+            
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/reliable-way-to-test-external-apis-without-mocking.html" class="u-url">Reliable Way To Test External APIs Without Mocking</a></h1>
         <hr>
 <div class="e-content">
         <div>

@@ -1,5 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 09 Apr 2018 09:17:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reliable Way To Test External APIs Without Mocking</title><link>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Let us write a function which retrieves user information from GitHub API.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 19 May 2018 14:27:48 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
+&lt;p&gt;Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.&lt;/p&gt;
+&lt;p&gt;We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.&lt;/p&gt;
+&lt;h4&gt;Nginx Setup&lt;/h4&gt;
+&lt;p&gt;Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;server {&lt;/span&gt;
+&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:80;&lt;/span&gt;
+&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
+
+&lt;span class="x"&gt;    return 301 https://avilpage.com$request_uri;&lt;/span&gt;
+&lt;span class="x"&gt;}&lt;/span&gt;
+
+
+&lt;span class="x"&gt;server {&lt;/span&gt;
+&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:443 ssl;&lt;/span&gt;
+&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
+
+&lt;span class="x"&gt;    ssl_certificate     /root/certs/avilpage.com.chain.crt;&lt;/span&gt;
+&lt;span class="x"&gt;    ssl_certificate_key /root/certs/avilpage.com.key;&lt;/span&gt;
+
+&lt;span class="x"&gt;    access_log /var/log/nginx/avilpage.com.access.log;&lt;/span&gt;
+&lt;span class="x"&gt;    error_log /var/log/nginx/avilpage.com.error.log;&lt;/span&gt;
+
+&lt;span class="x"&gt;    location / {&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:8000;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Host $http_host;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_redirect off;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location /ws/ {&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:9000;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_http_version 1.1;&lt;/span&gt;
+
+&lt;span class="x"&gt;            proxy_read_timeout 86400;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_redirect     off;&lt;/span&gt;
+
+&lt;span class="x"&gt;            proxy_set_header Upgrade $http_upgrade;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Connection "upgrade";&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header Host $host;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
+&lt;span class="x"&gt;            proxy_set_header X-Forwarded-Host $server_name;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location /static {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location  /favicon.ico {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;//static/img/favicon.ico;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;    location  /robots.txt {&lt;/span&gt;
+&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static/txt/robots.txt;&lt;/span&gt;
+&lt;span class="x"&gt;    }&lt;/span&gt;
+
+&lt;span class="x"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;WSGI Server Setup&lt;/h4&gt;
+&lt;p&gt;We will use gunicorn for wsgi server. We can run gunicorn with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ gunicorn avilpage.wsgi --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0:8000 --log-level error --log-file&lt;span class="o"&gt;=&lt;/span&gt;- --settings avilpage.production_settings
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can create a systemd unit file to make it as a service.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;gunicorn&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Service]&lt;/span&gt;
+&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/gunicorn/pid&lt;/span&gt;
+&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
+&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
+&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/gunicorn {{ project_name}}.wsgi --bind 0.0.0.0:8000 --log-level error --log-file=- --workers 5 --preload&lt;/span&gt;
+
+
+&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
+&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Install]&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ sudo service gunicorn restart
+&lt;/pre&gt;
+
+
+&lt;h4&gt;ASGI Server Setup&lt;/h4&gt;
+&lt;p&gt;We will use daphne for ASGI server and it can be started with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ daphne avilpage.asgi:application --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0 --port &lt;span class="m"&gt;9000&lt;/span&gt; --verbosity &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can create a systemd unit file like the previous one to create a service.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
+&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;daphne daemon&lt;/span&gt;
+&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Service]&lt;/span&gt;
+&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/daphne/pid&lt;/span&gt;
+&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
+&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
+&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
+&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/daphne --bind 0.0.0.0 --port 9000 --verbosity 0 {{project_name}}.asgi:application&lt;/span&gt;
+&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
+&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
+&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
+
+
+&lt;span class="k"&gt;[Install]&lt;/span&gt;
+&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Deployment&lt;/h4&gt;
+&lt;p&gt;Here is &lt;a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml"&gt;an ansible playbook&lt;/a&gt; which is used to deploy these config files to our server. To run the playbook on server &lt;code&gt;avilpage.com&lt;/code&gt;, execute&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ansible-playbook -i avilpage.com, django_setup.yml
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Scaling&lt;/h4&gt;
+&lt;p&gt;Now that we have deployed channels to production, we can do performance test to see how our server performs under load.&lt;/p&gt;
+&lt;p&gt;For WebSockets, we can use &lt;a href="https://www.npmjs.com/package/thor"&gt;Thor&lt;/a&gt; to run performance test.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;thor -C &lt;span class="m"&gt;100&lt;/span&gt; -A &lt;span class="m"&gt;1000&lt;/span&gt; wss://avilpage.com/ws/books/
+&lt;/pre&gt;
+
+
+&lt;p&gt;Our server is able to handle &lt;code&gt;100 requests per second&lt;/code&gt; with a &lt;code&gt;latency of 800ms&lt;/code&gt;. This is good enough for low traffic website.&lt;/p&gt;
+&lt;p&gt;To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using &lt;a href="http://avilpage.com/2018/05/deploying-scaling-django-channels.html"&gt;shared file descriptors&lt;/a&gt;. Unfortunately, it doesn't work as expected. As &lt;a href="https://github.com/django/daphne/issues/182#issuecomment-387507887"&gt;mentioned here&lt;/a&gt;, we can use systemd templates and spawn multiple daphne process.&lt;/p&gt;
+&lt;p&gt;An alternate way is to use &lt;a href="https://pypi.org/project/uvicorn/"&gt;uvicorn&lt;/a&gt; to start multiple workers. Install uvicorn using pip&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install uvicorn
+&lt;/pre&gt;
+
+
+&lt;p&gt;Start uvicorn ASGI server with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ uvicorn avilpage.asgi --log-level critical --workers &lt;span class="m"&gt;4&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</guid><pubDate>Sat, 19 May 2018 13:06:32 GMT</pubDate></item><item><title>Reliable Way To Test External APIs Without Mocking</title><link>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Let us write a function which retrieves user information from GitHub API.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
 
 
@@ -511,20 +665,4 @@ http://incepro.serveo/list/
 &lt;/pre&gt;
 
 
-&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item><item><title>Django Tips &amp; Tricks #7 - Django Auth Plugin For HTTPie</title><link>http://avilpage.com/2017/04/django-auth-plugin-for-httpie.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/httpie"&gt;HTTPie&lt;/a&gt; is an alternative to curl for interacting with web services from CLI. It provides a simple and intuitive interface and it is handy to send arbitrary HTTP requests while testing/debugging APIs.&lt;/p&gt;
-&lt;p&gt;When working with web applications that require authentication, using httpie is  difficult as authentication mechanism will be different for different applications. httpie has in built support for &lt;code&gt;basic&lt;/code&gt; &amp;amp; &lt;code&gt;digest&lt;/code&gt; authentication.&lt;/p&gt;
-&lt;p&gt;To authenticate with Django apps, a user needs to make a &lt;code&gt;GET&lt;/code&gt; request to login page. Django sends login form with a CSRF token. User can submit this form with valid credentials and a session will be initiated.&lt;/p&gt;
-&lt;p&gt;Establish session manually is boring and it gets tedious when working with multiple apps in multiple environments(development, staging, production).&lt;/p&gt;
-&lt;p&gt;I have written a plugin called &lt;a href="https://pypi.python.org/pypi/httpie-django-auth"&gt;httpie-django-auth&lt;/a&gt; which automates django authentication. It can be installed with pip&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;pip install httpie-django-auth
-&lt;/pre&gt;
-
-
-&lt;p&gt;By default, it uses &lt;code&gt;/admin/login&lt;/code&gt; to login. If you need to use some other URL for logging, set &lt;code&gt;HTTPIE_DJANGO_AUTH_URL&lt;/code&gt; environment variable.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;HTTPIE_DJANGO_AUTH_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'/accounts/login/'&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Now you can send authenticated requests to any URL as&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;http :8000/profile -A&lt;span class="o"&gt;=&lt;/span&gt;django --auth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'username:password'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2017/04/django-auth-plugin-for-httpie.html</guid><pubDate>Thu, 20 Apr 2017 15:00:28 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item></channel></rss>
