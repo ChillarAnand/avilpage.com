@@ -1,5 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2018)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2018/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 02 Jun 2018 10:36:38 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2018)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2018/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 15 Jun 2018 14:44:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django Tips &amp; Tricks #10 - Log SQL Queries To Console</title><link>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django ORM makes easy to interact with database. To understand what is happening behing the scenes or to see SQL performance, we can log all the SQL queries that be being executed. In this article, we will see various ways to achieve this.&lt;/p&gt;
+&lt;h4&gt;Using debug-toolbar&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/django-debug-toolbar/" target="_blank"&gt;Django debug toolbar&lt;/a&gt; provides panels to show debug information about requests. It has SQL panel which shows all executed SQL queries and time taken for them.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-sql-log-toolbar.png" height="300px" width="600"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;When building REST APIs or micro services where django templating engine is not used, &lt;a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank"&gt;this method won't work&lt;/a&gt;. In these situations, we have to log SQL queries to console.&lt;/p&gt;
+&lt;h4&gt;Using django-extensions&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/django-extensions/"&gt;Django-extensions&lt;/a&gt; provides lot of utilities for productive development. For &lt;code&gt;runserver_plus&lt;/code&gt; and &lt;code&gt;shell_plus&lt;/code&gt; commands, it accepts and optional &lt;code&gt;--print-sql&lt;/code&gt; argument, which prints all the SQL queries that are being executed.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;./manage.py runserver_plus --print-sql
+./manage.py shell_plus --print-sql
+&lt;/pre&gt;
+
+
+&lt;p&gt;Whenever an SQL query gets executed, it prints the query and time taken for it in console.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;is_staff&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;SELECT&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_login"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_superuser"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"first_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_staff"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_active"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"date_joined"&lt;/span&gt;
+  &lt;span class="n"&gt;FROM&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;
+ &lt;span class="n"&gt;WHERE&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_staff"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;true&lt;/span&gt;
+ &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;
+
+
+&lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.002107&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Database&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;QuerySet&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;anand&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;chillar&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Using django-querycount&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/django-querycount/"&gt;Django-querycount&lt;/a&gt; provides a middleware to show SQL query count and show duplicate queries on console.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="p"&gt;|&lt;/span&gt; Type &lt;span class="p"&gt;|&lt;/span&gt; Database  &lt;span class="p"&gt;|&lt;/span&gt;   Reads  &lt;span class="p"&gt;|&lt;/span&gt;  Writes  &lt;span class="p"&gt;|&lt;/span&gt;  Totals  &lt;span class="p"&gt;|&lt;/span&gt; Duplicates &lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="p"&gt;|&lt;/span&gt; RESP &lt;span class="p"&gt;|&lt;/span&gt;  default  &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;3&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;0&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;3&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;     &lt;span class="m"&gt;1&lt;/span&gt;      &lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
+Total queries: &lt;span class="m"&gt;3&lt;/span&gt; in &lt;span class="m"&gt;1&lt;/span&gt;.7738s
+
+
+Repeated &lt;span class="m"&gt;1&lt;/span&gt; times.
+SELECT &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_key"&lt;/span&gt;,
+&lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_data"&lt;/span&gt;, &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"expire_date"&lt;/span&gt; FROM
+&lt;span class="s2"&gt;"django_session"&lt;/span&gt; WHERE &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_key"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
+&lt;span class="s1"&gt;'dummy_key AND "django_session"."expire_date"&lt;/span&gt;
+&lt;span class="s1"&gt;&amp;gt; '&lt;/span&gt;&lt;span class="m"&gt;2018&lt;/span&gt;-05-31T09:38:56.369469+00:00&lt;span class="err"&gt;'&lt;/span&gt;::timestamptz&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This package provides &lt;a href="https://github.com/bradmontgomery/django-querycount#settings"&gt;additional settings&lt;/a&gt; to customize output.&lt;/p&gt;
+&lt;h4&gt;Django logging&lt;/h4&gt;
+&lt;p&gt;Instead of using any 3rd party package, we can use &lt;code&gt;django.db.backends&lt;/code&gt; logger to print all the SQL queries.&lt;/p&gt;
+&lt;p&gt;Add &lt;code&gt;django.db.backends&lt;/code&gt; to loggers list and set log level and handlers.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class="s1"&gt;'loggers'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s1"&gt;'django.db.backends'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="s1"&gt;'level'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'DEBUG'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s1"&gt;'handlers'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'console'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;In runserver console, we can see all SQL queries that are being executed.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
+[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
+&lt;/pre&gt;
+
+
+&lt;p&gt;These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</guid><pubDate>Thu, 14 Jun 2018 15:51:21 GMT</pubDate></item><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
 &lt;p&gt;Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.&lt;/p&gt;
 &lt;p&gt;We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.&lt;/p&gt;
 &lt;h4&gt;Nginx Setup&lt;/h4&gt;
