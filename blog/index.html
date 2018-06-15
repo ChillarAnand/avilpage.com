@@ -22,7 +22,92 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/deploying-scaling-django-channels.html" class="u-url">How To Deploy Django Channels To Production</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html" class="u-url">Django Tips &amp; Tricks #10 - Log SQL Queries To Console</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Django ORM makes easy to interact with database. To understand what is happening behing the scenes or to see SQL performance, we can log all the SQL queries that be being executed. In this article, we will see various ways to achieve this.</p>
+<h4>Using debug-toolbar</h4>
+<p><a href="https://pypi.org/project/django-debug-toolbar/" target="_blank">Django debug toolbar</a> provides panels to show debug information about requests. It has SQL panel which shows all executed SQL queries and time taken for them.</p>
+<p align="center">
+<img src="../images/django-sql-log-toolbar.png" height="300px" width="600"></p>
+
+<p>When building REST APIs or micro services where django templating engine is not used, <a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank">this method won't work</a>. In these situations, we have to log SQL queries to console.</p>
+<h4>Using django-extensions</h4>
+<p><a href="https://pypi.org/project/django-extensions/">Django-extensions</a> provides lot of utilities for productive development. For <code>runserver_plus</code> and <code>shell_plus</code> commands, it accepts and optional <code>--print-sql</code> argument, which prints all the SQL queries that are being executed.</p>
+<pre class="code literal-block"><span></span>./manage.py runserver_plus --print-sql
+./manage.py shell_plus --print-sql
+</pre>
+
+
+<p>Whenever an SQL query gets executed, it prints the query and time taken for it in console.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_superuser"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"username"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"first_name"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_name"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"email"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_active"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"date_joined"</span>
+  <span class="n">FROM</span> <span class="s2">"auth_user"</span>
+ <span class="n">WHERE</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span> <span class="o">=</span> <span class="n">true</span>
+ <span class="n">LIMIT</span> <span class="mi">21</span>
+
+
+<span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.002107</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
+
+<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">chillar</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
+</pre>
+
+
+<h4>Using django-querycount</h4>
+<p><a href="https://pypi.org/project/django-querycount/">Django-querycount</a> provides a middleware to show SQL query count and show duplicate queries on console.</p>
+<pre class="code literal-block"><span></span><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
+<span class="p">|</span> Type <span class="p">|</span> Database  <span class="p">|</span>   Reads  <span class="p">|</span>  Writes  <span class="p">|</span>  Totals  <span class="p">|</span> Duplicates <span class="p">|</span>
+<span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
+<span class="p">|</span> RESP <span class="p">|</span>  default  <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>    <span class="m">0</span>     <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>     <span class="m">1</span>      <span class="p">|</span>
+<span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
+Total queries: <span class="m">3</span> in <span class="m">1</span>.7738s
+
+
+Repeated <span class="m">1</span> times.
+SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</span>,
+<span class="s2">"django_session"</span>.<span class="s2">"session_data"</span>, <span class="s2">"django_session"</span>.<span class="s2">"expire_date"</span> FROM
+<span class="s2">"django_session"</span> WHERE <span class="o">(</span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span> <span class="o">=</span>
+<span class="s1">'dummy_key AND "django_session"."expire_date"</span>
+<span class="s1">&gt; '</span><span class="m">2018</span>-05-31T09:38:56.369469+00:00<span class="err">'</span>::timestamptz<span class="o">)</span>
+</pre>
+
+
+<p>This package provides <a href="https://github.com/bradmontgomery/django-querycount#settings">additional settings</a> to customize output.</p>
+<h4>Django logging</h4>
+<p>Instead of using any 3rd party package, we can use <code>django.db.backends</code> logger to print all the SQL queries.</p>
+<p>Add <code>django.db.backends</code> to loggers list and set log level and handlers.</p>
+<pre class="code literal-block"><span></span>    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'django.db.backends'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
+            <span class="s1">'handlers'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'console'</span><span class="p">,</span> <span class="p">],</span>
+        <span class="p">},</span>
+</pre>
+
+
+<p>In runserver console, we can see all SQL queries that are being executed.</p>
+<pre class="code literal-block"><span></span>(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
+[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
+</pre>
+
+
+<p>These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.</p>
+</div>
+        </div>
+                        <a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html#disqus_thread" data-disqus-identifier="cache/posts/2018/05/django-tips-tricks-log-sql-queries-to-console.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/deploying-scaling-django-channels.html" class="u-url">How To Deploy Django Channels To Production</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -652,78 +737,6 @@ http://incepro.serveo/list/
 </div>
         </div>
                         <a href="../2017/11/how-to-install-custom-roms-in-mipad.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/how-to-install-custom-roms-in-mipad.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html" class="u-url">Django Tips &amp; Tricks #8 - Hyperlink Foreignkey Fields In Admin</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Consider <code>Book</code> model which has <code>Author</code> as foreignkey.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-
-
-<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
-</pre>
-
-
-<p>We can register these models with admin interface as follows.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
-
-<span class="k">class</span> <span class="nc">BookAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,</span> <span class="p">)</span>
-
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">BookAdmin</span><span class="p">)</span>
-</pre>
-
-
-<p>Once they are registed, admin page shows <code>Book</code> model like this.</p>
-<p align="center">
-<img src="../images/django-tips-tricks-1.png"></p>
-
-<p>While browing books, to go to a particular author, we have to previous page, go to <code>Author</code> model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, if author field has a hyperlink, we can directly go to its page.</p>
-<p>Django provides an option to <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls">access admin views by its URL</a> reversing system. For example, we can get add view of author model in book app from <code>reverse("admin:book_author_add")</code>.</p>
-<p>To hyperlink author field in book admin, get url from reversing <code>book_author_change</code> with its id and return required html.</p>
-<pre class="code literal-block"><span></span><span class="kr">class</span> <span class="nx">BookAdmin</span><span class="p">(</span><span class="nx">admin</span><span class="p">.</span><span class="nx">ModelAdmin</span><span class="p">)</span><span class="o">:</span>
-    <span class="nx">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author_link'</span><span class="p">,</span> <span class="p">)</span>
-
-    <span class="nx">def</span> <span class="nx">author_link</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">book</span><span class="p">)</span><span class="o">:</span>
-        <span class="nx">link</span> <span class="o">=</span> <span class="nx">reverse</span><span class="p">(</span><span class="s2">"admin:book_author_change"</span><span class="p">,</span> <span class="nx">args</span><span class="o">=</span><span class="p">[</span><span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
-        <span class="k">return</span> <span class="nx">u</span><span class="s1">'&lt;a href="%s"&gt;%s&lt;/a&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="nx">link</span><span class="p">,</span> <span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
-    <span class="nx">author_link</span><span class="p">.</span><span class="nx">allow_tags</span> <span class="o">=</span> <span class="nx">True</span>
-    <span class="nx">author_link</span><span class="p">.</span><span class="nx">short_description</span> <span class="o">=</span> <span class="s1">'Author'</span>
-</pre>
-
-
-<p>Now in the book admin view, author field will be hyperlinked and we can visit just by clicking it.</p>
-<p align="center">
-<img src="../images/django-tips-tricks-2.png"></p>
-
-<p><b>Update:</b></p>
-<p>Django has inbuilt option for this. It provides <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display_links"><code>list_display_links</code></a>, to control which fields should be linked to change page. So, we can just add author field to it.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
-
-<span class="k">class</span> <span class="nc">BookAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
-    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,)</span>
-
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
-</pre>
-
-
-<p>Now, author field will be hyperlinked to its change page.</p>
-</div>
-        </div>
-                        <a href="../2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html">Comments</a>
 
 
         </article><nav class="postindexpager"><ul class="pager">
