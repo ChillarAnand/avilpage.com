@@ -2,7 +2,7 @@
 .. title: Amazon India Artificial Intelligence (AIAI) Summit
 .. slug: amazon-india-artificial-intelligence-aiai-summit
 .. date: 2017-09-18 13:51:51 UTC
-.. tags: conferences, artificial intelligence, bangalore
+.. tags: conferences, bangalore, draft
 .. category:
 .. link:
 .. description: Summary of AIAI summit 2017 in Bangalore
