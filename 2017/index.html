@@ -370,23 +370,6 @@ hello from android
                         <a href="10/bluetooth-communication-between-ubuntu-android.html#disqus_thread" data-disqus-identifier="cache/posts/2017/10/bluetooth-communication-between-ubuntu-android.html">Comments</a>
 
 
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="09/amazon-india-artificial-intelligence-aiai-summit.html" class="u-url">Amazon India Artificial Intelligence (AIAI) Summit</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Today I have attended AIAI summit 2017 in Bangalore. Amazon started this summit to network with academia, industry data scientists and showcase amazon's work in machine learning.</p>
-<p>There were 4 talks and 20 poster presentations. Most of them were scholars from IITB, IITM, IISC, IITH, one talk by CMU professor and remaining talks by Amazon.</p>
-<p align="center">
-<img src="../images/aiai-summit-amazon-0.jpg"><img src="../images/aiai-summit-amazon-1.jpg"><img src="../images/aiai-summit-amazon-2.jpg"></p>
-
-<p>Amazon team talked about the problems they are solving with machine learning like auto correcting address, suggesting right size for shoes/apparel, answering questions on products e.t.c.</p>
-<p>People from academia talked about the research work they are doing and their results.</p>
-<p>I have been working on Telugu OCR in the past few months. There were 3 poster presentations regarding indic languages. Even though a lot of papers were published in the past, there is no end-to-end OCR with good accuracy (&gt;98%) for Indic languages. It is good to see Indic languages getting traction in deep learning.</p>
-</div>
-        </div>
-                        <a href="09/amazon-india-artificial-intelligence-aiai-summit.html#disqus_thread" data-disqus-identifier="cache/posts/2017/09/amazon-india-artificial-intelligence-aiai-summit.html">Comments</a>
-
-
         </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="08/arduino-programming-from-text-editor-cli.html" class="u-url">Arduino Programming From Text Editor &amp; CLI</a></h1>
         <hr>
 <div class="e-content">
@@ -520,6 +503,62 @@ hello from android
 </div>
         </div>
                         <a href="06/auto-register-subclasess-without-metaclass.html#disqus_thread" data-disqus-identifier="cache/posts/2017/06/auto-register-subclasess-without-metaclass.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="05/how-to-auto-reload-celery-workers-in-development.html" class="u-url">How To Auto Reload Celery Workers In Development?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>We can pass <code>--autoreload</code> option when starting celery worker. This will restart worker when codebase changes.</p>
+<pre class="code literal-block"><span></span>celery worker -l info -A foo --autoreload
+</pre>
+
+
+<p>Unfortunately, it doesn't work as expected and <a href="https://github.com/celery/celery/issues/1658">it is deprecated</a>.</p>
+<p>During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.</p>
+<p><a href="https://pypi.python.org/pypi/watchdog">Watchdog</a> provides Python API and shell utilities to monitor file system events. We can install it with</p>
+<pre class="code literal-block"><span></span>pip install watchdog
+</pre>
+
+
+<p>Watchdog provides <code>watchmedo</code> a shell utilitiy to perform actions based on file events. It has <code>auto-restart</code> subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -- celery worker -l info -A foo
+</pre>
+
+
+<p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
+<pre class="code literal-block"><span></span>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
+</pre>
+
+
+<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
+<p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">autoreload</span>
+
+
+<span class="k">def</span> <span class="nf">restart_celery</span><span class="p">():</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'pkill -9 celery'</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'celery worker -l info -A foo'</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">'Starting celery worker with autoreload...'</span><span class="p">)</span>
+        <span class="n">autoreload</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">restart_celery</span><span class="p">)</span>
+</pre>
+
+
+<p>Now you can run celery worker with <code>python manage.py celery</code> which will start a celery worker and autoreload it when codebase changes.</p>
+</div>
+        </div>
+                        <a href="05/how-to-auto-reload-celery-workers-in-development.html#disqus_thread" data-disqus-identifier="cache/posts/2017/05/how-to-auto-reload-celery-workers-in-development.html">Comments</a>
 
 
         </article><nav class="postindexpager"><ul class="pager">
