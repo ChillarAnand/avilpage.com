@@ -22,7 +22,57 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html" class="u-url">Django Tips &amp; Tricks #10 - Log SQL Queries To Console</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/07/linux-performance-analysis-in-seconds.html" class="u-url">Linux Performance Analysis In Less Than 10 Seconds</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>If you are using a Linux System or managing a Linux server, you might come across a situation where a process will be taking too long to complete. In this article we will see how to track down such performance issues in Linux.</p>
+<p>Netflix TechBlog has an article on how to <a href="https://medium.com/netflix-techblog/linux-performance-analysis-in-60-000-milliseconds-accc10403c55">anlyze Linux performance in 60 seconds</a>. This article  provides 10+ tools to use in order to see the resource usage and pinpoint the bottleneck.</p>
+<p>It is strenuous to remember all those tools/options and laborious to run all those commands when working on multiple systems.</p>
+<p>Instead, we can use <a href="http://atoptool.nl/">atop</a>, a tool for one stop solution for performance analysis. Here is a comparision of atop with other tools from <a href="https://lwn.net/Articles/387202/">LWN</a>.</p>
+<p align="center">
+<img src="../images/linux-performance-analysis-tools.png" height="300px" width="600"></p>
+
+<p>atop shows live &amp; historical data measurement at system level as well as process level. To get the glimpse of system resource(CPU, memory, network, disk) usage install and run atop with</p>
+<pre class="code literal-block"><span></span>$ sudo apt install --yes atop
+
+$ atop
+</pre>
+
+
+<p align="center">
+<img src="../images/atop.png" height="300px" width="600"></p>
+
+<p>By default, atop shows resources used in the last interval only and sorts them by CPU usage. We can use</p>
+<pre class="code literal-block"><span></span>$ atop -A -f <span class="m">4</span>
+</pre>
+
+
+<p><code>-A</code> sorts the processes automatically in the order of the most busy system resource.</p>
+<p><code>-f</code> shows both active as well as inactive system resources in the ouput.</p>
+<p><code>4</code> sets refresh interval to 4 seconds.</p>
+<p>Just by looking at the output of atop, we get a glimpse of overall system resource usage as well as individual processes resource usage.</p>
+</div>
+        </div>
+                        <a href="../2018/07/linux-performance-analysis-in-seconds.html#disqus_thread" data-disqus-identifier="cache/posts/2018/07/linux-performance-analysis-in-6-seconds.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/06/comparision-of-asgi-servers.html" class="u-url">comparision of asgi servers</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<h4>daphne</h4>
+<p>https://github.com/django/daphne/</p>
+<p>https://github.com/encode/uvicorn
+https://github.com/pgjones/hypercorn</p>
+<p>https://github.com/erm/fikki
+https://github.com/ostcar/geiss</p>
+</div>
+        </div>
+                        <a href="../2018/06/comparision-of-asgi-servers.html#disqus_thread" data-disqus-identifier="cache/posts/2018/06/comparision-of-asgi-servers.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html" class="u-url">Django Tips &amp; Tricks #10 - Log SQL Queries To Console</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -632,116 +682,9 @@ http://incepro.serveo/list/
                         <a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html#disqus_thread" data-disqus-identifier="cache/posts/2017/12/automatic-magnetometer-calibration-with-arduino.html">Comments</a>
 
 
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tricks-auto-register-models-admin.html" class="u-url">Django Tips &amp; Tricks #9 - Auto Register Models In Admin</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
-<p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
-
-
-<span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre>
-
-
-<p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
-<p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
-
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
-                <span class="k">pass</span>
-</pre>
-
-
-<p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
-<p align="center">
-<img src="../images/django-admin-auto.png" width="600px"></p>
-
-<p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-
-<span class="k">class</span> <span class="nc">ListAdminMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"id"</span><span class="p">]</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
-
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-            <span class="n">admin_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">'AdminClass'</span><span class="p">,</span> <span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">),</span> <span class="p">{})</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
-                <span class="k">pass</span>
-</pre>
-
-
-<p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
-<p align="center">
-<img src="../images/django-admin-auto-2.png" width="600px"></p>
-</div>
-        </div>
-                        <a href="../2017/11/django-tricks-auto-register-models-admin.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/django-tips-tricks-auto-register-models-admin.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/how-to-install-custom-roms-in-mipad.html" class="u-url">How To Install Custom ROMs In Xiamo MiPad?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.</p>
-<h3>Install TWRP</h3>
-<p>Dowload latest recovery from <a href="https://twrp.me/">twrp.me</a>. Copy it to android device or push it to android using adb.</p>
-<pre class="code literal-block"><span></span>adb push -p twrp-3.1.1-0-mocha.img /sdcard/
-</pre>
-
-
-<p>Now put the device into fastboot mode by pressing <strong>Volume down</strong> &amp; <strong>Power</strong> button simultanesouly when you switch it on. When in fastboot mode, flash the downloaded recovery file</p>
-<pre class="code literal-block"><span></span>sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
-</pre>
-
-
-<p>Now we can go to recovery mode using adb.</p>
-<pre class="code literal-block"><span></span>adb reboot recovery
-</pre>
-
-
-<h3>Merge partitions</h3>
-<p>Before installing custom ROM, we need to merge partitions so that we will have enough space to install ROM. If you are familiar with <a href="https://www.gnu.org/software/parted/">parted</a> command, you can directly merge the partitions from terminal in TWRP recovery.</p>
-<p>There is also a script which you can flash to do the partition. You can read <a href="http://en.miui.com/thread-118294-1-1.html">this guide</a> on mi forum for more information.</p>
-<p>After partition is completed, from TWRP go to <strong>Wipe</strong> -&gt; <strong>Advanced wipe</strong> -&gt; Select <strong>System</strong> -&gt; Click on <strong>Repair or change file system</strong>. Here it should show that free space in system is more than 1GB.</p>
-<p align="center">
-<img src="../images/xiamo-mipad-custom-rom.jpg" width="600" height="400"></p>
-
-<h3>Install ROM</h3>
-<p>After partitions are merged, it is straight forward to install any custom ROM. Download a custom ROM like lineage or RR, push it to device and then install it from TWRP. After reboot, you will see the custom ROM booting.</p>
-</div>
-        </div>
-                        <a href="../2017/11/how-to-install-custom-roms-in-mipad.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/how-to-install-custom-roms-in-mipad.html">Comments</a>
-
-
         </article><nav class="postindexpager"><ul class="pager">
 <li class="next">
-                <a href="index-12.html" rel="next">Older posts</a>
+                <a href="index-11.html" rel="next">Older posts</a>
             </li>
         </ul></nav><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><br>
 </div>

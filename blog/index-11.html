@@ -22,7 +22,346 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/06/auto-register-subclasess-without-metaclass.html" class="u-url">Auto Register Subclasses Without Metaclass in Python</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tricks-auto-register-models-admin.html" class="u-url">Django Tips &amp; Tricks #9 - Auto Register Models In Admin</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
+<p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+
+
+<span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+    <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre>
+
+
+<p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
+<p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+
+<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
+
+    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
+                <span class="k">pass</span>
+</pre>
+
+
+<p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
+<p align="center">
+<img src="../images/django-admin-auto.png" width="600px"></p>
+
+<p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+
+<span class="k">class</span> <span class="nc">ListAdminMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"id"</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
+
+    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="n">admin_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">'AdminClass'</span><span class="p">,</span> <span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">),</span> <span class="p">{})</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
+                <span class="k">pass</span>
+</pre>
+
+
+<p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
+<p align="center">
+<img src="../images/django-admin-auto-2.png" width="600px"></p>
+</div>
+        </div>
+                        <a href="../2017/11/django-tricks-auto-register-models-admin.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/django-tips-tricks-auto-register-models-admin.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/how-to-install-custom-roms-in-mipad.html" class="u-url">How To Install Custom ROMs In Xiamo MiPad?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.</p>
+<h3>Install TWRP</h3>
+<p>Dowload latest recovery from <a href="https://twrp.me/">twrp.me</a>. Copy it to android device or push it to android using adb.</p>
+<pre class="code literal-block"><span></span>adb push -p twrp-3.1.1-0-mocha.img /sdcard/
+</pre>
+
+
+<p>Now put the device into fastboot mode by pressing <strong>Volume down</strong> &amp; <strong>Power</strong> button simultanesouly when you switch it on. When in fastboot mode, flash the downloaded recovery file</p>
+<pre class="code literal-block"><span></span>sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
+</pre>
+
+
+<p>Now we can go to recovery mode using adb.</p>
+<pre class="code literal-block"><span></span>adb reboot recovery
+</pre>
+
+
+<h3>Merge partitions</h3>
+<p>Before installing custom ROM, we need to merge partitions so that we will have enough space to install ROM. If you are familiar with <a href="https://www.gnu.org/software/parted/">parted</a> command, you can directly merge the partitions from terminal in TWRP recovery.</p>
+<p>There is also a script which you can flash to do the partition. You can read <a href="http://en.miui.com/thread-118294-1-1.html">this guide</a> on mi forum for more information.</p>
+<p>After partition is completed, from TWRP go to <strong>Wipe</strong> -&gt; <strong>Advanced wipe</strong> -&gt; Select <strong>System</strong> -&gt; Click on <strong>Repair or change file system</strong>. Here it should show that free space in system is more than 1GB.</p>
+<p align="center">
+<img src="../images/xiamo-mipad-custom-rom.jpg" width="600" height="400"></p>
+
+<h3>Install ROM</h3>
+<p>After partitions are merged, it is straight forward to install any custom ROM. Download a custom ROM like lineage or RR, push it to device and then install it from TWRP. After reboot, you will see the custom ROM booting.</p>
+</div>
+        </div>
+                        <a href="../2017/11/how-to-install-custom-roms-in-mipad.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/how-to-install-custom-roms-in-mipad.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html" class="u-url">Django Tips &amp; Tricks #8 - Hyperlink Foreignkey Fields In Admin</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Consider <code>Book</code> model which has <code>Author</code> as foreignkey.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
+</pre>
+
+
+<p>We can register these models with admin interface as follows.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">BookAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,</span> <span class="p">)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">BookAdmin</span><span class="p">)</span>
+</pre>
+
+
+<p>Once they are registed, admin page shows <code>Book</code> model like this.</p>
+<p align="center">
+<img src="../images/django-tips-tricks-1.png"></p>
+
+<p>While browing books, to go to a particular author, we have to previous page, go to <code>Author</code> model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, if author field has a hyperlink, we can directly go to its page.</p>
+<p>Django provides an option to <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls">access admin views by its URL</a> reversing system. For example, we can get add view of author model in book app from <code>reverse("admin:book_author_add")</code>.</p>
+<p>To hyperlink author field in book admin, get url from reversing <code>book_author_change</code> with its id and return required html.</p>
+<pre class="code literal-block"><span></span><span class="kr">class</span> <span class="nx">BookAdmin</span><span class="p">(</span><span class="nx">admin</span><span class="p">.</span><span class="nx">ModelAdmin</span><span class="p">)</span><span class="o">:</span>
+    <span class="nx">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author_link'</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="nx">def</span> <span class="nx">author_link</span><span class="p">(</span><span class="nx">self</span><span class="p">,</span> <span class="nx">book</span><span class="p">)</span><span class="o">:</span>
+        <span class="nx">link</span> <span class="o">=</span> <span class="nx">reverse</span><span class="p">(</span><span class="s2">"admin:book_author_change"</span><span class="p">,</span> <span class="nx">args</span><span class="o">=</span><span class="p">[</span><span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nx">u</span><span class="s1">'&lt;a href="%s"&gt;%s&lt;/a&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="nx">link</span><span class="p">,</span> <span class="nx">book</span><span class="p">.</span><span class="nx">author</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+    <span class="nx">author_link</span><span class="p">.</span><span class="nx">allow_tags</span> <span class="o">=</span> <span class="nx">True</span>
+    <span class="nx">author_link</span><span class="p">.</span><span class="nx">short_description</span> <span class="o">=</span> <span class="s1">'Author'</span>
+</pre>
+
+
+<p>Now in the book admin view, author field will be hyperlinked and we can visit just by clicking it.</p>
+<p align="center">
+<img src="../images/django-tips-tricks-2.png"></p>
+
+<p><b>Update:</b></p>
+<p>Django has inbuilt option for this. It provides <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display_links"><code>list_display_links</code></a>, to control which fields should be linked to change page. So, we can just add author field to it.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
+
+<span class="k">class</span> <span class="nc">BookAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">list_display_links</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'author'</span><span class="p">,)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
+</pre>
+
+
+<p>Now, author field will be hyperlinked to its change page.</p>
+</div>
+        </div>
+                        <a href="../2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/django-tips-tricks-hyperlink-foreignkey-admin.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/how-to-remove-clock-lock-screen-status-bar.html" class="u-url">How To Remove Clock From LockScreen/StatusBar?</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Last year, I wrote a blog post on <a href="../2016/09/remove-clock-lock-screen-status-bar-android.html">how to remove clock from lock screen and status bar</a> if <a href="http://repo.xposed.info/module/de.robv.android.xposed.installer">xposed</a> is installed on your android device. You can also do this without xposed if you are using RR(Resurrection Remix) as it comes with a lot of inbuilt customization.</p>
+<h4>Remove Clock From LockScreen</h4>
+<p>To remove clock from lockscreen, go to <strong>Settings</strong> -&gt; <strong>Configurations</strong> -&gt; <strong>Lock screen</strong> -&gt;  <strong>Show lock screen lock</strong>.</p>
+<p align="center">
+<img src="../images/remove_clock_android_11.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../images/remove_clock_android_12.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../images/remove_clock_android_13.png" height="400px" width="220"></p>
+
+<h4>Remove Time From StatusBar</h4>
+<p>To remove clock from status bar, go to <strong>Settings</strong> -&gt; <strong>Configurations</strong> -&gt; <strong>Status bar</strong> -&gt;  <strong>System UI tuner</strong> -&gt; <strong>Time</strong> -&gt; <strong>Dont show this icon</strong>.</p>
+<p align="center">
+<img src="../images/remove_clock_android_11.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../images/remove_clock_android_14.png" height="400px" width="220"></p>
+
+<p align="center">
+<img src="../images/remove_clock_android_15.png" height="400px" width="220"></p>
+
+<p>Once you do this, you will have a clean lockscreen and statusbar without any date or time them.</p>
+<p align="center">
+<img src="../images/remove_clock_android_16.png" height="400px" width="220"></p>
+</div>
+        </div>
+                        <a href="../2017/11/how-to-remove-clock-lock-screen-status-bar.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/remove-clock-lock-screen-status-bar-android.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/10/bluetooth-communication-between-ubuntu-android.html" class="u-url">Bluetooth Serial Communication Between Ubuntu &amp; Android</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.</p>
+<p>In this article, we will learn how to send data between laptop and android bluetooth.</p>
+<p>First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.</p>
+<pre class="code literal-block"><span></span>$ bluetoothctl
+<span class="o">[</span>NEW<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC asus <span class="o">[</span>default<span class="o">]</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A DESKTOP-C4ECO3K
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 athene
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">94</span>:65:2D:8C:2E:10 OnePlus <span class="m">5</span>
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:0C:A5:61:D5:64 Lenovo VIBE K5 Plus
+<span class="o">[</span>NEW<span class="o">]</span> Device AC:C3:3A:A0:CE:EF Galaxy J2
+<span class="o">[</span>NEW<span class="o">]</span> Device <span class="m">98</span>:D3:35:71:02:B3 HC-05
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># power on</span>
+Changing power on succeeded
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># agent on</span>
+Agent registered
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># default-agent</span>
+Default agent request successful
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># scan on</span>
+Discovery started
+<span class="o">[</span>CHG<span class="o">]</span> Controller <span class="m">24</span>:0A:64:D7:99:AC Discovering: yes
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">94</span>:E9:79:BB:F8:3A RSSI: -88
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 RSSI: -66
+
+<span class="o">[</span>bluetooth<span class="o">]</span><span class="c1"># pair 88:79:7E:7B:4C:87</span>
+Attempting to pair with <span class="m">88</span>:79:7E:7B:4C:87
+<span class="o">[</span>CHG<span class="o">]</span> Device <span class="m">88</span>:79:7E:7B:4C:87 Paired: yes
+Pairing successful
+</pre>
+
+
+<p>To communicate with paired devices, we will use <a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols">RFCOMM protocol</a>. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.</p>
+<p>From ubuntu, lets open a port for communication.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+</pre>
+
+
+<p>From Android, we have to connect to ubuntu. For this, we can use <a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;hl=en">Roboremo</a> app which supports RFCOMM.</p>
+<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+Waiting <span class="k">for</span> connection on channel <span class="m">3</span>
+Connection from <span class="m">88</span>:79:7E:7B:4C:87 to /dev/rfcomm0
+Press CTRL-C <span class="k">for</span> hangup
+</pre>
+
+
+<p>Once the connection is established, we can communicate between devices.</p>
+<p>In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to send message to bluetooth</span>
+$ <span class="nb">echo</span> <span class="s1">'hello from ubuntu'</span> &gt; /dev/rfcomm0
+</pre>
+
+
+<p>We can see the received messages on Android</p>
+<p align="center">
+<img src="../images/arduino-ubuntu-bluetooth.jpg"></p>
+
+<p>We can also send messages from android and read from ubuntu.</p>
+<pre class="code literal-block"><span></span><span class="c1"># to read messages from bluetooth</span>
+$ cat /dev/rfcomm0
+hello from android
+</pre>
+
+
+<p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
+</div>
+        </div>
+                        <a href="../2017/10/bluetooth-communication-between-ubuntu-android.html#disqus_thread" data-disqus-identifier="cache/posts/2017/10/bluetooth-communication-between-ubuntu-android.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/08/arduino-programming-from-text-editor-cli.html" class="u-url">Arduino Programming From Text Editor &amp; CLI</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>To program Arduino, we can use <a href="https://www.arduino.cc/en/main/software">Arduino IDE</a> which facilitates writing and uploading code to the board.</p>
+<p>If we are using a text editor for programming, it will have lot of customisations which speed up development process. In such case, it is better to use same text editor for arduino programming too.</p>
+<p>I use Emacs as IDE and there is <a href="https://github.com/bookest/arduino-mode">arduino mode</a> for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.</p>
+<p>Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.</p>
+<p>In Linux system, to upload a file called <code>foo.ino</code>, we can run</p>
+<pre class="code literal-block"><span></span>arduino --port /dev/ttyACM0 --board arduino:avr:mega
+ <span class="se">\ </span>--upload foo.ino
+</pre>
+
+
+<p>An alternate way is to use <a href="https://github.com/platformio/platformio-core/">platformio</a>, an opensource tool chain for IoT development.</p>
+<p>It can be installed using pip.</p>
+<pre class="code literal-block"><span></span>pip install platformio
+</pre>
+
+
+<p>Once it is installed, code can be directly uploaded using <code>ci</code> command.</p>
+<pre class="code literal-block"><span></span>pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
+</pre>
+
+
+<p>By this we can use text editor to write code and arduino/platformio to upload code to arduino board.</p>
+</div>
+        </div>
+                        <a href="../2017/08/arduino-programming-from-text-editor-cli.html#disqus_thread" data-disqus-identifier="cache/posts/2017/08/arduino-programming-from-text-editor-cli.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html" class="u-url">Using LSTM-CTC For Complex Script Recognistion</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p>Most Indian languages have strong consonant-vowel structure which combine to give syllables. These syllables are written as one continuous ligature and they require <a href="https://en.wikipedia.org/wiki/Complex_text_layout">complex text rendering</a> (CTL) for type setting.</p>
+<p>Writing OCR (Optical Character Recognistion) software for CTL scripts is a challenging task as segmentation is hard. Because of this overall accuracy drops drastically.</p>
+<p>A better approach is to use <a href="ftp://ftp.idsia.ch/pub/juergen/icml2006.pdf">Connectionist Temporal Classification</a> (CTC) which can identify unsegmented sequence directly as it has one-to-one correspondence between input samples and output labels.</p>
+<p>Here is a sample input and output of a <a href="https://github.com/rakeshvar/rnn_ctc">RNN-CTC</a> network which takes an unsegmented sequence and outputs labels.</p>
+<p align="center">
+<img src="../images/ctc.png"></p>
+
+<p>Open source OCR software <a href="https://github.com/tmbdev/ocropy/">ocorpy</a> uses BLSTM-CTC for text recognistion. <a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> started using the same in its latest(4.0) version.</p>
+<p>I have <a href="https://github.com/ChillarAnand/likitham">trained a model</a> to recognize Telugu script using ocropy and the accuracy is ~99% which is far better when compared to OCR softwares without CTC which are accurate to ~70%.</p>
+</div>
+        </div>
+                        <a href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html#disqus_thread" data-disqus-identifier="cache/posts/2017/07/using-lstm-ctc-for-complex-script-recognistion.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/06/auto-register-subclasess-without-metaclass.html" class="u-url">Auto Register Subclasses Without Metaclass in Python</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -108,456 +447,9 @@
                         <a href="../2017/06/auto-register-subclasess-without-metaclass.html#disqus_thread" data-disqus-identifier="cache/posts/2017/06/auto-register-subclasess-without-metaclass.html">Comments</a>
 
 
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/05/how-to-auto-reload-celery-workers-in-development.html" class="u-url">How To Auto Reload Celery Workers In Development?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>We can pass <code>--autoreload</code> option when starting celery worker. This will restart worker when codebase changes.</p>
-<pre class="code literal-block"><span></span>celery worker -l info -A foo --autoreload
-</pre>
-
-
-<p>Unfortunately, it doesn't work as expected and <a href="https://github.com/celery/celery/issues/1658">it is deprecated</a>.</p>
-<p>During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.</p>
-<p><a href="https://pypi.python.org/pypi/watchdog">Watchdog</a> provides Python API and shell utilities to monitor file system events. We can install it with</p>
-<pre class="code literal-block"><span></span>pip install watchdog
-</pre>
-
-
-<p>Watchdog provides <code>watchmedo</code> a shell utilitiy to perform actions based on file events. It has <code>auto-restart</code> subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -- celery worker -l info -A foo
-</pre>
-
-
-<p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
-</pre>
-
-
-<p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
-<p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-
-<span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
-<span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">autoreload</span>
-
-
-<span class="k">def</span> <span class="nf">restart_celery</span><span class="p">():</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'pkill -9 celery'</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'celery worker -l info -A foo'</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-
-
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">'Starting celery worker with autoreload...'</span><span class="p">)</span>
-        <span class="n">autoreload</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">restart_celery</span><span class="p">)</span>
-</pre>
-
-
-<p>Now you can run celery worker with <code>python manage.py celery</code> which will start a celery worker and autoreload it when codebase changes.</p>
-</div>
-        </div>
-                        <a href="../2017/05/how-to-auto-reload-celery-workers-in-development.html#disqus_thread" data-disqus-identifier="cache/posts/2017/05/how-to-auto-reload-celery-workers-in-development.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/04/django-auth-plugin-for-httpie.html" class="u-url">Django Tips &amp; Tricks #7 - Django Auth Plugin For HTTPie</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p><a href="https://pypi.python.org/pypi/httpie">HTTPie</a> is an alternative to curl for interacting with web services from CLI. It provides a simple and intuitive interface and it is handy to send arbitrary HTTP requests while testing/debugging APIs.</p>
-<p>When working with web applications that require authentication, using httpie is  difficult as authentication mechanism will be different for different applications. httpie has in built support for <code>basic</code> &amp; <code>digest</code> authentication.</p>
-<p>To authenticate with Django apps, a user needs to make a <code>GET</code> request to login page. Django sends login form with a CSRF token. User can submit this form with valid credentials and a session will be initiated.</p>
-<p>Establish session manually is boring and it gets tedious when working with multiple apps in multiple environments(development, staging, production).</p>
-<p>I have written a plugin called <a href="https://pypi.python.org/pypi/httpie-django-auth">httpie-django-auth</a> which automates django authentication. It can be installed with pip</p>
-<pre class="code literal-block"><span></span>pip install httpie-django-auth
-</pre>
-
-
-<p>By default, it uses <code>/admin/login</code> to login. If you need to use some other URL for logging, set <code>HTTPIE_DJANGO_AUTH_URL</code> environment variable.</p>
-<pre class="code literal-block"><span></span><span class="nb">export</span> <span class="nv">HTTPIE_DJANGO_AUTH_URL</span><span class="o">=</span><span class="s1">'/accounts/login/'</span>
-</pre>
-
-
-<p>Now you can send authenticated requests to any URL as</p>
-<pre class="code literal-block"><span></span>http :8000/profile -A<span class="o">=</span>django --auth<span class="o">=</span><span class="s1">'username:password'</span>
-</pre>
-</div>
-        </div>
-                        <a href="../2017/04/django-auth-plugin-for-httpie.html#disqus_thread" data-disqus-identifier="cache/posts/2017/04/django-auth-plugin-for-httpie.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/super-charge-your-shell-for-python-development.html" class="u-url">Super Charge Your Shell For Python Development</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Last month, I gave a lightning talk about supercharging your shell for python development at <a href="http://www.meetup.com/BangPypers/">BangPypers meetup</a>.</p>
-<iframe width="600" height="350" src="https://www.youtube.com/embed/lvmJ0tWCjFA" frameborder="0" allowfullscreen></iframe>
-
-<p>This is a detailed blog post on how to setup your laptop for the same.</p>
-<h3>Autojump</h3>
-<p>When working on terminal, <code>cd</code> is used to traverse directories.</p>
-<pre class="code literal-block"><span></span><span class="nb">cd</span> ~/projects/python/django
-</pre>
-
-
-<p><code>cd</code> is inefficient to quickly traverse directories which are in different paths and far away from each other.</p>
-<pre class="code literal-block"><span></span><span class="nb">cd</span> /var/lib/elasticsearch/
-<span class="nb">cd</span> ~/sandbox/channels/demo
-</pre>
-
-
-<p><code>z</code>, a oh-my-zsh plugin is efficient for traversing directories. With <code>z</code>, directory can be changed by typing name of directory.</p>
-<pre class="code literal-block"><span></span>z junction
-</pre>
-
-
-<p>Instead of full name, just a substring would do.</p>
-<pre class="code literal-block"><span></span>z ju
-</pre>
-
-
-<p><code>z</code> keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.</p>
-<p>To install <code>z</code>, install <a href="../2015/03/install-oh-my-zsh-on-ubuntu.html">oh-my-zsh</a> and add <code>z</code> to plugins in <code>.zshrc</code> file.</p>
-<pre class="code literal-block"><span></span><span class="nv">plugins</span><span class="o">=(</span>git z<span class="o">)</span>
-</pre>
-
-
-<h3>Aliases</h3>
-<p>Read this old blog post on how <a href="../2014/10/useful-shell-aliases-for-python-and.html">aliases will improve your productivity</a>.</p>
-<h3>Autoenv</h3>
-<p>When working on multiple projects, it becomes necessary to use virtualenvs so that multiple versions of same package can be used. In addition to that, it be necessary to set environment variables on a per project basis.</p>
-<p>To automate all these things, <a href="https://pypi.python.org/pypi/autoenv/">autoenv</a> provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.</p>
-<p>If you have file named <code>.env</code> in a directory, autoenv will automatically source that file whenever user enters into it.</p>
-<p><code>autoenv</code> is a python package. It can be installed with</p>
-<pre class="code literal-block"><span></span>pip install autoenv
-</pre>
-
-
-<p>It provides a shell script which needs to sourced.</p>
-<pre class="code literal-block"><span></span><span class="nb">echo</span> <span class="s2">"source `which activate.sh`"</span> &gt;&gt; ~/.bashrc
-</pre>
-
-
-<p>You can create a .env file like this in project root.</p>
-<pre class="code literal-block"><span></span><span class="nb">source</span> ~/.virtualenvs/exp/bin/activate
-<span class="nb">export</span> <span class="nv">SECRET_KEY</span><span class="o">=</span>foobar
-</pre>
-
-
-<p>Next time, when your enter into that directory, <code>autoenv</code> finds <code>.env</code> file and it will source it automatically.</p>
-<h3>Autoreload</h3>
-<p>I have written a sepeate blog post on how to <a href="../2014/11/python-automagically-reload-imports-in.html">automagically reload imports</a> long time back.</p>
-<h3>Autoimports</h3>
-<p>When you copy code and paste it in ipython interpreter, it might fail with <code>ImportError</code> if required modules aren't already imported by the interpreter.</p>
-<p>Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.</p>
-<p>You can write an init script which will do all these things and load it automatically when ipython starts.</p>
-<p>Here is a <a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py">simple init script</a> which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'ipython_init.py'</span><span class="p">)]</span>
-</pre>
-
-
-<h3>Autocall</h3>
-<p>When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.</p>
-<p>IPython provides <code>autocall</code> option to make functions callable without typing parenthesis. This can be activate with <code>%autocall</code> magic.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="o">%</span><span class="n">autocall</span> <span class="mi">1</span>
-<span class="n">Automatic</span> <span class="n">calling</span> <span class="ow">is</span><span class="p">:</span> <span class="n">Smart</span>
-</pre>
-
-
-<p>Now functions can be called without parenthesis.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span> <span class="mi">5</span>
-<span class="o">------&gt;</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</pre>
-
-
-<p>You can also enable this by default by activating it in ipython config file.</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'%autocall  1'</span><span class="p">]</span>
-</pre>
-
-
-<p>These are some tips to become more productive with your shell when working on python projects.</p>
-</div>
-        </div>
-                        <a href="../2017/03/super-charge-your-shell-for-python-development.html#disqus_thread" data-disqus-identifier="cache/posts/2017/03/supercharge-shell-python.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/03/provisioning-laptop-ansible.html" class="u-url">Provisioning Laptop(s) With Ansible</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.</p>
-<h3>Why Ansible?</h3>
-<p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
-<h3>Writing A Playbook</h3>
-<p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
-<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
-<span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
-
-<span class="n">tasks</span><span class="o">:</span>
-  <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
-    <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
-</pre>
-
-
-<p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
-<pre class="code literal-block"><span></span>ansible-playbook laptop-setup.yml -i localhost, -c local
-</pre>
-
-
-<h3>Bootstrap Script</h3>
-<p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
-<pre class="code literal-block"><span></span>sudo apt update --yes
-sudo apt install --yes python python-pip
-
-sudo apt install --yes libssl-dev
-sudo -H pip install ansible
-
-wget -c https://path/to/playbook.yml
-
-sudo ansible-playbook setup.yml -i localhost, -c local
-</pre>
-
-
-<p>Now, to provision a laptop, just run the bootstrap script.</p>
-<pre class="code literal-block"><span></span>sh -c "$(wget https://path/to/bootstrap_script.sh"
-</pre>
-
-
-<p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
-</div>
-        </div>
-                        <a href="../2017/03/provisioning-laptop-ansible.html#disqus_thread" data-disqus-identifier="cache/posts/2017/03/provisioning-laptop-ansible.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html" class="u-url">How BMTC Is Exploiting Crores From Bangalore Citizens?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p><a href="http://mybmtc.com" target="_blank">BMTC</a> (Bengaluru Metropolitan Transport Corporation) is a government agency which operates the public transport bus service in Bangalore, India. It holds monopoly as it is the only choice for public transportation.</p>
-<h3>Fare Calculation</h3>
-<p>BMTC considers ~2KM distance as a stage and the <a href="https://www.mybmtc.com/general-service?fareid=gns&amp;qt-home_quick_tab_bottom=2" target="_blank">fares for each stage</a> are as follows.</p>
-<p align="center">
-<img src="../bmtc-fare-charges.png" width="600px"></p>
-
-<p>Let's say, you want to travel from Indira Nagar to BTM Layout, it will cover 5 stages. So, BMTC charges 19₹ for that.</p>
-<h3>Exploitation?</h3>
-<p>If you travel from Indira Nagar KFC signal to Doopanahalli Arch(1.2KM), which comes under 1 stage, you have to pay 5₹.  On the other hand, if you travel Indira Nagar KFC signal to Doopanahalli bustop(1.4KM), you have to pay 12₹.</p>
-<p>How can BMTC charge 5₹ for the first 1.2KM and 7₹ for the subsequent 0.2KM?  If BMTC charges, 5₹ for 1st stage. Then it should charge 5₹ + extra for next stage. But it shouldn't be more than 10₹.</p>
-<p>You can just take 1 ticket(5₹) for 1st stage(1.2KM) and one more ticket(5₹)  for the next stage(0.2KM).  You can just travel 2 stages with 2 tickets for 10₹.</p>
-<p>Turnsout BMTC is charging 3₹ extra on every ticket which covers atleast 2 stages.  As lakhs of people travel in BMTC buses daily, in a month, this 3₹ turns into crores of rupees.</p>
-<p>I am not sure when BMTC has started charging like this. A month back, I sent them an email asking for an explaination of unfair bus tickets and they haven't replied yet.</p>
-<h3>Update:</h3>
-<p>After sending this to BMTC officials, they have reduced 2nd stage bus fare by 2 Rs. Thanks to <a href="https://twitter.com/philentropist">Gopala Kallapura</a>, <a href="https://twitter.com/kracetheking">Krace Kumar</a> &amp; <a href="https://twitter.com/thej">Thegesh GN</a> for supporting the issue.</p>
-</div>
-        </div>
-                        <a href="../2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html#disqus_thread" data-disqus-identifier="cache/posts/2017/02/bmtc-exploiting-crores-from-bangalore-citizens.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/refactoring-django-with-fst.html" class="u-url">Refactoring Django With Full Syntax Tree</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
-<p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
-
-<p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
-
-<p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.</p>
-<pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
-   <span class="m">1364</span>
-</pre>
-
-
-<p>So changes has to be scripted. A <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple python script</a> to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.</p>
-<p>To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.</p>
-<p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
-<pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
-<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
-
-   <span class="k">print</span><span class="p">(</span>
-    <span class="s2">"hello world"</span>
-<span class="p">)</span>
-</pre>
-
-
-<p>Converting above code to AST and then converting back gives this</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">)</span>
-</pre>
-
-
-<p>Code to AST is a lossy transformation as they cannot preserve empty lines, comments and code formatting.</p>
-<pre class="code literal-block"><span></span><span class="n">ast_to_code</span><span class="p">(</span><span class="n">code_to_ast</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">!=</span> <span class="n">source_code</span>
-</pre>
-
-
-<p>For lossless transformation, FST(Full Syntax Trees) is needed.</p>
-<pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
-</pre>
-
-
-<p><a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
-<p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.</p>
-<p>Thanks to <a href="https://github.com/timgraham" target="_blank">Tim Graham</a> &amp; <a href="https://github.com/aaugustin" target="_blank">Aymeric Augustin</a> for <a href="https://github.com/django/django/pull/7905/commits/d6eaf7c0183cd04b78f2a55e1d60bb7e59598310" target="_blank">reviewing the patch</a>.</p>
-</div>
-        </div>
-                        <a href="../2017/01/refactoring-django-with-fst.html#disqus_thread" data-disqus-identifier="cache/posts/2017/01/refactoring-django-with-fst.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/01/blog_posts_are_better_than_scientific_papers/" class="u-url">Why Blog Posts Are Better Than Scientific Papers?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Titus Brown wrote a blog post on why <a href="http://ivory.idyll.org/blog/2017-top-ten-reasons-blog-posts.html">blog posts are better than scientific papers</a>. Here are few more reasons for that.</p>
-<h3>Fast</h3>
-<p>Publishing blog posts is lightning fast(how fast can you type?). You can just publish it with a click after writing. However with scientific papers you have to wait months to get your work published.</p>
-<h3>Mutability</h3>
-<p>Blog posts are easy to edit. If you are using a version controlled system like git, any one can easily collaborate. You can also leave comments on (most) blog posts and can have discussion with the author and/or others. Scientific papers once published are hard to change.</p>
-<h3>No Gatekeepers</h3>
-<p>To publish blog posts, you can setup your own blog or use services like <a href="http://medium.com">medium</a>. There are no gatekeepers who says that you can't publish a blog post because they thinks its not worth it.</p>
-<h3>Organic</h3>
-<p>Blog posts tend to be casual and organic. You can crack a joke and readers will enjoy it. Scientific papers are formal. You spray some sarcasm and your paper never gets published.</p>
-</div>
-        </div>
-                        <a href="../2017/01/blog_posts_are_better_than_scientific_papers/#disqus_thread" data-disqus-identifier="cache/posts/2017/01/why_blog_posts_are_better_than_research_papers.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/12/" class="u-url">What Is The Meaning Of Life?</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>The meaning of life is</p>
-<blockquote cite="https://en.oxforddictionaries.com/definition/life">
-
-the condition that distinguishes animals and plants from inorganic matter, including the capacity for growth, reproduction, functional activity, and continual change preceding death.
-
-</blockquote>
-
-<p>Source: Oxford Dictionary</p>
-</div>
-        </div>
-                        <a href="../2016/12/#disqus_thread" data-disqus-identifier="cache/posts/2016/12/what is the meaning of life.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2016/11/detect-correct-skew-images-python.html" class="u-url">Detect &amp; Correct Skew In Images Using Python</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>When scanning a document, a slight skew gets into the scanned image. If you are using the scanned image to extract information from it, detecting and correcting skew is crucial.</p>
-<p>There are several techniques that are used to skew correction.</p>
-<ul>
-<li>Projection profile method</li>
-<li>
-<p>Hough transform</p>
-</li>
-<li>
-<p>Topline method</p>
-</li>
-<li>
-<p>Scanline method</p>
-</li>
-</ul>
-<p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
-<p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
-<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
-
-<span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
-
-<span class="c1"># convert to binary</span>
-<span class="n">wd</span><span class="p">,</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
-<span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'1'</span><span class="p">)</span><span class="o">.</span><span class="n">getdata</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-<span class="n">bin_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ht</span><span class="p">,</span> <span class="n">wd</span><span class="p">))</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'binary.png'</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
-
-
-<span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">limit</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">limit</span><span class="p">,</span> <span class="n">limit</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
-    <span class="n">hist</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">find_score</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
-    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-
-<span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
-<span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">'Best angle: {}'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
-
-<span class="c1"># correct skew</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
-<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
-</pre>
-
-
-<p><strong>Results:</strong></p>
-<p align="center"><img align="center" src="../skew_python/original.png"></p>
-
-<p align="center">Original Image</p>
-
-<hr>
-<p align="center"><img align="center" src="../skew_python/gray.png"></p>
-
-<p align="center">Black &amp; white image</p>
-
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
-
-<p align="center">Histogram of image</p>
-
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
-
-<p align="center">Scores at various angles</p>
-
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
-
-<p align="center">Histogram at 2° (best angle)</p>
-
-<hr>
-<p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
-
-<p align="center">Skew corrected image</p>
-
-<p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
-</div>
-        </div>
-                        <a href="../2016/11/detect-correct-skew-images-python.html#disqus_thread" data-disqus-identifier="cache/posts/2016/11/detect-correct-skew-images-python.html">Comments</a>
-
-
         </article><nav class="postindexpager"><ul class="pager">
 <li class="previous">
-                <a href="index-12.html" rel="prev">Newer posts</a>
+                <a href="." rel="prev">Newer posts</a>
             </li>
             <li class="next">
                 <a href="index-10.html" rel="next">Older posts</a>
