@@ -1434,3 +1434,82 @@ for label in labels:
 REDIRECTIONS = LABEL_REDIRECTIONS
 
 NEW_POST_DATE_PATH_FORMAT = '%Y/%m'
+
+
+RENDER_STATIC_TAG_CLOUDS = {
+    'tag-small': {
+        # Tag cloud's name (used as CSS class). {0} will be replaced
+        # by the language.
+        'name': 'tcs-{0}',
+
+        # Filename for the HTML fragment. {0} will be replaced by the
+        # language.
+        'filename': 'tagcloud.html',
+
+        # The taxonomy type to obtain the classification ("tags")
+        # from.
+        'taxonomy_type': 'tag',
+
+        # Filename for the CSS. {0} will be replaced by the language.
+        'style_filename': 'assets/css/tagcloud-small.css',
+
+        # Maximum number of levels to be generated
+        'max_number_of_levels': 15,
+
+        # Maximum number of tags in cloud. Negative values mean
+        # that all tags will appear.
+        'max_tags': 40,
+
+        # Tags which appear less often than this number will be
+        # ignored.
+        'minimal_number_of_appearances': 2,
+
+        # Colors defining a gradient out of which the tag font colors
+        # are taken. The colors are specified as RGP triples with each
+        # component being a floating point number between 0.0 and 1.0.
+        # 'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
+        'colors': ((1.0,1.0,1.0), ),
+
+        # Colors defining a gradient out of which the tag background
+        # colors are taken.
+        'background_colors': ((0.5, 0.5, 0.5), ),
+
+        # Colors defining a gradient out of which the tag border colors
+        # are taken.
+        'border_colors': ((0.4, 0.4, 0.4), ),
+
+        # Interval (min_value, max_value) for the font size
+        'font_sizes': (15, 25),
+
+        # If positive, will be multiplied by font size to yield the
+        # CSS border radius and the vertical margin. (The horizontal
+        # margin is set to zero.)
+        'round_factor': 0.6,
+    },
+    'tag-large': {
+        'name': 'tcl-{0}',
+        'filename': 'tagcloud-large.inc',
+        'taxonomy_type': 'tag',
+        'style_filename': 'assets/css/tagcloud-large.css',
+        'max_number_of_levels': 100,
+        'minimal_number_of_appearances': 1,
+        'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
+        'background_colors': ((0.1, 0.1, 0.1), ),
+        'border_colors': ((0.4, 0.4, 0.4), ),
+        'font_sizes': (8, 35),
+        'round_factor': 0.3,
+    },
+    'category-large': {
+        'name': 'ccl-{0}',
+        'filename': 'catcloud-{0}-large.inc',
+        'taxonomy_type': 'category',
+        'style_filename': 'assets/css/catcloud-large.css',
+        'max_number_of_levels': 100,
+        'minimal_number_of_appearances': 1,
+        'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
+        'background_colors': ((0.1, 0.1, 0.1), ),
+        'border_colors': ((0.4, 0.4, 0.4), ),
+        'font_sizes': (8, 35),
+        'round_factor': 0.3,
+    },
+}
