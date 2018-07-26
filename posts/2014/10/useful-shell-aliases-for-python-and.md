@@ -2,7 +2,7 @@
 .. title: Django Tips & Tricks #1 - Useful Shell Aliases For Python/Django Developers
 .. slug: useful-shell-aliases-for-python-and
 .. date: 2014-10-25 18:27:00
-.. tags: python, terminal, django, django-tips-tricks
+.. tags: python, command-line, django, django-tips-tricks
 .. category: tech, programming, python
 .. description: Using shell aliases for productivity.
 -->
