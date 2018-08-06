@@ -12,7 +12,7 @@
 
 ### Personal Projects
 
-- [fadapa](https://github.com/ChillarAnand/fadapa) - A python package to parse FastQC output data.
+- [fadapa](https://github.com/ChillarAnand/fadapa) - Python package to parse FastQC output data.
 
 - [real-auto-save](https://github.com/ChillarAnand/real-auto-save) - Automatically save buffers at regular intervals in Emacs.
 
@@ -21,6 +21,8 @@
 - [emacsism](https://github.com/ChillarAnand/emacsism) - A glimpse of divine editing experience with emacs.
 
 - [NetworkInfoWidget](https://github.com/ChillarAnand/NetworkInfoWidget) - Android widget to show network name & ip address.
+
+- [Stock Trends](https://github.com/ChillarAnand/stocktrends) - Python package to calculate sentiment trends in stocks.
 
 
 ### OSS Contributions
