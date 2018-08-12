@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to convert mitmproxy request dump to curl commands or any other custom formats.">
+<meta name="author" content="Chillar Anand">
+<title>Parsing &amp; Transforming mitmproxy Request Flows | Avil Page</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link rel="canonical" href="http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html">
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]--><link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<style>
+     #wrapper {
+         width: 100%;
+         margin: 0;
+     }
+
+     #first-div {
+         width: 16%;
+         height: 90px;
+         /*          margin: 10px 0px 0px 10px; */
+         margin: 0;
+         float: left ;
+     }
+
+     #second-div {
+         width: 84%;
+         height: 72px;
+         margin: 18px 0px 0px 0px;
+         float: left ;
+     }
+    </style>
+</head>
+<body>
+        <div id="">
+            <div id="container">
+                <!-- <h1 id="blog-title">
+                     <a href="http://avilpage.com/" title="Avil Page" rel="home">Avil Page</a>
+                     </h1> -->
+
+
+
+
+    <div class="postbox">
+
+        <article class="postbox post-text"><div class="h-entry" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <h1 class="p-name" itemprop="headline name">Parsing &amp; Transforming mitmproxy Request Flows</h1>
+
+
+
+
+                5 min read
+
+
+                <hr>
+<div class="e-content" itemprop="articleBody text">
+                    <div>
+<p><a href="https://mitmproxy.org/">mitmproxy</a> is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.</p>
+<p>mitmproxy provides an option to export web request flows to curl/httpie/raw formats. From mitmproxy, we can press <code>e</code>(export) and then we can select format for exporting.</p>
+<p align="center">
+<img src="../../images/mitm-curl.png" height="300px" width="600"></p>
+
+<p>Exporting multiple requests with this interface becomes tedious. Instead we can save all requests to a file and write a python script to export them.</p>
+<p>Start mitmproxy with this command so that all request flows are appended to <code>requests.mitm</code> file for later use.</p>
+<pre class="code literal-block"><span></span>$ mitmproxy -w +requests.mitm
+</pre>
+
+
+<p>Here is a python script to parse this dump file and print request URLs.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
+
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">'requests.mitm'</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">FlowReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+</pre>
+
+
+<p><code>flow.request</code> object has more attributes to provide information about the request.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">31</span><span class="p">]:</span>
+<span class="p">[</span><span class="o">...</span>
+ <span class="s1">'host'</span><span class="p">,</span>
+ <span class="s1">'host_header'</span><span class="p">,</span>
+ <span class="s1">'http_version'</span><span class="p">,</span>
+ <span class="s1">'method'</span><span class="p">,</span>
+ <span class="s1">'multipart_form'</span><span class="p">,</span>
+ <span class="s1">'path'</span><span class="p">,</span>
+ <span class="s1">'raw_content'</span><span class="p">,</span>
+ <span class="o">...</span>
+ <span class="s1">'wrap'</span><span class="p">]</span>
+</pre>
+
+
+<p>We can use the mitmproxy export utilities to transform mitm flows to other formats.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">33</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">mitmproxy.addons</span> <span class="kn">import</span> <span class="n">export</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">34</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">curl_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">34</span><span class="p">]:</span> <span class="s2">"curl -H 'Host:mitm.it' -H 'Proxy-Connection:keep-alive' -H 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' -H 'DNT:1' -H 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' -H 'Referer:http://mitm.it/' -H 'Accept-Encoding:gzip, deflate' -H 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' -H 'content-length:0' 'http://mitm.it/favicon.ico'"</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">35</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">35</span><span class="p">]:</span> <span class="sa">b</span><span class="s1">'GET /favicon.ico HTTP/1.1</span><span class="se">\r\n</span><span class="s1">Host: mitm.it</span><span class="se">\r\n</span><span class="s1">Proxy-Connection: keep-alive</span><span class="se">\r\n</span><span class="s1">User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36</span><span class="se">\r\n</span><span class="s1">DNT: 1</span><span class="se">\r\n</span><span class="s1">Accept: image/webp,image/apng,image/*,*/*;q=0.8</span><span class="se">\r\n</span><span class="s1">Referer: http://mitm.it/</span><span class="se">\r\n</span><span class="s1">Accept-Encoding: gzip, deflate</span><span class="se">\r\n</span><span class="s1">Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7</span><span class="se">\r\n\r\n</span><span class="s1">'</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">httpie_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="s2">"http GET http://mitm.it/favicon.ico 'Host:mitm.it' 'Proxy-Connection:keep-alive' 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' 'DNT:1' 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' 'Referer:http://mitm.it/' 'Accept-Encoding:gzip, deflate' 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' 'content-length:0'"</span>
+</pre>
+
+
+<p>With these utilities we can transform mitmproxy request flow to curl command or any other custom form to fit our needs.</p>
+</div>
+                </div>
+                    <meta content="How to convert mitmproxy request dump to curl commands or any other custom formats." itemprop="description">
+</div>
+
+                <b> Tags: </b>
+                    <a href="../../tags/python.html">python</a>
+
+            <br><hr>
+<div id="wrapper">
+                <div id="first-div">
+                    <img src="https://s.gravatar.com/avatar/608fa09693cef8d410834bd55755dbed?s=80">
+</div>
+                <div id="second-div">
+                    I am Chillar Anand. I daydream a lot and write about the things that interest me here.
+                    You can read more about <a href="../../p/about-avilpage.html">this blog here</a>.
+                </div>
+            </div>
+
+            <hr>
+<a href="../../">
+                <h2>See all articles</h2>
+            </a>
+
+            <a href="../../rss.xml">
+                <h3>RSS Feed for the blog</h3>
+            </a>
+
+            <a href="https://github.com/ChillarAnand/avilpage.com">
+                Edit this page
+            </a>
+
+            <hr>
+<section class="comments hidden-print"><h2>Comments</h2>
+                                    <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="avilpage",
+            disqus_url="http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html",
+        disqus_title="Parsing & Transforming mitmproxy Request Flows",
+        disqus_identifier="cache/posts/2018/08/parsing-and-transforming-mitmproxy-request-flows.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+                </section></article>
+</div>
+                   <script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script><br>
+</div>
+
+
+            <!--Sidebar content-->
+            <!-- <ul class="unstyled">
+                     
+
+                                 <li><a href="/">Articles</a>
+                <li><a href="/about">About.html</a>
+                <li><a href="/rss.xml">RSS</a>
+
+                 </ul> -->
+            <br>
+</div>
+    </body>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-81644162-1', 'auto');
+    ga('send', 'pageview');
+
+    </script>
+</html>
