@@ -22,7 +22,74 @@
 
 
 
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/07/linux-performance-analysis-in-seconds.html" class="u-url">Linux Performance Analysis In Less Than 10 Seconds</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/08/parsing-and-transforming-mitmproxy-request-flows.html" class="u-url">Parsing &amp; Transforming mitmproxy Request Flows</a></h1>
+        <hr>
+<div class="e-content">
+        <div>
+<p><a href="https://mitmproxy.org/">mitmproxy</a> is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.</p>
+<p>mitmproxy provides an option to export web request flows to curl/httpie/raw formats. From mitmproxy, we can press <code>e</code>(export) and then we can select format for exporting.</p>
+<p align="center">
+<img src="../images/mitm-curl.png" height="300px" width="600"></p>
+
+<p>Exporting multiple requests with this interface becomes tedious. Instead we can save all requests to a file and write a python script to export them.</p>
+<p>Start mitmproxy with this command so that all request flows are appended to <code>requests.mitm</code> file for later use.</p>
+<pre class="code literal-block"><span></span>$ mitmproxy -w +requests.mitm
+</pre>
+
+
+<p>Here is a python script to parse this dump file and print request URLs.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
+
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">'requests.mitm'</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">FlowReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+</pre>
+
+
+<p><code>flow.request</code> object has more attributes to provide information about the request.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">31</span><span class="p">]:</span>
+<span class="p">[</span><span class="o">...</span>
+ <span class="s1">'host'</span><span class="p">,</span>
+ <span class="s1">'host_header'</span><span class="p">,</span>
+ <span class="s1">'http_version'</span><span class="p">,</span>
+ <span class="s1">'method'</span><span class="p">,</span>
+ <span class="s1">'multipart_form'</span><span class="p">,</span>
+ <span class="s1">'path'</span><span class="p">,</span>
+ <span class="s1">'raw_content'</span><span class="p">,</span>
+ <span class="o">...</span>
+ <span class="s1">'wrap'</span><span class="p">]</span>
+</pre>
+
+
+<p>We can use the mitmproxy export utilities to transform mitm flows to other formats.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">33</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">mitmproxy.addons</span> <span class="kn">import</span> <span class="n">export</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">34</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">curl_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">34</span><span class="p">]:</span> <span class="s2">"curl -H 'Host:mitm.it' -H 'Proxy-Connection:keep-alive' -H 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' -H 'DNT:1' -H 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' -H 'Referer:http://mitm.it/' -H 'Accept-Encoding:gzip, deflate' -H 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' -H 'content-length:0' 'http://mitm.it/favicon.ico'"</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">35</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">35</span><span class="p">]:</span> <span class="sa">b</span><span class="s1">'GET /favicon.ico HTTP/1.1</span><span class="se">\r\n</span><span class="s1">Host: mitm.it</span><span class="se">\r\n</span><span class="s1">Proxy-Connection: keep-alive</span><span class="se">\r\n</span><span class="s1">User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36</span><span class="se">\r\n</span><span class="s1">DNT: 1</span><span class="se">\r\n</span><span class="s1">Accept: image/webp,image/apng,image/*,*/*;q=0.8</span><span class="se">\r\n</span><span class="s1">Referer: http://mitm.it/</span><span class="se">\r\n</span><span class="s1">Accept-Encoding: gzip, deflate</span><span class="se">\r\n</span><span class="s1">Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7</span><span class="se">\r\n\r\n</span><span class="s1">'</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">httpie_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="s2">"http GET http://mitm.it/favicon.ico 'Host:mitm.it' 'Proxy-Connection:keep-alive' 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' 'DNT:1' 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' 'Referer:http://mitm.it/' 'Accept-Encoding:gzip, deflate' 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' 'content-length:0'"</span>
+</pre>
+
+
+<p>With these utilities we can transform mitmproxy request flow to curl command or any other custom form to fit our needs.</p>
+</div>
+        </div>
+                        <a href="../2018/08/parsing-and-transforming-mitmproxy-request-flows.html#disqus_thread" data-disqus-identifier="cache/posts/2018/08/parsing-and-transforming-mitmproxy-request-flows.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/07/linux-performance-analysis-in-seconds.html" class="u-url">Linux Performance Analysis In Less Than 10 Seconds</a></h1>
         <hr>
 <div class="e-content">
         <div>
@@ -665,78 +732,6 @@ http://incepro.serveo/list/
 </div>
         </div>
                         <a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html#disqus_thread" data-disqus-identifier="cache/posts/2017/12/automatic-magnetometer-calibration-with-arduino.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/11/django-tricks-auto-register-models-admin.html" class="u-url">Django Tips &amp; Tricks #9 - Auto Register Models In Admin</a></h1>
-        <hr>
-<div class="e-content">
-        <div>
-<p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
-<p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
-
-
-<span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-
-<span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-    <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre>
-
-
-<p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
-<p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
-
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
-                <span class="k">pass</span>
-</pre>
-
-
-<p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
-<p align="center">
-<img src="../images/django-admin-auto.png" width="600px"></p>
-
-<p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-
-<span class="k">class</span> <span class="nc">ListAdminMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"id"</span><span class="p">]</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
-
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-            <span class="n">admin_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">'AdminClass'</span><span class="p">,</span> <span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">),</span> <span class="p">{})</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
-                <span class="k">pass</span>
-</pre>
-
-
-<p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
-<p align="center">
-<img src="../images/django-admin-auto-2.png" width="600px"></p>
-</div>
-        </div>
-                        <a href="../2017/11/django-tricks-auto-register-models-admin.html#disqus_thread" data-disqus-identifier="cache/posts/2017/11/django-tips-tricks-auto-register-models-admin.html">Comments</a>
 
 
         </article><nav class="postindexpager"><ul class="pager">
