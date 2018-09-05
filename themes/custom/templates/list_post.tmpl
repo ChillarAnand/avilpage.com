@@ -2,30 +2,38 @@
 
 {% import 'post_helper.tmpl' as helper with context %}
 {% import 'post_header.tmpl' as pheader with context %}
-
+{% import 'archive_navigation_helper.tmpl' as archive_nav with context %}
+{% import 'feeds_translations_helper.tmpl' as feeds_translations with context %}
 {% extends 'base.tmpl' %}
 
 {% block content %}
-
-    {% if posts %}
-
-        {% for group in posts|groupby('date.year')|reverse %}
-            <h4>{{ group.grouper }}</h4>
-            {% for post in group.list %}
-                <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
-                <br />
-                {{ post.formatted_date('%d %b %y') }} |
-
-                {% set time = (post.text() | wordcount / 200) | round | int %}
-                {% if time == 0 %}
-                    {% set time = 1 %}
-                {% endif %}
-                {{ time }} min read
-
-                <br /><br />
+    <article class="listpage">
+        <header>
+            <h1>{{ title|e }}</h1>
+        </header>
+        {{ archive_nav.archive_navigation() }}
+        {{ feeds_translations.translation_link() }}
+        <div class="postlist">
+            {% for group in posts|groupby('date.year')|reverse %}
+                <h4>{{ group.grouper }}</h4>
+                {% for post in group.list %}
+                    <a href="{{ post.permalink() }}" class="listtitle">{{ post.title()|e }}</a>
+                    <br />
+                    <time class="listdate" datetime="{{ post.formatted_date('webiso') }}" title="{{ post.formatted_date(date_format)|e }}">
+                        {{ post.formatted_date(date_format) }}
+                    </time>
+                    {% set time = (post.text() | wordcount / 200) | round | int %}
+                    {% if time == 0 %}
+                        {% set time = 1 %}
+                    {% endif %}
+                    {{ time }} min read
+                    <br /><br />
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
+        </div>
+    </article>
+{% endblock %}
 
-    {% endif %}
-
+{% block extra_head %}
+    {{ feeds_translations.head() }}
 {% endblock %}
