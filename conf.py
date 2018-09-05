@@ -133,7 +133,9 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 NAVIGATION_LINKS = {
     DEFAULT_LANG: (
         ("/", "Articles"),
-        ("/about", "About.html"),
+        ("/p/talks.html", "Talks"),
+        ("/p/projects.html", "Projects"),
+        ("/p/about.html", "About"),
         # ("/archive.html", "Archives"),
         # ("/categories/index.html", "Tags"),
         ("/rss.xml", "RSS"),
@@ -142,6 +144,7 @@ NAVIGATION_LINKS = {
 
 # Name of the theme to use.
 THEME = "avilpage"
+THEME = "custom"
 
 
 # use archive as home page
