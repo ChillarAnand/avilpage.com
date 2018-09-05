@@ -13,7 +13,6 @@
 
 mitmproxy provides an option to export web request flows to curl/httpie/raw formats. From mitmproxy, we can press `e`(export) and then we can select format for exporting.
 
-
 <p align="center">
 <img src="/images/mitm-curl.png"  height="300px" width="600" />
 </p>
