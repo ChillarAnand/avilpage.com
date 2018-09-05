@@ -1,0 +1,31 @@
+{#  -*- coding: utf-8 -*- #}
+
+{% import 'post_helper.tmpl' as helper with context %}
+{% import 'post_header.tmpl' as pheader with context %}
+
+{% extends 'base.tmpl' %}
+
+{% block content %}
+
+    {% if posts %}
+
+        {% for group in posts|groupby('date.year')|reverse %}
+            <h4>{{ group.grouper }}</h4>
+            {% for post in group.list %}
+                <a href="{{ post.permalink() }}"> {{ post.title() }}</a>
+                <br />
+                {{ post.formatted_date('%d %b %y') }} |
+
+                {% set time = (post.text() | wordcount / 200) | round | int %}
+                {% if time == 0 %}
+                    {% set time = 1 %}
+                {% endif %}
+                {{ time }} min read
+
+                <br /><br />
+            {% endfor %}
+        {% endfor %}
+
+    {% endif %}
+
+{% endblock %}
