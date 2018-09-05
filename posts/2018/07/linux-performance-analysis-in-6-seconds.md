@@ -10,7 +10,7 @@
 -->
 
 
-If you are using a Linux System or managing a Linux server, you might come across a situation where a process will be taking too long to complete. In this article we will see how to track down such performance issues in Linux.
+If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.
 
 
 Netflix TechBlog has an article on how to [anlyze Linux performance in 60 seconds](https://medium.com/netflix-techblog/linux-performance-analysis-in-60-000-milliseconds-accc10403c55). This article  provides 10+ tools to use in order to see the resource usage and pinpoint the bottleneck.
