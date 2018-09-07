@@ -2,10 +2,11 @@
 .. title: Django Tips & Tricks #8 - Hyperlink Foreignkey Fields In Admin
 .. slug: django-tips-tricks-hyperlink-foreignkey-admin
 .. date: 2017-11-14 21:21:21 UTC
+.. updated: 2018-09-07 08:21:21 UTC
 .. tags: python, django, django-tips-tricks
 .. category: tech, programming, python
 .. link:
-.. description: Django productivity tips. How to hyperlink foreignkey fields in django admin interface for faster access.
+.. description: Django admin productivity tips. How to hyperlink foreignkey fields in django admin interface for faster access.
 .. type: text
 -->
 
@@ -44,45 +45,32 @@ Once they are registed, admin page shows `Book` model like this.
 </p>
 
 
-While browing books, to go to a particular author, we have to previous page, go to `Author` model and then find relevant author. This becomes tedious if we spend lot of time in admin. Instead, if author field has a hyperlink, we can directly go to its page.
+While browsing books, we can see `name` and `author`. Here, name field is liked to change view of book. But author field is shown as plain text. If we have to modify author name, we have to go back to authors admin page, search for relevant author and then change name.
 
-Django provides an option to [access admin views by its URL](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls) reversing system. For example, we can get add view of author model in book app from `reverse("admin:book_author_add")`.
+This becomes tedious if we spend lot of time in admin for tasks like this. Instead, if author field is hyperlinked to its change view, we can directly go to that page.
 
-To hyperlink author field in book admin, get url from reversing `book_author_change` with its id and return required html.
+Django provides an option to [access admin views by its URL reversing system](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls). For example, we can get change view of author model in book app using `reverse("admin:book_author_change", args=id)`. Now we can use this url to hyperlink author field in book admin.
+
 
 ```
+from django.contrib import admin
+from django.utils.safestring import mark_safe
+
+
 class BookAdmin(admin.ModelAdmin):
     list_display = ('name', 'author_link', )
 
     def author_link(self, book):
-        link = reverse("admin:book_author_change", args=[book.author.id])
-        return u'<a href="%s">%s</a>' % (link, book.author.name)
-    author_link.allow_tags = True
+        url = reverse("admin:book_author_change", args=[book.author.id])
+        link = '<a href="%s">%s</a>' % (url, book.author.name)
+        return mark_safe(link)
     author_link.short_description = 'Author'
 ```
 
-Now in the book admin view, author field will be hyperlinked and we can visit just by clicking it.
+Now in the book admin view, author field will be hyperlinked to its change view and we can visit just by clicking it.
 
 <p align="center">
 <img src="/images/django-tips-tricks-2.png" />
 </p>
 
-
-<b>Update:</b>
-
-Django has inbuilt option for this. It provides [`list_display_links`](https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display_links), to control which fields should be linked to change page. So, we can just add author field to it.
-
-
-```py
-from django.contrib import admin
-
-from .models import Author, Book
-
-class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', )
-    list_display_links = ('name', 'author',)
-
-admin.site.register(Author)
-```
-
-Now, author field will be hyperlinked to its change page.
+Depending on requirements, we can link any field in django to other fields or add custom fields to improve productivity.
