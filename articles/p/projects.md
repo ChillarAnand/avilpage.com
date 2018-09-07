@@ -1,5 +1,5 @@
 <!--
-.. title: Chillar Anand Projects
+.. title: Projects
 .. slug: projects
 .. date: 2018-03-04 21:21:21 UTC
 .. tags:
