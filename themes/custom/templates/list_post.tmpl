@@ -1,6 +1,6 @@
 {#  -*- coding: utf-8 -*- #}
 
-{% import 'post_helper.tmpl' as helper with context %}
+{% import 'helper.tmpl' as helper with context %}
 {% import 'post_header.tmpl' as pheader with context %}
 {% import 'archive_navigation_helper.tmpl' as archive_nav with context %}
 {% import 'feeds_translations_helper.tmpl' as feeds_translations with context %}
@@ -22,11 +22,7 @@
                     <time class="listdate" datetime="{{ post.formatted_date('webiso') }}" title="{{ post.formatted_date(date_format)|e }}">
                         {{ post.formatted_date(date_format) }}
                     </time>
-                    {% set time = (post.text() | wordcount / 200) | round | int %}
-                    {% if time == 0 %}
-                        {% set time = 1 %}
-                    {% endif %}
-                    {{ time }} min read
+                    {{ helper.duration(post) }}
                     <br /><br />
                 {% endfor %}
             {% endfor %}
