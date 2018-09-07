@@ -1,5 +1,5 @@
 <!--
-.. title: Chillar Anand Talks
+.. title: Tech Talks
 .. slug: talks
 .. date: 2017-08-24 13:29:59 UTC
 .. tags:
