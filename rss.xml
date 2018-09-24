@@ -1,5 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 07 Sep 2018 08:36:11 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Parsing &amp; Transforming mitmproxy Request Flows</title><link>http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://mitmproxy.org/"&gt;mitmproxy&lt;/a&gt; is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Sep 2018 18:02:22 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Load Testing WebSockets?</title><link>http://avilpage.com/2018/09/guide-to-load-testing-websockets.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;An important part of load testing is finding a right tool that fits our needs. Here are some tools for load testing websockets.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.npmjs.com/package/thor"&gt;thor&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.npmjs.com/package/thor"&gt;artillery&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/loadimpact/k6"&gt;k6&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/Fitblip/wsstat"&gt;wsstat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/M6Web/websocket-bench"&gt;websocket-bench&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/processone/tsung"&gt;tsung&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://jmeter.apache.org/"&gt;Jmeter&lt;/a&gt;(requires plugin)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For this tutorial, we will be using artillery for load testing as it supports quick testing from command line as well as simulating real scenarios from yml config file. It also has inbuilt support for reports.&lt;/p&gt;
+&lt;p&gt;Install node &amp;amp; npm on the system with apt package manager.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ sudo apt install -y nodejs npm
+&lt;/pre&gt;
+
+
+&lt;p&gt;Install artillery with npm.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ npm install -g artillery
+&lt;/pre&gt;
+
+
+&lt;p&gt;Lets write a simple configuration file to test echo websocket at wss://echo.websocket.com&lt;/p&gt;
+&lt;p&gt;Artillery script is composed of two sections: &lt;code&gt;config&lt;/code&gt; and &lt;code&gt;scenarios&lt;/code&gt;. The &lt;code&gt;config&lt;/code&gt; section defines the target, load, environment and other configurations. The &lt;code&gt;scenarios&lt;/code&gt; section contains definitions of test cases that will be executed.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  config:
+    target: "wss://echo.websocket.org"
+    phases:
+      - duration: 600
+        arrivalRate: 100
+        name: "Steady users"
+
+
+  scenarios:
+    - engine: "ws"
+      flow:
+        - send: "hello"
+&lt;/pre&gt;
+
+
+&lt;p&gt;This script will create 100 virtual users every second for 600 seconds. Each virtual user will connect to the socket and send &lt;code&gt;hello&lt;/code&gt; after websocket connection is established.&lt;/p&gt;
+&lt;p&gt;Save this script to a file called &lt;code&gt;load.yml&lt;/code&gt; and run it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ artillery run load.yml -o results.json
+&lt;/pre&gt;
+
+
+&lt;p&gt;Once load testing is completed, it will save results to &lt;code&gt;results.json&lt;/code&gt; file. Artillery can convert this json to graphs for visualization. To see a detailed report, run&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ artillery report results.json
+&lt;/pre&gt;
+
+
+&lt;p&gt;Here is a sample report generated with artillery.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/load-testing-report.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;For quick loadtesting and to see how server performs under given load, artillery will be sufficient. Artillery doesn't support websocket responses yet. For load testing scenarios based on websocket responses, Jmeter or tsung can be used.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>load-testing</category><guid>http://avilpage.com/2018/09/guide-to-load-testing-websockets.html</guid><pubDate>Mon, 24 Sep 2018 08:51:21 GMT</pubDate></item><item><title>Parsing &amp; Transforming mitmproxy Request Flows</title><link>http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://mitmproxy.org/"&gt;mitmproxy&lt;/a&gt; is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.&lt;/p&gt;
 &lt;p&gt;mitmproxy provides an option to export web request flows to curl/httpie/raw formats. From mitmproxy, we can press &lt;code&gt;e&lt;/code&gt;(export) and then we can select format for exporting.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="http://avilpage.com/images/mitm-curl.png" height="300px" width="600"&gt;
@@ -576,45 +630,4 @@ http://incepro.serveo/list/
 &lt;/pre&gt;
 
 
-&lt;p&gt;This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>technical-analysis</category><category>trading</category><guid>http://avilpage.com/2018/01/how-to-plot-renko-charts-with-python.html</guid><pubDate>Wed, 10 Jan 2018 09:27:23 GMT</pubDate></item><item><title>Automatic Magnetometer Calibration With Arduino</title><link>http://avilpage.com/2017/12/automatic-magnetometer-calibration-with-arduino.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;If we take readings from a 3-axis &lt;a href="https://en.wikipedia.org/wiki/Magnetometer"&gt;magnetometers&lt;/a&gt; like HMC5883L, AK8963C (used in MPU9250) or LSM303DLHC and plot them, its response should be a sphere with ceter at origin.&lt;/p&gt;
-&lt;p&gt;In practice, due to the presence of hard and soft iron distortions, the response will be an ellipsiod with its center shifted away from origin. We need to calibrate the magnetometer to nullify the distortions.&lt;/p&gt;
-&lt;p&gt;First we need to get sample readings of magnetometer in various positions. Depending on the magnetometer, we need to connect it to arduino and take readings by rotating it in 8 shape.&lt;/p&gt;
-&lt;h4&gt;Calibration&lt;/h4&gt;
-&lt;p&gt;Hard iron biases shifts center away from origin. We can eliminate this error by calculating the offsets and shifting the readings.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx_min&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my_min&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz_min&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx_max&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my_max&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz_max&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx_calibrated&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my_calibrated&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz_calibrated&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="c1"&gt;// get min/max values by taking readings&lt;/span&gt;
-&lt;span class="c1"&gt;// from magnetometer of your choice&lt;/span&gt;
-
-&lt;span class="n"&gt;mx_offset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_min&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;mx_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;my_offset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_min&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;my_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;mz_offset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz_min&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;mz_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="n"&gt;mx_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mx&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;my_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;mz_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;mz&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Soft iron biases makes the axial responses uneven which results in ellipsiod shape. An easier way to correct this is to rescale the axial readings to an average value.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;mx_scale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;my_scale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;mz_scale&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="n"&gt;mx_scale&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_max&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mx_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;my_scale&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_max&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;my_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;mz_scale&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz_max&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mz_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="kt"&gt;float&lt;/span&gt; &lt;span class="n"&gt;avg_scale&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_scale&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;my_scale&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;mz_scale&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-
-&lt;span class="n"&gt;mx_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="n"&gt;my_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="n"&gt;mz_calibrated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime. We can also write an auto update function which will recalibrate offsets &amp;amp; scale for every new reading.&lt;/p&gt;&lt;/div&gt;</description><category>arduino</category><category>how-to</category><guid>http://avilpage.com/2017/12/automatic-magnetometer-calibration-with-arduino.html</guid><pubDate>Sat, 02 Dec 2017 21:21:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>technical-analysis</category><category>trading</category><guid>http://avilpage.com/2018/01/how-to-plot-renko-charts-with-python.html</guid><pubDate>Wed, 10 Jan 2018 09:27:23 GMT</pubDate></item></channel></rss>
