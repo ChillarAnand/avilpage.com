@@ -1,59 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2018)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2018/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Sep 2018 18:02:23 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Load Testing WebSockets?</title><link>http://avilpage.com/2018/09/guide-to-load-testing-websockets.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;An important part of load testing is finding a right tool that fits our needs. Here are some tools for load testing websockets.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="https://www.npmjs.com/package/thor"&gt;thor&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://www.npmjs.com/package/thor"&gt;artillery&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://github.com/loadimpact/k6"&gt;k6&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://github.com/Fitblip/wsstat"&gt;wsstat&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://github.com/M6Web/websocket-bench"&gt;websocket-bench&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://github.com/processone/tsung"&gt;tsung&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="https://jmeter.apache.org/"&gt;Jmeter&lt;/a&gt;(requires plugin)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;For this tutorial, we will be using artillery for load testing as it supports quick testing from command line as well as simulating real scenarios from yml config file. It also has inbuilt support for reports.&lt;/p&gt;
-&lt;p&gt;Install node &amp;amp; npm on the system with apt package manager.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ sudo apt install -y nodejs npm
-&lt;/pre&gt;
-
-
-&lt;p&gt;Install artillery with npm.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ npm install -g artillery
-&lt;/pre&gt;
-
-
-&lt;p&gt;Lets write a simple configuration file to test echo websocket at wss://echo.websocket.com&lt;/p&gt;
-&lt;p&gt;Artillery script is composed of two sections: &lt;code&gt;config&lt;/code&gt; and &lt;code&gt;scenarios&lt;/code&gt;. The &lt;code&gt;config&lt;/code&gt; section defines the target, load, environment and other configurations. The &lt;code&gt;scenarios&lt;/code&gt; section contains definitions of test cases that will be executed.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;  config:
-    target: "wss://echo.websocket.org"
-    phases:
-      - duration: 600
-        arrivalRate: 100
-        name: "Steady users"
-
-
-  scenarios:
-    - engine: "ws"
-      flow:
-        - send: "hello"
-&lt;/pre&gt;
-
-
-&lt;p&gt;This script will create 100 virtual users every second for 600 seconds. Each virtual user will connect to the socket and send &lt;code&gt;hello&lt;/code&gt; after websocket connection is established.&lt;/p&gt;
-&lt;p&gt;Save this script to a file called &lt;code&gt;load.yml&lt;/code&gt; and run it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ artillery run load.yml -o results.json
-&lt;/pre&gt;
-
-
-&lt;p&gt;Once load testing is completed, it will save results to &lt;code&gt;results.json&lt;/code&gt; file. Artillery can convert this json to graphs for visualization. To see a detailed report, run&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ artillery report results.json
-&lt;/pre&gt;
-
-
-&lt;p&gt;Here is a sample report generated with artillery.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2018)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2018/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Oct 2018 18:08:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Continous Deployment For Python Chalice</title><link>http://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Outline&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/chalice/"&gt;Chalice&lt;/a&gt; is a microframework developed by Amazon for quickly creating and deploying serverless applications in Python.&lt;/p&gt;
+&lt;p&gt;In this article, we will see how to setup continous deployment with &lt;a href="https://github.com"&gt;GitHub&lt;/a&gt; and &lt;a href="https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html"&gt;AWS CodePipeline&lt;/a&gt;.&lt;/p&gt;
+&lt;h4&gt;CD Setup&lt;/h4&gt;
+&lt;p&gt;Chalice provides cli command &lt;code&gt;deploy&lt;/code&gt; to deploy from local system.&lt;/p&gt;
+&lt;p&gt;Chalice also provides cli command &lt;code&gt;generate-pipeline&lt;/code&gt; command to generate CloudFormation template. This template is useful to automatically generate several resources required for AWS pipeline.&lt;/p&gt;
 &lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/load-testing-report.png"&gt;
+&lt;img src="http://avilpage.com/images/aws-python-pipeline.png" height="300px" width="600"&gt;
 &lt;/p&gt;
 
-&lt;p&gt;For quick loadtesting and to see how server performs under given load, artillery will be sufficient. Artillery doesn't support websocket responses yet. For load testing scenarios based on websocket responses, Jmeter or tsung can be used.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>load-testing</category><guid>http://avilpage.com/2018/09/guide-to-load-testing-websockets.html</guid><pubDate>Mon, 24 Sep 2018 08:51:21 GMT</pubDate></item><item><title>Parsing &amp; Transforming mitmproxy Request Flows</title><link>http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://mitmproxy.org/"&gt;mitmproxy&lt;/a&gt; is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.&lt;/p&gt;
+&lt;p&gt;This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.&lt;/p&gt;
+&lt;p&gt;Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.&lt;/p&gt;
+&lt;p&gt;We can use a custom buildpsec file to directly deploy the code from build step.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.1&lt;/span&gt;
+
+&lt;span class="n"&gt;phases&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Entering&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;phase&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Installing&lt;/span&gt; &lt;span class="n"&gt;dependencies&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;upgrade&lt;/span&gt; &lt;span class="n"&gt;awscli&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;aws&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;chalice&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;txt&lt;/span&gt;
+
+  &lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;entered&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt; &lt;span class="n"&gt;phase&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Build&lt;/span&gt; &lt;span class="n"&gt;started&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;
+      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;chalice&lt;/span&gt; &lt;span class="n"&gt;deploy&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;stage&lt;/span&gt; &lt;span class="n"&gt;staging&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.&lt;/p&gt;&lt;/div&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>http://avilpage.com/2018/10/cd-python-chalice-aws.html</guid><pubDate>Tue, 30 Oct 2018 15:51:21 GMT</pubDate></item><item><title>Parsing &amp; Transforming mitmproxy Request Flows</title><link>http://avilpage.com/2018/08/parsing-and-transforming-mitmproxy-request-flows.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;&lt;a href="https://mitmproxy.org/"&gt;mitmproxy&lt;/a&gt; is a free and open source interactive HTTPS proxy. It provides command-line interface, web interface and Python API for interaction and customizing it for our needs.&lt;/p&gt;
 &lt;p&gt;mitmproxy provides an option to export web request flows to curl/httpie/raw formats. From mitmproxy, we can press &lt;code&gt;e&lt;/code&gt;(export) and then we can select format for exporting.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="http://avilpage.com/images/mitm-curl.png" height="300px" width="600"&gt;
