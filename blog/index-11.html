@@ -71,7 +71,90 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html" class="u-url">Automatic Magnetometer Calibration With Arduino</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/01/how-to-plot-renko-charts-with-python.html" class="u-url">How To Plot Renko Charts With Python?</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p><a href="https://en.wikipedia.org/wiki/Renko">Renko charts</a> are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.</p>
+<p>To plot renko charts, we can choose a fixed price as brick value or calculate it based on ATR(Average True Range) of the instrument.</p>
+<p>There are two types of Renko charts based on which bricks are calculated.</p>
+<h4>Renko chart - Price movement</h4>
+<p>First one is based on price movement. In this, we will divide the price movement of current duration by brick size to get the bricks.</p>
+<p>Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+<span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">plot_renko</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">prev_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">bricks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bricks</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'green'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'red'</span>
+
+        <span class="n">prev_num</span> <span class="o">+=</span> <span class="n">number</span>
+
+        <span class="n">renko</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">prev_num</span> <span class="o">*</span> <span class="n">brick_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">renko</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'cdiff'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s1">'cdiff'</span><span class="p">,</span> <span class="p">)]</span> <span class="o">/</span> <span class="n">brick_size</span>
+
+<span class="n">bricks</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">][</span><span class="s1">'bricks'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">plot_renko</span><span class="p">(</span><span class="n">bricks</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">)</span>
+</pre>
+
+
+<p>Here is a sample renko chart plotted using the above code.</p>
+<p align="center">
+<img src="../images/python-renko3.png"></p>
+
+<h4>Renko chart - Period close</h4>
+<p>In this bricks are calculated based on the close price of the instrument. Calculation of bricks is sligtly complex compared to price movement chart. I have created a seperate package called <a href="https://pypi.python.org/pypi/stocktrends">stocktrends</a> which has this calculation.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">stocktrends</span> <span class="kn">import</span> <span class="n">Renko</span>
+
+<span class="n">renko</span> <span class="o">=</span> <span class="n">Renko</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">renko</span><span class="o">.</span><span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">renko</span><span class="o">.</span><span class="n">get_ohlc_data</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tail</span><span class="p">())</span>
+</pre>
+
+
+<p>This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.</p>
+</div>
+                    </div>
+                                    <a href="../2018/01/how-to-plot-renko-charts-with-python.html#disqus_thread" data-disqus-identifier="cache/posts/2018/01/how-to-plot-renko-charts-with-python.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2017/12/automatic-magnetometer-calibration-with-arduino.html" class="u-url">Automatic Magnetometer Calibration With Arduino</a></h1>
             <hr>
 <div class="e-content">
                         <div>
