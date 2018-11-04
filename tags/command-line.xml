@@ -1,5 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 20 Oct 2018 09:02:52 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Linux Performance Analysis In Less Than 10 Seconds</title><link>http://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 03 Nov 2018 15:54:00 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Comparision Of Alexa, Majestic &amp; Domcop Top Million Sites</title><link>http://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;&lt;a href="http://s3.amazonaws.com/alexa-static/top-1m.csv.zip"&gt;Alexa&lt;/a&gt;, &lt;a href="https://blog.majestic.com/development/majestic-million-csv-daily/"&gt;Majestic&lt;/a&gt; &amp;amp; &lt;a href="https://www.domcop.com/top-10-million-domains"&gt;Domcop&lt;/a&gt;(based on &lt;a href="https://commoncrawl.org/"&gt;CommonCrawl&lt;/a&gt; data) provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.&lt;/p&gt;
+&lt;h4&gt;Collecting data&lt;/h4&gt;
+&lt;p&gt;Lets download data from above sources and extract domain names. The data format is different for each source. We can use &lt;code&gt;awk&lt;/code&gt; tool to extract domains column from the source. After extracting data, sort it and save it to a file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# alexa&lt;/span&gt;
+
+$ wget http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+
+$ unzip top-1m.csv.zip
+
+&lt;span class="c1"&gt;# data sorted by ranking&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; top-1m.csv
+&lt;span class="m"&gt;1&lt;/span&gt;,google.com
+&lt;span class="m"&gt;2&lt;/span&gt;,youtube.com
+&lt;span class="m"&gt;3&lt;/span&gt;,facebook.com
+&lt;span class="m"&gt;4&lt;/span&gt;,baidu.com
+&lt;span class="m"&gt;5&lt;/span&gt;,wikipedia.org
+
+$ awk -F &lt;span class="s2"&gt;","&lt;/span&gt; &lt;span class="s1"&gt;'{print $2}'&lt;/span&gt; top-1m.csv &lt;span class="p"&gt;|&lt;/span&gt; sort &amp;gt; alexa
+
+&lt;span class="c1"&gt;# domains after sorting alphabetically&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; alexa
+&lt;span class="m"&gt;00000&lt;/span&gt;.life
+&lt;span class="m"&gt;00&lt;/span&gt;-000.pl
+&lt;span class="m"&gt;00004&lt;/span&gt;.tel
+&lt;span class="m"&gt;00008888&lt;/span&gt;.tumblr.com
+0002rick.tumblr.com
+&lt;/pre&gt;
+
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Domcop&lt;/span&gt;
+
+$ wget https://www.domcop.com/files/top/top10milliondomains.csv.zip
+
+$ unzip top10milliondomains.csv.zip
+
+&lt;span class="c1"&gt;# data sorted by ranking&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; top10milliondomains.csv
+&lt;span class="s2"&gt;"Rank"&lt;/span&gt;,&lt;span class="s2"&gt;"Domain"&lt;/span&gt;,&lt;span class="s2"&gt;"Open Page Rank"&lt;/span&gt;
+&lt;span class="s2"&gt;"1"&lt;/span&gt;,&lt;span class="s2"&gt;"fonts.googleapis.com"&lt;/span&gt;,&lt;span class="s2"&gt;"10.00"&lt;/span&gt;
+&lt;span class="s2"&gt;"2"&lt;/span&gt;,&lt;span class="s2"&gt;"facebook.com"&lt;/span&gt;,&lt;span class="s2"&gt;"10.00"&lt;/span&gt;
+&lt;span class="s2"&gt;"3"&lt;/span&gt;,&lt;span class="s2"&gt;"youtube.com"&lt;/span&gt;,&lt;span class="s2"&gt;"10.00"&lt;/span&gt;
+&lt;span class="s2"&gt;"4"&lt;/span&gt;,&lt;span class="s2"&gt;"twitter.com"&lt;/span&gt;,&lt;span class="s2"&gt;"10.00"&lt;/span&gt;
+
+$ awk -F &lt;span class="s2"&gt;"\"*,\"*"&lt;/span&gt; &lt;span class="s1"&gt;'{if(NR&amp;gt;1)print $2}'&lt;/span&gt; top10milliondomains.csv.zip &lt;span class="p"&gt;|&lt;/span&gt; sort &amp;gt; domcop
+
+&lt;span class="c1"&gt;# domains after sorting alphabetically&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; domcop
+00000000b.com
+000000book.com
+&lt;span class="m"&gt;0000180&lt;/span&gt;.fortunecity.com
+&lt;span class="m"&gt;000139418&lt;/span&gt;.wixsite.com
+000fashions.blogspot.com
+&lt;/pre&gt;
+
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Majestic&lt;/span&gt;
+
+$ wget http://downloads.majestic.com/majestic_million.csv
+
+&lt;span class="c1"&gt;# data sorted by ranking&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; majestic_million.csv
+GlobalRank,TldRank,Domain,TLD,RefSubNets,RefIPs,IDN_Domain,IDN_TLD,PrevGlobalRank,PrevTldRank,PrevRefSubNets,PrevRefIPs
+&lt;span class="m"&gt;1&lt;/span&gt;,1,google.com,com,474277,3016409,google.com,com,1,1,474577,3012875
+&lt;span class="m"&gt;2&lt;/span&gt;,2,facebook.com,com,462854,3093315,facebook.com,com,2,2,462860,3090006
+&lt;span class="m"&gt;3&lt;/span&gt;,3,youtube.com,com,422434,2504924,youtube.com,com,3,3,422377,2501555
+&lt;span class="m"&gt;4&lt;/span&gt;,4,twitter.com,com,412950,2497935,twitter.com,com,4,4,413220,2495261
+
+$ awk -F &lt;span class="s2"&gt;"\"*,\"*"&lt;/span&gt; &lt;span class="s1"&gt;'{if(NR&amp;gt;1)print $2}'&lt;/span&gt; majestic_million.csv &lt;span class="p"&gt;|&lt;/span&gt; sort &amp;gt; majestic
+
+&lt;span class="c1"&gt;# domains after sorting alphabetically&lt;/span&gt;
+$ head -n &lt;span class="m"&gt;5&lt;/span&gt; majestic
+&lt;span class="m"&gt;00000&lt;/span&gt;.xn--p1ai
+&lt;span class="m"&gt;0000666&lt;/span&gt;.com
+&lt;span class="m"&gt;0000&lt;/span&gt;.jp
+0000www.com
+&lt;span class="m"&gt;0000&lt;/span&gt;.xn--p1ai
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Comparing Data&lt;/h4&gt;
+&lt;p&gt;We have collected and extracted domains from above sources. Lets compare the domains to see how similar they are using &lt;code&gt;comm&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ comm -123 alexa domcop --total
+&lt;span class="m"&gt;871851&lt;/span&gt;  &lt;span class="m"&gt;871851&lt;/span&gt;  &lt;span class="m"&gt;128149&lt;/span&gt;  total
+
+$ comm -123 alexa majestic --total
+&lt;span class="m"&gt;788454&lt;/span&gt;  &lt;span class="m"&gt;788454&lt;/span&gt;  &lt;span class="m"&gt;211546&lt;/span&gt;  total
+
+$ comm -123 domcop majestic --total
+&lt;span class="m"&gt;784388&lt;/span&gt;  &lt;span class="m"&gt;784388&lt;/span&gt;  &lt;span class="m"&gt;215612&lt;/span&gt;  total
+&lt;/pre&gt;
+
+
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ comm -12 alexa domcop &lt;span class="p"&gt;|&lt;/span&gt; comm -123 - majestic --total
+&lt;span class="m"&gt;31314&lt;/span&gt;   &lt;span class="m"&gt;903165&lt;/span&gt;  &lt;span class="m"&gt;96835&lt;/span&gt;   total
+&lt;/pre&gt;
+
+
+&lt;p&gt;So, only 96,835(9.6%) domains are common between all the datasets and the overlap between any two sources is ~20%. Here is a venn diagram showing the overlap between them.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/million-alexa-majestic-domcop.png"&gt;
+&lt;/p&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We have collected data from alexa, domcorp &amp;amp; majestic, extracted domains from it and observed that there is only a small overlap between them.&lt;/p&gt;&lt;/div&gt;</description><category>command-line</category><category>data-analysis</category><category>python</category><guid>http://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</guid><pubDate>Fri, 02 Nov 2018 06:34:58 GMT</pubDate></item><item><title>Linux Performance Analysis In Less Than 10 Seconds</title><link>http://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.&lt;/p&gt;
 &lt;p&gt;Netflix TechBlog has an article on how to &lt;a href="https://medium.com/netflix-techblog/linux-performance-analysis-in-60-000-milliseconds-accc10403c55"&gt;anlyze Linux performance in 60 seconds&lt;/a&gt;. This article  provides 10+ tools to use in order to see the resource usage and pinpoint the bottleneck.&lt;/p&gt;
 &lt;p&gt;It is strenuous to remember all those tools/options and laborious to run all those commands when working on multiple systems.&lt;/p&gt;
 &lt;p&gt;Instead, we can use &lt;a href="http://atoptool.nl/"&gt;atop&lt;/a&gt;, a tool for one stop solution for performance analysis. Here is a comparision of atop with other tools from &lt;a href="https://lwn.net/Articles/387202/"&gt;LWN&lt;/a&gt;.&lt;/p&gt;

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2018 (old posts, page 1) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2018/index-1.html">
+<link rel="prev" href="." type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><link rel="alternate" type="application/rss+xml" title="RSS for section_index 2018" href="rss.xml">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../">Articles</a>
+                </li>
+<li>
+<a href="../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../p/about.html">About</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+<div class="sectionindex">
+    <header><h2><a href=".">2018 (old posts, page 1)</a></h2>
+                    <p class="feedlink">
+                    <a href="rss.xml" type="application/rss+xml">RSS feed</a>
+            </p>
+
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="01/how-to-plot-renko-charts-with-python.html" class="u-url">How To Plot Renko Charts With Python?</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p><a href="https://en.wikipedia.org/wiki/Renko">Renko charts</a> are time independent and are efficient to trade as they eliminate noise. In this article we see how to plot renko charts of any instrument with OHLC data using Python.</p>
+<p>To plot renko charts, we can choose a fixed price as brick value or calculate it based on ATR(Average True Range) of the instrument.</p>
+<p>There are two types of Renko charts based on which bricks are calculated.</p>
+<h4>Renko chart - Price movement</h4>
+<p>First one is based on price movement. In this, we will divide the price movement of current duration by brick size to get the bricks.</p>
+<p>Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+<span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">plot_renko</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">):</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">y_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">prev_num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">bricks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bricks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bricks</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'green'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s1">'red'</span>
+
+        <span class="n">prev_num</span> <span class="o">+=</span> <span class="n">number</span>
+
+        <span class="n">renko</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">prev_num</span> <span class="o">*</span> <span class="n">brick_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">renko</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">'cdiff'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s1">'close'</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s1">'cdiff'</span><span class="p">,</span> <span class="p">)]</span> <span class="o">/</span> <span class="n">brick_size</span>
+
+<span class="n">bricks</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">][</span><span class="s1">'bricks'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">plot_renko</span><span class="p">(</span><span class="n">bricks</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">)</span>
+</pre>
+
+
+<p>Here is a sample renko chart plotted using the above code.</p>
+<p align="center">
+<img src="../images/python-renko3.png"></p>
+
+<h4>Renko chart - Period close</h4>
+<p>In this bricks are calculated based on the close price of the instrument. Calculation of bricks is sligtly complex compared to price movement chart. I have created a seperate package called <a href="https://pypi.python.org/pypi/stocktrends">stocktrends</a> which has this calculation.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">stocktrends</span> <span class="kn">import</span> <span class="n">Renko</span>
+
+<span class="n">renko</span> <span class="o">=</span> <span class="n">Renko</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">renko</span><span class="o">.</span><span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">renko</span><span class="o">.</span><span class="n">get_ohlc_data</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tail</span><span class="p">())</span>
+</pre>
+
+
+<p>This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.</p>
+</div>
+                    </div>
+                                    <a href="01/how-to-plot-renko-charts-with-python.html#disqus_thread" data-disqus-identifier="cache/posts/2018/01/how-to-plot-renko-charts-with-python.html">Comments</a>
+
+
+        </article><nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+        </ul></nav><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        </div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+    }});
+    </script>
+</body>
+</html>
