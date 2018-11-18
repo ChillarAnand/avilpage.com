@@ -76,7 +76,134 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/comparision-alexa-majestic-domcorp-top-million-sites.html" class="u-url">Comparision Of Alexa, Majestic &amp; Domcop Top Million Sites</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/archive-millions-pages-wget-minutes.html" class="u-url">Archive Million Pages With wget In Minutes</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p><a href="https://github.com/webrecorder/webrecorder">webrecorder</a>, <a href="https://github.com/internetarchive/heritrix3">heritrix</a>, <a href="https://nutch.apache.org/">nutch</a>, <a href="https://scrapy.org/">scrapy</a>, <a href="https://github.com/gocolly/colly">colly</a>, <a href="https://github.com/scrapinghub/frontera">frontera</a> are popular tools for large scale web crawling and archiving.</p>
+<p>These tools require some learning curve and some of them don't have inbuilt support for warc(<a href="https://en.wikipedia.org/wiki/Web_ARChive">Web ARChive</a>) output format.</p>
+<p><code>wget</code> comes bundled with most *nix systems and has inbuilt support for warc output. In this article we will see how to quickly archive web pages with wget.</p>
+<h4>Archiving with wget</h4>
+<p>In previous article we have extracted a <a href="11/comparision-alexa-majestic-domcorp-top-million-sites.html">superset of top 1 million domains</a>. We can use that list or urls to archive. Save this list to a file called <code>urls.txt</code>.</p>
+<p>This can be archived with the following command.</p>
+<pre class="code literal-block"><span></span><span class="nv">file</span><span class="o">=</span>urls.txt
+wget -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null
+</pre>
+
+
+<p>wget has the ability to continue partially downloaded files. But this option won't work with warc output. So, it is better to split this list into small chunks and process them. One added advantage of this approach is we can parallely download multiple chunks with wget.</p>
+<pre class="code literal-block"><span></span>mkdir -p chunks
+split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<span class="o">=</span>.txt -a <span class="m">3</span>
+</pre>
+
+
+<p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
+<pre class="code literal-block"><span></span>for file in `ls -r chunks/*.txt`
+do
+   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;
+done
+</pre>
+
+
+<p>To archive 1000 urls, it takes ~15 minutes. In less than 20 minutes, it will download entire million pages.</p>
+<p>Also, each process takes ~8MB of memory. To run 1000 process, a system needs 8GB+ memory. Otherwise, number of parallel processes should be reduced which increases overall run time.</p>
+<p>Each archive chunk will be ~150MB and consume lot of storage. All downloaded acrhives can be zipped to reduce storage.</p>
+<pre class="code literal-block"><span></span>gzip *.warc
+</pre>
+
+
+<p>Here is an idempotent shell script to download and archive files in batches.</p>
+<table class="codehilitetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td>
+<td class="code">
+<pre class="code literal-block"><span></span><span class="ch">#! /bin/sh</span>
+
+<span class="nb">set</span> -x
+
+<span class="nv">batch</span><span class="o">=</span><span class="m">1000</span>
+<span class="nv">size</span><span class="o">=</span><span class="sb">`</span>expr <span class="si">${#</span><span class="nv">batch</span><span class="si">}</span> - <span class="m">1</span><span class="sb">`</span>
+<span class="nv">maxproc</span><span class="o">=</span><span class="m">50</span>
+<span class="nv">file</span><span class="o">=</span>urls.txt
+<span class="nv">dir</span><span class="o">=</span><span class="nv">$HOME</span><span class="s1">'/projects/chunks'</span><span class="nv">$batch</span>
+
+
+mkdir -p <span class="nv">$dir</span>
+split -l <span class="nv">$batch</span> <span class="nv">$file</span> <span class="nv">$dir</span><span class="s1">'/'</span> -d --additional-suffix<span class="o">=</span>.txt -a <span class="nv">$size</span>
+sleep <span class="m">1</span>
+
+<span class="nv">useragent</span><span class="o">=</span><span class="s1">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'</span>
+
+
+<span class="k">for</span> file in <span class="sb">`</span>ls -r <span class="nv">$dir</span>/*.txt<span class="sb">`</span>
+<span class="k">do</span>
+    <span class="nv">warcfile</span><span class="o">=</span><span class="nv">$file</span><span class="s1">'.warc'</span>
+    <span class="nv">warczip</span><span class="o">=</span><span class="nv">$warcfile</span><span class="s1">'.gz'</span>
+    <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$warczip</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> -f <span class="nv">$warcfile</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="k">continue</span>
+    <span class="k">fi</span>
+
+    <span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>pgrep wget -c<span class="k">)</span> -lt <span class="nv">$maxproc</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="nv">$file</span>
+        wget -H <span class="s2">"user-agent: </span><span class="nv">$useragent</span><span class="s2">"</span> -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null <span class="p">&amp;</span>
+        sleep <span class="m">2</span>
+    <span class="k">else</span>
+        sleep <span class="m">300</span>
+        <span class="k">for</span> filename in <span class="sb">`</span>find <span class="nv">$dir</span> -name <span class="s1">'*.warc'</span> -mmin +5<span class="sb">`</span>
+        <span class="k">do</span>
+            gzip <span class="nv">$filename</span> -9
+        <span class="k">done</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
+</pre>
+</td>
+</tr></table>
+<h4>Conclusion</h4>
+<p>In this article, we have seen how to archive million pages with wget in few minutes.</p>
+<p>wget2 has multithreading support and <a href="https://gitlab.com/gnuwget/wget2/issues/65">it might have warc output soon</a>. With that, archiving with wget becomes much easier.</p>
+</div>
+                    </div>
+                                    <a href="11/archive-millions-pages-wget-minutes.html#disqus_thread" data-disqus-identifier="cache/posts/2018/11/archive-millions-pages-wget-minutes.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/comparision-alexa-majestic-domcorp-top-million-sites.html" class="u-url">Comparision Of Alexa, Majestic &amp; Domcop Top Million Sites</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -755,62 +882,6 @@ http://incepro.serveo/list/
                                     <a href="02/deploy-django-web-app-android.html#disqus_thread" data-disqus-identifier="cache/posts/2018/02/deploy-django-webapp-on-android-mobile.html">Comments</a>
 
 
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.</p>
-<p>Let us take a simple add task and measure queueing time.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">timeit</span>
-
-<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
-
-<span class="n">broker</span> <span class="o">=</span> <span class="s1">'memory://'</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="n">broker</span><span class="o">=</span><span class="n">broker</span><span class="p">)</span>
-
-
-<span class="nd">@app.task</span>
-<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
-
-
-<span class="n">tasks</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
-<span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tasks</span><span class="p">)]</span>
-<span class="n">duration</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-<span class="n">rate</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">//</span><span class="n">duration</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">"{} tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
-</pre>
-
-
-<p>On development machine, with AMD A4-5000 CPU, queueing time is as follows</p>
-<ul>
-<li>memory ---&gt; 400 tasks/sec</li>
-<li>rabbitmq ---&gt; 300 tasks/sec</li>
-<li>redis ---&gt; 250 tasks/sec</li>
-<li>postgres ---&gt; 30 tasks/sec</li>
-</ul>
-<p>On production machine, with Intel(R) Xeon(R) CPU E5-2676, queueing time is as follows</p>
-<ul>
-<li>memory ---&gt; 2000 tasks/sec</li>
-<li>rabbitmq ---&gt; 1400 tasks/sec</li>
-<li>redis ---&gt; 1200 tasks/sec</li>
-<li>postgres ---&gt; 200 tasks/sec</li>
-</ul>
-<p>For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.</p>
-<p>Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.</p>
-<pre class="code literal-block"><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
-</pre>
-
-
-<p>This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.</p>
-</div>
-                    </div>
-                                    <a href="02/load-testing-celery-brokers.html#disqus_thread" data-disqus-identifier="cache/posts/2018/02/load-testing-celery-with-various-brokers.html">Comments</a>
-
-
         </article><nav class="postindexpager"><ul class="pager">
 <li class="next">
                 <a href="index-1.html" rel="next">Older posts</a>
@@ -832,7 +903,13 @@ http://incepro.serveo/list/
         ignoreClass: 'islink',
         captions: function(element) {
             return element.getElementsByTagName('img')[0].alt;
-    }});
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
     </script>
 </body>
 </html>
