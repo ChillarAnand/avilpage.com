@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to find bottlenecks in django web application and scale it.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../11/archive-millions-pages-wget-minutes.html" title="Archive Million Pages With wget In Minutes" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks">
+<meta property="og:url" content="http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html">
+<meta property="og:description" content="How to find bottlenecks in django web application and scale it.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2018-12-11T08:08:08+05:30">
+<meta property="article:tag" content="apm">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="django-tips-tricks">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="django-bottleneck-performance-scaling.md" id="sourcelink">Source</a>
+    </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2018-12-11T08:08:08+05:30" itemprop="datePublished" title="11 Dec 18">11 Dec 2018</time></p>
+            |
+            
+
+        8 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<h4>Introduction</h4>
+<p>When optimizing performance of web application, a common mistake is to start with optimizing the slowest page(or API). In addition to considering response time, we should also consider the traffic it is receving to priorotize the order of optimization.</p>
+<p>In this article we will profile a django webapp, find high-impact performance bottlenecks and then start optimization them to yield better performance.</p>
+<h4>Profiling</h4>
+<p><a href="https://github.com/jazzband/django-silk">django-silk</a> is an open source profiling tool which intercepts and stores HTTP requests data. Install it with pip.</p>
+<pre class="code literal-block"><span></span>pip install django-silk
+</pre>
+
+
+<p>Add <code>silk</code> to installed apps and include silk middleware in django settings.</p>
+<pre class="code literal-block"><span></span><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s1">'silk.middleware.SilkyMiddleware'</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+
+<span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="o">...</span>
+    <span class="s1">'silk'</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>Run migrations so that Silk can create required database tables to store profile data.</p>
+<pre class="code literal-block"><span></span>$ python manage.py makemigrations
+$ python manage.py migrate
+$ python manage.py collectstatic
+</pre>
+
+
+<p>Include silk urls in root urlconf to view the profile data.</p>
+<pre class="code literal-block"><span></span><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
+</pre>
+
+
+<p>On silk requests page(<a href="#">http://host/silk/requests/</a>), we can see all requests and sort them by overall time or time spent in database.</p>
+<p align="center">
+<img src="../../images/django-bottlenecks.png"></p>
+
+<h4>High Impact Bottlenecks</h4>
+<p>Silk creates <code>silk_request</code> table which contains information about the requests processed by django.</p>
+<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">pgcli</span>
+
+<span class="n">library</span><span class="o">&gt;</span> <span class="err">\</span><span class="n">d</span> <span class="n">silk_request</span><span class="p">;</span>
+
+<span class="o">+</span><span class="c1">--------------------+--------------------------+-------------+</span>
+<span class="o">|</span> <span class="k">Column</span>             <span class="o">|</span> <span class="k">Type</span>                     <span class="o">|</span> <span class="n">Modifiers</span>   <span class="o">|</span>
+<span class="o">|</span><span class="c1">--------------------+--------------------------+-------------|</span>
+<span class="o">|</span> <span class="n">id</span>                 <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>    <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
+<span class="o">|</span> <span class="n">path</span>               <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">190</span><span class="p">)</span>   <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
+<span class="o">|</span> <span class="n">time_taken</span>         <span class="o">|</span> <span class="n">double</span> <span class="k">precision</span>         <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
+<span class="p">...</span>
+</pre>
+
+
+<p>We can group these requests data by <code>path</code>, calculate number of requests, average time taken and impact factor of each path. Since we are considering response time and traffic, impact factor will be product of average response time and number of requests for that path.</p>
+<pre class="code literal-block"><span></span><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
+     <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">round</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span> <span class="o">*</span> <span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="o">/</span><span class="k">max</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="o">*</span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span> <span class="n">over</span> <span class="p">()::</span><span class="nb">NUMERIC</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">impact</span>
+ <span class="k">FROM</span>
+     <span class="p">(</span><span class="k">select</span> <span class="n">path</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">time_taken</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">avg_time</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="k">count</span> <span class="k">from</span> <span class="n">silk_request</span> <span class="k">group</span> <span class="k">by</span> <span class="n">PATH</span><span class="p">)</span>
+     <span class="n">s</span>
+ <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">impact</span> <span class="k">DESC</span><span class="p">;</span>
+
+<span class="o">+</span><span class="c1">-------------------------+------------+---------+----------+</span>
+<span class="o">|</span> <span class="n">path</span>                    <span class="o">|</span> <span class="n">avg_time</span>   <span class="o">|</span> <span class="k">count</span>   <span class="o">|</span> <span class="n">impact</span>   <span class="o">|</span>
+<span class="o">|</span><span class="c1">-------------------------+------------+---------+----------|</span>
+<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="n">book</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">239</span><span class="p">.</span><span class="mi">90</span>     <span class="o">|</span> <span class="mi">1400</span>    <span class="o">|</span> <span class="mi">1</span><span class="p">.</span><span class="mi">00</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="k">data</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">94</span><span class="p">.</span><span class="mi">81</span>      <span class="o">|</span> <span class="mi">1900</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">54</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span>                 <span class="o">|</span> <span class="mi">152</span><span class="p">.</span><span class="mi">49</span>     <span class="o">|</span> <span class="mi">900</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">41</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">login</span><span class="o">/</span>           <span class="o">|</span> <span class="mi">307</span><span class="p">.</span><span class="mi">03</span>     <span class="o">|</span> <span class="mi">400</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">37</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="o">/</span>                       <span class="o">|</span> <span class="mi">106</span><span class="p">.</span><span class="mi">51</span>     <span class="o">|</span> <span class="mi">1000</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">32</span>     <span class="o">|</span>
+<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="k">user</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">494</span><span class="p">.</span><span class="mi">11</span>     <span class="o">|</span> <span class="mi">200</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">29</span>     <span class="o">|</span>
+<span class="p">...</span>
+</pre>
+
+
+<p>We can see <code>/point/book/book/</code> has highest impact even though it is neighter most visited nor slowest view. Optimizing this view first yields in overall better performance of webapp.</p>
+<h4>Conclusion</h4>
+<p>In this article, we learnt how to profile django webapp and identify bottlenecks to improve performance. In the next article, we wil learn how to optimize these bottlenecks by taking an in-depth look at them.</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/apm.html" rel="tag">apm</a></li>
+            <li><a class="tag p-category" href="../../tags/django.html" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../tags/django-tips-tricks.html" rel="tag">django-tips-tricks</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../11/archive-millions-pages-wget-minutes.html" rel="prev" title="Archive Million Pages With wget In Minutes">Previous post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+                        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="avilpage",
+            disqus_url="http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html",
+        disqus_title="Django Tips & Tricks #11 - Finding High-impact Performance Bottlenecks",
+        disqus_identifier="cache/posts/2018/12/django-performance.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+    </script>
+</body>
+</html>

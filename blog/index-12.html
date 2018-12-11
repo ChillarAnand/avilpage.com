@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avil Page (old posts, page 12) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://avilpage.com/blog/index-12.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-11.html" type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../">Articles</a>
+                </li>
+<li>
+<a href="../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../p/about.html">About</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.</p>
+<p>First install <a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid">SSHDroid</a> app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.</p>
+<p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
+<p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
+<p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
+<pre class="code literal-block"><span></span>rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
+</pre>
+
+
+<p>Now ssh into android, install django and start django server.</p>
+<pre class="code literal-block"><span></span>$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
+</pre>
+
+
+<pre class="code literal-block"><span></span>$ python -m pip install django
+$ <span class="nb">cd</span> /data/local/django-bookmarks
+$ python manage.py runvserver
+</pre>
+
+
+<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
+<pre class="code literal-block"><span></span>$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
+
+Forwarding HTTP traffic from https://incepro.serveo.net
+Press g to start a GUI session and ctrl-c to quit.
+</pre>
+
+
+<p>Now we can share our django app with anyone.</p>
+<p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
+<pre class="code literal-block"><span></span>ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
+-H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
+http://incepro.serveo/list/
+</pre>
+
+
+<p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
+<p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
+</div>
+                    </div>
+                                    <a href="../2018/02/deploy-django-web-app-android.html#disqus_thread" data-disqus-identifier="cache/posts/2018/02/deploy-django-webapp-on-android-mobile.html">Comments</a>
+
+
+        </article><nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-11.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2018         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+    </script>
+</body>
+</html>
