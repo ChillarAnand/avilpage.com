@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Oct 2018 18:09:01 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Continous Deployment For Python Chalice</title><link>http://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Outline&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 31 Jan 2019 13:53:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
+&lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
+&lt;h4&gt;Packaging&lt;/h4&gt;
+&lt;p&gt;To package python project, we need to create &lt;code&gt;setup.py&lt;/code&gt; file which is build script for setuptools. Below is a sample setup file to create a package named &lt;code&gt;library&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt;
+
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"README.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"r"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;long_description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"chillaranand"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"foo@avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"A simple python package"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"https://github.com/chillaranand/library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;find_packages&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;
+    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="s2"&gt;"Programming Language :: Python :: 3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"License :: OSI Approved :: MIT License"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"Operating System :: OS Independent"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Python provides &lt;a href="https://packaging.python.org/tutorials/packaging-projects/"&gt;detailed packaging documentation&lt;/a&gt; on structuring and building the package.&lt;/p&gt;
+&lt;h4&gt;Installation&lt;/h4&gt;
+&lt;p&gt;Once module(s) is packaged and pushed to hosting service, it can be installed with pip.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# using https&lt;/span&gt;
+$ pip install git+https://github.com/chillaranand/library.git
+
+&lt;span class="c1"&gt;# using ssh&lt;/span&gt;
+pip install git+ssh://git@github.com/chillaranand/library.git
+&lt;/pre&gt;
+
+
+&lt;p&gt;This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
+
+$ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@github.com/chillaranand/library.git
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item><item><title>Setup Continous Deployment For Python Chalice</title><link>http://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Outline&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://pypi.org/project/chalice/"&gt;Chalice&lt;/a&gt; is a microframework developed by Amazon for quickly creating and deploying serverless applications in Python.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to setup continous deployment with &lt;a href="https://github.com"&gt;GitHub&lt;/a&gt; and &lt;a href="https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html"&gt;AWS CodePipeline&lt;/a&gt;.&lt;/p&gt;
 &lt;h4&gt;CD Setup&lt;/h4&gt;

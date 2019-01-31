@@ -71,7 +71,58 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/03/convert-browser-requests-to-python-requests.html" class="u-url">Convert Browser Requests To Python Requests For Scraping</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.</p>
+<p>If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.</p>
+<p>Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.</p>
+<p>From browser developer options, we can capture <a href="https://curl.haxx.se/">curl</a> equivalent command for any request from <code>Network</code> tab with <code>copy as cURL</code> option.</p>
+<p align="center">
+<img src="../images/requests-python-browser.png" height="300px" width="600"></p>
+
+<p>Here is one such request.</p>
+<pre class="code literal-block"><span></span><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
+</pre>
+
+
+<p>Once we get curl command, we can directly convert it to python requests using <a href="https://pypi.python.org/pypi/uncurl/">uncurl</a>.</p>
+<pre class="code literal-block"><span></span>$ pip install uncurl
+</pre>
+
+
+<p>Since the copied curl request is in clipboard, we can pipe it to uncurl.</p>
+<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
+
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://avilpage.com/dummy"</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="s1">'page=2&amp;category=python'</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"</span><span class="p">,</span>
+        <span class="s2">"Accept-Encoding"</span><span class="p">:</span> <span class="s2">"gzip, deflate"</span><span class="p">,</span>
+        <span class="s2">"Accept-Language"</span><span class="p">:</span> <span class="s2">"en-US,en;q=0.9,ms;q=0.8,te;q=0.7"</span><span class="p">,</span>
+        <span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"max-age=0"</span><span class="p">,</span>
+        <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/x-www-form-urlencoded"</span><span class="p">,</span>
+        <span class="s2">"Origin"</span><span class="p">:</span> <span class="s2">"http://avilpage.com"</span><span class="p">,</span>
+        <span class="s2">"Referer"</span><span class="p">:</span> <span class="s2">"http://avilpage.com/"</span><span class="p">,</span>
+        <span class="s2">"Upgrade-Insecure-Requests"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"</span>
+    <span class="p">},</span>
+    <span class="n">cookies</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"ASPSESSIONIDSABAAQDA"</span><span class="p">:</span> <span class="s2">"FKOHHAGAFODIIGNNNDFKNGLM"</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>If we have to use some other programming language, we can use <a href="https://curl.trillworks.com/">curlconverter</a> to convert curl command to Go or Node.js equivalent code.</p>
+<p>Now, we can use this code to get contents of current page and then continue scraping from the urls in it.</p>
+</div>
+                    </div>
+                                    <a href="../2018/03/convert-browser-requests-to-python-requests.html#disqus_thread" data-disqus-identifier="cache/posts/2018/03/convert-browser-requests-to-python-requests.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -130,7 +181,7 @@ http://incepro.serveo/list/
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2018         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>
