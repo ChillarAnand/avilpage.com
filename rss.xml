@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 11 Dec 2018 06:08:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks</title><link>http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 31 Jan 2019 13:53:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
+&lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
+&lt;h4&gt;Packaging&lt;/h4&gt;
+&lt;p&gt;To package python project, we need to create &lt;code&gt;setup.py&lt;/code&gt; file which is build script for setuptools. Below is a sample setup file to create a package named &lt;code&gt;library&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt;
+
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"README.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"r"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;long_description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"chillaranand"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"foo@avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"A simple python package"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"https://github.com/chillaranand/library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;find_packages&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;
+    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="s2"&gt;"Programming Language :: Python :: 3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"License :: OSI Approved :: MIT License"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"Operating System :: OS Independent"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Python provides &lt;a href="https://packaging.python.org/tutorials/packaging-projects/"&gt;detailed packaging documentation&lt;/a&gt; on structuring and building the package.&lt;/p&gt;
+&lt;h4&gt;Installation&lt;/h4&gt;
+&lt;p&gt;Once module(s) is packaged and pushed to hosting service, it can be installed with pip.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# using https&lt;/span&gt;
+$ pip install git+https://github.com/chillaranand/library.git
+
+&lt;span class="c1"&gt;# using ssh&lt;/span&gt;
+pip install git+ssh://git@github.com/chillaranand/library.git
+&lt;/pre&gt;
+
+
+&lt;p&gt;This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
+
+$ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@github.com/chillaranand/library.git
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item><item><title>Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks</title><link>http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When optimizing performance of web application, a common mistake is to start with optimizing the slowest page(or API). In addition to considering response time, we should also consider the traffic it is receving to priorotize the order of optimization.&lt;/p&gt;
 &lt;p&gt;In this article we will profile a django webapp, find high-impact performance bottlenecks and then start optimization them to yield better performance.&lt;/p&gt;
 &lt;h4&gt;Profiling&lt;/h4&gt;
@@ -709,46 +757,4 @@ SELECT &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&
 
 
 &lt;p&gt;When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.&lt;/p&gt;
-&lt;p&gt;When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>python</category><category>testing</category><guid>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</guid><pubDate>Sun, 08 Apr 2018 15:51:21 GMT</pubDate></item><item><title>Convert Browser Requests To Python Requests For Scraping</title><link>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.&lt;/p&gt;
-&lt;p&gt;If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.&lt;/p&gt;
-&lt;p&gt;Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.&lt;/p&gt;
-&lt;p&gt;From browser developer options, we can capture &lt;a href="https://curl.haxx.se/"&gt;curl&lt;/a&gt; equivalent command for any request from &lt;code&gt;Network&lt;/code&gt; tab with &lt;code&gt;copy as cURL&lt;/code&gt; option.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/requests-python-browser.png" height="300px" width="600"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Here is one such request.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt; &lt;span class="s1"&gt;'http://avilpage.com/dummy'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Origin: http://avilpage.com'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Accept-Encoding: gzip, deflate'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Upgrade-Insecure-Requests: 1'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Content-Type: application/x-www-form-urlencoded'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Cache-Control: max-age=0'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Referer: http://avilpage.com/'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'Connection: keep-alive'&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;H&lt;/span&gt; &lt;span class="s1"&gt;'DNT: 1'&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="s1"&gt;'page=2&amp;amp;category=python'&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;compressed&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Once we get curl command, we can directly convert it to python requests using &lt;a href="https://pypi.python.org/pypi/uncurl/"&gt;uncurl&lt;/a&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install uncurl
-&lt;/pre&gt;
-
-
-&lt;p&gt;Since the copied curl request is in clipboard, we can pipe it to uncurl.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;clipit&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;uncurl&lt;/span&gt;
-
-&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;post&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"http://avilpage.com/dummy"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'page=2&amp;amp;category=python'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;headers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="s2"&gt;"Accept"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Accept-Encoding"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"gzip, deflate"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Accept-Language"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"en-US,en;q=0.9,ms;q=0.8,te;q=0.7"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Cache-Control"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"max-age=0"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Content-Type"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"application/x-www-form-urlencoded"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Origin"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"http://avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Referer"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"http://avilpage.com/"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Upgrade-Insecure-Requests"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"User-Agent"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"&lt;/span&gt;
-    &lt;span class="p"&gt;},&lt;/span&gt;
-    &lt;span class="n"&gt;cookies&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="s2"&gt;"ASPSESSIONIDSABAAQDA"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"FKOHHAGAFODIIGNNNDFKNGLM"&lt;/span&gt;
-    &lt;span class="p"&gt;},&lt;/span&gt;
-&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;If we have to use some other programming language, we can use &lt;a href="https://curl.trillworks.com/"&gt;curlconverter&lt;/a&gt; to convert curl command to Go or Node.js equivalent code.&lt;/p&gt;
-&lt;p&gt;Now, we can use this code to get contents of current page and then continue scraping from the urls in it.&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>scraping</category><guid>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</guid><pubDate>Mon, 26 Mar 2018 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>python</category><category>testing</category><guid>http://avilpage.com/2018/04/reliable-way-to-test-external-apis-without-mocking.html</guid><pubDate>Sun, 08 Apr 2018 15:51:21 GMT</pubDate></item></channel></rss>
