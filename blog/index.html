@@ -71,7 +71,46 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/02/django-tips-csrf-token-postman-curl.html" class="u-url">Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>Django has inbuilt <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
+<p><a href="https://www.getpostman.com">Postman</a> is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.</p>
+<h4>CSRF Token In Postman</h4>
+<p>Django sets <code>csrftoken</code> cookie on login. After logging in, we can see the csrf token from cookies in the Postman.</p>
+<p align="center">
+<img src="../images/django-csrf-postman1.png"></p>
+
+<p>We can grab this token and set it in headers manually.</p>
+<p align="center">
+<img src="../images/django-csrf-postman2.png"></p>
+
+<p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
+<p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
+<pre class="code literal-block"><span></span><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</pre>
+
+
+<p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
+<p align="center">
+<img src="../images/django-csrf-postman3.png"></p>
+
+<p>Now in our requests, we can use this variable to set the header.</p>
+<p align="center">
+<img src="../images/django-csrf-postman4.png"></p>
+
+<p>When the token expires, we just need to login again and csrf token gets updated automatically.</p>
+<h4>Conclusion</h4>
+<p>In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.</p>
+</div>
+                    </div>
+                                    <a href="../2019/02/django-tips-csrf-token-postman-curl.html#disqus_thread" data-disqus-identifier="cache/posts/2019/02/django-tips-csrf-token-api.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -850,79 +889,6 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 </div>
                     </div>
                                     <a href="../2018/05/deploying-scaling-django-channels.html#disqus_thread" data-disqus-identifier="cache/posts/2018/05/scaling-django-channels.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/04/reliable-way-to-test-external-apis-without-mocking.html" class="u-url">Reliable Way To Test External APIs Without Mocking</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>Let us write a function which retrieves user information from GitHub API.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">requests</span>
-
-
-<span class="k">def</span> <span class="nf">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'https://api.github.com/users/{username}'</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">None</span>
-</pre>
-
-
-<p>To test this function, we can write a test case to call the external API and check if it is returning valid data.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
-    <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
-    <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
-
-<p>Even though this test case is reliable, this won't be efficient when we have many APIs to test as it sends unwanted requests to external API and makes tests slower due to I/O.</p>
-<p>A widely used solution to avoid external API calls is <a href="https://en.wikipedia.org/wiki/Mock_object">mocking</a>. Instead of getting the response from external API, use a mock object which returns similar data.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
-
-
-<span class="k">def</span> <span class="nf">test_get_github_user_info_with_mock</span><span class="p">():</span>
-    <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s1">'requests.get'</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_get</span><span class="p">:</span>
-        <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
-
-        <span class="n">mock_get</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="n">json_response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"login"</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
-        <span class="n">mock_get</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">json_response</span>
-
-        <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-
-        <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
-        <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
-
-<p>This solves above problems but creates additional problems.</p>
-<ul>
-<li>Unreliable. Even though test cases pass, we are not sure if API is up and is returning a valid response.</li>
-<li>Maintenance. We need to ensure mock responses are up to date with API.</li>
-</ul>
-<p>To avoid this, we can cache the responses using <a href="https://pypi.python.org/pypi/requests-cache">requests-cache</a>.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">requests_cache</span>
-
-<span class="n">requests_cache</span><span class="o">.</span><span class="n">install_cache</span><span class="p">(</span><span class="s1">'github_cache'</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">test_get_github_user_info_without_mock</span><span class="p">():</span>
-    <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
-    <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
-    <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
-
-<p>When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.</p>
-<p>When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.</p>
-</div>
-                    </div>
-                                    <a href="../2018/04/reliable-way-to-test-external-apis-without-mocking.html#disqus_thread" data-disqus-identifier="cache/posts/2018/04/reliable-way-to-test-external-apis-without-mocking.html">Comments</a>
 
 
         </article><nav class="postindexpager"><ul class="pager">
