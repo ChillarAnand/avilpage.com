@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 01 Feb 2019 15:40:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Thu, 28 Feb 2019 17:19:52 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</title><link>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Django has inbuilt &lt;a href="https://docs.djangoproject.com/en/dev/ref/csrf/"&gt;CSRF protection&lt;/a&gt; mechanism for requests via unsafe methods to prevent &lt;a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery"&gt;Cross Site Request Forgeries&lt;/a&gt;. When CSRF protection is enabled on AJAX POST methods, &lt;code&gt;X-CSRFToken&lt;/code&gt; header should be sent in the request.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.getpostman.com"&gt;Postman&lt;/a&gt; is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.&lt;/p&gt;
+&lt;h4&gt;CSRF Token In Postman&lt;/h4&gt;
+&lt;p&gt;Django sets &lt;code&gt;csrftoken&lt;/code&gt; cookie on login. After logging in, we can see the csrf token from cookies in the Postman.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-csrf-postman1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We can grab this token and set it in headers manually.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-csrf-postman2.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.&lt;/p&gt;
+&lt;p&gt;Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In &lt;code&gt;Test&lt;/code&gt; section of postman, add these lines.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getResponseCookie&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"csrftoken"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;setEnvironmentVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'csrftoken'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This extracts csrf token and sets it to an evironment variable called &lt;code&gt;csrftoken&lt;/code&gt; in the current environment.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-csrf-postman3.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now in our requests, we can use this variable to set the header.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-csrf-postman4.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
 &lt;h4&gt;Packaging&lt;/h4&gt;
@@ -658,41 +691,4 @@ SELECT &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&
 
 
 &lt;p&gt;If we have to use some other programming language, we can use &lt;a href="https://curl.trillworks.com/"&gt;curlconverter&lt;/a&gt; to convert curl command to Go or Node.js equivalent code.&lt;/p&gt;
-&lt;p&gt;Now, we can use this code to get contents of current page and then continue scraping from the urls in it.&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>scraping</category><guid>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</guid><pubDate>Mon, 26 Mar 2018 15:51:21 GMT</pubDate></item><item><title>Running Django Web Apps On Android Devices</title><link>http://avilpage.com/2018/02/deploy-django-web-app-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.&lt;/p&gt;
-&lt;p&gt;First install &lt;a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid"&gt;SSHDroid&lt;/a&gt; app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.&lt;/p&gt;
-&lt;p&gt;Now install &lt;a href="https://play.google.com/store/apps/details?id=org.qpython.qpy"&gt;QPython&lt;/a&gt;. This comes bundled with pip, which will install required python packages.&lt;/p&gt;
-&lt;p&gt;Instead of installing these two apps, we can use &lt;a href="https://github.com/termux/termux-app/"&gt;Termux&lt;/a&gt;, &lt;a href="https://github.com/corbinlc/GNURootDebian"&gt;GNURoot Debian&lt;/a&gt; or some other app which provides Linux environment in Android. These apps will provide &lt;code&gt;apt&lt;/code&gt; package manager, which can install &lt;code&gt;python&lt;/code&gt; and &lt;code&gt;openssh-server&lt;/code&gt; packages.&lt;/p&gt;
-&lt;p&gt;I have used &lt;a href="https://github.com/ChillarAnand/django-bookmarks"&gt;django-bookmarks&lt;/a&gt;, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;rsync -razP django-bookmarks :&lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;:/data/local/
-&lt;/pre&gt;
-
-
-&lt;p&gt;Now ssh into android, install django and start django server.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ssh -v &lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ python -m pip install django
-$ &lt;span class="nb"&gt;cd&lt;/span&gt; /data/local/django-bookmarks
-$ python manage.py runvserver
-&lt;/pre&gt;
-
-
-&lt;p&gt;This will start development server on port 8000. To share this webapp with others, we will expose it with &lt;a href="https://serveo.net/"&gt;serveo&lt;/a&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ssh -R &lt;span class="m"&gt;80&lt;/span&gt;:localhost:8000 serveo.net
-
-Forwarding HTTP traffic from https://incepro.serveo.net
-Press g to start a GUI session and ctrl-c to quit.
-&lt;/pre&gt;
-
-
-&lt;p&gt;Now we can share our django app with anyone.&lt;/p&gt;
-&lt;p&gt;I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;ab -k -c &lt;span class="m"&gt;50&lt;/span&gt; -n &lt;span class="m"&gt;1000&lt;/span&gt;  &lt;span class="se"&gt;\&lt;/span&gt;
--H &lt;span class="s2"&gt;"Accept-Encoding: gzip, deflate"&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-http://incepro.serveo/list/
-&lt;/pre&gt;
-
-
-&lt;p&gt;It is able to server 15+ requests concurrently with an average response time of 800ms.&lt;/p&gt;
-&lt;p&gt;We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/02/deploy-django-web-app-android.html</guid><pubDate>Mon, 19 Feb 2018 12:10:56 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Now, we can use this code to get contents of current page and then continue scraping from the urls in it.&lt;/p&gt;&lt;/div&gt;</description><category>python</category><category>scraping</category><guid>http://avilpage.com/2018/03/convert-browser-requests-to-python-requests.html</guid><pubDate>Mon, 26 Mar 2018 15:51:21 GMT</pubDate></item></channel></rss>

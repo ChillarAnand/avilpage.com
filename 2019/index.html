@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2019 | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><link rel="alternate" type="application/rss+xml" title="RSS for section_index 2019" href="rss.xml">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../">Articles</a>
+                </li>
+<li>
+<a href="../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../p/about.html">About</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+<div class="sectionindex">
+    <header><h2><a href=".">2019</a></h2>
+                    <p class="feedlink">
+                    <a href="rss.xml" type="application/rss+xml">RSS feed</a>
+            </p>
+
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/django-tips-csrf-token-postman-curl.html" class="u-url">Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>Django has inbuilt <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
+<p><a href="https://www.getpostman.com">Postman</a> is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.</p>
+<h4>CSRF Token In Postman</h4>
+<p>Django sets <code>csrftoken</code> cookie on login. After logging in, we can see the csrf token from cookies in the Postman.</p>
+<p align="center">
+<img src="../images/django-csrf-postman1.png"></p>
+
+<p>We can grab this token and set it in headers manually.</p>
+<p align="center">
+<img src="../images/django-csrf-postman2.png"></p>
+
+<p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
+<p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
+<pre class="code literal-block"><span></span><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</pre>
+
+
+<p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
+<p align="center">
+<img src="../images/django-csrf-postman3.png"></p>
+
+<p>Now in our requests, we can use this variable to set the header.</p>
+<p align="center">
+<img src="../images/django-csrf-postman4.png"></p>
+
+<p>When the token expires, we just need to login again and csrf token gets updated automatically.</p>
+<h4>Conclusion</h4>
+<p>In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.</p>
+</div>
+                    </div>
+                                    <a href="02/django-tips-csrf-token-postman-curl.html#disqus_thread" data-disqus-identifier="cache/posts/2019/02/django-tips-csrf-token-api.html">Comments</a>
+
+
+        </article><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        </div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+    </script>
+</body>
+</html>
