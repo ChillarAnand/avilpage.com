@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Mon, 01 Apr 2019 15:22:36 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Essential PyCharm (Intellij) Plugins To Improve Productivity</title><link>http://avilpage.com/2019/03/intellij-pycharm-plugins-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;As per 2019 &lt;a href="https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools"&gt;JetBrains survery&lt;/a&gt;, PyCharm is the most widely used(36%) IDE for Python development. Eventhough PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 30 Apr 2019 17:53:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>A Short Guide To Debugging PostgreSQL Triggers</title><link>http://avilpage.com/2019/04/how-to-debug-postgres-triggers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html"&gt;PostgreSQL triggers&lt;/a&gt; will associate a &lt;code&gt;function&lt;/code&gt; to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.&lt;/p&gt;
+&lt;p&gt;In this article we will see how to debug PostgreSQL triggers.&lt;/p&gt;
+&lt;h4&gt;Triggers&lt;/h4&gt;
+&lt;p&gt;First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;triggers&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can also use &lt;code&gt;EXPLAIN&lt;/code&gt; to show triggers which are executed for an event by running relevant queries.&lt;/p&gt;
+&lt;h4&gt;PostgreSQL Logging&lt;/h4&gt;
+&lt;p&gt;After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="n"&gt;let&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;all&lt;/span&gt; &lt;span class="n"&gt;queries&lt;/span&gt;
+&lt;span class="n"&gt;log_statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'all'&lt;/span&gt;
+
+&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;set&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="k"&gt;to&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;level&lt;/span&gt;
+&lt;span class="n"&gt;client_min_messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Restart postgresql to reflect configuration changes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Linux&lt;/span&gt;
+sudo service postgres restart
+
+&lt;span class="c1"&gt;# Mac&lt;/span&gt;
+brew services restart postgres
+&lt;/pre&gt;
+
+
+&lt;p&gt;Tail the logs and check if queries are executing correctly with appropriate values.&lt;/p&gt;
+&lt;h4&gt;Triggers Logging&lt;/h4&gt;
+&lt;p&gt;After enabling logging for PostgreSQL, we can &lt;a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html"&gt;raise messages/errors in triggers&lt;/a&gt; so that we can see if any unexpected things are happening at any point in the trigger.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="s1"&gt;'Updating row with ID: %'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;division_by_zero&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;WARNING&lt;/span&gt; &lt;span class="s1"&gt;'Unable to deleted record'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.&lt;/p&gt;
+&lt;h4&gt;SQL/PostgreSQL Gotchas&lt;/h4&gt;
+&lt;p&gt;Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Unquoted object names will be treated as lower case. &lt;code&gt;SELECT FOO FROM bar&lt;/code&gt; will become &lt;code&gt;SELECT foo FROM bar&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Comparing nullable fields. This might yield strange results as &lt;code&gt;NULL != NULL&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;PostgreSQL uses POSIX offsets. For &lt;code&gt;04:21:42 UTC+01&lt;/code&gt;, +1  means the timezone is west of Greenwich.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp;amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.&lt;/p&gt;
+&lt;!-- links --&gt;&lt;/div&gt;</description><category>database</category><category>debug</category><category>postgresql</category><guid>http://avilpage.com/2019/04/how-to-debug-postgres-triggers.html</guid><pubDate>Tue, 30 Apr 2019 15:51:21 GMT</pubDate></item><item><title>Essential PyCharm (Intellij) Plugins To Improve Productivity</title><link>http://avilpage.com/2019/03/intellij-pycharm-plugins-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;As per 2019 &lt;a href="https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools"&gt;JetBrains survery&lt;/a&gt;, PyCharm is the most widely used(36%) IDE for Python development. Eventhough PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.&lt;/p&gt;
 &lt;h4&gt;Highlight Bracket Pair&lt;/h4&gt;
 &lt;p&gt;Instead of manually scanning where a bracket starts/ends, &lt;a href="https://plugins.jetbrains.com/plugin/10465-highlightbracketpair"&gt;Highlight Bracket Pair&lt;/a&gt; will automatically hightlight the bracket pairs based on cursor position.&lt;/p&gt;
 &lt;h4&gt;Rainbow Brackets&lt;/h4&gt;
@@ -513,80 +561,4 @@ $ atop
 &lt;p&gt;&lt;code&gt;-A&lt;/code&gt; sorts the processes automatically in the order of the most busy system resource.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;-f&lt;/code&gt; shows both active as well as inactive system resources in the ouput.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;4&lt;/code&gt; sets refresh interval to 4 seconds.&lt;/p&gt;
-&lt;p&gt;Just by looking at the output of atop, we get a glimpse of overall system resource usage as well as individual processes resource usage.&lt;/p&gt;&lt;/div&gt;</description><category>command-line</category><category>linux</category><guid>http://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</guid><pubDate>Tue, 24 Jul 2018 15:51:21 GMT</pubDate></item><item><title>Django Tips &amp; Tricks #10 - Log SQL Queries To Console</title><link>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Django ORM makes easy to interact with database. To understand what is happening behing the scenes or to see SQL performance, we can log all the SQL queries that be being executed. In this article, we will see various ways to achieve this.&lt;/p&gt;
-&lt;h4&gt;Using debug-toolbar&lt;/h4&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/project/django-debug-toolbar/" target="_blank"&gt;Django debug toolbar&lt;/a&gt; provides panels to show debug information about requests. It has SQL panel which shows all executed SQL queries and time taken for them.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/django-sql-log-toolbar.png" height="300px" width="600"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;When building REST APIs or micro services where django templating engine is not used, &lt;a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank"&gt;this method won't work&lt;/a&gt;. In these situations, we have to log SQL queries to console.&lt;/p&gt;
-&lt;h4&gt;Using django-extensions&lt;/h4&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/project/django-extensions/"&gt;Django-extensions&lt;/a&gt; provides lot of utilities for productive development. For &lt;code&gt;runserver_plus&lt;/code&gt; and &lt;code&gt;shell_plus&lt;/code&gt; commands, it accepts and optional &lt;code&gt;--print-sql&lt;/code&gt; argument, which prints all the SQL queries that are being executed.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;./manage.py runserver_plus --print-sql
-./manage.py shell_plus --print-sql
-&lt;/pre&gt;
-
-
-&lt;p&gt;Whenever an SQL query gets executed, it prints the query and time taken for it in console.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;is_staff&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;SELECT&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_login"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_superuser"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"first_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_staff"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_active"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"date_joined"&lt;/span&gt;
-  &lt;span class="n"&gt;FROM&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;
- &lt;span class="n"&gt;WHERE&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_staff"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;true&lt;/span&gt;
- &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;
-
-
-&lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.002107&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Database&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-
-&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;QuerySet&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;anand&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;chillar&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h4&gt;Using django-querycount&lt;/h4&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/project/django-querycount/"&gt;Django-querycount&lt;/a&gt; provides a middleware to show SQL query count and show duplicate queries on console.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
-&lt;span class="p"&gt;|&lt;/span&gt; Type &lt;span class="p"&gt;|&lt;/span&gt; Database  &lt;span class="p"&gt;|&lt;/span&gt;   Reads  &lt;span class="p"&gt;|&lt;/span&gt;  Writes  &lt;span class="p"&gt;|&lt;/span&gt;  Totals  &lt;span class="p"&gt;|&lt;/span&gt; Duplicates &lt;span class="p"&gt;|&lt;/span&gt;
-&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
-&lt;span class="p"&gt;|&lt;/span&gt; RESP &lt;span class="p"&gt;|&lt;/span&gt;  default  &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;3&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;0&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;    &lt;span class="m"&gt;3&lt;/span&gt;     &lt;span class="p"&gt;|&lt;/span&gt;     &lt;span class="m"&gt;1&lt;/span&gt;      &lt;span class="p"&gt;|&lt;/span&gt;
-&lt;span class="p"&gt;|&lt;/span&gt;------&lt;span class="p"&gt;|&lt;/span&gt;-----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;----------&lt;span class="p"&gt;|&lt;/span&gt;------------&lt;span class="p"&gt;|&lt;/span&gt;
-Total queries: &lt;span class="m"&gt;3&lt;/span&gt; in &lt;span class="m"&gt;1&lt;/span&gt;.7738s
-
-
-Repeated &lt;span class="m"&gt;1&lt;/span&gt; times.
-SELECT &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_key"&lt;/span&gt;,
-&lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_data"&lt;/span&gt;, &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"expire_date"&lt;/span&gt; FROM
-&lt;span class="s2"&gt;"django_session"&lt;/span&gt; WHERE &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&gt;"session_key"&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;
-&lt;span class="s1"&gt;'dummy_key AND "django_session"."expire_date"&lt;/span&gt;
-&lt;span class="s1"&gt;&amp;gt; '&lt;/span&gt;&lt;span class="m"&gt;2018&lt;/span&gt;-05-31T09:38:56.369469+00:00&lt;span class="err"&gt;'&lt;/span&gt;::timestamptz&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;This package provides &lt;a href="https://github.com/bradmontgomery/django-querycount#settings"&gt;additional settings&lt;/a&gt; to customize output.&lt;/p&gt;
-&lt;h4&gt;Django logging&lt;/h4&gt;
-&lt;p&gt;Instead of using any 3rd party package, we can use &lt;code&gt;django.db.backends&lt;/code&gt; logger to print all the SQL queries.&lt;/p&gt;
-&lt;p&gt;Add &lt;code&gt;django.db.backends&lt;/code&gt; to loggers list and set log level and handlers.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class="s1"&gt;'loggers'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="s1"&gt;'django.db.backends'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="s1"&gt;'level'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'DEBUG'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-            &lt;span class="s1"&gt;'handlers'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'console'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;],&lt;/span&gt;
-        &lt;span class="p"&gt;},&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;In runserver console, we can see all SQL queries that are being executed.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
-[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
-&lt;/pre&gt;
-
-
-&lt;p&gt;These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</guid><pubDate>Thu, 14 Jun 2018 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Just by looking at the output of atop, we get a glimpse of overall system resource usage as well as individual processes resource usage.&lt;/p&gt;&lt;/div&gt;</description><category>command-line</category><category>linux</category><guid>http://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</guid><pubDate>Tue, 24 Jul 2018 15:51:21 GMT</pubDate></item></channel></rss>
