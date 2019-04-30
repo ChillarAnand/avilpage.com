@@ -71,7 +71,65 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/03/intellij-pycharm-plugins-productivity.html" class="u-url">Essential PyCharm (Intellij) Plugins To Improve Productivity</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.</p>
+<p>In this article we will see how to debug PostgreSQL triggers.</p>
+<h4>Triggers</h4>
+<p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
+<pre class="code literal-block"><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
+
+
+<p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
+<h4>PostgreSQL Logging</h4>
+<p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
+<pre class="code literal-block"><span></span><span class="o">#</span> <span class="n">let</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
+
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
+
+
+<p>Restart postgresql to reflect configuration changes.</p>
+<pre class="code literal-block"><span></span><span class="c1"># Linux</span>
+sudo service postgres restart
+
+<span class="c1"># Mac</span>
+brew services restart postgres
+</pre>
+
+
+<p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
+<h4>Triggers Logging</h4>
+<p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
+<pre class="code literal-block"><span></span><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to deleted record'</span><span class="p">;</span>
+</pre>
+
+
+<p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
+<h4>SQL/PostgreSQL Gotchas</h4>
+<p>Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.</p>
+<ol>
+<li>Unquoted object names will be treated as lower case. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
+<li>Comparing nullable fields. This might yield strange results as <code>NULL != NULL</code>.</li>
+<li>PostgreSQL uses POSIX offsets. For <code>04:21:42 UTC+01</code>, +1  means the timezone is west of Greenwich.</li>
+</ol>
+<h4>Conclusion</h4>
+<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
+<!-- links -->
+</div>
+                    </div>
+                                    <a href="../2019/04/how-to-debug-postgres-triggers.html#disqus_thread" data-disqus-identifier="cache/posts/2019/04/debug-postgres-triggers.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/03/intellij-pycharm-plugins-productivity.html" class="u-url">Essential PyCharm (Intellij) Plugins To Improve Productivity</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -666,91 +724,6 @@ $ atop
 </div>
                     </div>
                                     <a href="../2018/07/linux-performance-analysis-in-seconds.html#disqus_thread" data-disqus-identifier="cache/posts/2018/07/linux-performance-analysis-in-6-seconds.html">Comments</a>
-
-
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html" class="u-url">Django Tips &amp; Tricks #10 - Log SQL Queries To Console</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>Django ORM makes easy to interact with database. To understand what is happening behing the scenes or to see SQL performance, we can log all the SQL queries that be being executed. In this article, we will see various ways to achieve this.</p>
-<h4>Using debug-toolbar</h4>
-<p><a href="https://pypi.org/project/django-debug-toolbar/" target="_blank">Django debug toolbar</a> provides panels to show debug information about requests. It has SQL panel which shows all executed SQL queries and time taken for them.</p>
-<p align="center">
-<img src="../images/django-sql-log-toolbar.png" height="300px" width="600"></p>
-
-<p>When building REST APIs or micro services where django templating engine is not used, <a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank">this method won't work</a>. In these situations, we have to log SQL queries to console.</p>
-<h4>Using django-extensions</h4>
-<p><a href="https://pypi.org/project/django-extensions/">Django-extensions</a> provides lot of utilities for productive development. For <code>runserver_plus</code> and <code>shell_plus</code> commands, it accepts and optional <code>--print-sql</code> argument, which prints all the SQL queries that are being executed.</p>
-<pre class="code literal-block"><span></span>./manage.py runserver_plus --print-sql
-./manage.py shell_plus --print-sql
-</pre>
-
-
-<p>Whenever an SQL query gets executed, it prints the query and time taken for it in console.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_superuser"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"username"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"first_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"email"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_active"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"date_joined"</span>
-  <span class="n">FROM</span> <span class="s2">"auth_user"</span>
- <span class="n">WHERE</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span> <span class="o">=</span> <span class="n">true</span>
- <span class="n">LIMIT</span> <span class="mi">21</span>
-
-
-<span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.002107</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
-
-<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">chillar</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
-</pre>
-
-
-<h4>Using django-querycount</h4>
-<p><a href="https://pypi.org/project/django-querycount/">Django-querycount</a> provides a middleware to show SQL query count and show duplicate queries on console.</p>
-<pre class="code literal-block"><span></span><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-<span class="p">|</span> Type <span class="p">|</span> Database  <span class="p">|</span>   Reads  <span class="p">|</span>  Writes  <span class="p">|</span>  Totals  <span class="p">|</span> Duplicates <span class="p">|</span>
-<span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-<span class="p">|</span> RESP <span class="p">|</span>  default  <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>    <span class="m">0</span>     <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>     <span class="m">1</span>      <span class="p">|</span>
-<span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-Total queries: <span class="m">3</span> in <span class="m">1</span>.7738s
-
-
-Repeated <span class="m">1</span> times.
-SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</span>,
-<span class="s2">"django_session"</span>.<span class="s2">"session_data"</span>, <span class="s2">"django_session"</span>.<span class="s2">"expire_date"</span> FROM
-<span class="s2">"django_session"</span> WHERE <span class="o">(</span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span> <span class="o">=</span>
-<span class="s1">'dummy_key AND "django_session"."expire_date"</span>
-<span class="s1">&gt; '</span><span class="m">2018</span>-05-31T09:38:56.369469+00:00<span class="err">'</span>::timestamptz<span class="o">)</span>
-</pre>
-
-
-<p>This package provides <a href="https://github.com/bradmontgomery/django-querycount#settings">additional settings</a> to customize output.</p>
-<h4>Django logging</h4>
-<p>Instead of using any 3rd party package, we can use <code>django.db.backends</code> logger to print all the SQL queries.</p>
-<p>Add <code>django.db.backends</code> to loggers list and set log level and handlers.</p>
-<pre class="code literal-block"><span></span>    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">'django.db.backends'</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
-            <span class="s1">'handlers'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'console'</span><span class="p">,</span> <span class="p">],</span>
-        <span class="p">},</span>
-</pre>
-
-
-<p>In runserver console, we can see all SQL queries that are being executed.</p>
-<pre class="code literal-block"><span></span>(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
-[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
-</pre>
-
-
-<p>These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.</p>
-</div>
-                    </div>
-                                    <a href="../2018/05/django-tips-tricks-log-sql-queries-to-console.html#disqus_thread" data-disqus-identifier="cache/posts/2018/05/django-tips-tricks-log-sql-queries-to-console.html">Comments</a>
 
 
         </article><nav class="postindexpager"><ul class="pager">

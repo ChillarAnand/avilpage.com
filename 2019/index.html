@@ -76,7 +76,65 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="03/intellij-pycharm-plugins-productivity.html" class="u-url">Essential PyCharm (Intellij) Plugins To Improve Productivity</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.</p>
+<p>In this article we will see how to debug PostgreSQL triggers.</p>
+<h4>Triggers</h4>
+<p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
+<pre class="code literal-block"><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
+
+
+<p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
+<h4>PostgreSQL Logging</h4>
+<p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
+<pre class="code literal-block"><span></span><span class="o">#</span> <span class="n">let</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
+
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
+
+
+<p>Restart postgresql to reflect configuration changes.</p>
+<pre class="code literal-block"><span></span><span class="c1"># Linux</span>
+sudo service postgres restart
+
+<span class="c1"># Mac</span>
+brew services restart postgres
+</pre>
+
+
+<p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
+<h4>Triggers Logging</h4>
+<p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
+<pre class="code literal-block"><span></span><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to deleted record'</span><span class="p">;</span>
+</pre>
+
+
+<p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
+<h4>SQL/PostgreSQL Gotchas</h4>
+<p>Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.</p>
+<ol>
+<li>Unquoted object names will be treated as lower case. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
+<li>Comparing nullable fields. This might yield strange results as <code>NULL != NULL</code>.</li>
+<li>PostgreSQL uses POSIX offsets. For <code>04:21:42 UTC+01</code>, +1  means the timezone is west of Greenwich.</li>
+</ol>
+<h4>Conclusion</h4>
+<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
+<!-- links -->
+</div>
+                    </div>
+                                    <a href="04/how-to-debug-postgres-triggers.html#disqus_thread" data-disqus-identifier="cache/posts/2019/04/debug-postgres-triggers.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="03/intellij-pycharm-plugins-productivity.html" class="u-url">Essential PyCharm (Intellij) Plugins To Improve Productivity</a></h1>
             <hr>
 <div class="e-content">
                         <div>

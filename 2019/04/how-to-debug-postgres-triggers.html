@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to debug and fix issues with postgresql triggers?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Short Guide To Debugging PostgreSQL Triggers | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/04/how-to-debug-postgres-triggers.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../03/intellij-pycharm-plugins-productivity.html" title="Essential PyCharm (Intellij) Plugins To Improve Productivity" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="A Short Guide To Debugging PostgreSQL Triggers">
+<meta property="og:url" content="http://avilpage.com/2019/04/how-to-debug-postgres-triggers.html">
+<meta property="og:description" content="How to debug and fix issues with postgresql triggers?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-04-30T21:21:21+05:30">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="debug">
+<meta property="article:tag" content="postgresql">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="how-to-debug-postgres-triggers.md" id="sourcelink">Source</a>
+    </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-04-30T21:21:21+05:30" itemprop="datePublished" title="30 Apr 19">30 Apr 2019</time></p>
+            |
+            
+
+        3 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<h4>Introduction</h4>
+<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.</p>
+<p>In this article we will see how to debug PostgreSQL triggers.</p>
+<h4>Triggers</h4>
+<p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
+<pre class="code literal-block"><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
+
+
+<p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
+<h4>PostgreSQL Logging</h4>
+<p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
+<pre class="code literal-block"><span></span><span class="o">#</span> <span class="n">let</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
+
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
+
+
+<p>Restart postgresql to reflect configuration changes.</p>
+<pre class="code literal-block"><span></span><span class="c1"># Linux</span>
+sudo service postgres restart
+
+<span class="c1"># Mac</span>
+brew services restart postgres
+</pre>
+
+
+<p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
+<h4>Triggers Logging</h4>
+<p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
+<pre class="code literal-block"><span></span><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to deleted record'</span><span class="p">;</span>
+</pre>
+
+
+<p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
+<h4>SQL/PostgreSQL Gotchas</h4>
+<p>Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.</p>
+<ol>
+<li>Unquoted object names will be treated as lower case. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
+<li>Comparing nullable fields. This might yield strange results as <code>NULL != NULL</code>.</li>
+<li>PostgreSQL uses POSIX offsets. For <code>04:21:42 UTC+01</code>, +1  means the timezone is west of Greenwich.</li>
+</ol>
+<h4>Conclusion</h4>
+<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
+<!-- links -->
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/database.html" rel="tag">database</a></li>
+            <li><a class="tag p-category" href="../../tags/debug.html" rel="tag">debug</a></li>
+            <li><a class="tag p-category" href="../../tags/postgresql.html" rel="tag">postgresql</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../03/intellij-pycharm-plugins-productivity.html" rel="prev" title="Essential PyCharm (Intellij) Plugins To Improve Productivity">Previous post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+                        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="avilpage",
+            disqus_url="http://avilpage.com/2019/04/how-to-debug-postgres-triggers.html",
+        disqus_title="A Short Guide To Debugging PostgreSQL Triggers",
+        disqus_identifier="cache/posts/2019/04/debug-postgres-triggers.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="avilpage";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+    </script>
+</body>
+</html>
