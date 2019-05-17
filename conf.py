@@ -1456,7 +1456,7 @@ RENDER_STATIC_TAG_CLOUDS = {
     },
     'tag-large': {
         'name': 'tcl-{0}',
-        'filename': 'tagcloud-large.inc',
+        'filename': 'tagcloud-large.html',
         'taxonomy_type': 'tag',
         'style_filename': 'assets/css/tagcloud-large.css',
         'max_number_of_levels': 100,
@@ -1471,7 +1471,7 @@ RENDER_STATIC_TAG_CLOUDS = {
     },
     'category-large': {
         'name': 'ccl-{0}',
-        'filename': 'catcloud-{0}-large.inc',
+        'filename': 'catcloud-{0}-large.html',
         'taxonomy_type': 'category',
         'style_filename': 'assets/css/catcloud-large.css',
         'max_number_of_levels': 100,
