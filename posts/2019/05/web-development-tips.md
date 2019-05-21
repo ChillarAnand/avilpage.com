@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-When debugging an issue related to web development projects, we have to switch between environments (local, development, QA, staging and production) when the issue is inconsistent between them.
+When debugging an issue related to web development projects, which is inconsistent between environments (local, development, QA, staging and production), we have to frequently switch between them.
 
 If we are debugging something on the home page, then we can just bookmark the host URLs. We can switch between them by clicking on the relevant bookmark. Some browsers provide autocompletion for bookmarks. So we can type a few characters and then select the relevant URL from suggestions.
 
@@ -23,7 +23,7 @@ Lets create a bookmarklet to replace host in the URL with [http://localhost:8000
 javascript:(function() { window.location.replace("http://localhost:8000" + window.location.pathname + window.location.search); }())
 ```
 
-If we click on `To Local` bookmarklet, it will be redirected the same page on the localhost.
+If we click on `To Local` bookmarklet, it will redirect the current active page to localhost URL.
 
 We can create one more bookmarklet to switch to production. Create a bookmarklet called `To Production` and add the following snippet in the URL.
 
