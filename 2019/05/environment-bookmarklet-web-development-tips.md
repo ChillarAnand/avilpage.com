@@ -1,8 +1,8 @@
 <!--
 .. title: Switching Hosts With Bookmarklets - Web Development Tips
 .. slug: environment-bookmarklet-web-development-tips
-.. date: 2019-05-22 21:21:21 UTC+05:30
-.. tags: web-browser, web-development, web-development-tips
+.. date: 2019-05-08 21:10:52 UTC+05:30
+.. tags: chrome, web-development, web-development-tips
 .. category:
 .. link:
 .. description: How to change enviroments (local, dev, qa, staging, production) on browser with bookmarklets.
