@@ -5,7 +5,7 @@
 .. tags: life-tips, grandma
 .. category:
 .. link:
-.. description: Most people don't even remember the phone numbers of family and friends. It has to do with smart phone usage. It is important to remember phone numbers.
+.. description: How many phone numbers do you remember? Most people don't even remember the phone numbers of family and friends. It has to do with smart phone usage.
 .. type: text
 -->
 
