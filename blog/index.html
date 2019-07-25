@@ -71,7 +71,94 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/05/total-recall-grandma-phone-numbers.html" class="u-url">Why My Grandma Can Recall 100+ Phone Numbers, But We Can't</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/07/aws-s3-bucket-objects-versions.html" class="u-url">Versioning &amp; Retrieving All Files From AWS S3 With Boto</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p><a href="https://aws.amazon.com/s3/">Amazon S3</a> (Amazon Simple Storage Service) is an object storage service offered by Amazon Web Services. For S3 buckets, if versioning is enabled, users can preserve, retrieve, and restore every version of the object stored in the bucket.</p>
+<p>In this article, we will understand how to enable versioning for a bucket and retrieve all versions of an object from AWS web interface as well as <a href="https://pypi.org/project/boto3/">Python boto</a> library.</p>
+<h4>Versioning of Bucket</h4>
+<p>Bucket versioning can be changed with a toggle button from the AWS web console in the bucket properties.</p>
+<p align="center">
+<img src="../images/aws-s3-bucket-version1.png"></p>
+
+<p>We can do the same with Python boto3 library.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">boto3</span>
+
+
+<span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
+
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">'s3'</span><span class="p">)</span>
+<span class="n">versioning</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">BucketVersioning</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+
+<span class="c1"># check status</span>
+<span class="k">print</span><span class="p">(</span><span class="n">versioning</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+
+<span class="c1"># enable versioning</span>
+<span class="n">versioning</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+
+<span class="c1"># disable versioning</span>
+<span class="n">versioning</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
+</pre>
+
+
+<h4>Retrieving Objects</h4>
+<p>Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.</p>
+<p>We can write a simple script to generate a text file with a random text and upload it to S3.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="kn">import</span> <span class="nn">boto3</span>
+
+<span class="n">file_name</span> <span class="o">=</span> <span class="s1">'test.txt'</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">file_name</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'s3'</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">s3</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+</pre>
+
+
+<p>If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.</p>
+<p>We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at <code>Latest version</code>.</p>
+<p align="center">
+<img src="../images/aws-s3-bucket-version2.png"></p>
+
+<p>We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">boto3</span>
+
+
+<span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
+<span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'s3'</span><span class="p">)</span>
+
+<span class="n">versions</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">list_object_versions</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
+    <span class="n">version_id</span> <span class="o">=</span> <span class="n">versions</span><span class="p">[</span><span class="s1">'Versions'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'VersionId'</span><span class="p">]</span>
+    <span class="n">file_key</span> <span class="o">=</span> <span class="n">versions</span><span class="p">[</span><span class="s1">'Versions'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'Key'</span><span class="p">]</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span>
+        <span class="n">Bucket</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">,</span>
+        <span class="n">Key</span><span class="o">=</span><span class="n">file_key</span><span class="p">,</span>
+        <span class="n">VersionId</span><span class="o">=</span><span class="n">version_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">'Body'</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre>
+
+
+<h4>Conclusion</h4>
+<p>Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.</p>
+</div>
+                    </div>
+                                    <a href="../2019/07/aws-s3-bucket-objects-versions.html#disqus_thread" data-disqus-identifier="cache/posts/2019/07/s3.html">Comments</a>
+
+
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/05/total-recall-grandma-phone-numbers.html" class="u-url">Why My Grandma Can Recall 100+ Phone Numbers, But We Can't</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -623,50 +710,6 @@ $ comm -123 domcop majestic --total
                                     <a href="../2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#disqus_thread" data-disqus-identifier="cache/posts/2018/11/comparision-of-alexa-majestic-domcorp-top-millioin-sites.html">Comments</a>
 
 
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/10/cd-python-chalice-aws.html" class="u-url">Setup Continous Deployment For Python Chalice</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<h4>Outline</h4>
-<p><a href="https://pypi.org/project/chalice/">Chalice</a> is a microframework developed by Amazon for quickly creating and deploying serverless applications in Python.</p>
-<p>In this article, we will see how to setup continous deployment with <a href="https://github.com">GitHub</a> and <a href="https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html">AWS CodePipeline</a>.</p>
-<h4>CD Setup</h4>
-<p>Chalice provides cli command <code>deploy</code> to deploy from local system.</p>
-<p>Chalice also provides cli command <code>generate-pipeline</code> command to generate CloudFormation template. This template is useful to automatically generate several resources required for AWS pipeline.</p>
-<p align="center">
-<img src="../images/aws-python-pipeline.png" height="300px" width="600"></p>
-
-<p>This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.</p>
-<p>Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.</p>
-<p>We can use a custom buildpsec file to directly deploy the code from build step.</p>
-<pre class="code literal-block"><span></span><span class="n">version</span><span class="o">:</span> <span class="mf">0.1</span>
-
-<span class="n">phases</span><span class="o">:</span>
-  <span class="n">install</span><span class="o">:</span>
-    <span class="n">commands</span><span class="o">:</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Entering</span> <span class="n">the</span> <span class="n">install</span> <span class="n">phase</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Installing</span> <span class="n">dependencies</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">awscli</span>
-      <span class="o">-</span> <span class="n">aws</span> <span class="o">--</span><span class="n">version</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">chalice</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="na">txt</span>
-
-  <span class="n">build</span><span class="o">:</span>
-    <span class="n">commands</span><span class="o">:</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">entered</span> <span class="n">the</span> <span class="n">build</span> <span class="n">phase</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="n">on</span> <span class="err">`</span><span class="n">date</span><span class="err">`</span>
-      <span class="o">-</span> <span class="n">chalice</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">stage</span> <span class="n">staging</span>
-</pre>
-
-
-<p>This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.</p>
-<h4>Conclusion</h4>
-<p>We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.</p>
-</div>
-                    </div>
-                                    <a href="../2018/10/cd-python-chalice-aws.html#disqus_thread" data-disqus-identifier="cache/posts/2018/10/setup-cd-for-python-chalice.html">Comments</a>
-
-
         </article><nav class="postindexpager"><ul class="pager">
 <li class="next">
                 <a href="index-12.html" rel="next">Older posts</a>
@@ -694,6 +737,10 @@ $ comm -123 domcop majestic --total
     gtag('js', new Date());
 
     gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
     </script>
 </body>
 </html>
