@@ -1,5 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Wed, 24 Jul 2019 15:57:50 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Versioning &amp; Retrieving All Files From AWS S3 With Boto</title><link>http://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 01 Sep 2019 10:20:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Profiling &amp; Optimizing Bottlenecks In Django</title><link>http://avilpage.com/2019/08/django-profile-optimize-views.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In the previous article, we have learnt where to start with &lt;a href="http://avilpage.com/2018/12/django-bottleneck-performance-scaling.html"&gt;performance optimization in django application&lt;/a&gt; and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.&lt;/p&gt;
+&lt;h4&gt;Profling APIs With django-silk&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/django-silk/"&gt;django-silk&lt;/a&gt; provides &lt;code&gt;silk_profile&lt;/code&gt; function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;silk.profiling.profiler&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;silk_profile&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@silk_profile&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;slow_api&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;JsonResponse&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s1"&gt;'data'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'slow_response'&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;SILKY_PYTHON_PROFILER&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
+&lt;span class="n"&gt;SILKY_PYTHON_PROFILER_BINARY&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
+&lt;span class="n"&gt;SILKY_PYTHON_PROFILER_RESULT_PATH&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'/tmp/'&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Once the above view is loaded, we can see the profile information in silk profiling page.&lt;/p&gt;
+&lt;p&gt;In profile page, silk shows a profile graph and highlights the path where more time is taken.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-profiling1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;It also shows cprofile stats in the same page. This profile data file can be downloaded and used with other visualization tools like snakeviz.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-profiling2.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;By looking at the above data, we can see most of the time is spent is &lt;code&gt;time.sleep&lt;/code&gt; in our view.&lt;/p&gt;
+&lt;h4&gt;Profling APIs With django-extensions&lt;/h4&gt;
+&lt;p&gt;If you don't want to use silk, an alternate way to profile django views is to use &lt;code&gt;runprofileserver&lt;/code&gt; command provided by &lt;a href="https://pypi.org/project/django-extensions/"&gt;django-extensions&lt;/a&gt; package. Install django-extensions package and then start server with the following command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
+&lt;/pre&gt;
+
+
+&lt;p&gt;This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding &lt;code&gt;.prof&lt;/code&gt; profile data file in &lt;code&gt;/tmp/prof/&lt;/code&gt; folder.&lt;/p&gt;
+&lt;p&gt;After profile data is generated, we can use profile data viewing tools like &lt;a href="https://pypi.org/project/snakeviz/"&gt;snakeviz&lt;/a&gt;, &lt;a href="https://pypi.org/project/cprofilev/"&gt;cprofilev&lt;/a&gt; visualize or browse the profile data.&lt;/p&gt;
+&lt;p&gt;Install snakeviz using pip&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install snakeviz
+&lt;/pre&gt;
+
+
+&lt;p&gt;Open the profile data file using snakeviz.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
+&lt;/pre&gt;
+
+
+&lt;p&gt;It shows icicles graph view and  table view of profile data of that view.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="http://avilpage.com/images/django-profiling3.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;These will help to pinpoint which line of code is slowing down the view. Once it is identified, we can take appropriate action like optimize that code, setting up a cache or moving it to a task queue if it is not required to be performed in the request-response cycle.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>python</category><guid>http://avilpage.com/2019/08/django-profile-optimize-views.html</guid><pubDate>Sat, 31 Aug 2019 15:51:21 GMT</pubDate></item><item><title>Versioning &amp; Retrieving All Files From AWS S3 With Boto</title><link>http://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://aws.amazon.com/s3/"&gt;Amazon S3&lt;/a&gt; (Amazon Simple Storage Service) is an object storage service offered by Amazon Web Services. For S3 buckets, if versioning is enabled, users can preserve, retrieve, and restore every version of the object stored in the bucket.&lt;/p&gt;
 &lt;p&gt;In this article, we will understand how to enable versioning for a bucket and retrieve all versions of an object from AWS web interface as well as &lt;a href="https://pypi.org/project/boto3/"&gt;Python boto&lt;/a&gt; library.&lt;/p&gt;
 &lt;h4&gt;Versioning of Bucket&lt;/h4&gt;
@@ -527,158 +582,4 @@ SELECT &lt;span class="s2"&gt;"django_session"&lt;/span&gt;.&lt;span class="s2"&
 &lt;/pre&gt;
 
 
-&lt;p&gt;These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</guid><pubDate>Thu, 14 Jun 2018 15:51:21 GMT</pubDate></item><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
-&lt;p&gt;Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.&lt;/p&gt;
-&lt;p&gt;We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.&lt;/p&gt;
-&lt;h4&gt;Nginx Setup&lt;/h4&gt;
-&lt;p&gt;Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;server {&lt;/span&gt;
-&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:80;&lt;/span&gt;
-&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
-
-&lt;span class="x"&gt;    return 301 https://avilpage.com$request_uri;&lt;/span&gt;
-&lt;span class="x"&gt;}&lt;/span&gt;
-
-
-&lt;span class="x"&gt;server {&lt;/span&gt;
-&lt;span class="x"&gt;    listen &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;:443 ssl;&lt;/span&gt;
-&lt;span class="x"&gt;    server_name &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt; www.&lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;server_name&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;;&lt;/span&gt;
-
-&lt;span class="x"&gt;    ssl_certificate     /root/certs/avilpage.com.chain.crt;&lt;/span&gt;
-&lt;span class="x"&gt;    ssl_certificate_key /root/certs/avilpage.com.key;&lt;/span&gt;
-
-&lt;span class="x"&gt;    access_log /var/log/nginx/avilpage.com.access.log;&lt;/span&gt;
-&lt;span class="x"&gt;    error_log /var/log/nginx/avilpage.com.error.log;&lt;/span&gt;
-
-&lt;span class="x"&gt;    location / {&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:8000;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header Host $http_host;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_redirect off;&lt;/span&gt;
-&lt;span class="x"&gt;    }&lt;/span&gt;
-
-&lt;span class="x"&gt;    location /ws/ {&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_pass http://0.0.0.0:9000;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_http_version 1.1;&lt;/span&gt;
-
-&lt;span class="x"&gt;            proxy_read_timeout 86400;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_redirect     off;&lt;/span&gt;
-
-&lt;span class="x"&gt;            proxy_set_header Upgrade $http_upgrade;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header Connection "upgrade";&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header Host $host;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header X-Real-IP $remote_addr;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;&lt;/span&gt;
-&lt;span class="x"&gt;            proxy_set_header X-Forwarded-Host $server_name;&lt;/span&gt;
-&lt;span class="x"&gt;    }&lt;/span&gt;
-
-&lt;span class="x"&gt;    location /static {&lt;/span&gt;
-&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static;&lt;/span&gt;
-&lt;span class="x"&gt;    }&lt;/span&gt;
-
-&lt;span class="x"&gt;    location  /favicon.ico {&lt;/span&gt;
-&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;//static/img/favicon.ico;&lt;/span&gt;
-&lt;span class="x"&gt;    }&lt;/span&gt;
-
-&lt;span class="x"&gt;    location  /robots.txt {&lt;/span&gt;
-&lt;span class="x"&gt;        alias &lt;/span&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;project_root&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;/static/txt/robots.txt;&lt;/span&gt;
-&lt;span class="x"&gt;    }&lt;/span&gt;
-
-&lt;span class="x"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h4&gt;WSGI Server Setup&lt;/h4&gt;
-&lt;p&gt;We will use gunicorn for wsgi server. We can run gunicorn with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ gunicorn avilpage.wsgi --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0:8000 --log-level error --log-file&lt;span class="o"&gt;=&lt;/span&gt;- --settings avilpage.production_settings
-&lt;/pre&gt;
-
-
-&lt;p&gt;We can create a systemd unit file to make it as a service.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
-&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;gunicorn&lt;/span&gt;
-&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
-
-
-&lt;span class="k"&gt;[Service]&lt;/span&gt;
-&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/gunicorn/pid&lt;/span&gt;
-&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
-&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
-&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
-&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
-&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/gunicorn {{ project_name}}.wsgi --bind 0.0.0.0:8000 --log-level error --log-file=- --workers 5 --preload&lt;/span&gt;
-
-
-&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
-&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
-&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
-&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
-
-
-&lt;span class="k"&gt;[Install]&lt;/span&gt;
-&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ sudo service gunicorn restart
-&lt;/pre&gt;
-
-
-&lt;h4&gt;ASGI Server Setup&lt;/h4&gt;
-&lt;p&gt;We will use daphne for ASGI server and it can be started with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ daphne avilpage.asgi:application --bind &lt;span class="m"&gt;0&lt;/span&gt;.0.0.0 --port &lt;span class="m"&gt;9000&lt;/span&gt; --verbosity &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;We can create a systemd unit file like the previous one to create a service.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Unit]&lt;/span&gt;
-&lt;span class="na"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;daphne daemon&lt;/span&gt;
-&lt;span class="na"&gt;After&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;network.target&lt;/span&gt;
-
-
-&lt;span class="k"&gt;[Service]&lt;/span&gt;
-&lt;span class="na"&gt;PIDFile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/run/daphne/pid&lt;/span&gt;
-&lt;span class="na"&gt;User&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
-&lt;span class="na"&gt;Group&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;root&lt;/span&gt;
-&lt;span class="na"&gt;WorkingDirectory&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ project_root }}&lt;/span&gt;
-&lt;span class="na"&gt;Environment&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"DJANGO_SETTINGS_MODULE={{ project_name }}.production_settings"&lt;/span&gt;
-&lt;span class="na"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;{{ venv_bin }}/daphne --bind 0.0.0.0 --port 9000 --verbosity 0 {{project_name}}.asgi:application&lt;/span&gt;
-&lt;span class="na"&gt;ExecReload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s HUP $MAINPID&lt;/span&gt;
-&lt;span class="na"&gt;ExecStop&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/bin/kill -s TERM $MAINPID&lt;/span&gt;
-&lt;span class="na"&gt;Restart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;on-abort&lt;/span&gt;
-&lt;span class="na"&gt;PrivateTmp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;true&lt;/span&gt;
-
-
-&lt;span class="k"&gt;[Install]&lt;/span&gt;
-&lt;span class="na"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;multi-user.target&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;h4&gt;Deployment&lt;/h4&gt;
-&lt;p&gt;Here is &lt;a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml"&gt;an ansible playbook&lt;/a&gt; which is used to deploy these config files to our server. To run the playbook on server &lt;code&gt;avilpage.com&lt;/code&gt;, execute&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ansible-playbook -i avilpage.com, django_setup.yml
-&lt;/pre&gt;
-
-
-&lt;h4&gt;Scaling&lt;/h4&gt;
-&lt;p&gt;Now that we have deployed channels to production, we can do performance test to see how our server performs under load.&lt;/p&gt;
-&lt;p&gt;For WebSockets, we can use &lt;a href="https://www.npmjs.com/package/thor"&gt;Thor&lt;/a&gt; to run performance test.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;thor -C &lt;span class="m"&gt;100&lt;/span&gt; -A &lt;span class="m"&gt;1000&lt;/span&gt; wss://avilpage.com/ws/books/
-&lt;/pre&gt;
-
-
-&lt;p&gt;Our server is able to handle &lt;code&gt;100 requests per second&lt;/code&gt; with a &lt;code&gt;latency of 800ms&lt;/code&gt;. This is good enough for low traffic website.&lt;/p&gt;
-&lt;p&gt;To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using &lt;a href="http://avilpage.com/2018/05/deploying-scaling-django-channels.html"&gt;shared file descriptors&lt;/a&gt;. Unfortunately, it doesn't work as expected. As &lt;a href="https://github.com/django/daphne/issues/182#issuecomment-387507887"&gt;mentioned here&lt;/a&gt;, we can use systemd templates and spawn multiple daphne process.&lt;/p&gt;
-&lt;p&gt;An alternate way is to use &lt;a href="https://pypi.org/project/uvicorn/"&gt;uvicorn&lt;/a&gt; to start multiple workers. Install uvicorn using pip&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install uvicorn
-&lt;/pre&gt;
-
-
-&lt;p&gt;Start uvicorn ASGI server with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ uvicorn avilpage.asgi --log-level critical --workers &lt;span class="m"&gt;4&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</guid><pubDate>Fri, 18 May 2018 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2018/05/django-tips-tricks-log-sql-queries-to-console.html</guid><pubDate>Thu, 14 Jun 2018 15:51:21 GMT</pubDate></item></channel></rss>

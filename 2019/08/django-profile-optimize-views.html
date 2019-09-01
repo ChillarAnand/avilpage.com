@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to find performance bottlenecks and optimize them?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profiling &amp; Optimizing Bottlenecks In Django | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/08/django-profile-optimize-views.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../07/aws-s3-bucket-objects-versions.html" title="Versioning &amp; Retrieving All Files From AWS S3 With Boto" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Profiling &amp; Optimizing Bottlenecks In Django">
+<meta property="og:url" content="http://avilpage.com/2019/08/django-profile-optimize-views.html">
+<meta property="og:description" content="How to find performance bottlenecks and optimize them?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-08-31T21:21:21+05:30">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="django-profile-optimize-views.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Profiling &amp; Optimizing Bottlenecks In Django</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-08-31T21:21:21+05:30" itemprop="datePublished" title="31 Aug 19">31 Aug 2019</time></p>
+            |
+            
+
+        3 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<p>In the previous article, we have learnt where to start with <a href="../../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
+<h4>Profling APIs With django-silk</h4>
+<p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
+
+
+<span class="nd">@silk_profile</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
+</pre>
+
+
+<p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
+<pre class="code literal-block"><span></span><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
+</pre>
+
+
+<p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
+<p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
+<p align="center">
+<img src="../../images/django-profiling1.png"></p>
+
+<p>It also shows cprofile stats in the same page. This profile data file can be downloaded and used with other visualization tools like snakeviz.</p>
+<p align="center">
+<img src="../../images/django-profiling2.png"></p>
+
+<p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
+<h4>Profling APIs With django-extensions</h4>
+<p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
+<pre class="code literal-block"><span></span>$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
+</pre>
+
+
+<p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
+<p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
+<p>Install snakeviz using pip</p>
+<pre class="code literal-block"><span></span>$ pip install snakeviz
+</pre>
+
+
+<p>Open the profile data file using snakeviz.</p>
+<pre class="code literal-block"><span></span>$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
+</pre>
+
+
+<p>It shows icicles graph view and  table view of profile data of that view.</p>
+<p align="center">
+<img src="../../images/django-profiling3.png"></p>
+
+<p>These will help to pinpoint which line of code is slowing down the view. Once it is identified, we can take appropriate action like optimize that code, setting up a cache or moving it to a task queue if it is not required to be performed in the request-response cycle.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/django.html" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../07/aws-s3-bucket-objects-versions.html" rel="prev" title="Versioning &amp; Retrieving All Files From AWS S3 With Boto">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>
