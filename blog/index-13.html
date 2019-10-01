@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avil Page (old posts, page 13) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://avilpage.com/blog/index-13.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-12.html" type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]-->
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../">Articles</a>
+                </li>
+<li>
+<a href="../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../p/about.html">About</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/archive-millions-pages-wget-minutes.html" class="u-url">Archive Million Pages With wget In Minutes</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p><a href="https://github.com/webrecorder/webrecorder">webrecorder</a>, <a href="https://github.com/internetarchive/heritrix3">heritrix</a>, <a href="https://nutch.apache.org/">nutch</a>, <a href="https://scrapy.org/">scrapy</a>, <a href="https://github.com/gocolly/colly">colly</a>, <a href="https://github.com/scrapinghub/frontera">frontera</a> are popular tools for large scale web crawling and archiving.</p>
+<p>These tools require some learning curve and some of them don't have inbuilt support for warc(<a href="https://en.wikipedia.org/wiki/Web_ARChive">Web ARChive</a>) output format.</p>
+<p><code>wget</code> comes bundled with most *nix systems and has inbuilt support for warc output. In this article we will see how to quickly archive web pages with wget.</p>
+<h4>Archiving with wget</h4>
+<p>In previous article we have extracted a <a href="../2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html">superset of top 1 million domains</a>. We can use that list or urls to archive. Save this list to a file called <code>urls.txt</code>.</p>
+<p>This can be archived with the following command.</p>
+<pre class="code literal-block"><span></span><span class="nv">file</span><span class="o">=</span>urls.txt
+wget -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null
+</pre>
+
+
+<p>wget has the ability to continue partially downloaded files. But this option won't work with warc output. So, it is better to split this list into small chunks and process them. One added advantage of this approach is we can parallely download multiple chunks with wget.</p>
+<pre class="code literal-block"><span></span>mkdir -p chunks
+split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<span class="o">=</span>.txt -a <span class="m">3</span>
+</pre>
+
+
+<p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
+<pre class="code literal-block"><span></span>for file in `ls -r chunks/*.txt`
+do
+   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;
+done
+</pre>
+
+
+<p>To archive 1000 urls, it takes ~15 minutes. In less than 20 minutes, it will download entire million pages.</p>
+<p>Also, each process takes ~8MB of memory. To run 1000 process, a system needs 8GB+ memory. Otherwise, number of parallel processes should be reduced which increases overall run time.</p>
+<p>Each archive chunk will be ~150MB and consume lot of storage. All downloaded acrhives can be zipped to reduce storage.</p>
+<pre class="code literal-block"><span></span>gzip *.warc
+</pre>
+
+
+<p>Here is an idempotent shell script to download and archive files in batches.</p>
+<table class="codehilitetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td>
+<td class="code">
+<pre class="code literal-block"><span></span><span class="ch">#! /bin/sh</span>
+
+<span class="nb">set</span> -x
+
+<span class="nv">batch</span><span class="o">=</span><span class="m">1000</span>
+<span class="nv">size</span><span class="o">=</span><span class="sb">`</span>expr <span class="si">${#</span><span class="nv">batch</span><span class="si">}</span> - <span class="m">1</span><span class="sb">`</span>
+<span class="nv">maxproc</span><span class="o">=</span><span class="m">50</span>
+<span class="nv">file</span><span class="o">=</span>urls.txt
+<span class="nv">dir</span><span class="o">=</span><span class="nv">$HOME</span><span class="s1">'/projects/chunks'</span><span class="nv">$batch</span>
+
+
+mkdir -p <span class="nv">$dir</span>
+split -l <span class="nv">$batch</span> <span class="nv">$file</span> <span class="nv">$dir</span><span class="s1">'/'</span> -d --additional-suffix<span class="o">=</span>.txt -a <span class="nv">$size</span>
+sleep <span class="m">1</span>
+
+<span class="nv">useragent</span><span class="o">=</span><span class="s1">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'</span>
+
+
+<span class="k">for</span> file in <span class="sb">`</span>ls -r <span class="nv">$dir</span>/*.txt<span class="sb">`</span>
+<span class="k">do</span>
+    <span class="nv">warcfile</span><span class="o">=</span><span class="nv">$file</span><span class="s1">'.warc'</span>
+    <span class="nv">warczip</span><span class="o">=</span><span class="nv">$warcfile</span><span class="s1">'.gz'</span>
+    <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$warczip</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> -f <span class="nv">$warcfile</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="k">continue</span>
+    <span class="k">fi</span>
+
+    <span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>pgrep wget -c<span class="k">)</span> -lt <span class="nv">$maxproc</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="nv">$file</span>
+        wget -H <span class="s2">"user-agent: </span><span class="nv">$useragent</span><span class="s2">"</span> -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null <span class="p">&amp;</span>
+        sleep <span class="m">2</span>
+    <span class="k">else</span>
+        sleep <span class="m">300</span>
+        <span class="k">for</span> filename in <span class="sb">`</span>find <span class="nv">$dir</span> -name <span class="s1">'*.warc'</span> -mmin +5<span class="sb">`</span>
+        <span class="k">do</span>
+            gzip <span class="nv">$filename</span> -9
+        <span class="k">done</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
+</pre>
+</td>
+</tr></table>
+<h4>Conclusion</h4>
+<p>In this article, we have seen how to archive million pages with wget in few minutes.</p>
+<p>wget2 has multithreading support and <a href="https://gitlab.com/gnuwget/wget2/issues/65">it might have warc output soon</a>. With that, archiving with wget becomes much easier.</p>
+</div>
+                    </div>
+                        
+        </article><nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-12.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>

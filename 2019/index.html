@@ -76,7 +76,73 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="08/django-profile-optimize-views.html" class="u-url">Profiling &amp; Optimizing Bottlenecks In Django</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="09/django-tips-data-migrations.html" class="u-url">Tips On Writing Data Migrations in Django Application</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>In a Django application, when schema changes Django automatically generates a migration file for the schema changes. We can write additional migrations to change data.</p>
+<p>In this article, we will learn some tips on writing <a href="https://docs.djangoproject.com/en/dev/topics/migrations/#data-migrations">data migrations in Django applications</a>.</p>
+<h4>Use Management Commands</h4>
+<p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
+<p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="n">status_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'valid'</span><span class="p">:</span> <span class="s1">'ACTIVE'</span><span class="p">,</span>
+            <span class="s1">'invalid'</span><span class="p">:</span> <span class="s1">'ERROR'</span><span class="p">,</span>
+            <span class="s1">'unknown'</span><span class="p">:</span> <span class="s1">'UKNOWN'</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre>
+
+
+<p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
+<h4>Link Data Migrations &amp; Schema Migrations</h4>
+<p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
+    <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">]</span>
+
+    <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
+    <span class="p">]</span>
+</pre>
+
+
+<h4>Watch Out For DB Queries</h4>
+<p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
+<p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
+<p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
+<pre class="code literal-block"><span></span><span class="c1"># instead of</span>
+<span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># use</span>
+<span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
+</pre>
+
+
+<p>As an alternative, we can use raw SQL queries for data migrations.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="08/django-profile-optimize-views.html" class="u-url">Profiling &amp; Optimizing Bottlenecks In Django</a></h1>
             <hr>
 <div class="e-content">
                         <div>
