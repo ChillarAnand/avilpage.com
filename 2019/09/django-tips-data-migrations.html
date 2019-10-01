@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tips On Writing Data Migrations in Django Application | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/09/django-tips-data-migrations.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../08/django-profile-optimize-views.html" title="Profiling &amp; Optimizing Bottlenecks In Django" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Tips On Writing Data Migrations in Django Application">
+<meta property="og:url" content="http://avilpage.com/2019/09/django-tips-data-migrations.html">
+<meta property="og:description" content="Introduction
+In a Django application, when schema changes Django automatically generates a migration file for the schema changes. We can write additional migrations to change data.
+In this article, we">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-09-30T21:21:21+05:30">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="django-tips-tricks">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="django-tips-data-migrations.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Tips On Writing Data Migrations in Django Application</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-09-30T21:21:21+05:30" itemprop="datePublished" title="30 Sep 19">30 Sep 2019</time></p>
+            |
+            
+
+        5 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<h4>Introduction</h4>
+<p>In a Django application, when schema changes Django automatically generates a migration file for the schema changes. We can write additional migrations to change data.</p>
+<p>In this article, we will learn some tips on writing <a href="https://docs.djangoproject.com/en/dev/topics/migrations/#data-migrations">data migrations in Django applications</a>.</p>
+<h4>Use Management Commands</h4>
+<p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
+<p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="n">status_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'valid'</span><span class="p">:</span> <span class="s1">'ACTIVE'</span><span class="p">,</span>
+            <span class="s1">'invalid'</span><span class="p">:</span> <span class="s1">'ERROR'</span><span class="p">,</span>
+            <span class="s1">'unknown'</span><span class="p">:</span> <span class="s1">'UKNOWN'</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre>
+
+
+<p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
+<h4>Link Data Migrations &amp; Schema Migrations</h4>
+<p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
+    <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">]</span>
+
+    <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
+    <span class="p">]</span>
+</pre>
+
+
+<h4>Watch Out For DB Queries</h4>
+<p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
+<p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
+<p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
+<pre class="code literal-block"><span></span><span class="c1"># instead of</span>
+<span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+<span class="c1"># use</span>
+<span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
+</pre>
+
+
+<p>As an alternative, we can use raw SQL queries for data migrations.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/django.html" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../tags/django-tips-tricks.html" rel="tag">django-tips-tricks</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../08/django-profile-optimize-views.html" rel="prev" title="Profiling &amp; Optimizing Bottlenecks In Django">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>
