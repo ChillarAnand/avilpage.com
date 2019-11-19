@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page (Posts about metaprogramming)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/metaprogramming.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 19 Nov 2019 03:51:17 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Writing &amp; Editing Code With Code - Part 1</title><link>http://avilpage.com/2019/10/writing-editing-code-with-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.&lt;/p&gt;
+&lt;h4&gt;Metaprogramming&lt;/h4&gt;
+&lt;p&gt;When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'num.py'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'w'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'print({})'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This 3 lines of program generates a hundred line of program which produces the desired output on executing it.&lt;/p&gt;
+&lt;p&gt;This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.&lt;/p&gt;
+&lt;h4&gt;Metaprogramming In Django&lt;/h4&gt;
+&lt;p&gt;Django provides a management command called &lt;code&gt;inspectdb&lt;/code&gt; which generates Python code based on SQL schema of the database.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ ./manage.py inspectdb
+
+from django.db import models
+
+class Book&lt;span class="o"&gt;(&lt;/span&gt;models.Model&lt;span class="o"&gt;)&lt;/span&gt;:
+    &lt;span class="nv"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; models.CharField&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;max_length&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+    &lt;span class="nv"&gt;slug&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; models.SlugField&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;max_length&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+    ...
+&lt;/pre&gt;
+
+
+&lt;p&gt;In django admin, models can be registered like this.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;admin&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;book.models&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Book&lt;/span&gt;
+
+
+&lt;span class="n"&gt;admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Book&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.&lt;/p&gt;
+&lt;p&gt;Django ORM generates SQL statements for given ORM statements in Python.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;SELECT&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_login"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_superuser"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"first_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"last_name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_staff"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"is_active"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+       &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"date_joined"&lt;/span&gt;
+  &lt;span class="n"&gt;FROM&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;
+ &lt;span class="n"&gt;ORDER&lt;/span&gt; &lt;span class="n"&gt;BY&lt;/span&gt; &lt;span class="s2"&gt;"auth_user"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt; &lt;span class="n"&gt;DESC&lt;/span&gt;
+ &lt;span class="n"&gt;LIMIT&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+
+&lt;span class="n"&gt;Execution&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.050304&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Database&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;anand&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.&lt;/p&gt;
+&lt;p&gt;We can also use these techniques in everyday programming. Here are some use cases.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Generate REST API automatically.&lt;/li&gt;
+&lt;li&gt;Automatically generate unit test cases based on a template.&lt;/li&gt;
+&lt;li&gt;Generate integration tests automatically from the network traffic.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;These are a some of the things related to web development where we can use metaprogramming techniques to generate/modify code. We will learn more about this in the next part of the article.&lt;/p&gt;&lt;/div&gt;</description><category>metaprogramming</category><category>python</category><guid>http://avilpage.com/2019/10/writing-editing-code-with-code.html</guid><pubDate>Thu, 31 Oct 2019 15:51:21 GMT</pubDate></item></channel></rss>

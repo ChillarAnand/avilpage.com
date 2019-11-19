@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing &amp; Editing Code With Code - Part 1 | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/10/writing-editing-code-with-code.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../09/django-tips-data-migrations.html" title="Tips On Writing Data Migrations in Django Application" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Writing &amp; Editing Code With Code - Part 1">
+<meta property="og:url" content="http://avilpage.com/2019/10/writing-editing-code-with-code.html">
+<meta property="og:description" content="In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as dat">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-10-31T21:21:21+05:30">
+<meta property="article:tag" content="metaprogramming">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="writing-editing-code-with-code.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Writing &amp; Editing Code With Code - Part 1</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-10-31T21:21:21+05:30" itemprop="datePublished" title="31 Oct 19">31 Oct 2019</time></p>
+            |
+            
+
+        5 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
+<h4>Metaprogramming</h4>
+<p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
+<pre class="code literal-block"><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print({})'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</pre>
+
+
+<p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
+<p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
+<h4>Metaprogramming In Django</h4>
+<p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
+<pre class="code literal-block"><span></span>$ ./manage.py inspectdb
+
+from django.db import models
+
+class Book<span class="o">(</span>models.Model<span class="o">)</span>:
+    <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
+    <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
+    ...
+</pre>
+
+
+<p>In django admin, models can be registered like this.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+<span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
+
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
+</pre>
+
+
+<p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
+<p>Django ORM generates SQL statements for given ORM statements in Python.</p>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_superuser"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"username"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"first_name"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_name"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"email"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_active"</span><span class="p">,</span>
+       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"date_joined"</span>
+  <span class="n">FROM</span> <span class="s2">"auth_user"</span>
+ <span class="n">ORDER</span> <span class="n">BY</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span> <span class="n">DESC</span>
+ <span class="n">LIMIT</span> <span class="mi">1</span>
+
+
+<span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
+
+<span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
+</pre>
+
+
+<p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
+<p>We can also use these techniques in everyday programming. Here are some use cases.</p>
+<ol>
+<li>Generate REST API automatically.</li>
+<li>Automatically generate unit test cases based on a template.</li>
+<li>Generate integration tests automatically from the network traffic.</li>
+</ol>
+<p>These are a some of the things related to web development where we can use metaprogramming techniques to generate/modify code. We will learn more about this in the next part of the article.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/metaprogramming.html" rel="tag">metaprogramming</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../09/django-tips-data-migrations.html" rel="prev" title="Tips On Writing Data Migrations in Django Application">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>
