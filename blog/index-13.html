@@ -72,7 +72,63 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/12/django-bottleneck-performance-scaling.html" class="u-url">Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to <a href="https://pypi.org">PyPi</a> or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.</p>
+<p>In this article, we will see how to use <a href="https://packaging.python.org/key_projects/#pip">pip</a> to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.</p>
+<h4>Packaging</h4>
+<p>To package python project, we need to create <code>setup.py</code> file which is build script for setuptools. Below is a sample setup file to create a package named <code>library</code>.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">setuptools</span>
+
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"README.md"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="n">long_description</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">setuptools</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"library"</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">"chillaranand"</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s2">"foo@avilpage.com"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"A simple python package"</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="n">long_description</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">"https://github.com/chillaranand/library"</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="n">setuptools</span><span class="o">.</span><span class="n">find_packages</span><span class="p">(),</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">"Programming Language :: Python :: 3"</span><span class="p">,</span>
+        <span class="s2">"License :: OSI Approved :: MIT License"</span><span class="p">,</span>
+        <span class="s2">"Operating System :: OS Independent"</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>Python provides <a href="https://packaging.python.org/tutorials/packaging-projects/">detailed packaging documentation</a> on structuring and building the package.</p>
+<h4>Installation</h4>
+<p>Once module(s) is packaged and pushed to hosting service, it can be installed with pip.</p>
+<pre class="code literal-block"><span></span><span class="c1"># using https</span>
+$ pip install git+https://github.com/chillaranand/library.git
+
+<span class="c1"># using ssh</span>
+pip install git+ssh://git@github.com/chillaranand/library.git
+</pre>
+
+
+<p>This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.</p>
+<pre class="code literal-block"><span></span>$ <span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
+
+$ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chillaranand/library.git
+</pre>
+
+
+<h4>Conclusion</h4>
+<p>In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/12/django-bottleneck-performance-scaling.html" class="u-url">Django Tips &amp; Tricks #11 - Finding High-impact Performance Bottlenecks</a></h1>
             <hr>
 <div class="e-content">
                         <div>

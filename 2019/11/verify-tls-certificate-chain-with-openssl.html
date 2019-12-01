@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to verify certificate chain with openssl on the command line?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verifying TLS Certificate Chain With OpenSSL | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../10/writing-editing-code-with-code.html" title="Writing &amp; Editing Code With Code - Part 1" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Verifying TLS Certificate Chain With OpenSSL">
+<meta property="og:url" content="http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html">
+<meta property="og:description" content="How to verify certificate chain with openssl on the command line?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-11-30T10:15:14+05:30">
+<meta property="article:tag" content="openssl">
+<meta property="article:tag" content="shell">
+<meta property="article:tag" content="tls">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="verify-tls-certificate-chain-with-openssl.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Verifying TLS Certificate Chain With OpenSSL</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-11-30T10:15:14+05:30" itemprop="datePublished" title="30 Nov 19">30 Nov 2019</time></p>
+            |
+            
+
+        5 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<h4>Introduction</h4>
+<p>To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).</p>
+<p>In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.</p>
+<h4>Chain of Trust</h4>
+<p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
+<p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
+<pre class="code literal-block"><span></span>$ openssl s_client -showcerts -connect avilpage.com:443
+
+CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
+<span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
+verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span><span class="m">1</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert SHA2 High Assurance Server CA
+verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span><span class="m">0</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">ST</span> <span class="o">=</span> California, <span class="nv">L</span> <span class="o">=</span> San Francisco, <span class="nv">O</span> <span class="o">=</span> <span class="s2">"GitHub, Inc."</span>, <span class="nv">CN</span> <span class="o">=</span> www.github.com
+verify <span class="k">return</span>:1
+---
+Certificate chain
+ <span class="m">0</span> s:/C<span class="o">=</span>US/ST<span class="o">=</span>California/L<span class="o">=</span>San Francisco/O<span class="o">=</span>GitHub, Inc./CN<span class="o">=</span>www.github.com
+   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
+-----BEGIN CERTIFICATE-----
+MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
+aTrrJ67dru040my
+-----END CERTIFICATE-----
+ <span class="m">1</span> s:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
+   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert High Assurance EV Root CA
+-----BEGIN CERTIFICATE-----
+MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
+<span class="nv">cPUeybQ</span><span class="o">=</span>
+-----END CERTIFICATE-----
+
+    Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
+</pre>
+
+
+<p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
+<p>We can decode these pem files and see the information in these certificates using</p>
+<pre class="code literal-block"><span></span>$ openssl x509 -noout -text -in server.crt
+
+Certificate:
+    Data:
+        Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
+    Signature Algorithm: sha256WithRSAEncryption
+    ----
+</pre>
+
+
+<p>We can also get only the subject and issuer of the certificate with</p>
+<pre class="code literal-block"><span></span>$ openssl x509 -noout -subject -noout -issuer -in server.pem
+
+<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
+<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
+
+$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
+
+<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
+<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
+</pre>
+
+
+<p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
+<p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
+<p>If you are using a Mac, open <code>Keychain Access</code>, search and export the relevant root certificate in <code>.pem</code> format.</p>
+<p algin="center">
+<img src="../../images/tls-openssl1.png"></p>
+
+<p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
+<pre class="code literal-block"><span></span>$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+server.pem: OK
+</pre>
+
+
+<p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
+<h4>Conclusion</h4>
+<p>In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/openssl.html" rel="tag">openssl</a></li>
+            <li><a class="tag p-category" href="../../tags/shell.html" rel="tag">shell</a></li>
+            <li><a class="tag p-category" href="../../tags/tls.html" rel="tag">tls</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../10/writing-editing-code-with-code.html" rel="prev" title="Writing &amp; Editing Code With Code - Part 1">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>
