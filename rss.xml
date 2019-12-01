@@ -1,5 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Tue, 19 Nov 2019 03:51:17 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Writing &amp; Editing Code With Code - Part 1</title><link>http://avilpage.com/2019/10/writing-editing-code-with-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" type="application/rss+xml" rel="self"></atom:link><language>en</language><lastBuildDate>Sun, 01 Dec 2019 03:46:30 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).&lt;/p&gt;
+&lt;p&gt;In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.&lt;/p&gt;
+&lt;h4&gt;Chain of Trust&lt;/h4&gt;
+&lt;p&gt;TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.&lt;/p&gt;
+&lt;p&gt;Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl s_client -showcerts -connect avilpage.com:443
+
+CONNECTED&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;00000006&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert High Assurance EV Root CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert SHA2 High Assurance Server CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;ST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; California, &lt;span class="nv"&gt;L&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; San Francisco, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GitHub, Inc."&lt;/span&gt;, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.github.com
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+---
+Certificate chain
+ &lt;span class="m"&gt;0&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/ST&lt;span class="o"&gt;=&lt;/span&gt;California/L&lt;span class="o"&gt;=&lt;/span&gt;San Francisco/O&lt;span class="o"&gt;=&lt;/span&gt;GitHub, Inc./CN&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+-----BEGIN CERTIFICATE-----
+MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
+aTrrJ67dru040my
+-----END CERTIFICATE-----
+ &lt;span class="m"&gt;1&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+-----BEGIN CERTIFICATE-----
+MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
+&lt;span class="nv"&gt;cPUeybQ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+-----END CERTIFICATE-----
+
+    Verify &lt;span class="k"&gt;return&lt;/span&gt; code: &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ok&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into &lt;code&gt;server.pem&lt;/code&gt; and &lt;code&gt;intermediate.pem&lt;/code&gt; files.&lt;/p&gt;
+&lt;p&gt;We can decode these pem files and see the information in these certificates using&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl x509 -noout -text -in server.crt
+
+Certificate:
+    Data:
+        Version: &lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;0x2&lt;span class="o"&gt;)&lt;/span&gt;
+    Signature Algorithm: sha256WithRSAEncryption
+    ----
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can also get only the subject and issuer of the certificate with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl x509 -noout -subject -noout -issuer -in server.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+
+$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+&lt;/pre&gt;
+
+
+&lt;p&gt;Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.&lt;/p&gt;
+&lt;p&gt;If you are using a Linux machine, all the root certificate will readily available in &lt;code&gt;.pem&lt;/code&gt; format in &lt;code&gt;/etc/ssl/certs&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;If you are using a Mac, open &lt;code&gt;Keychain Access&lt;/code&gt;, search and export the relevant root certificate in &lt;code&gt;.pem&lt;/code&gt; format.&lt;/p&gt;
+&lt;p algin="center"&gt;
+&lt;img src="http://avilpage.com/images/tls-openssl1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We have all the 3 certificates in the chain of trust and we can validate them with&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+server.pem: OK
+&lt;/pre&gt;
+
+
+&lt;p&gt;If there is some issue with validation OpenSSL will throw an error with relevant information.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.&lt;/p&gt;&lt;/div&gt;</description><category>openssl</category><category>shell</category><category>tls</category><guid>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</guid><pubDate>Sat, 30 Nov 2019 04:45:14 GMT</pubDate></item><item><title>Writing &amp; Editing Code With Code - Part 1</title><link>http://avilpage.com/2019/10/writing-editing-code-with-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.&lt;/p&gt;
 &lt;h4&gt;Metaprogramming&lt;/h4&gt;
 &lt;p&gt;When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'num.py'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'w'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
@@ -377,52 +455,4 @@ brew services restart postgres
 
 &lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
-&lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
-&lt;h4&gt;Packaging&lt;/h4&gt;
-&lt;p&gt;To package python project, we need to create &lt;code&gt;setup.py&lt;/code&gt; file which is build script for setuptools. Below is a sample setup file to create a package named &lt;code&gt;library&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt;
-
-
-&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"README.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"r"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;long_description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-
-&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"chillaranand"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"foo@avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"A simple python package"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"https://github.com/chillaranand/library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;find_packages&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;
-    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-        &lt;span class="s2"&gt;"Programming Language :: Python :: 3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"License :: OSI Approved :: MIT License"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Operating System :: OS Independent"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="p"&gt;],&lt;/span&gt;
-&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Python provides &lt;a href="https://packaging.python.org/tutorials/packaging-projects/"&gt;detailed packaging documentation&lt;/a&gt; on structuring and building the package.&lt;/p&gt;
-&lt;h4&gt;Installation&lt;/h4&gt;
-&lt;p&gt;Once module(s) is packaged and pushed to hosting service, it can be installed with pip.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# using https&lt;/span&gt;
-$ pip install git+https://github.com/chillaranand/library.git
-
-&lt;span class="c1"&gt;# using ssh&lt;/span&gt;
-pip install git+ssh://git@github.com/chillaranand/library.git
-&lt;/pre&gt;
-
-
-&lt;p&gt;This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
-
-$ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@github.com/chillaranand/library.git
-&lt;/pre&gt;
-
-
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item></channel></rss>
