@@ -72,7 +72,44 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/02/django-tips-csrf-token-postman-curl.html" class="u-url">Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>Django has inbuilt <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
+<p><a href="https://www.getpostman.com">Postman</a> is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.</p>
+<h4>CSRF Token In Postman</h4>
+<p>Django sets <code>csrftoken</code> cookie on login. After logging in, we can see the csrf token from cookies in the Postman.</p>
+<p align="center">
+<img src="../images/django-csrf-postman1.png"></p>
+
+<p>We can grab this token and set it in headers manually.</p>
+<p align="center">
+<img src="../images/django-csrf-postman2.png"></p>
+
+<p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
+<p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
+<pre class="code literal-block"><span></span><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</pre>
+
+
+<p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
+<p align="center">
+<img src="../images/django-csrf-postman3.png"></p>
+
+<p>Now in our requests, we can use this variable to set the header.</p>
+<p align="center">
+<img src="../images/django-csrf-postman4.png"></p>
+
+<p>When the token expires, we just need to login again and csrf token gets updated automatically.</p>
+<h4>Conclusion</h4>
+<p>In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -351,7 +388,7 @@ sleep <span class="m">1</span>
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>
