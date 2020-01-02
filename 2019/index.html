@@ -18,6 +18,7 @@ article: http://ogp.me/ns/article#
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
 <link rel="canonical" href="http://avilpage.com/2019/">
+<link rel="next" href="index-1.html" type="text/html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><link rel="alternate" type="application/rss+xml" title="RSS for section_index 2019" href="rss.xml">
 </head>
 <body>
@@ -76,7 +77,46 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/verify-tls-certificate-chain-with-openssl.html" class="u-url">Verifying TLS Certificate Chain With OpenSSL</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="12/mastering-dicom-part-1.html" class="u-url">Mastering DICOM - Part #1</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>In hospitals, <a href="https://en.wikipedia.org/wiki/Picture_archiving_and_communication_system">PACS</a> simplifies the clinical workflow by reducing physical and time barriers. A typical radiology workflow looks like this.</p>
+<p algin="center">
+<img src="../images/dicom-pacs-python1.png"></p>
+
+<p>Credit: <cite>Wikipedia</cite></p>
+
+<p>A patient as per doctor's request will visit a radiology center to undergo CT/MRI/X-RAY. Data captured from modality(medical imaging equipments like CT/MRI machine) will be sent to QA for verfication and then sent to PACS for archiving.</p>
+<p>After this when patient visits doctor, doctor can see this study on his workstation(which has DICOM viewer) by entering patient details.</p>
+<p>In this series of articles, we will how to achieve this seamless transfer of medical data digitally with DICOM.</p>
+<h4>DICOM standard</h4>
+<p>DICOM modalities create files in DICOM format. This file has dicom header which contains meta data and dicom data set which has modality info(equipment information, equipment configuration etc), patient information(name, sex etc) and the image data.</p>
+<p>Storing and retreiving DICOM files from PACS servers is generally achieved through DIMSE DICOM for desktop applications and DICOMWeb for web applications.</p>
+<p>All the machines which transfer/receive DICOM data must follow DICOM standard. With this all the DICOM machines which are in a network can store and retrieve DICOM files from PACS.</p>
+<p>When writing software to handle DICOM data, there are third party packages to handle most of the these things for us.</p>
+<ul>
+<li>
+<p>Python(<a href="https://pypi.org/project/pydicom/">pydicom</a>, <a href="https://pypi.org/project/pynetdicom/">pynetdicom</a>)</p>
+</li>
+<li>
+<p>Ruby (<a href="https://rubygems.org/gems/dicom/">ruby-dicom</a>)</p>
+</li>
+<li>
+<p>R (<a href="https://CRAN.R-project.org/package=oro.dicom">oro.dicom</a>)</p>
+</li>
+<li>
+<p>C/C++ (<a href="https://dicom.offis.de/dcmtk">dcmtoolkit</a>)</p>
+</li>
+</ul>
+<h4>Conclusion</h4>
+<p>In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.</p>
+<p>In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="11/verify-tls-certificate-chain-with-openssl.html" class="u-url">Verifying TLS Certificate Chain With OpenSSL</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -565,50 +605,17 @@ brew services restart postgres
 </div>
                     </div>
                         
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/django-tips-csrf-token-postman-curl.html" class="u-url">Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<h4>Introduction</h4>
-<p>Django has inbuilt <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
-<p><a href="https://www.getpostman.com">Postman</a> is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.</p>
-<h4>CSRF Token In Postman</h4>
-<p>Django sets <code>csrftoken</code> cookie on login. After logging in, we can see the csrf token from cookies in the Postman.</p>
-<p align="center">
-<img src="../images/django-csrf-postman1.png"></p>
-
-<p>We can grab this token and set it in headers manually.</p>
-<p align="center">
-<img src="../images/django-csrf-postman2.png"></p>
-
-<p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
-<p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
-<pre class="code literal-block"><span></span><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
-<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</pre>
-
-
-<p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
-<p align="center">
-<img src="../images/django-csrf-postman3.png"></p>
-
-<p>Now in our requests, we can use this variable to set the header.</p>
-<p align="center">
-<img src="../images/django-csrf-postman4.png"></p>
-
-<p>When the token expires, we just need to login again and csrf token gets updated automatically.</p>
-<h4>Conclusion</h4>
-<p>In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.</p>
-</div>
-                    </div>
-                        
-        </article>
+        </article><nav class="postindexpager"><ul class="pager">
+<li class="next">
+                <a href="index-1.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav>
 </div>
         </div>
         <!--End of body content-->
 
         <footer id="footer">
-            Contents © 2019         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>

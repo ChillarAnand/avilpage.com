@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering DICOM - Part #1 | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2019/12/mastering-dicom-part-1.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../11/verify-tls-certificate-chain-with-openssl.html" title="Verifying TLS Certificate Chain With OpenSSL" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Mastering DICOM - Part #1">
+<meta property="og:url" content="http://avilpage.com/2019/12/mastering-dicom-part-1.html">
+<meta property="og:description" content="How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-12-31T18:59:09+05:30">
+<meta property="article:tag" content="health-care">
+<meta property="article:tag" content="python">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="mastering-dicom-part-1.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Mastering DICOM - Part #1</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2019-12-31T18:59:09+05:30" itemprop="datePublished" title="31 Dec 19">31 Dec 2019</time></p>
+            |
+            
+
+        2 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<h4>Introduction</h4>
+<p>In hospitals, <a href="https://en.wikipedia.org/wiki/Picture_archiving_and_communication_system">PACS</a> simplifies the clinical workflow by reducing physical and time barriers. A typical radiology workflow looks like this.</p>
+<p algin="center">
+<img src="../../images/dicom-pacs-python1.png"></p>
+
+<p>Credit: <cite>Wikipedia</cite></p>
+
+<p>A patient as per doctor's request will visit a radiology center to undergo CT/MRI/X-RAY. Data captured from modality(medical imaging equipments like CT/MRI machine) will be sent to QA for verfication and then sent to PACS for archiving.</p>
+<p>After this when patient visits doctor, doctor can see this study on his workstation(which has DICOM viewer) by entering patient details.</p>
+<p>In this series of articles, we will how to achieve this seamless transfer of medical data digitally with DICOM.</p>
+<h4>DICOM standard</h4>
+<p>DICOM modalities create files in DICOM format. This file has dicom header which contains meta data and dicom data set which has modality info(equipment information, equipment configuration etc), patient information(name, sex etc) and the image data.</p>
+<p>Storing and retreiving DICOM files from PACS servers is generally achieved through DIMSE DICOM for desktop applications and DICOMWeb for web applications.</p>
+<p>All the machines which transfer/receive DICOM data must follow DICOM standard. With this all the DICOM machines which are in a network can store and retrieve DICOM files from PACS.</p>
+<p>When writing software to handle DICOM data, there are third party packages to handle most of the these things for us.</p>
+<ul>
+<li>
+<p>Python(<a href="https://pypi.org/project/pydicom/">pydicom</a>, <a href="https://pypi.org/project/pynetdicom/">pynetdicom</a>)</p>
+</li>
+<li>
+<p>Ruby (<a href="https://rubygems.org/gems/dicom/">ruby-dicom</a>)</p>
+</li>
+<li>
+<p>R (<a href="https://CRAN.R-project.org/package=oro.dicom">oro.dicom</a>)</p>
+</li>
+<li>
+<p>C/C++ (<a href="https://dicom.offis.de/dcmtk">dcmtoolkit</a>)</p>
+</li>
+</ul>
+<h4>Conclusion</h4>
+<p>In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.</p>
+<p>In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/health-care.html" rel="tag">health-care</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../11/verify-tls-certificate-chain-with-openssl.html" rel="prev" title="Verifying TLS Certificate Chain With OpenSSL">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script>
+</body>
+</html>
