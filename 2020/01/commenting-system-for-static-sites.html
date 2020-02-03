@@ -5,9 +5,9 @@ article: http://ogp.me/ns/article#
 " lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="description" content="How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.">
+<meta name="description" content="How to setup an open source self hosted commenting system for static sites like Jekyll, Nikola, Hugo etc.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mastering DICOM - Part #1 | Avil Page</title>
+<title>Setup Self-hosted Comment System For Static Sites | Avil Page</title>
 <link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
 <!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
@@ -18,18 +18,17 @@ article: http://ogp.me/ns/article#
 <meta name="theme-color" content="#5670d4">
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
-<link rel="canonical" href="http://avilpage.com/2019/12/mastering-dicom-part-1.html">
+<link rel="canonical" href="http://avilpage.com/2020/01/commenting-system-for-static-sites.html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
-<link rel="prev" href="../11/verify-tls-certificate-chain-with-openssl.html" title="Verifying TLS Certificate Chain With OpenSSL" type="text/html">
-<link rel="next" href="../../2020/01/commenting-system-for-static-sites.html" title="Setup Self-hosted Comment System For Static Sites" type="text/html">
+<link rel="prev" href="../../2019/12/mastering-dicom-part-1.html" title="Mastering DICOM - Part #1" type="text/html">
 <meta property="og:site_name" content="Avil Page">
-<meta property="og:title" content="Mastering DICOM - Part #1">
-<meta property="og:url" content="http://avilpage.com/2019/12/mastering-dicom-part-1.html">
-<meta property="og:description" content="How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.">
+<meta property="og:title" content="Setup Self-hosted Comment System For Static Sites">
+<meta property="og:url" content="http://avilpage.com/2020/01/commenting-system-for-static-sites.html">
+<meta property="og:description" content="How to setup an open source self hosted commenting system for static sites like Jekyll, Nikola, Hugo etc.">
 <meta property="og:type" content="article">
-<meta property="article:published_time" content="2019-12-31T18:59:09+05:30">
-<meta property="article:tag" content="health-care">
-<meta property="article:tag" content="python">
+<meta property="article:published_time" content="2020-01-31T07:17:12+05:30">
+<meta property="article:tag" content="meta">
+<meta property="article:tag" content="static-site">
 </head>
 <body>
 <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -73,7 +72,7 @@ article: http://ogp.me/ns/article#
 </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-            <a href="mastering-dicom-part-1.md" id="sourcelink">Source</a>
+            <a href="commenting-system-for-static-sites.md" id="sourcelink">Source</a>
         </li>
                 
             </ul>
@@ -86,11 +85,11 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Mastering DICOM - Part #1</a></h1>
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Setup Self-hosted Comment System For Static Sites</a></h1>
 
         <div class="metadata">
             <p class="dateline">
-                <time class="published dt-published" datetime="2019-12-31T18:59:09+05:30" itemprop="datePublished" title="31 Dec 19">31 Dec 2019</time></p>
+                <time class="published dt-published" datetime="2020-01-31T07:17:12+05:30" itemprop="datePublished" title="31 Jan 20">31 Jan 2020</time></p>
             |
             
 
@@ -103,49 +102,28 @@ article: http://ogp.me/ns/article#
 <div class="e-content entry-content" itemprop="articleBody text">
             <div>
 <h4>Introduction</h4>
-<p>In hospitals, <a href="https://en.wikipedia.org/wiki/Picture_archiving_and_communication_system">PACS</a> simplifies the clinical workflow by reducing physical and time barriers. A typical radiology workflow looks like this.</p>
-<p algin="center">
-<img src="../../images/dicom-pacs-python1.png"></p>
-
-<p>Credit: <cite>Wikipedia</cite></p>
-
-<p>A patient as per doctor's request will visit a radiology center to undergo CT/MRI/X-RAY. Data captured from modality(medical imaging equipments like CT/MRI machine) will be sent to QA for verfication and then sent to PACS for archiving.</p>
-<p>After this when patient visits doctor, doctor can see this study on his workstation(which has DICOM viewer) by entering patient details.</p>
-<p>In this series of articles, we will how to achieve this seamless transfer of medical data digitally with DICOM.</p>
-<h4>DICOM standard</h4>
-<p>DICOM modalities create files in DICOM format. This file has dicom header which contains meta data and dicom data set which has modality info(equipment information, equipment configuration etc), patient information(name, sex etc) and the image data.</p>
-<p>Storing and retreiving DICOM files from PACS servers is generally achieved through DIMSE DICOM for desktop applications and DICOMWeb for web applications.</p>
-<p>All the machines which transfer/receive DICOM data must follow DICOM standard. With this all the DICOM machines which are in a network can store and retrieve DICOM files from PACS.</p>
-<p>When writing software to handle DICOM data, there are third party packages to handle most of the these things for us.</p>
-<ul>
-<li>
-<p>Python(<a href="https://pypi.org/project/pydicom/">pydicom</a>, <a href="https://pypi.org/project/pynetdicom/">pynetdicom</a>)</p>
-</li>
-<li>
-<p>Ruby (<a href="https://rubygems.org/gems/dicom/">ruby-dicom</a>)</p>
-</li>
-<li>
-<p>R (<a href="https://CRAN.R-project.org/package=oro.dicom">oro.dicom</a>)</p>
-</li>
-<li>
-<p>C/C++ (<a href="https://dicom.offis.de/dcmtk">dcmtoolkit</a>)</p>
-</li>
-</ul>
+<p>This blog <a href="https://avilpage.com">AvilPage</a> is generated by <a href="https://pypi.org/project/Nikola/">Nikola</a>, a static site generator. Since this is a static site, to setup up comments it has to depend on hosted commenting systems like
+<a href="https://disqus.com" rel="nofollow">Disqus</a>,
+<a href="https://just-comments.com" rel="nofollow">JustComments</a>
+etc or self-host an open source system like  <a href="https://github.com/coralproject/talk">Coral</a>, <a href="https://github.com/eduardoboucas/staticman">StaticMan</a> etc.</p>
+<p>Hosted systems have no maintainance but has privacy and pricing issues. With self hosted systems, there will be complete access to data but maintainance is an issue.</p>
+<p>Coral commenting system provides 1-click deployment to Heroku which reduces maintainance effort.</p>
+<h4>Setting Up Coral</h4>
+<p>Heroku provides free hosting for hobby projects. Coral project provides a template to deploy to Heorku directly. Once the app is deployed, we can configure comment system from the coral admin page.</p>
+<p>Once it is configured, we have to embed JS snippet available at <a href="https://docs.coralproject.net/talk/v5/integrating/cms/">Coral CMS integration</a> to the static site to render comments.</p>
+<p>If we use Heroku free tier, Dynos will sleep when there is no traffic. Next time when someone posts a comment, it will take a while for the dyno to respond. To prevent we can setup a monitor on Uptimerobot or Pingdom so that it will make a request to heroku app every ~20 minutes. This will consume Dyno hours but coral app response will be faster.</p>
 <h4>Conclusion</h4>
-<p>In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.</p>
-<p>In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.</p>
+<p>Self-hosting a comment system is easy with Coral. There are other hosted alternatives to Disqus but due to privacy and pricing concerns, I wanted to use self-hosted commenting system.</p>
+<p>Thanks to <a href="http://blog.kiranruth.com">Master Ruth</a> for nudging and helping me in setting up comment system on this blog.</p>
 </div>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
-<li><a class="tag p-category" href="../../tags/health-care.html" rel="tag">health-care</a></li>
-            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+<li><a class="tag p-category" href="../../tags/meta.html" rel="tag">meta</a></li>
+            <li><a class="tag p-category" href="../../tags/static-site.html" rel="tag">static-site</a></li>
         </ul>
 <ul class="pager hidden-print">
 <li class="previous">
-                <a href="../11/verify-tls-certificate-chain-with-openssl.html" rel="prev" title="Verifying TLS Certificate Chain With OpenSSL">Previous post</a>
-            </li>
-            <li class="next">
-                <a href="../../2020/01/commenting-system-for-static-sites.html" rel="next" title="Setup Self-hosted Comment System For Static Sites">Next post</a>
+                <a href="../../2019/12/mastering-dicom-part-1.html" rel="prev" title="Mastering DICOM - Part #1">Previous post</a>
             </li>
         </ul></nav></aside><div class="full-article-footer">
             <div class="article-footer">
