@@ -2,7 +2,7 @@
 .. title: Setup Self-hosted Comment System For Static Sites
 .. slug: commenting-system-for-static-sites
 .. date: 2020-01-31 07:17:12 UTC+05:30
-.. tags: static-site, meta
+.. tags: static-site, meta, draft
 .. category:
 .. link:
 .. description: How to setup an open source self hosted commenting system for static sites like Jekyll, Nikola, Hugo etc.
