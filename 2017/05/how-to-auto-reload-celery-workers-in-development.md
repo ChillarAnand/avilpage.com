@@ -5,7 +5,7 @@
 .. tags: celery, automation, python
 .. category: programming, python
 .. link:
-.. description: How to automaically reload celery workers in development environment.
+.. description: How to automatically reload celery workers in development environment.
 .. type: text
 -->
 
