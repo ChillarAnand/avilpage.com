@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-Remote-first and remote-friendly companies have a different work culture & communication process compared to non-remote companies. Due to COVID-19[^1] world wide pandemic, majority of workers who didn't had prior remote experience are working from home. This article is intended to provide some helpful tips for such people.
+Remote-first and remote-friendly companies have a different work culture & communication process compared to non-remote companies. Due to COVID-19[^1] world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.
 
 ### Work Desk
 
@@ -48,11 +48,13 @@ Take regular breaks during work hours. Without any distractions, it is easy to g
 
 With unlimited access to kitchen and snacks, it is hard to avoid binge eating at home. But atleast avoid binge eating during office hours.
 
+Exercise. Since WFH involves only sitting in a chair through out the day, staying physically active is challenging especially during this pandemic. Exercise few minutes every morning, help yourself in the kitchen by making a meal or doing dishes, clean your house etc., should help in staying physically active.
+
 
 ### Seek Help
 
 WFH can be lonely at times as the social interactions are quite less. Schedule 1 to 1 meetings or virtual coffe meetings with your colleagues to increase social interactions. Discuss WFH problems with your colleagues, friends and remote communities to see how they are tacking those problems.
 
 
-[^1]: https://en.wikipedia.org/wiki/Coronavirus_disease_2019
-[^2]: https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer
+[^1]: [https://en.wikipedia.org/wiki/Coronavirus_disease_2019](https://en.wikipedia.org/wiki/Coronavirus_disease_2019)
+[^2]: [https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer](https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer)
