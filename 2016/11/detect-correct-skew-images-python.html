@@ -121,8 +121,8 @@ article: http://ogp.me/ns/article#
 <p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
 <pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
 
@@ -139,7 +139,7 @@ article: http://ogp.me/ns/article#
 
 
 <span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
@@ -155,10 +155,10 @@ article: http://ogp.me/ns/article#
 
 <span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 <span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
-<span class="k">print</span><span class="p">(</span><span class="s1">'Best angle: {}'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Best angle: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
 
 <span class="c1"># correct skew</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
 <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
 </pre>

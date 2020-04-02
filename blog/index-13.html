@@ -72,7 +72,30 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/05/environment-bookmarklet-web-development-tips.html" class="u-url">Switching Hosts With Bookmarklets - Web Development Tips</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>When debugging an issue related to web development projects, which is inconsistent between environments (local, development, QA, staging and production), we have to frequently switch between them.</p>
+<p>If we are debugging something on the home page, then we can just bookmark the host URLs. We can switch between them by clicking on the relevant bookmark. Some browsers provide autocompletion for bookmarks. So we can type a few characters and then select the relevant URL from suggestions.</p>
+<p>When debugging an issue on some other page like <a href="../2019/05/environment-bookmarklet-web-development-tips.html">https://avilpage.com/validate/books/?name=darwin&amp;year=2019</a>, which has URL path and query param, switching between enviroment becomes tedious. To switch to local environment, we have to manually replace the hostname with localhost.</p>
+<p>To avoid this, we can use a bookmarklet to switch the hosts. A <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> is a bookmark which contains a JavaScript code snippet in its URL. This code snippet will be executed when the bookmarklet is clicked.</p>
+<p>Lets create a bookmarklet to replace host in the URL with <a href="http://localhost:8000">http://localhost:8000</a>. Create new bookmark called <code>To Local</code> and in the URL add the following snippet.</p>
+<pre class="code literal-block"><span></span><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</pre>
+
+
+<p>If we click on <code>To Local</code> bookmarklet, it will redirect the current active page to localhost URL.</p>
+<p>We can create one more bookmarklet to switch to production. Create a bookmarklet called <code>To Production</code> and add the following snippet in the URL.</p>
+<pre class="code literal-block"><span></span><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</pre>
+
+
+<p>We can create similar bookmarklets to switch to other enviroments. Now, switching between enviroments on any page is as easy as clicking a button.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -354,10 +377,10 @@ split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<spa
 
 
 <p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
-<pre class="code literal-block"><span></span>for file in `ls -r chunks/*.txt`
-do
-   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;
-done
+<pre class="code literal-block"><span></span><span class="err">for file in `ls -r chunks/*.txt`</span>
+<span class="err">do</span>
+<span class="err">   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;</span>
+<span class="err">done</span>
 </pre>
 
 

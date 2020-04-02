@@ -242,10 +242,10 @@ split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<spa
 
 
 <p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
-<pre class="code literal-block"><span></span>for file in `ls -r chunks/*.txt`
-do
-   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;
-done
+<pre class="code literal-block"><span></span><span class="err">for file in `ls -r chunks/*.txt`</span>
+<span class="err">do</span>
+<span class="err">   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;</span>
+<span class="err">done</span>
 </pre>
 
 
@@ -471,22 +471,22 @@ $ comm -123 domcop majestic --total
 <p>This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.</p>
 <p>Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.</p>
 <p>We can use a custom buildpsec file to directly deploy the code from build step.</p>
-<pre class="code literal-block"><span></span><span class="n">version</span><span class="o">:</span> <span class="mf">0.1</span>
+<pre class="code literal-block"><span></span><span class="n">version</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span>
 
-<span class="n">phases</span><span class="o">:</span>
-  <span class="n">install</span><span class="o">:</span>
-    <span class="n">commands</span><span class="o">:</span>
+<span class="n">phases</span><span class="p">:</span>
+  <span class="n">install</span><span class="p">:</span>
+    <span class="n">commands</span><span class="p">:</span>
       <span class="o">-</span> <span class="n">echo</span> <span class="n">Entering</span> <span class="n">the</span> <span class="n">install</span> <span class="n">phase</span>
       <span class="o">-</span> <span class="n">echo</span> <span class="n">Installing</span> <span class="n">dependencies</span>
       <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">awscli</span>
       <span class="o">-</span> <span class="n">aws</span> <span class="o">--</span><span class="n">version</span>
       <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">chalice</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="na">txt</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
 
-  <span class="n">build</span><span class="o">:</span>
-    <span class="n">commands</span><span class="o">:</span>
+  <span class="n">build</span><span class="p">:</span>
+    <span class="n">commands</span><span class="p">:</span>
       <span class="o">-</span> <span class="n">echo</span> <span class="n">entered</span> <span class="n">the</span> <span class="n">build</span> <span class="n">phase</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="n">on</span> <span class="err">`</span><span class="n">date</span><span class="err">`</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="k">on</span> <span class="ss">`date`</span>
       <span class="o">-</span> <span class="n">chalice</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">stage</span> <span class="n">staging</span>
 </pre>
 
@@ -522,7 +522,7 @@ $ comm -123 domcop majestic --total
     <span class="n">reader</span> <span class="o">=</span> <span class="n">FlowReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">():</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
 </pre>
 
 
@@ -614,7 +614,7 @@ $ atop
 
 
 <p>Whenever an SQL query gets executed, it prints the query and time taken for it in console.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -669,8 +669,8 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 
 
 <p>In runserver console, we can see all SQL queries that are being executed.</p>
-<pre class="code literal-block"><span></span>(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
-[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
+<pre class="code literal-block"><span></span><span class="err">(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)</span>
+<span class="err">[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]</span>
 </pre>
 
 
@@ -862,7 +862,7 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
 </pre>
 
@@ -901,7 +901,7 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <span class="k">def</span> <span class="nf">test_get_github_user_info_without_mock</span><span class="p">():</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
 </pre>
 
