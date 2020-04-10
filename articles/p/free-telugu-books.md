@@ -16,8 +16,11 @@ As part of Digital Library of India[^1], several institutes in India have digiti
 
 ### [Telugu Thesis](http://www.teluguthesis.com/p/blog-page_20.html)
 
+<b>350+ Books</b>
 
-http://www.sairealattitudemanagement.org/Telugu-Devotional-Spiritual-Free-eBooks-All-List
+
+#### [ఉచిత భక్తి పుస్తకాలు](http://www.sairealattitudemanagement.org/Telugu-Devotional-Spiritual-Free-eBooks-All-List)
+
 
 
 http://www.sundarayya.org/publication
