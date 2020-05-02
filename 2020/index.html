@@ -53,6 +53,9 @@ article: http://ogp.me/ns/article#
 <a href="../p/projects.html">Projects</a>
                 </li>
 <li>
+<a href="../p/pages.html">Pages</a>
+                </li>
+<li>
 <a href="../p/about.html">About</a>
                 </li>
 <li>
@@ -77,7 +80,117 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/work-from-home-tips.html" class="u-url">Work From Home Tips For Non-remote Workers</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/setup-continuous-deployment-with-kubernetes.html" class="u-url">Continuous Deployment To Kubernetes With Skaffold</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
+<h4>Prerequisites</h4>
+<p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
+<pre class="code literal-block"><span></span>$ kubectl cluster-info
+$ kubectl config get-contexts
+</pre>
+
+
+<p>You should know how to manually deploy your application to kubernetes.</p>
+<pre class="code literal-block"><span></span><span class="c1"># push latest docker image to container registry</span>
+$ docker push chillaranand/library
+
+<span class="c1"># deploy latest image to k8s</span>
+$ kubectl apply -f app/deployment.yaml
+$ kubectl apply -f app/service.yaml
+</pre>
+
+
+<h4>Skaffold</h4>
+<p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
+<p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
+<pre class="code literal-block"><span></span>$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$ chmod +x skaffold
+$ sudo mv skaffold /usr/local/bin
+</pre>
+
+
+<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
+<pre class="code literal-block"><span></span>$ skaffold init
+Configuration skaffold.yaml was written
+
+$ cat skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: library
+build:
+  artifacts:
+  - image: docker.io/chillaranand/library
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+</pre>
+
+
+<p>To deploy latest changes to your cluster, run</p>
+<pre class="code literal-block"><span></span>$ skaffold run
+</pre>
+
+
+<p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
+<h4>CircleCI Workflow</h4>
+<pre class="code literal-block"><span></span>version: <span class="m">2</span>.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.19
+  kubernetes: circleci/kubernetes@0.11.0
+
+commands:
+  kubernetes-deploy:
+
+    steps:
+      - setup_remote_docker
+
+      - aws-cli/setup:
+          profile-name: default
+
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.15.10
+
+      - checkout
+
+      - run:
+          name: container registry log in
+          command: <span class="p">|</span>
+            sudo <span class="k">$(</span>aws ecr get-login --region ap-south-1 --no-include-email<span class="k">)</span>
+
+      - run:
+          name: install skaffold
+          command: <span class="p">|</span>
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+
+      - run:
+          name: update kube config to connect to the required cluster
+          command: <span class="p">|</span>
+            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+
+      - run:
+          name: deploy to k8s
+          command: <span class="p">|</span>
+            skaffold run
+</pre>
+
+
+<p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
+<p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a seperate environment is created for it.</p>
+<p>Remaining steps are self explainatory.</p>
+<h4>Conclusion</h4>
+<p>Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/work-from-home-tips.html" class="u-url">Work From Home Tips For Non-remote Workers</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -346,23 +459,23 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
     $(document.links).filter(function() {
         return this.hostname != window.location.hostname;
     }).attr('target', '_blank');
-    </script><script>
-    (function() {
-        var d = document, s = d.createElement('script');
-        var url = 'avilpage-coral.herokuapp.com';
-        /*         var url = 'http://comments.avilpage.com'; */
-        s.src = '//' + url + '/assets/js/embed.js';
-        s.async = false;
-        s.defer = true;
-        s.onload = function() {
-            Coral.createStreamEmbed({
-                id: "coral_thread",
-                autoRender: true,
-                rootURL: '//' + url,
-            });
-        };
-        (d.head || d.body).appendChild(s);
-    })();
-    </script>
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
 </body>
 </html>

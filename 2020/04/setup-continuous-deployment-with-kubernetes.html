@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to setup continuous deployment to kubernetes in a continuous integration environment?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuous Deployment To Kubernetes With Skaffold | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="work-from-home-tips.html" title="Work From Home Tips For Non-remote Workers" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Continuous Deployment To Kubernetes With Skaffold">
+<meta property="og:url" content="http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html">
+<meta property="og:description" content="How to setup continuous deployment to kubernetes in a continuous integration environment?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-04-30T16:45:36+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="kubernetes">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="setup-continuous-deployment-with-kubernetes.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Continuous Deployment To Kubernetes With Skaffold</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2020-04-30T16:45:36+05:30" itemprop="datePublished" title="30 Apr 20">30 Apr 2020</time></p>
+            |
+            
+
+        3 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<p>In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
+<h4>Prerequisites</h4>
+<p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
+<pre class="code literal-block"><span></span>$ kubectl cluster-info
+$ kubectl config get-contexts
+</pre>
+
+
+<p>You should know how to manually deploy your application to kubernetes.</p>
+<pre class="code literal-block"><span></span><span class="c1"># push latest docker image to container registry</span>
+$ docker push chillaranand/library
+
+<span class="c1"># deploy latest image to k8s</span>
+$ kubectl apply -f app/deployment.yaml
+$ kubectl apply -f app/service.yaml
+</pre>
+
+
+<h4>Skaffold</h4>
+<p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
+<p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
+<pre class="code literal-block"><span></span>$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$ chmod +x skaffold
+$ sudo mv skaffold /usr/local/bin
+</pre>
+
+
+<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
+<pre class="code literal-block"><span></span>$ skaffold init
+Configuration skaffold.yaml was written
+
+$ cat skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: library
+build:
+  artifacts:
+  - image: docker.io/chillaranand/library
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+</pre>
+
+
+<p>To deploy latest changes to your cluster, run</p>
+<pre class="code literal-block"><span></span>$ skaffold run
+</pre>
+
+
+<p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
+<h4>CircleCI Workflow</h4>
+<pre class="code literal-block"><span></span>version: <span class="m">2</span>.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.19
+  kubernetes: circleci/kubernetes@0.11.0
+
+commands:
+  kubernetes-deploy:
+
+    steps:
+      - setup_remote_docker
+
+      - aws-cli/setup:
+          profile-name: default
+
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.15.10
+
+      - checkout
+
+      - run:
+          name: container registry log in
+          command: <span class="p">|</span>
+            sudo <span class="k">$(</span>aws ecr get-login --region ap-south-1 --no-include-email<span class="k">)</span>
+
+      - run:
+          name: install skaffold
+          command: <span class="p">|</span>
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+
+      - run:
+          name: update kube config to connect to the required cluster
+          command: <span class="p">|</span>
+            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+
+      - run:
+          name: deploy to k8s
+          command: <span class="p">|</span>
+            skaffold run
+</pre>
+
+
+<p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
+<p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a seperate environment is created for it.</p>
+<p>Remaining steps are self explainatory.</p>
+<h4>Conclusion</h4>
+<p>Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/kubernetes.html" rel="tag">kubernetes</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="work-from-home-tips.html" rel="prev" title="Work From Home Tips For Non-remote Workers">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>

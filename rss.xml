@@ -1,5 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 10 Apr 2020 04:14:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Work From Home Tips For Non-remote Workers</title><link>http://avilpage.com/2020/04/work-from-home-tips.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Remote-first and remote-friendly companies have a different work culture &amp;amp; communication process compared to non-remote companies. Due to COVID-19&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 02 May 2020 04:09:43 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
+&lt;h4&gt;Prerequisites&lt;/h4&gt;
+&lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ kubectl cluster-info
+$ kubectl config get-contexts
+&lt;/pre&gt;
+
+
+&lt;p&gt;You should know how to manually deploy your application to kubernetes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
+$ docker push chillaranand/library
+
+&lt;span class="c1"&gt;# deploy latest image to k8s&lt;/span&gt;
+$ kubectl apply -f app/deployment.yaml
+$ kubectl apply -f app/service.yaml
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Skaffold&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/GoogleContainerTools/skaffold"&gt;Skaffold&lt;/a&gt; is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.&lt;/p&gt;
+&lt;p&gt;Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$ chmod +x skaffold
+$ sudo mv skaffold /usr/local/bin
+&lt;/pre&gt;
+
+
+&lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ skaffold init
+Configuration skaffold.yaml was written
+
+$ cat skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: library
+build:
+  artifacts:
+  - image: docker.io/chillaranand/library
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+&lt;/pre&gt;
+
+
+&lt;p&gt;To deploy latest changes to your cluster, run&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ skaffold run
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.&lt;/p&gt;
+&lt;h4&gt;CircleCI Workflow&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.19
+  kubernetes: circleci/kubernetes@0.11.0
+
+commands:
+  kubernetes-deploy:
+
+    steps:
+      - setup_remote_docker
+
+      - aws-cli/setup:
+          profile-name: default
+
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.15.10
+
+      - checkout
+
+      - run:
+          name: container registry log in
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            sudo &lt;span class="k"&gt;$(&lt;/span&gt;aws ecr get-login --region ap-south-1 --no-include-email&lt;span class="k"&gt;)&lt;/span&gt;
+
+      - run:
+          name: install skaffold
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+
+      - run:
+          name: update kube config to connect to the required cluster
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+
+      - run:
+          name: deploy to k8s
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            skaffold run
+&lt;/pre&gt;
+
+
+&lt;p&gt;CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.&lt;/p&gt;
+&lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
+&lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>Work From Home Tips For Non-remote Workers</title><link>http://avilpage.com/2020/04/work-from-home-tips.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Remote-first and remote-friendly companies have a different work culture &amp;amp; communication process compared to non-remote companies. Due to COVID-19&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.&lt;/p&gt;
 &lt;h4&gt;Work Desk&lt;/h4&gt;
 &lt;p&gt;It is important to have a dedicated room or at least a desk for work. This creates a virtual boundary between your office work and personal work. Otherwise, you will end up working from bed, dining tables, kitchen etc which will result in body pains due to bad postures.&lt;/p&gt;
 &lt;h4&gt;Get Ready&lt;/h4&gt;
@@ -586,12 +688,4 @@ class Book&lt;span class="o"&gt;(&lt;/span&gt;models.Model&lt;span class="o"&gt;
 
 
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.&lt;/p&gt;&lt;/div&gt;</description><category>aws</category><category>python</category><guid>http://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</guid><pubDate>Wed, 24 Jul 2019 15:51:21 GMT</pubDate></item><item><title>Why My Grandma Can Recall 100+ Phone Numbers, But We Can't</title><link>http://avilpage.com/2019/05/total-recall-grandma-phone-numbers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;On a leisure evening, as I was chit chatting with my grandma, my phone started ringing. Some one who is not in my contacts is calling me. As I was wondering who the heck is calling, my grandma just glanced at my screen and said, "Its you uncle Somu, pick up the phone". I was dumbstruck by this.&lt;/p&gt;
-&lt;p&gt;Later that evening, I asked my grandma to recall the phone numbers she remembers. She recalled 30+ phone numbers and she was able to recognize 100+ phone numbers based on the last 4 digits of the mobile.&lt;/p&gt;
-&lt;p&gt;That came as a surprise for me as I don't even remember 10+ phone numbers now. Most of the smart phone users don't remember family and friends phone numbers anymore.&lt;/p&gt;
-&lt;p&gt;A decade back, I used to remember most of my relatives and friends phone numbers even though I didn't had a phone. My grandma used to use a mini notebook to write all the phone numbers. I was worried about this mini notebook as it can get lost easily and it is always hard to find when required.&lt;/p&gt;
-&lt;p&gt;Since my grandma didn't have any contacts in her phone, she gets a glimpse of number every time someone calls her. She also dials the number every time she has to call someone. With this habit she is able to memorize all the numbers.&lt;/p&gt;
-&lt;p&gt;I, on the other hand started using a smart phone which has all the contacts. I search my contacts by name when I have to dial someone and there is no need to dial the number. Also whenever someone call me, their name gets displayed in large letters and I never get to focus on the number. Due to this, I don't remember any of the phone numbers&lt;/p&gt;
-&lt;p&gt;After this revelation, I started an experiment by disabling contact permissions for dialer app. With this, I am forced to type the number or select appropriate number from the call history and dial it. This was a bit uncomfortable at first. Soon I got used to it as recognized more and more numbers.&lt;/p&gt;
-&lt;p&gt;This might seem unnecessary in the smart phone age. But when you are traveling or when your phone gets switched off, it's hard to contact people. Even if someone gives their phone, it is of no use if I don't remember any numbers.&lt;/p&gt;
-&lt;p&gt;Also it is important to remember phone numbers of family and friends which might be needed in case of emergencies.&lt;/p&gt;&lt;/div&gt;</description><category>grandma</category><category>life-tips</category><guid>http://avilpage.com/2019/05/total-recall-grandma-phone-numbers.html</guid><pubDate>Thu, 20 Jun 2019 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.&lt;/p&gt;&lt;/div&gt;</description><category>aws</category><category>python</category><guid>http://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</guid><pubDate>Wed, 24 Jul 2019 15:51:21 GMT</pubDate></item></channel></rss>
