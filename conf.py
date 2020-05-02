@@ -135,12 +135,11 @@ NAVIGATION_LINKS = {
         ("/", "Articles"),
         ("/p/talks.html", "Talks"),
         ("/p/projects.html", "Projects"),
-        ("/p/resources.html", "Resources"),
+        ("/p/pages.html", "Pages"),
         ("/p/about.html", "About"),
         # ("/archive.html", "Archives"),
         # ("/categories/index.html", "Tags"),
         ("/rss.xml", "RSS"),
-        ("/ads.txt", "Ads"),
     ),
 }
 
