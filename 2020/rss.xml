@@ -1,5 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2020)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2020/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 10 Apr 2020 04:14:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Work From Home Tips For Non-remote Workers</title><link>http://avilpage.com/2020/04/work-from-home-tips.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Remote-first and remote-friendly companies have a different work culture &amp;amp; communication process compared to non-remote companies. Due to COVID-19&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (2020)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/2020/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 02 May 2020 04:09:43 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
+&lt;h4&gt;Prerequisites&lt;/h4&gt;
+&lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ kubectl cluster-info
+$ kubectl config get-contexts
+&lt;/pre&gt;
+
+
+&lt;p&gt;You should know how to manually deploy your application to kubernetes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
+$ docker push chillaranand/library
+
+&lt;span class="c1"&gt;# deploy latest image to k8s&lt;/span&gt;
+$ kubectl apply -f app/deployment.yaml
+$ kubectl apply -f app/service.yaml
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Skaffold&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://github.com/GoogleContainerTools/skaffold"&gt;Skaffold&lt;/a&gt; is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.&lt;/p&gt;
+&lt;p&gt;Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$ chmod +x skaffold
+$ sudo mv skaffold /usr/local/bin
+&lt;/pre&gt;
+
+
+&lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ skaffold init
+Configuration skaffold.yaml was written
+
+$ cat skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: library
+build:
+  artifacts:
+  - image: docker.io/chillaranand/library
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+&lt;/pre&gt;
+
+
+&lt;p&gt;To deploy latest changes to your cluster, run&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ skaffold run
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.&lt;/p&gt;
+&lt;h4&gt;CircleCI Workflow&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.19
+  kubernetes: circleci/kubernetes@0.11.0
+
+commands:
+  kubernetes-deploy:
+
+    steps:
+      - setup_remote_docker
+
+      - aws-cli/setup:
+          profile-name: default
+
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.15.10
+
+      - checkout
+
+      - run:
+          name: container registry log in
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            sudo &lt;span class="k"&gt;$(&lt;/span&gt;aws ecr get-login --region ap-south-1 --no-include-email&lt;span class="k"&gt;)&lt;/span&gt;
+
+      - run:
+          name: install skaffold
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+
+      - run:
+          name: update kube config to connect to the required cluster
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+
+      - run:
+          name: deploy to k8s
+          command: &lt;span class="p"&gt;|&lt;/span&gt;
+            skaffold run
+&lt;/pre&gt;
+
+
+&lt;p&gt;CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.&lt;/p&gt;
+&lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
+&lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>Work From Home Tips For Non-remote Workers</title><link>http://avilpage.com/2020/04/work-from-home-tips.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Remote-first and remote-friendly companies have a different work culture &amp;amp; communication process compared to non-remote companies. Due to COVID-19&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.&lt;/p&gt;
 &lt;h4&gt;Work Desk&lt;/h4&gt;
 &lt;p&gt;It is important to have a dedicated room or at least a desk for work. This creates a virtual boundary between your office work and personal work. Otherwise, you will end up working from bed, dining tables, kitchen etc which will result in body pains due to bad postures.&lt;/p&gt;
 &lt;h4&gt;Get Ready&lt;/h4&gt;
