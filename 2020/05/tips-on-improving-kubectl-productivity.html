@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to improve your productivity with kubectl from any shell and using some k8s specific tools.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tips On Improving kubectl Productivity | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../04/setup-continuous-deployment-with-kubernetes.html" title="Continuous Deployment To Kubernetes With Skaffold" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Tips On Improving kubectl Productivity">
+<meta property="og:url" content="http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html">
+<meta property="og:description" content="How to improve your productivity with kubectl from any shell and using some k8s specific tools.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-05-31T18:42:00+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="kubenetes">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="tips-on-improving-kubectl-productivity.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Tips On Improving kubectl Productivity</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2020-05-31T18:42:00+05:30" itemprop="datePublished" title="31 May 20">31 May 2020</time></p>
+            |
+            
+
+        5 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<p><code>kubectl</code> is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.</p>
+<p>In this article, lets learn few tips to improve our productivity when using kubectl.</p>
+<h4>Aliases</h4>
+<p>Aliases in general improve the productivity when using a shell.</p>
+<p>kubectl provides shortcuts for commands. For example,</p>
+<pre class="code literal-block"><span></span><span class="c1"># instead of running full command</span>
+$ kubectl get services
+
+<span class="c1"># we can use short hand version</span>
+$ kubectl get svc
+</pre>
+
+
+<p>It also provides completion for commands.</p>
+<pre class="code literal-block"><span></span><span class="c1"># enable completion for zsh</span>
+$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
+
+<span class="c1"># type `kubectl ` and hit `&lt;TAB&gt;` will show possible options</span>
+$ kubectl
+annotate       attach         cluster-info
+api-resources  auth           completion
+api-versions   autoscale      config
+apply          certificate    convert
+
+<span class="c1"># type `kubectl g`, and hit `&lt;TAB&gt;` will show possible options</span>
+$ kubectl get
+</pre>
+
+
+<p>However, setup up aliases for most commanly used commands will lot of time.</p>
+<pre class="code literal-block"><span></span><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
+
+<span class="nb">alias</span> <span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
+<span class="nb">alias</span> <span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
+<span class="nb">alias</span> <span class="nv">kgpa</span><span class="o">=</span><span class="s1">'kubectl get pods --all-namespaces'</span>
+<span class="nb">alias</span> <span class="nv">ket</span><span class="o">=</span><span class="s1">'kubectl exec -it'</span>
+<span class="nb">alias</span> <span class="nv">wkgp</span><span class="o">=</span><span class="s1">'watch -n1 kubectl getp pods'</span>
+
+<span class="nb">alias</span> <span class="nv">kga</span><span class="o">=</span><span class="s1">'kubectl get all'</span>
+<span class="nb">alias</span> <span class="nv">kgaa</span><span class="o">=</span><span class="s1">'kubectl get all --all-namespaces'</span>
+
+<span class="nb">alias</span> <span class="nv">kaf</span><span class="o">=</span><span class="s1">'kubectl apply -f'</span>
+
+<span class="nb">alias</span> <span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
+<span class="nb">alias</span> <span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
+</pre>
+
+
+<p>If you don't write your own aliases, there is <a href="https://github.com/ahmetb/kubectl-aliases">kubectl-aliases</a> which provides exhuastive list of aliases. We can source this file in rc file and start using them.</p>
+<h4>Use Functions</h4>
+<p>Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.</p>
+<p>For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.</p>
+<pre class="code literal-block"><span></span>kp<span class="o">()</span> <span class="o">{</span>
+    kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">'{print $1}'</span><span class="k">)</span> <span class="p">|</span> grep <span class="s1">'token:'</span> <span class="p">|</span> awk <span class="s1">'{print $2}'</span> <span class="p">|</span> pbcopy
+    open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+    kubectl proxy
+<span class="o">}</span>
+</pre>
+
+
+<p>Now from the shell, when we run <code>kp</code>, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.</p>
+<h4>Use Labels</h4>
+<p>To describe a pod or tail logs from a pod, we can use pod names.</p>
+<pre class="code literal-block"><span></span>$ kubectl get pods
+NAME                             READY   STATUS
+hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
+
+
+$ kubectl describe pod hello-world-79d794c659-tpfv2
+
+$ kubectl logs -f pod/hello-world-79d794c659-tpfv2
+</pre>
+
+
+<p>When the app gets updated, the name of pod also updates. So, instead of using pod name, we can use pod labels.</p>
+<pre class="code literal-block"><span></span>$ kubectl describe pod -l<span class="o">=</span>hello-world
+
+$ kubectl logs -f -l<span class="o">=</span>pod/hello-world
+</pre>
+
+
+<h4>Kubectl Tools</h4>
+<p>k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.</p>
+<p><a href="https://github.com/aylei/kubectl-debug">kubectl-debug</a> - Debug pod by a new container with all troubleshooting tools pre-installed.</p>
+<p><a href="https://github.com/pixel-point/kube-forwarder">kube-forwarder</a> - Easy to use port forwarding manager.</p>
+<p><a href="https://github.com/wercker/stern">stern</a> - Multi pod and container log tailing.</p>
+<p><a href="https://github.com/ahmetb/kubectx">kubectx</a> - Quick way to switch between clusters and namespaces.</p>
+<p><a href="https://github.com/astefanutti/kubebox">kubebox</a> - Terminal and Web console for Kubernetes.</p>
+<p><a href="https://github.com/derailed/k9s">k9s</a> - Interactive terminal UI.</p>
+<p><a href="https://github.com/IBM/kui">kui</a> - Hybrid CLI/UI tool for k8s.</p>
+<p><a href="https://github.com/databricks/click">click</a> - Interactive controller for k8s.</p>
+<p><a href="https://github.com/lensapp/lens">lens</a> - Stand alone corss platform k8s IDE.</p>
+<h4>Conclusion</h4>
+<p>In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.</p>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/kubenetes.html" rel="tag">kubenetes</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../04/setup-continuous-deployment-with-kubernetes.html" rel="prev" title="Continuous Deployment To Kubernetes With Skaffold">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>
