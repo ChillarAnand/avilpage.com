@@ -11,54 +11,9 @@ https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-intro/
 How A Typo Led Me To A 100$ Bounty?
 
 
-Deis as an scalable open source alternative to heroku
-scalable self hosted pass with deis and kubedb
-
-
-
-
-
-Setup Continuous Deployment With Kubernetes
-
-
 Python resources blog
 
 
-
-
-
-
-kubectl productivity
-
-short names
-svc
-
-
-aliases
-
-https://github.com/ahmetb/kubectl-aliases
-
-https://github.com/ahmetb/kubectx
-
-functions
-kcp
-
-
-set context
-ksn
-
-
-
-
-kubectl logs
-stern
-
-
-use labels
-kdp -l app=hanuman-server
-
-
----
 
 
 systems change
@@ -72,12 +27,6 @@ Range filter in django admin
 https://github.com/silentsokolov/django-admin-rangefilter/blob/master/README.rst
 
 
-Writer writes a book and gives to close friend.
-He says don't publish as our is too radical.
-Small changes only. Not large changes. Society inertia.
-He tears the book infront of him and he never comes up with another book.
-
-I found a book which had front papers missing. After reading few pages i lost the bill. Now i have to image what could have been. Will never know the authors intentions.
 But people expect author to write complete stories
 
 
@@ -87,13 +36,17 @@ one cube - two cubicles - rubik cube - wipro/consulting jobs
 
 From a Phone perspective shot film
 
+
 Easiest way Rubik cube
 
 
 Learn to appeal to emotion instead of logic
 
+
+
 https://itnext.io/watch-out-for-the-trap-when-using-default-for-django-models-44350f672be2
 django model defaults
+
 
 
 It's important to have 4 close friends within walkable distance.
@@ -127,12 +80,18 @@ Dnd schedule
 Don't take anywhere unnecessarily
 Kiss launcher
 
+
+
 A design that could save millions of dollars
 https://web.archive.org/web/20140819035349/https://www.theguardian.com/news/datablog/2014/aug/18/how-much-time-would-a-reversible-usb-cable-save
 
 
 
 Confessions of a software engineer
+
+why i had to write a software program at midnight for modi & ivanka trump?
+
+
 It all starts with a problem
 Job search
 Interview
@@ -221,3 +180,27 @@ Thou Shall Not Evangalize Emacs/Vim
 Over 1 year, the average Vim user saves 11 minutes in productivity.
 
 However, they lose 27 hours through evangelising Vim to non-users.
+
+
+
+paas kubernetes
+
+Few years back, you have helped me with my first path to deis[1].
+
+
+[1]: https://github.com/deis/controller/pull/1196
+
+
+deis/deis
+
+
+auzre/draft
+
+
+Kel Project
+https://github.com/kelproject
+
+Teresa
+https://github.com/luizalabs/teresa
+
+Up & Running With Mirth

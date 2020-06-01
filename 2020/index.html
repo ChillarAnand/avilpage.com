@@ -80,7 +80,108 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/setup-continuous-deployment-with-kubernetes.html" class="u-url">Continuous Deployment To Kubernetes With Skaffold</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="05/tips-on-improving-kubectl-productivity.html" class="u-url">Tips On Improving kubectl Productivity</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p><code>kubectl</code> is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.</p>
+<p>In this article, lets learn few tips to improve our productivity when using kubectl.</p>
+<h4>Aliases</h4>
+<p>Aliases in general improve the productivity when using a shell.</p>
+<p>kubectl provides shortcuts for commands. For example,</p>
+<pre class="code literal-block"><span></span><span class="c1"># instead of running full command</span>
+$ kubectl get services
+
+<span class="c1"># we can use short hand version</span>
+$ kubectl get svc
+</pre>
+
+
+<p>It also provides completion for commands.</p>
+<pre class="code literal-block"><span></span><span class="c1"># enable completion for zsh</span>
+$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
+
+<span class="c1"># type `kubectl ` and hit `&lt;TAB&gt;` will show possible options</span>
+$ kubectl
+annotate       attach         cluster-info
+api-resources  auth           completion
+api-versions   autoscale      config
+apply          certificate    convert
+
+<span class="c1"># type `kubectl g`, and hit `&lt;TAB&gt;` will show possible options</span>
+$ kubectl get
+</pre>
+
+
+<p>However, setup up aliases for most commanly used commands will lot of time.</p>
+<pre class="code literal-block"><span></span><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
+
+<span class="nb">alias</span> <span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
+<span class="nb">alias</span> <span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
+<span class="nb">alias</span> <span class="nv">kgpa</span><span class="o">=</span><span class="s1">'kubectl get pods --all-namespaces'</span>
+<span class="nb">alias</span> <span class="nv">ket</span><span class="o">=</span><span class="s1">'kubectl exec -it'</span>
+<span class="nb">alias</span> <span class="nv">wkgp</span><span class="o">=</span><span class="s1">'watch -n1 kubectl getp pods'</span>
+
+<span class="nb">alias</span> <span class="nv">kga</span><span class="o">=</span><span class="s1">'kubectl get all'</span>
+<span class="nb">alias</span> <span class="nv">kgaa</span><span class="o">=</span><span class="s1">'kubectl get all --all-namespaces'</span>
+
+<span class="nb">alias</span> <span class="nv">kaf</span><span class="o">=</span><span class="s1">'kubectl apply -f'</span>
+
+<span class="nb">alias</span> <span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
+<span class="nb">alias</span> <span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
+</pre>
+
+
+<p>If you don't write your own aliases, there is <a href="https://github.com/ahmetb/kubectl-aliases">kubectl-aliases</a> which provides exhuastive list of aliases. We can source this file in rc file and start using them.</p>
+<h4>Use Functions</h4>
+<p>Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.</p>
+<p>For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.</p>
+<pre class="code literal-block"><span></span>kp<span class="o">()</span> <span class="o">{</span>
+    kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">'{print $1}'</span><span class="k">)</span> <span class="p">|</span> grep <span class="s1">'token:'</span> <span class="p">|</span> awk <span class="s1">'{print $2}'</span> <span class="p">|</span> pbcopy
+    open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+    kubectl proxy
+<span class="o">}</span>
+</pre>
+
+
+<p>Now from the shell, when we run <code>kp</code>, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.</p>
+<h4>Use Labels</h4>
+<p>To describe a pod or tail logs from a pod, we can use pod names.</p>
+<pre class="code literal-block"><span></span>$ kubectl get pods
+NAME                             READY   STATUS
+hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
+
+
+$ kubectl describe pod hello-world-79d794c659-tpfv2
+
+$ kubectl logs -f pod/hello-world-79d794c659-tpfv2
+</pre>
+
+
+<p>When the app gets updated, the name of pod also updates. So, instead of using pod name, we can use pod labels.</p>
+<pre class="code literal-block"><span></span>$ kubectl describe pod -l<span class="o">=</span>hello-world
+
+$ kubectl logs -f -l<span class="o">=</span>pod/hello-world
+</pre>
+
+
+<h4>Kubectl Tools</h4>
+<p>k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.</p>
+<p><a href="https://github.com/aylei/kubectl-debug">kubectl-debug</a> - Debug pod by a new container with all troubleshooting tools pre-installed.</p>
+<p><a href="https://github.com/pixel-point/kube-forwarder">kube-forwarder</a> - Easy to use port forwarding manager.</p>
+<p><a href="https://github.com/wercker/stern">stern</a> - Multi pod and container log tailing.</p>
+<p><a href="https://github.com/ahmetb/kubectx">kubectx</a> - Quick way to switch between clusters and namespaces.</p>
+<p><a href="https://github.com/astefanutti/kubebox">kubebox</a> - Terminal and Web console for Kubernetes.</p>
+<p><a href="https://github.com/derailed/k9s">k9s</a> - Interactive terminal UI.</p>
+<p><a href="https://github.com/IBM/kui">kui</a> - Hybrid CLI/UI tool for k8s.</p>
+<p><a href="https://github.com/databricks/click">click</a> - Interactive controller for k8s.</p>
+<p><a href="https://github.com/lensapp/lens">lens</a> - Stand alone corss platform k8s IDE.</p>
+<h4>Conclusion</h4>
+<p>In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="04/setup-continuous-deployment-with-kubernetes.html" class="u-url">Continuous Deployment To Kubernetes With Skaffold</a></h1>
             <hr>
 <div class="e-content">
                         <div>
