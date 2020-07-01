@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How do Dart/Flutter stateful hot reload work internally?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Dart, Flutter Stateful Hot Reload Work? - Part 1 | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/06/how-dartflutter-hot-reload-work-part-1.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../05/tips-on-improving-kubectl-productivity.html" title="Tips On Improving kubectl Productivity" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="How Dart, Flutter Stateful Hot Reload Work? - Part 1">
+<meta property="og:url" content="http://avilpage.com/2020/06/how-dartflutter-hot-reload-work-part-1.html">
+<meta property="og:description" content="How do Dart/Flutter stateful hot reload work internally?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-06-30T19:17:20+05:30">
+<meta property="article:tag" content="dart">
+<meta property="article:tag" content="programming">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="how-dartflutter-hot-reload-work-part-1.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">How Dart, Flutter Stateful Hot Reload Work? - Part 1</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2020-06-30T19:17:20+05:30" itemprop="datePublished" title="30 Jun 20">30 Jun 2020</time></p>
+            |
+            
+
+        6 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<p>This will be a series of articles on exploring the internals of Dart &amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.</p>
+<h4>Stateful Hot Reload</h4>
+<pre class="code literal-block"><span></span><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+  <span class="n">total</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">;</span>
+
+  <span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">2</span><span class="p">),</span> <span class="n">adder</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>In the above program<sup id="fnref-program"><a class="footnote-ref" href="how-dartflutter-hot-reload-work-part-1.html#fn-program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref-periodic"><a class="footnote-ref" href="how-dartflutter-hot-reload-work-part-1.html#fn-periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
+<p>We can run this program from command line using</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/d42KmW4LknU<span class="o">=</span>/
+Total is <span class="m">2</span>. Adding <span class="m">2</span>
+Total is <span class="m">4</span>. Adding <span class="m">2</span>
+Total is <span class="m">6</span>. Adding <span class="m">2</span>
+Total is <span class="m">8</span>. Adding <span class="m">2</span>
+...
+</pre>
+
+
+<p>This will start executing the program and will provide a link to observatory<sup id="fnref-observatory"><a class="footnote-ref" href="how-dartflutter-hot-reload-work-part-1.html#fn-observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
+<p>As the program is executing, lets open the program in an editor, change delta from 2 to 3.</p>
+<pre class="code literal-block"><span></span>  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
+  <span class="err">#</span> <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+
+  <span class="err">#</span> <span class="n">change</span> <span class="n">to</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
+</pre>
+
+
+<p>If we restart the program, it will start executing from the beginning and it will lose the state of the program.</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/eoP2lpC2ZWw<span class="o">=</span>/
+Total is <span class="m">3</span>. Adding <span class="m">3</span>
+Total is <span class="m">6</span>. Adding <span class="m">3</span>
+Total is <span class="m">9</span>. Adding <span class="m">3</span>
+</pre>
+
+
+<p>Instead of restart, we can open the observatory link in browser, open main isolate and click on <code>Reload Source</code> button.</p>
+<p><img src="../../images/dart-vm.png"></p>
+<p>As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/n_GSAKsyr5s<span class="o">=</span>/
+Total is <span class="m">2</span>. Adding <span class="m">2</span>
+Total is <span class="m">4</span>. Adding <span class="m">2</span>
+Total is <span class="m">6</span>. Adding <span class="m">2</span>
+Total is <span class="m">8</span>. Adding <span class="m">2</span>
+Total is <span class="m">11</span>. Adding <span class="m">3</span> <span class="c1"># after hot reload</span>
+Total is <span class="m">14</span>. Adding <span class="m">3</span>
+Total is <span class="m">17</span>. Adding <span class="m">3</span>
+Total is <span class="m">20</span>. Adding <span class="m">3</span>
+</pre>
+
+
+<p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref-hot"><a class="footnote-ref" href="how-dartflutter-hot-reload-work-part-1.html#fn-hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-program">
+<p>https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ <a class="footnote-backref" href="how-dartflutter-hot-reload-work-part-1.html#fnref-program" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn-periodic">
+<p>https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html <a class="footnote-backref" href="how-dartflutter-hot-reload-work-part-1.html#fnref-periodic" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn-observatory">
+<p>https://dart-lang.github.io/observatory/ <a class="footnote-backref" href="how-dartflutter-hot-reload-work-part-1.html#fnref-observatory" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn-hot">
+<p>https://github.com/dart-lang/sdk/wiki/Hot-reload <a class="footnote-backref" href="how-dartflutter-hot-reload-work-part-1.html#fnref-hot" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/dart.html" rel="tag">dart</a></li>
+            <li><a class="tag p-category" href="../../tags/programming.html" rel="tag">programming</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../05/tips-on-improving-kubectl-productivity.html" rel="prev" title="Tips On Improving kubectl Productivity">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>
