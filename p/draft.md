@@ -17,6 +17,7 @@ Python resources blog
 
 
 systems change
+
 fence - take it down
 cat - tie it everyday zen story
 it is important to understand the system.
@@ -24,11 +25,11 @@ https://fs.blog/2020/03/chestertons-fence/
 
 
 Range filter in django admin
+
 https://github.com/silentsokolov/django-admin-rangefilter/blob/master/README.rst
 
 
 But people expect author to write complete stories
-
 
 How solving rubik cube lead to 2 job offers
 one cube - two cubicles - rubik cube - wipro/consulting jobs
@@ -46,7 +47,6 @@ Learn to appeal to emotion instead of logic
 
 https://itnext.io/watch-out-for-the-trap-when-using-default-for-django-models-44350f672be2
 django model defaults
-
 
 
 It's important to have 4 close friends within walkable distance.
@@ -203,4 +203,7 @@ https://github.com/kelproject
 Teresa
 https://github.com/luizalabs/teresa
 
+
 Up & Running With Mirth
+
+The real value of a software developer lies in finding the bugs

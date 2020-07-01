@@ -75,7 +75,67 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/07/aws-s3-bucket-objects-versions.html" class="u-url">Versioning &amp; Retrieving All Files From AWS S3 With Boto</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/08/django-profile-optimize-views.html" class="u-url">Profiling &amp; Optimizing Bottlenecks In Django</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>In the previous article, we have learnt where to start with <a href="../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
+<h4>Profling APIs With django-silk</h4>
+<p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
+
+
+<span class="nd">@silk_profile</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
+</pre>
+
+
+<p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
+<pre class="code literal-block"><span></span><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
+</pre>
+
+
+<p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
+<p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
+<p align="center">
+<img src="../images/django-profiling1.png"></p>
+
+<p>It also shows cprofile stats in the same page. This profile data file can be downloaded and used with other visualization tools like snakeviz.</p>
+<p align="center">
+<img src="../images/django-profiling2.png"></p>
+
+<p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
+<h4>Profling APIs With django-extensions</h4>
+<p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
+<pre class="code literal-block"><span></span>$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
+</pre>
+
+
+<p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
+<p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
+<p>Install snakeviz using pip</p>
+<pre class="code literal-block"><span></span>$ pip install snakeviz
+</pre>
+
+
+<p>Open the profile data file using snakeviz.</p>
+<pre class="code literal-block"><span></span>$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
+</pre>
+
+
+<p>It shows icicles graph view and  table view of profile data of that view.</p>
+<p align="center">
+<img src="../images/django-profiling3.png"></p>
+
+<p>These will help to pinpoint which line of code is slowing down the view. Once it is identified, we can take appropriate action like optimize that code, setting up a cache or moving it to a task queue if it is not required to be performed in the request-response cycle.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/07/aws-s3-bucket-objects-versions.html" class="u-url">Versioning &amp; Retrieving All Files From AWS S3 With Boto</a></h1>
             <hr>
 <div class="e-content">
                         <div>

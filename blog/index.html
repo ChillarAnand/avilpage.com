@@ -74,7 +74,100 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/05/tips-on-improving-kubectl-productivity.html" class="u-url">Tips On Improving kubectl Productivity</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/06/how-dartflutter-hot-reload-work-part-1.html" class="u-url">How Dart, Flutter Stateful Hot Reload Work? - Part 1</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>This will be a series of articles on exploring the internals of Dart &amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.</p>
+<h4>Stateful Hot Reload</h4>
+<pre class="code literal-block"><span></span><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+  <span class="n">total</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">;</span>
+
+  <span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">2</span><span class="p">),</span> <span class="n">adder</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+
+
+<p>In the above program<sup id="fnref-program"><a class="footnote-ref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fn-program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref-periodic"><a class="footnote-ref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fn-periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
+<p>We can run this program from command line using</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/d42KmW4LknU<span class="o">=</span>/
+Total is <span class="m">2</span>. Adding <span class="m">2</span>
+Total is <span class="m">4</span>. Adding <span class="m">2</span>
+Total is <span class="m">6</span>. Adding <span class="m">2</span>
+Total is <span class="m">8</span>. Adding <span class="m">2</span>
+...
+</pre>
+
+
+<p>This will start executing the program and will provide a link to observatory<sup id="fnref-observatory"><a class="footnote-ref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fn-observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
+<p>As the program is executing, lets open the program in an editor, change delta from 2 to 3.</p>
+<pre class="code literal-block"><span></span>  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
+  <span class="err">#</span> <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+
+  <span class="err">#</span> <span class="n">change</span> <span class="n">to</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
+</pre>
+
+
+<p>If we restart the program, it will start executing from the beginning and it will lose the state of the program.</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/eoP2lpC2ZWw<span class="o">=</span>/
+Total is <span class="m">3</span>. Adding <span class="m">3</span>
+Total is <span class="m">6</span>. Adding <span class="m">3</span>
+Total is <span class="m">9</span>. Adding <span class="m">3</span>
+</pre>
+
+
+<p>Instead of restart, we can open the observatory link in browser, open main isolate and click on <code>Reload Source</code> button.</p>
+<p><img src="../images/dart-vm.png"></p>
+<p>As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.</p>
+<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
+Observatory listening on http://127.0.0.1:8181/n_GSAKsyr5s<span class="o">=</span>/
+Total is <span class="m">2</span>. Adding <span class="m">2</span>
+Total is <span class="m">4</span>. Adding <span class="m">2</span>
+Total is <span class="m">6</span>. Adding <span class="m">2</span>
+Total is <span class="m">8</span>. Adding <span class="m">2</span>
+Total is <span class="m">11</span>. Adding <span class="m">3</span> <span class="c1"># after hot reload</span>
+Total is <span class="m">14</span>. Adding <span class="m">3</span>
+Total is <span class="m">17</span>. Adding <span class="m">3</span>
+Total is <span class="m">20</span>. Adding <span class="m">3</span>
+</pre>
+
+
+<p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref-hot"><a class="footnote-ref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fn-hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-program">
+<p>https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ <a class="footnote-backref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fnref-program" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn-periodic">
+<p>https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html <a class="footnote-backref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fnref-periodic" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn-observatory">
+<p>https://dart-lang.github.io/observatory/ <a class="footnote-backref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fnref-observatory" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn-hot">
+<p>https://github.com/dart-lang/sdk/wiki/Hot-reload <a class="footnote-backref" href="../2020/06/how-dartflutter-hot-reload-work-part-1.html#fnref-hot" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/05/tips-on-improving-kubectl-productivity.html" class="u-url">Tips On Improving kubectl Productivity</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -786,66 +879,6 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
-</div>
-                    </div>
-                        
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/08/django-profile-optimize-views.html" class="u-url">Profiling &amp; Optimizing Bottlenecks In Django</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>In the previous article, we have learnt where to start with <a href="../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
-<h4>Profling APIs With django-silk</h4>
-<p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
-
-
-<span class="nd">@silk_profile</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
-</pre>
-
-
-<p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
-<pre class="code literal-block"><span></span><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
-</pre>
-
-
-<p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
-<p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
-<p align="center">
-<img src="../images/django-profiling1.png"></p>
-
-<p>It also shows cprofile stats in the same page. This profile data file can be downloaded and used with other visualization tools like snakeviz.</p>
-<p align="center">
-<img src="../images/django-profiling2.png"></p>
-
-<p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
-<h4>Profling APIs With django-extensions</h4>
-<p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
-<pre class="code literal-block"><span></span>$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
-</pre>
-
-
-<p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
-<p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
-<p>Install snakeviz using pip</p>
-<pre class="code literal-block"><span></span>$ pip install snakeviz
-</pre>
-
-
-<p>Open the profile data file using snakeviz.</p>
-<pre class="code literal-block"><span></span>$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
-</pre>
-
-
-<p>It shows icicles graph view and  table view of profile data of that view.</p>
-<p align="center">
-<img src="../images/django-profiling3.png"></p>
-
-<p>These will help to pinpoint which line of code is slowing down the view. Once it is identified, we can take appropriate action like optimize that code, setting up a cache or moving it to a task queue if it is not required to be performed in the request-response cycle.</p>
 </div>
                     </div>
                         
