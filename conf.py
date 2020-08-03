@@ -1509,11 +1509,11 @@ RENDER_STATIC_TAG_CLOUDS = {
 
         # Maximum number of tags in cloud. Negative values mean
         # that all tags will appear.
-        'max_tags': 20,
+        'max_tags': 10,
 
         # Tags which appear less often than this number will be
         # ignored.
-        'minimal_number_of_appearances': 4,
+        'minimal_number_of_appearances': 10,
 
         # Colors defining a gradient out of which the tag font colors
         # are taken. The colors are specified as RGP triples with each
@@ -1529,7 +1529,7 @@ RENDER_STATIC_TAG_CLOUDS = {
         'border_colors': ((0.4, 0.4, 0.4), ),
 
         # Interval (min_value, max_value) for the font size
-        'font_sizes': (12, 20),
+        'font_sizes': (32, 10),
 
         # If positive, will be multiplied by font size to yield the
         # CSS border radius and the vertical margin. (The horizontal
