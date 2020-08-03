@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to set a default date for date hierarchy drill down in django admin page for a model?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set Default Date For Date Hierarchy In Django Admin | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../06/how-dartflutter-hot-reload-work-part-1.html" title="How Dart, Flutter Stateful Hot Reload Work? - Part 1" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Set Default Date For Date Hierarchy In Django Admin">
+<meta property="og:url" content="http://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html">
+<meta property="og:description" content="How to set a default date for date hierarchy drill down in django admin page for a model?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-07-31T20:06:49+05:30">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="django-admin">
+<meta property="article:tag" content="django-tips-tricks">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="default-date-hierarchy-in-django-admin.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Set Default Date For Date Hierarchy In Django Admin</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2020-07-31T20:06:49+05:30" itemprop="datePublished" title="31 Jul 20">31 Jul 2020</time></p>
+            |
+            
+
+        7 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<h4>Introduction</h4>
+<p>When we monitor daily events from django admin, most of the time we are interested in events related to today. Django admin provides date based drill down navigation page via ModelAdmin.date_hierarchy<sup id="fnref-dh"><a class="footnote-ref" href="default-date-hierarchy-in-django-admin.html#fn-dh">1</a></sup> option. With this, we can navigate to any date to filter out events related to that date.</p>
+<p>One problem with this drill down navigation is, we have to navigate to todays date every time we open a model in admin. Since we are interested in todays events most of the time, setting todays date as default filtered date will solve the problem.</p>
+<h4>Set Default Date For Date Hierarchy</h4>
+<p>Let us create an admin page to show all the users who logged in today. Since User model is already registered in admin by default, let us create a proxy model to register it again.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+
+
+<span class="k">class</span> <span class="nc">DjangoUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
+</pre>
+
+
+<p>Lets register this model in admin to show logged in users details along with date hierarchy.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+
+
+<span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MetaUserAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'username'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">,</span> <span class="s1">'last_login'</span><span class="p">)</span>
+    <span class="n">date_hierarchy</span> <span class="o">=</span> <span class="s1">'last_login'</span>
+</pre>
+
+
+<p>If we open <code>DjangoUser</code> model in admin page, it will show drill down navigation bar like this.</p>
+<p><img src="../../images/django-admin-date.png"></p>
+<p>Now, if we drill down to a particular date, django adds additional query params to the admin url. For example, if we visit 2020-06-26 date, corresponding query params are <code>/?last_login__day=26&amp;last_login__month=6&amp;last_login__year=2020</code>.</p>
+<p>We can override changelist view and set default params to todays date if there are no query params. If there are query params then render the original response.</p>
+<pre class="code literal-block"><span></span><span class="nv">@admin</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span><span class="w"></span>
+<span class="k">class</span><span class="w"> </span><span class="n">MetaUserAdmin</span><span class="p">(</span><span class="k">admin</span><span class="p">.</span><span class="n">ModelAdmin</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">list_display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s1">'username'</span><span class="p">,</span><span class="w"> </span><span class="s1">'is_active'</span><span class="p">,</span><span class="w"> </span><span class="s1">'last_login'</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">date_hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'last_login'</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">changelist_view</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="k">GET</span><span class="err">:</span><span class="w"></span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">super</span><span class="p">().</span><span class="n">changelist_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="n">extra_context</span><span class="p">)</span><span class="w"></span>
+
+<span class="w">        </span><span class="nc">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">().</span><span class="nc">date</span><span class="p">()</span><span class="w"></span>
+<span class="w">        </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'day', 'month', 'year'</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">field_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'{}__{}'.format(self.date_hierarchy, i) for i in params</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">field_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">getattr(date, i) for i in params</span><span class="o">]</span><span class="w"></span>
+<span class="w">        </span><span class="n">query_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">field_keys</span><span class="p">,</span><span class="w"> </span><span class="n">field_values</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'{}?{}'</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="k">path</span><span class="p">,</span><span class="w"> </span><span class="n">urlencode</span><span class="p">(</span><span class="n">query_params</span><span class="p">))</span><span class="w"></span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redirect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="w"></span>
+</pre>
+
+
+<p>Now if we open the same admin page, it will redirect to todays date by default.</p>
+<p><img src="../../images/django-admin-date2.png"></p>
+<h4>Conclusion</h4>
+<p>In this article, we have seen how to set a default date for <code>date_hierarchy</code> in admin page. We can also achieve similar filtering by settiing default values for <code>search_filter</code> or <code>list_filter</code> which will filter items related to any specific date.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-dh">
+<p><a href="https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy">Django docs - ModelAdmin.date_hierarchy</a> <a class="footnote-backref" href="default-date-hierarchy-in-django-admin.html#fnref-dh" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/django.html" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../tags/django-admin.html" rel="tag">django-admin</a></li>
+            <li><a class="tag p-category" href="../../tags/django-tips-tricks.html" rel="tag">django-tips-tricks</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../06/how-dartflutter-hot-reload-work-part-1.html" rel="prev" title="How Dart, Flutter Stateful Hot Reload Work? - Part 1">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>
