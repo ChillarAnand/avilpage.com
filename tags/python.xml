@@ -1,5 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 23 Jul 2020 03:11:40 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Reduce Python Package Footprint?</title><link>http://avilpage.com/2020/02/reduce-python-package-footprint.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;PyPi&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/02/reduce-python-package-footprint.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries&lt;sup id="fnref-2"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/02/reduce-python-package-footprint.html#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt; along with the package.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Sep 2020 02:43:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Serial Bluetooth Terminal With Python Asyncio</title><link>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;PySerial package provides a tool called miniterm&lt;sup id="fnref-miniterm"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-miniterm"&gt;1&lt;/a&gt;&lt;/sup&gt;, which provides a terminal to interact with any serial ports.&lt;/p&gt;
+&lt;p&gt;However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.&lt;/p&gt;
+&lt;p&gt;In this article, lets write a simple terminal to address the above issues.&lt;/p&gt;
+&lt;h4&gt;Bluetooth Receiver&lt;/h4&gt;
+&lt;p&gt;pyserial-asyncio&lt;sup id="fnref-pyserial-asyncio"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-pyserial-asyncio"&gt;2&lt;/a&gt;&lt;/sup&gt; package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;asyncio&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;datetime&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;dt&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;serial_asyncio&lt;/span&gt;
+
+
+&lt;span class="k"&gt;async&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;receive&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;readuntil&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;b&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;now&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s1"&gt; Rx &amp;lt;== &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strip&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;async&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;serial_asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open_serial_connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;receiver&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;receive&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;reader&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wait&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;receiver&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+
+&lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;baudrate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;loop&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_event_loop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;loop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run_until_complete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;loop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal&lt;sup id="fnref-asbt"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-asbt"&gt;4&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Here a screenshot of messages being send from an Android device.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;We can listen to these messages on laptop via serial port by running the following command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ python receiver.py /dev/cu.Bluetooth-Incoming-Port &lt;span class="m"&gt;9600&lt;/span&gt;
+&lt;span class="m"&gt;2020&lt;/span&gt;-08-31 &lt;span class="m"&gt;10&lt;/span&gt;:44:50.995281 Rx &amp;lt;&lt;span class="o"&gt;==&lt;/span&gt; ping from android
+&lt;span class="m"&gt;2020&lt;/span&gt;-08-31 &lt;span class="m"&gt;10&lt;/span&gt;:44:57.702866 Rx &amp;lt;&lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;test&lt;/span&gt; message
+&lt;/pre&gt;
+
+
+&lt;h4&gt;Bluetooth Sender&lt;/h4&gt;
+&lt;p&gt;Now lets write a sender to send messages typed on the terminal to the bluetooth.&lt;/p&gt;
+&lt;p&gt;To read input from terminal, we need to use aioconsole &lt;sup id="fnref-aioc"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-aioc"&gt;3&lt;/a&gt;&lt;/sup&gt;. It provides async input equivalent function to read input typed on the terminal.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;asyncio&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;datetime&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;dt&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;serial_asyncio&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;aioconsole&lt;/span&gt;
+
+
+&lt;span class="k"&gt;async&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;writer&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;aioconsole&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_standard_streams&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;async&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;stdin&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strip&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;continue&lt;/span&gt;
+        &lt;span class="n"&gt;now&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s1"&gt; Tx ==&amp;gt; &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;writer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;async&lt;/span&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;writer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;serial_asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open_serial_connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;sender&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;writer&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="n"&gt;asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wait&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;sender&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+
+&lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;baudrate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;loop&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;asyncio&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_event_loop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;loop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run_until_complete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;baudrate&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;loop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can run the program with the following command and send messages to phone's bluetooth.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ python sender.py /dev/cu.Bluetooth-Incoming-Port &lt;span class="m"&gt;9600&lt;/span&gt;
+
+ping from mac
+&lt;span class="m"&gt;2020&lt;/span&gt;-08-31 &lt;span class="m"&gt;10&lt;/span&gt;:46:52.222676 &lt;span class="nv"&gt;Tx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt;&amp;gt; ping from mac
+&lt;span class="m"&gt;2020&lt;/span&gt;-08-31 &lt;span class="m"&gt;10&lt;/span&gt;:46:58.423492 &lt;span class="nv"&gt;Tx&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt;&amp;gt; &lt;span class="nb"&gt;test&lt;/span&gt; message
+&lt;/pre&gt;
+
+
+&lt;p&gt;Here a screenshot of messages received on Android device.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;If we combine the above two programmes, we get a simple bluetooth client to interact with any bluetooth via serial interface. Here is the complete code &lt;sup id="fnref-gist"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-gist"&gt;5&lt;/a&gt;&lt;/sup&gt; for the client.&lt;/p&gt;
+&lt;p&gt;In the next article, lets see how to interact with Bluetooth LE devices.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-miniterm"&gt;
+&lt;p&gt;&lt;a href="https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm"&gt;miniterm&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref-miniterm" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-pyserial-asyncio"&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/pyserial-asyncio/"&gt;pyserial-asyncio on PyPi&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref-pyserial-asyncio" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-aioc"&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/aioconsole/"&gt;aioconsole on PyPi&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref-aioc" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-asbt"&gt;
+&lt;p&gt;&lt;a href="https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal"&gt;Serial Bluetooth Terminal on Play Store&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref-asbt" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-gist"&gt;
+&lt;p&gt;&lt;a href="https://gist.github.com/ChillarAnand/a7be6adeb84a63d48e8dda27aab7ac94"&gt;Python async client&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref-gist" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>bluetooth</category><category>iot</category><category>python</category><guid>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</guid><pubDate>Mon, 31 Aug 2020 15:51:21 GMT</pubDate></item><item><title>How To Reduce Python Package Footprint?</title><link>http://avilpage.com/2020/02/reduce-python-package-footprint.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;PyPi&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/02/reduce-python-package-footprint.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries&lt;sup id="fnref-2"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/02/reduce-python-package-footprint.html#fn-2"&gt;2&lt;/a&gt;&lt;/sup&gt; along with the package.&lt;/p&gt;
 &lt;h4&gt;Build From Source&lt;/h4&gt;
 &lt;p&gt;If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB&lt;sup id="fnref-3"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/02/reduce-python-package-footprint.html#fn-3"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ pip install numpy
@@ -520,52 +635,4 @@ class Book&lt;span class="o"&gt;(&lt;/span&gt;models.Model&lt;span class="o"&gt;
 
 &lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
-&lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
-&lt;h4&gt;Packaging&lt;/h4&gt;
-&lt;p&gt;To package python project, we need to create &lt;code&gt;setup.py&lt;/code&gt; file which is build script for setuptools. Below is a sample setup file to create a package named &lt;code&gt;library&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt;
-
-
-&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"README.md"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"r"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;long_description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-
-&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"chillaranand"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;author_email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"foo@avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"A simple python package"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;long_description&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"https://github.com/chillaranand/library"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;setuptools&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;find_packages&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt;
-    &lt;span class="n"&gt;classifiers&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-        &lt;span class="s2"&gt;"Programming Language :: Python :: 3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"License :: OSI Approved :: MIT License"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="s2"&gt;"Operating System :: OS Independent"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="p"&gt;],&lt;/span&gt;
-&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;Python provides &lt;a href="https://packaging.python.org/tutorials/packaging-projects/"&gt;detailed packaging documentation&lt;/a&gt; on structuring and building the package.&lt;/p&gt;
-&lt;h4&gt;Installation&lt;/h4&gt;
-&lt;p&gt;Once module(s) is packaged and pushed to hosting service, it can be installed with pip.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# using https&lt;/span&gt;
-$ pip install git+https://github.com/chillaranand/library.git
-
-&lt;span class="c1"&gt;# using ssh&lt;/span&gt;
-pip install git+ssh://git@github.com/chillaranand/library.git
-&lt;/pre&gt;
-
-
-&lt;p&gt;This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;GITHUB_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
-
-$ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@github.com/chillaranand/library.git
-&lt;/pre&gt;
-
-
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item></channel></rss>
