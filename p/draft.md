@@ -15,13 +15,13 @@ Python resources blog
 
 
 
-
 systems change
 
 fence - take it down
 cat - tie it everyday zen story
 it is important to understand the system.
 https://fs.blog/2020/03/chestertons-fence/
+
 
 
 Range filter in django admin
@@ -35,14 +35,10 @@ How solving rubik cube lead to 2 job offers
 one cube - two cubicles - rubik cube - wipro/consulting jobs
 
 
-From a Phone perspective shot film
-
-
 Easiest way Rubik cube
 
 
 Learn to appeal to emotion instead of logic
-
 
 
 https://itnext.io/watch-out-for-the-trap-when-using-default-for-django-models-44350f672be2
@@ -88,6 +84,7 @@ https://web.archive.org/web/20140819035349/https://www.theguardian.com/news/data
 
 
 Confessions of a software engineer
+
 
 why i had to write a software program at midnight for modi & ivanka trump?
 
@@ -182,19 +179,6 @@ Over 1 year, the average Vim user saves 11 minutes in productivity.
 However, they lose 27 hours through evangelising Vim to non-users.
 
 
-
-paas kubernetes
-
-Few years back, you have helped me with my first path to deis[1].
-
-
-[1]: https://github.com/deis/controller/pull/1196
-
-
-deis/deis
-
-
-auzre/draft
 
 
 Kel Project

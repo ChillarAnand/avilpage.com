@@ -74,7 +74,130 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/07/default-date-hierarchy-in-django-admin.html" class="u-url">Set Default Date For Date Hierarchy In Django Admin</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/08/bluetooth-terminal-python-asyncio.html" class="u-url">Serial Bluetooth Terminal With Python Asyncio</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>PySerial package provides a tool called miniterm<sup id="fnref-miniterm"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn-miniterm">1</a></sup>, which provides a terminal to interact with any serial ports.</p>
+<p>However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.</p>
+<p>In this article, lets write a simple terminal to address the above issues.</p>
+<h4>Bluetooth Receiver</h4>
+<p>pyserial-asyncio<sup id="fnref-pyserial-asyncio"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn-pyserial-asyncio">2</a></sup> package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="kn">import</span> <span class="nn">serial_asyncio</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Rx &lt;== </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
+    <span class="n">reader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">receiver</span><span class="p">])</span>
+
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre>
+
+
+<p>Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal<sup id="fnref-asbt"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn-asbt">4</a></sup>.</p>
+<p>Here a screenshot of messages being send from an Android device.</p>
+<p><img src="../images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"></p>
+<p>We can listen to these messages on laptop via serial port by running the following command.</p>
+<pre class="code literal-block"><span></span>$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+<span class="m">2020</span>-08-31 <span class="m">10</span>:44:50.995281 Rx &lt;<span class="o">==</span> ping from android
+<span class="m">2020</span>-08-31 <span class="m">10</span>:44:57.702866 Rx &lt;<span class="o">==</span> <span class="nb">test</span> message
+</pre>
+
+
+<h4>Bluetooth Sender</h4>
+<p>Now lets write a sender to send messages typed on the terminal to the bluetooth.</p>
+<p>To read input from terminal, we need to use aioconsole <sup id="fnref-aioc"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn-aioc">3</a></sup>. It provides async input equivalent function to read input typed on the terminal.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="kn">import</span> <span class="nn">serial_asyncio</span>
+<span class="kn">import</span> <span class="nn">aioconsole</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">writer</span><span class="p">):</span>
+    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioconsole</span><span class="o">.</span><span class="n">get_standard_streams</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdin</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Tx ==&gt; </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">send</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">sender</span><span class="p">])</span>
+
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre>
+
+
+<p>We can run the program with the following command and send messages to phone's bluetooth.</p>
+<pre class="code literal-block"><span></span>$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+
+ping from mac
+<span class="m">2020</span>-08-31 <span class="m">10</span>:46:52.222676 <span class="nv">Tx</span> <span class="o">==</span>&gt; ping from mac
+<span class="m">2020</span>-08-31 <span class="m">10</span>:46:58.423492 <span class="nv">Tx</span> <span class="o">==</span>&gt; <span class="nb">test</span> message
+</pre>
+
+
+<p>Here a screenshot of messages received on Android device.</p>
+<p><img src="../images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"></p>
+<h4>Conclusion</h4>
+<p>If we combine the above two programmes, we get a simple bluetooth client to interact with any bluetooth via serial interface. Here is the complete code <sup id="fnref-gist"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn-gist">5</a></sup> for the client.</p>
+<p>In the next article, lets see how to interact with Bluetooth LE devices.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-miniterm">
+<p><a href="https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm">miniterm</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref-miniterm" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn-pyserial-asyncio">
+<p><a href="https://pypi.org/project/pyserial-asyncio/">pyserial-asyncio on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref-pyserial-asyncio" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn-aioc">
+<p><a href="https://pypi.org/project/aioconsole/">aioconsole on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref-aioc" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn-asbt">
+<p><a href="https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal">Serial Bluetooth Terminal on Play Store</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref-asbt" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn-gist">
+<p><a href="https://gist.github.com/ChillarAnand/a7be6adeb84a63d48e8dda27aab7ac94">Python async client</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref-gist" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/07/default-date-hierarchy-in-django-admin.html" class="u-url">Set Default Date For Date Hierarchy In Django Admin</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -806,80 +929,6 @@ server.pem: OK
 <p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
 <h4>Conclusion</h4>
 <p>In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.</p>
-</div>
-                    </div>
-                        
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2019/10/writing-editing-code-with-code.html" class="u-url">Writing &amp; Editing Code With Code - Part 1</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
-<h4>Metaprogramming</h4>
-<p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
-<pre class="code literal-block"><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre>
-
-
-<p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
-<p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
-<h4>Metaprogramming In Django</h4>
-<p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
-<pre class="code literal-block"><span></span>$ ./manage.py inspectdb
-
-from django.db import models
-
-class Book<span class="o">(</span>models.Model<span class="o">)</span>:
-    <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    ...
-</pre>
-
-
-<p>In django admin, models can be registered like this.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-<span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
-
-
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
-</pre>
-
-
-<p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
-<p>Django ORM generates SQL statements for given ORM statements in Python.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
-<span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_superuser"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"username"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"first_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"email"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_active"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"date_joined"</span>
-  <span class="n">FROM</span> <span class="s2">"auth_user"</span>
- <span class="n">ORDER</span> <span class="n">BY</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span> <span class="n">DESC</span>
- <span class="n">LIMIT</span> <span class="mi">1</span>
-
-
-<span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
-
-<span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
-</pre>
-
-
-<p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
-<p>We can also use these techniques in everyday programming. Here are some use cases.</p>
-<ol>
-<li>Generate REST API automatically.</li>
-<li>Automatically generate unit test cases based on a template.</li>
-<li>Generate integration tests automatically from the network traffic.</li>
-</ol>
-<p>These are a some of the things related to web development where we can use metaprogramming techniques to generate/modify code. We will learn more about this in the next part of the article.</p>
 </div>
                     </div>
                         
