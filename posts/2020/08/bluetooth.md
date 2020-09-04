@@ -1,6 +1,6 @@
 <!--
 .. title: Serial Bluetooth Terminal With Python Asyncio
-.. slug: bluetooth
+.. slug: bluetooth-terminal-python-asyncio
 .. date: 2020-08-31 21:21:21 UTC+05:30
 .. tags: iot, python, bluetooth
 .. category:
