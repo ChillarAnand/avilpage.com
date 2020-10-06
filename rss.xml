@@ -1,5 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Sep 2020 02:43:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Serial Bluetooth Terminal With Python Asyncio</title><link>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 02 Oct 2020 13:41:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
+&lt;h4&gt;Deployment To k8s&lt;/h4&gt;
+&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref-nc"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn-nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can use this docker image and create a k8s deployment to start a container.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;---&lt;/span&gt;
+&lt;span class="c"&gt;apiVersion: apps/v1beta1&lt;/span&gt;
+&lt;span class="c"&gt;kind: Deployment&lt;/span&gt;
+&lt;span class="c"&gt;metadata:&lt;/span&gt;
+&lt;span class="c"&gt;  name: mirth-connect&lt;/span&gt;
+&lt;span class="c"&gt;  namespace: default&lt;/span&gt;
+&lt;span class="c"&gt;spec:&lt;/span&gt;
+&lt;span class="c"&gt;  template:&lt;/span&gt;
+&lt;span class="c"&gt;    spec:&lt;/span&gt;
+&lt;span class="c"&gt;      containers:&lt;/span&gt;
+&lt;span class="c"&gt;      - name: mirth-connect&lt;/span&gt;
+&lt;span class="c"&gt;        image: docker.io/nextgenhealthcare/connect&lt;/span&gt;
+&lt;span class="c"&gt;        ports:&lt;/span&gt;
+&lt;span class="c"&gt;        - name: http&lt;/span&gt;
+&lt;span class="c"&gt;          containerPort: 8080&lt;/span&gt;
+&lt;span class="c"&gt;        - name: https&lt;/span&gt;
+&lt;span class="c"&gt;          containerPort: 8443&lt;/span&gt;
+&lt;span class="c"&gt;        - name: hl7-test&lt;/span&gt;
+&lt;span class="c"&gt;          containerPort: 9001&lt;/span&gt;
+&lt;span class="c"&gt;        env:&lt;/span&gt;
+&lt;span class="c"&gt;          - name: DATABASE&lt;/span&gt;
+&lt;span class="c"&gt;            value: postgres&lt;/span&gt;
+&lt;span class="c"&gt;          - name: DATABASE_URL&lt;/span&gt;
+&lt;span class="c"&gt;            value: jdbc:postgresql://avilpage.com:5432/mirth_db&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This deployment file can be applied on a cluster using &lt;code&gt;kubectl&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ kubectl apply -f connect-deployment.yaml
+&lt;/pre&gt;
+
+
+&lt;p&gt;To access this container, we can create a service to expose this deployment to public.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;---&lt;/span&gt;
+&lt;span class="c"&gt;apiVersion: v1&lt;/span&gt;
+&lt;span class="c"&gt;kind: Service&lt;/span&gt;
+&lt;span class="c"&gt;metadata:&lt;/span&gt;
+&lt;span class="c"&gt;  name: mirth-connect&lt;/span&gt;
+&lt;span class="c"&gt;  annotations:&lt;/span&gt;
+&lt;span class="c"&gt;    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-south-1:foo&lt;/span&gt;
+&lt;span class="c"&gt;    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"&lt;/span&gt;
+&lt;span class="c"&gt;    external-dns.alpha.kubernetes.io/hostname: connect.avilpage.com&lt;/span&gt;
+&lt;span class="c"&gt;spec:&lt;/span&gt;
+&lt;span class="c"&gt;  type: LoadBalancer&lt;/span&gt;
+&lt;span class="c"&gt;  selector:&lt;/span&gt;
+&lt;span class="c"&gt;    app: mirth-connect&lt;/span&gt;
+&lt;span class="c"&gt;  ports:&lt;/span&gt;
+&lt;span class="c"&gt;    - name: http&lt;/span&gt;
+&lt;span class="c"&gt;      port: 80&lt;/span&gt;
+&lt;span class="c"&gt;      targetPort: 8080&lt;/span&gt;
+&lt;span class="c"&gt;      protocol: TCP&lt;/span&gt;
+&lt;span class="c"&gt;    - name: https&lt;/span&gt;
+&lt;span class="c"&gt;      port: 443&lt;/span&gt;
+&lt;span class="c"&gt;      targetPort: 8443&lt;/span&gt;
+&lt;span class="c"&gt;      protocol: TCP&lt;/span&gt;
+&lt;span class="c"&gt;    - name: hl7-test&lt;/span&gt;
+&lt;span class="c"&gt;      port: 9001&lt;/span&gt;
+&lt;span class="c"&gt;      targetPort: 9001&lt;/span&gt;
+&lt;span class="c"&gt;      protocol: TCP&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.&lt;/p&gt;
+&lt;p&gt;Once Mirth Connect is up &amp;amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Earlier, there were no official docker images for Mirth Connect and it was bit diffucult to dockerize Mirth Connect and deploy it. With the release of official Docker images, deploying Mirth Connect to k8s or any other container orchestration platform has become much easier.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-nc"&gt;
+&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref-nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>devops</category><category>health-care</category><category>kubernetes</category><category>mirth-connect</category><guid>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Serial Bluetooth Terminal With Python Asyncio</title><link>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;PySerial package provides a tool called miniterm&lt;sup id="fnref-miniterm"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-miniterm"&gt;1&lt;/a&gt;&lt;/sup&gt;, which provides a terminal to interact with any serial ports.&lt;/p&gt;
 &lt;p&gt;However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.&lt;/p&gt;
 &lt;p&gt;In this article, lets write a simple terminal to address the above issues.&lt;/p&gt;
@@ -704,82 +786,4 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 &lt;/ul&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.&lt;/p&gt;
-&lt;p&gt;In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.&lt;/p&gt;&lt;/div&gt;</description><category>health-care</category><category>python</category><guid>http://avilpage.com/2019/12/mastering-dicom-part-1.html</guid><pubDate>Tue, 31 Dec 2019 13:29:09 GMT</pubDate></item><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).&lt;/p&gt;
-&lt;p&gt;In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.&lt;/p&gt;
-&lt;h4&gt;Chain of Trust&lt;/h4&gt;
-&lt;p&gt;TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.&lt;/p&gt;
-&lt;p&gt;Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl s_client -showcerts -connect avilpage.com:443
-
-CONNECTED&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;00000006&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert High Assurance EV Root CA
-verify &lt;span class="k"&gt;return&lt;/span&gt;:1
-&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert SHA2 High Assurance Server CA
-verify &lt;span class="k"&gt;return&lt;/span&gt;:1
-&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;ST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; California, &lt;span class="nv"&gt;L&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; San Francisco, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GitHub, Inc."&lt;/span&gt;, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.github.com
-verify &lt;span class="k"&gt;return&lt;/span&gt;:1
----
-Certificate chain
- &lt;span class="m"&gt;0&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/ST&lt;span class="o"&gt;=&lt;/span&gt;California/L&lt;span class="o"&gt;=&lt;/span&gt;San Francisco/O&lt;span class="o"&gt;=&lt;/span&gt;GitHub, Inc./CN&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
-   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
------BEGIN CERTIFICATE-----
-MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
-MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
-0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
-aTrrJ67dru040my
------END CERTIFICATE-----
- &lt;span class="m"&gt;1&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
-   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
------BEGIN CERTIFICATE-----
-MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
-MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
-0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
-&lt;span class="nv"&gt;cPUeybQ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
------END CERTIFICATE-----
-
-    Verify &lt;span class="k"&gt;return&lt;/span&gt; code: &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ok&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into &lt;code&gt;server.pem&lt;/code&gt; and &lt;code&gt;intermediate.pem&lt;/code&gt; files.&lt;/p&gt;
-&lt;p&gt;We can decode these pem files and see the information in these certificates using&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl x509 -noout -text -in server.crt
-
-Certificate:
-    Data:
-        Version: &lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;0x2&lt;span class="o"&gt;)&lt;/span&gt;
-    Signature Algorithm: sha256WithRSAEncryption
-    ----
-&lt;/pre&gt;
-
-
-&lt;p&gt;We can also get only the subject and issuer of the certificate with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl x509 -noout -subject -noout -issuer -in server.pem
-
-&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
-&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
-
-$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
-
-&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
-&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
-&lt;/pre&gt;
-
-
-&lt;p&gt;Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.&lt;/p&gt;
-&lt;p&gt;If you are using a Linux machine, all the root certificate will readily available in &lt;code&gt;.pem&lt;/code&gt; format in &lt;code&gt;/etc/ssl/certs&lt;/code&gt; directory.&lt;/p&gt;
-&lt;p&gt;If you are using a Mac, open &lt;code&gt;Keychain Access&lt;/code&gt;, search and export the relevant root certificate in &lt;code&gt;.pem&lt;/code&gt; format.&lt;/p&gt;
-&lt;p algin="center"&gt;
-&lt;img src="http://avilpage.com/images/tls-openssl1.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;We have all the 3 certificates in the chain of trust and we can validate them with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
-server.pem: OK
-&lt;/pre&gt;
-
-
-&lt;p&gt;If there is some issue with validation OpenSSL will throw an error with relevant information.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.&lt;/p&gt;&lt;/div&gt;</description><category>openssl</category><category>shell</category><category>tls</category><guid>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</guid><pubDate>Sat, 30 Nov 2019 04:45:14 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.&lt;/p&gt;&lt;/div&gt;</description><category>health-care</category><category>python</category><guid>http://avilpage.com/2019/12/mastering-dicom-part-1.html</guid><pubDate>Tue, 31 Dec 2019 13:29:09 GMT</pubDate></item></channel></rss>
