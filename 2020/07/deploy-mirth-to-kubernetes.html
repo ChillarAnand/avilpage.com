@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to Deploy NextGen Connect (aka Mirth Connect) to a Kubernetes cluster.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How To Deploy Mirth Connect To Kubernetes | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../08/bluetooth-terminal-python-asyncio.html" title="Serial Bluetooth Terminal With Python Asyncio" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="How To Deploy Mirth Connect To Kubernetes">
+<meta property="og:url" content="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html">
+<meta property="og:description" content="How to Deploy NextGen Connect (aka Mirth Connect) to a Kubernetes cluster.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-09-30T23:25:46+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="health-care">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="mirth-connect">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../">Articles</a>
+                </li>
+<li>
+<a href="../../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../../p/about.html">About</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+            <a href="deploy-mirth-to-kubernetes.md" id="sourcelink">Source</a>
+        </li>
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">How To Deploy Mirth Connect To Kubernetes</a></h1>
+
+        <div class="metadata">
+            <p class="dateline">
+                <time class="published dt-published" datetime="2020-09-30T23:25:46+05:30" itemprop="datePublished" title="30 Sep 20">30 Sep 2020</time></p>
+            |
+            
+
+        4 min read
+
+
+        </div>
+        
+    </header><hr>
+<div class="e-content entry-content" itemprop="articleBody text">
+            <div>
+<h4>Introduction</h4>
+<p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
+<h4>Deployment To k8s</h4>
+<p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref-nc"><a class="footnote-ref" href="deploy-mirth-to-kubernetes.html#fn-nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
+<pre class="code literal-block"><span></span><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
+</pre>
+
+
+<p>We can use this docker image and create a k8s deployment to start a container.</p>
+<pre class="code literal-block"><span></span><span class="err">---</span>
+<span class="c">apiVersion: apps/v1beta1</span>
+<span class="c">kind: Deployment</span>
+<span class="c">metadata:</span>
+<span class="c">  name: mirth-connect</span>
+<span class="c">  namespace: default</span>
+<span class="c">spec:</span>
+<span class="c">  template:</span>
+<span class="c">    spec:</span>
+<span class="c">      containers:</span>
+<span class="c">      - name: mirth-connect</span>
+<span class="c">        image: docker.io/nextgenhealthcare/connect</span>
+<span class="c">        ports:</span>
+<span class="c">        - name: http</span>
+<span class="c">          containerPort: 8080</span>
+<span class="c">        - name: https</span>
+<span class="c">          containerPort: 8443</span>
+<span class="c">        - name: hl7-test</span>
+<span class="c">          containerPort: 9001</span>
+<span class="c">        env:</span>
+<span class="c">          - name: DATABASE</span>
+<span class="c">            value: postgres</span>
+<span class="c">          - name: DATABASE_URL</span>
+<span class="c">            value: jdbc:postgresql://avilpage.com:5432/mirth_db</span>
+</pre>
+
+
+<p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
+<pre class="code literal-block"><span></span>$ kubectl apply -f connect-deployment.yaml
+</pre>
+
+
+<p>To access this container, we can create a service to expose this deployment to public.</p>
+<pre class="code literal-block"><span></span><span class="err">---</span>
+<span class="c">apiVersion: v1</span>
+<span class="c">kind: Service</span>
+<span class="c">metadata:</span>
+<span class="c">  name: mirth-connect</span>
+<span class="c">  annotations:</span>
+<span class="c">    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-south-1:foo</span>
+<span class="c">    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"</span>
+<span class="c">    external-dns.alpha.kubernetes.io/hostname: connect.avilpage.com</span>
+<span class="c">spec:</span>
+<span class="c">  type: LoadBalancer</span>
+<span class="c">  selector:</span>
+<span class="c">    app: mirth-connect</span>
+<span class="c">  ports:</span>
+<span class="c">    - name: http</span>
+<span class="c">      port: 80</span>
+<span class="c">      targetPort: 8080</span>
+<span class="c">      protocol: TCP</span>
+<span class="c">    - name: https</span>
+<span class="c">      port: 443</span>
+<span class="c">      targetPort: 8443</span>
+<span class="c">      protocol: TCP</span>
+<span class="c">    - name: hl7-test</span>
+<span class="c">      port: 9001</span>
+<span class="c">      targetPort: 9001</span>
+<span class="c">      protocol: TCP</span>
+</pre>
+
+
+<p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
+<p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
+<h4>Conclusion</h4>
+<p>Earlier, there were no official docker images for Mirth Connect and it was bit diffucult to dockerize Mirth Connect and deploy it. With the release of official Docker images, deploying Mirth Connect to k8s or any other container orchestration platform has become much easier.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-nc">
+<p><a href="https://hub.docker.com/r/nextgenhealthcare/connect/">https://hub.docker.com/r/nextgenhealthcare/connect/</a> <a class="footnote-backref" href="deploy-mirth-to-kubernetes.html#fnref-nc" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/health-care.html" rel="tag">health-care</a></li>
+            <li><a class="tag p-category" href="../../tags/kubernetes.html" rel="tag">kubernetes</a></li>
+            <li><a class="tag p-category" href="../../tags/mirth-connect.html" rel="tag">mirth-connect</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../08/bluetooth-terminal-python-asyncio.html" rel="prev" title="Serial Bluetooth Terminal With Python Asyncio">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        <hr></article>
+</div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script src="../../assets/js/moment-with-locales.min.js"></script><script src="../../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>

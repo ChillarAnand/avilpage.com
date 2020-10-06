@@ -80,7 +80,97 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="08/bluetooth-terminal-python-asyncio.html" class="u-url">Serial Bluetooth Terminal With Python Asyncio</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="07/deploy-mirth-to-kubernetes.html" class="u-url">How To Deploy Mirth Connect To Kubernetes</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
+<h4>Deployment To k8s</h4>
+<p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref-nc"><a class="footnote-ref" href="07/deploy-mirth-to-kubernetes.html#fn-nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
+<pre class="code literal-block"><span></span><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
+</pre>
+
+
+<p>We can use this docker image and create a k8s deployment to start a container.</p>
+<pre class="code literal-block"><span></span><span class="err">---</span>
+<span class="c">apiVersion: apps/v1beta1</span>
+<span class="c">kind: Deployment</span>
+<span class="c">metadata:</span>
+<span class="c">  name: mirth-connect</span>
+<span class="c">  namespace: default</span>
+<span class="c">spec:</span>
+<span class="c">  template:</span>
+<span class="c">    spec:</span>
+<span class="c">      containers:</span>
+<span class="c">      - name: mirth-connect</span>
+<span class="c">        image: docker.io/nextgenhealthcare/connect</span>
+<span class="c">        ports:</span>
+<span class="c">        - name: http</span>
+<span class="c">          containerPort: 8080</span>
+<span class="c">        - name: https</span>
+<span class="c">          containerPort: 8443</span>
+<span class="c">        - name: hl7-test</span>
+<span class="c">          containerPort: 9001</span>
+<span class="c">        env:</span>
+<span class="c">          - name: DATABASE</span>
+<span class="c">            value: postgres</span>
+<span class="c">          - name: DATABASE_URL</span>
+<span class="c">            value: jdbc:postgresql://avilpage.com:5432/mirth_db</span>
+</pre>
+
+
+<p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
+<pre class="code literal-block"><span></span>$ kubectl apply -f connect-deployment.yaml
+</pre>
+
+
+<p>To access this container, we can create a service to expose this deployment to public.</p>
+<pre class="code literal-block"><span></span><span class="err">---</span>
+<span class="c">apiVersion: v1</span>
+<span class="c">kind: Service</span>
+<span class="c">metadata:</span>
+<span class="c">  name: mirth-connect</span>
+<span class="c">  annotations:</span>
+<span class="c">    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-south-1:foo</span>
+<span class="c">    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"</span>
+<span class="c">    external-dns.alpha.kubernetes.io/hostname: connect.avilpage.com</span>
+<span class="c">spec:</span>
+<span class="c">  type: LoadBalancer</span>
+<span class="c">  selector:</span>
+<span class="c">    app: mirth-connect</span>
+<span class="c">  ports:</span>
+<span class="c">    - name: http</span>
+<span class="c">      port: 80</span>
+<span class="c">      targetPort: 8080</span>
+<span class="c">      protocol: TCP</span>
+<span class="c">    - name: https</span>
+<span class="c">      port: 443</span>
+<span class="c">      targetPort: 8443</span>
+<span class="c">      protocol: TCP</span>
+<span class="c">    - name: hl7-test</span>
+<span class="c">      port: 9001</span>
+<span class="c">      targetPort: 9001</span>
+<span class="c">      protocol: TCP</span>
+</pre>
+
+
+<p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
+<p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
+<h4>Conclusion</h4>
+<p>Earlier, there were no official docker images for Mirth Connect and it was bit diffucult to dockerize Mirth Connect and deploy it. With the release of official Docker images, deploying Mirth Connect to k8s or any other container orchestration platform has become much easier.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-nc">
+<p><a href="https://hub.docker.com/r/nextgenhealthcare/connect/">https://hub.docker.com/r/nextgenhealthcare/connect/</a> <a class="footnote-backref" href="07/deploy-mirth-to-kubernetes.html#fnref-nc" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="08/bluetooth-terminal-python-asyncio.html" class="u-url">Serial Bluetooth Terminal With Python Asyncio</a></h1>
             <hr>
 <div class="e-content">
                         <div>
