@@ -1,5 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Sep 2020 02:43:07 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Serial Bluetooth Terminal With Python Asyncio</title><link>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 03 Nov 2020 17:05:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Make Python Docker Builds Slim &amp; Fast</title><link>http://avilpage.com/2020/10/python-docker-build-slim-fast.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;When using Docker, if the build is taking time or the build image is huge, it will waste system resources as well as our time. In this article, let's see how to reduce build time as well as image size when using Docker for Python projects.&lt;/p&gt;
+&lt;h4&gt;Project&lt;/h4&gt;
+&lt;p&gt;Let us take a hello world application written in flask.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt;
+
+
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;home&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;'hello world - v1.0.0'&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Let's create a requirements.txt file to list out python packages required for the project.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;flask==1.1.2&lt;/span&gt;
+&lt;span class="err"&gt;pandas==1.1.2&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Pandas binary wheel size is ~10MB. It is included in requirements to see how python packages affect docker image size.&lt;/p&gt;
+&lt;p&gt;Here is our Dockerfile to run the flask application.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
+
+&lt;span class="n"&gt;EXPOSE&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+
+&lt;span class="n"&gt;ENTRYPOINT&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"python"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;CMD&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"-m"&lt;/span&gt; &lt;span class="ss"&gt;"flask"&lt;/span&gt; &lt;span class="ss"&gt;"run"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Let's use the following commands to measure the image size &amp;amp; build time with/without cache.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ docker build . -t flask:0.0 --pull --no-cache
+&lt;span class="o"&gt;[&lt;/span&gt;+&lt;span class="o"&gt;]&lt;/span&gt; Building &lt;span class="m"&gt;45&lt;/span&gt;.3s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;/9&lt;span class="o"&gt;)&lt;/span&gt; FINISHED
+
+$ touch app.py  &lt;span class="c1"&gt;# modify app.py file&lt;/span&gt;
+
+$ docker build . -t flask:0.1
+&lt;span class="o"&gt;[&lt;/span&gt;+&lt;span class="o"&gt;]&lt;/span&gt; Building &lt;span class="m"&gt;15&lt;/span&gt;.3s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;/9&lt;span class="o"&gt;)&lt;/span&gt; FINISHED
+
+$ docker images &lt;span class="p"&gt;|&lt;/span&gt; grep flask
+flask               &lt;span class="m"&gt;0&lt;/span&gt;.1     06d3e985f12e    &lt;span class="m"&gt;1&lt;/span&gt;.01GB
+&lt;/pre&gt;
+
+
+&lt;p&gt;With the current docker, here are the results.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker0.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;h4&gt;1. Install requirements first&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="n"&gt;EXPOSE&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+
+&lt;span class="n"&gt;ENTRYPOINT&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"python"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;CMD&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"-m"&lt;/span&gt; &lt;span class="ss"&gt;"flask"&lt;/span&gt; &lt;span class="ss"&gt;"run"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Let us modify the docker file to install requirements first and then add code to the docker image.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker1.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;Now, build without cache took almost the same time. With cache, the build is completed in a second. Since docker caches step by step, it has cached python package installation step and thereby reducing the build time.&lt;/p&gt;
+&lt;h4&gt;2. Disable Cache&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt; &lt;span class="c1"&gt;--no-cache&lt;/span&gt;
+
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="n"&gt;EXPOSE&lt;/span&gt; &lt;span class="mi"&gt;5000&lt;/span&gt;
+
+&lt;span class="n"&gt;ENTRYPOINT&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"python"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;CMD&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"-m"&lt;/span&gt; &lt;span class="ss"&gt;"flask"&lt;/span&gt; &lt;span class="ss"&gt;"run"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;By default, pip will cache the downloaded packages. Since we don't need a cache inside docker, let's disable pip cache by passing &lt;code&gt;--no-cache&lt;/code&gt; argument.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker2.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;This reduced the docker image size by ~20MB. In real-world projects, where there are a good number of dependencies, the overall image size will be reduced a lot.&lt;/p&gt;
+&lt;h4&gt;3. Use slim variant&lt;/h4&gt;
+&lt;p&gt;Till now, we have been using defacto Python variant. It has a large number of common debian packages. There is a slim variant that doesn't contain all these common packages&lt;sup id="fnref-dpy"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn-dpy"&gt;4&lt;/a&gt;&lt;/sup&gt;. Since we don't need all these debian packages, let's use slim variant.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;python&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;slim&lt;/span&gt;
+
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker3.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;This reduced the docker image size by ~750 MB without affecting the build time.&lt;/p&gt;
+&lt;h4&gt;4. Build from source&lt;/h4&gt;
+&lt;p&gt;Python packages can be installed via wheels (.whl files) for a faster and smoother installation. We can also install them via source code. If we look at Pandas project files on PyPi&lt;sup id="fnref-pandas"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn-pandas"&gt;1&lt;/a&gt;&lt;/sup&gt;, it provides both wheels as well as tar zip source files. Pip will prefer wheels over source code the installation process will be much smoother.&lt;/p&gt;
+&lt;p&gt;To reduce Docker image size, we can build from source instead of using the wheel. This will increase build time as the python package will take some time to compile while building.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker4.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;Here build size is reduced by ~20MB but the build has increased to 15 minutes.&lt;/p&gt;
+&lt;h4&gt;5. Use Alpine&lt;/h4&gt;
+&lt;p&gt;Earlier we have used, python slim variant the base image. However, there is Alpine variant which is much smaller than slim. One caveat with using alpine is Python wheels won't work with this image&lt;sup id="fnref-aw"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn-aw"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;We have to build all packages from source. For example, packages like TensorFlow provide only wheels for installation. To install this on Alpine, we have to install from the source which will take additional effort to figure out dependencies and install.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;Using Alpine will reduce the image size by ~70 MB but it is not recomended to use Alpine as wheels won't work with this image.&lt;/p&gt;
+&lt;p&gt;&lt;img src="http://avilpage.com/images/docker4.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;All the docker files used in the article are available on github&lt;sup id="fnref-gh"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn-gh"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We have started with a docker build of 1.01 GB and reduced it to 0.13 GB. We have also optimized build times using the docker caching mechanism. We can use appropriate steps to optimize build for size or speed or both.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn-pandas"&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/pandas/#files"&gt;https://pypi.org/project/pandas/#files&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref-pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-aw"&gt;
+&lt;p&gt;&lt;a href="https://github.com/docker-library/docs/issues/904"&gt;https://github.com/docker-library/docs/issues/904&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref-aw" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-gh"&gt;
+&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/library-docker"&gt;https://github.com/ChillarAnand/library-docker&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref-gh" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn-dpy"&gt;
+&lt;p&gt;&lt;a href="https://hub.docker.com/_/python"&gt;https://hub.docker.com/_/python&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref-dpy" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2020/10/python-docker-build-slim-fast.html</guid><pubDate>Sat, 31 Oct 2020 12:53:13 GMT</pubDate></item><item><title>Serial Bluetooth Terminal With Python Asyncio</title><link>http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;PySerial package provides a tool called miniterm&lt;sup id="fnref-miniterm"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fn-miniterm"&gt;1&lt;/a&gt;&lt;/sup&gt;, which provides a terminal to interact with any serial ports.&lt;/p&gt;
 &lt;p&gt;However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.&lt;/p&gt;
 &lt;p&gt;In this article, lets write a simple terminal to address the above issues.&lt;/p&gt;
@@ -602,37 +749,4 @@ class Book&lt;span class="o"&gt;(&lt;/span&gt;models.Model&lt;span class="o"&gt;
 &lt;h4&gt;Ace Jump&lt;/h4&gt;
 &lt;p&gt;To move caret to a particular position in the editor without mouse,
 &lt;a href="https://plugins.jetbrains.com/plugin/7086-acejump"&gt;AceJump plugin&lt;/a&gt; will be useful. It allows to quickly navigate the caret to any position in the editor.&lt;/p&gt;
-&lt;p&gt;These are some plugins which will boost developers productivity while writing and debugging code in PyCharm or other JetBrains IDE.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>pycharm</category><category>python</category><guid>http://avilpage.com/2019/03/intellij-pycharm-plugins-productivity.html</guid><pubDate>Sun, 31 Mar 2019 15:51:21 GMT</pubDate></item><item><title>Django Tips &amp; Tricks #12 - Automatically Set CSRF Token in Postman</title><link>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Django has inbuilt &lt;a href="https://docs.djangoproject.com/en/dev/ref/csrf/"&gt;CSRF protection&lt;/a&gt; mechanism for requests via unsafe methods to prevent &lt;a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery"&gt;Cross Site Request Forgeries&lt;/a&gt;. When CSRF protection is enabled on AJAX POST methods, &lt;code&gt;X-CSRFToken&lt;/code&gt; header should be sent in the request.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://www.getpostman.com"&gt;Postman&lt;/a&gt; is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.&lt;/p&gt;
-&lt;h4&gt;CSRF Token In Postman&lt;/h4&gt;
-&lt;p&gt;Django sets &lt;code&gt;csrftoken&lt;/code&gt; cookie on login. After logging in, we can see the csrf token from cookies in the Postman.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/django-csrf-postman1.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;We can grab this token and set it in headers manually.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/django-csrf-postman2.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.&lt;/p&gt;
-&lt;p&gt;Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In &lt;code&gt;Test&lt;/code&gt; section of postman, add these lines.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getResponseCookie&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"csrftoken"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;setEnvironmentVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'csrftoken'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;/pre&gt;
-
-
-&lt;p&gt;This extracts csrf token and sets it to an evironment variable called &lt;code&gt;csrftoken&lt;/code&gt; in the current environment.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/django-csrf-postman3.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Now in our requests, we can use this variable to set the header.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/django-csrf-postman4.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;&lt;/div&gt;</description><category>api</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;These are some plugins which will boost developers productivity while writing and debugging code in PyCharm or other JetBrains IDE.&lt;/p&gt;&lt;/div&gt;</description><category>django</category><category>pycharm</category><category>python</category><guid>http://avilpage.com/2019/03/intellij-pycharm-plugins-productivity.html</guid><pubDate>Sun, 31 Mar 2019 15:51:21 GMT</pubDate></item></channel></rss>
