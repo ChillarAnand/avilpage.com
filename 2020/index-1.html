@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns#
+article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2020 (old posts, page 1) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<!-- <link href="/assets/css/rst_base.css" rel="stylesheet" type="text/css"> --><link href="../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/style.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/carbon.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2020/index-1.html">
+<link rel="prev" href="." type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><link rel="alternate" type="application/rss+xml" title="RSS for section_index 2020" href="rss.xml">
+<script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://avilpage.com/">
+
+                <span id="blog-title">Avil Page</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../">Articles</a>
+                </li>
+<li>
+<a href="../p/talks.html">Talks</a>
+                </li>
+<li>
+<a href="../p/projects.html">Projects</a>
+                </li>
+<li>
+<a href="../p/pages.html">Pages</a>
+                </li>
+<li>
+<a href="../p/about.html">About</a>
+                </li>
+<li>
+<a href="../rss.xml">RSS</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content col-lg-6 col-lg-offset-3 col-xs-12 col-md-12">
+        <!--Body content-->
+        <div class="row">
+            
+<div class="sectionindex">
+    <header><h2><a href=".">2020 (old posts, page 1)</a></h2>
+                    <p class="feedlink">
+                    <a href="rss.xml" type="application/rss+xml">RSS feed</a>
+            </p>
+
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="01/disable-transactions-django-tests.html" class="u-url">Disabling Atomic Transactions In Django Test Cases</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p><a href="https://docs.djangoproject.com/en/dev/topics/testing/tools/#testcase">TestCase</a> is the most used class for writing tests in Django. To make tests faster, it wraps all the tests in 2 nested <code>atomic</code> blocks.</p>
+<p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
+<h4>Select for update</h4>
+<p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+        <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+        <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre>
+
+
+<p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
+<h4>Threads</h4>
+<p>Let us take a view which uses threads to get data from database.</p>
+<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="n">response</span>
+
+<span class="k">class</span> <span class="nc">BookViewSet</span><span class="p">(</span><span class="n">ViewSet</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
+</pre>
+
+
+<p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre>
+
+
+<p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
+<h4>Transaction Test Case</h4>
+<p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
+<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
+
+<span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre>
+
+
+<p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
+<p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre>
+
+
+<p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
+<p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
+<p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
+<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_fixture_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_setup</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
+</pre>
+
+
+<p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
+<h4>Conclusion</h4>
+<p>Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.</p>
+</div>
+                    </div>
+                        
+        </article><nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+        </ul></nav>
+</div>
+        </div>
+        <!--End of body content-->
+        <div id="coral_thread"></div>
+
+        <footer id="footer">
+            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+            <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script src="../assets/js/moment-with-locales.min.js"></script><script src="../assets/js/fancydates.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element) {
+            return element.getElementsByTagName('img')[0].alt;
+        }});
+    </script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-81644162-1"></script><script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-81644162-1');
+
+    $(document.links).filter(function() {
+        return this.hostname != window.location.hostname;
+    }).attr('target', '_blank');
+    </script><!-- <script>
+         (function() {
+         var d = document, s = d.createElement('script');
+         var url = 'avilpage-coral.herokuapp.com';
+         /*         var url = 'http://comments.avilpage.com'; */
+         s.src = '//' + url + '/assets/js/embed.js';
+         s.async = false;
+         s.defer = true;
+         s.onload = function() {
+         Coral.createStreamEmbed({
+         id: "coral_thread",
+         autoRender: true,
+         rootURL: '//' + url,
+         });
+         };
+         (d.head || d.body).appendChild(s);
+         })();
+         </script> -->
+</body>
+</html>
