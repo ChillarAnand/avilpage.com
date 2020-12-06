@@ -74,7 +74,62 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/10/python-docker-build-slim-fast.html" class="u-url">Make Python Docker Builds Slim &amp; Fast</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/11/python-web-applications-performance-sentry.html" class="u-url">Finding Performance Issues In Python Web Apps with Sentry</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>Earlier, we have seen couple of articles here on finding performance issues<sup id="fnref-perf1"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn-perf1">1</a></sup> and how to go about optimizing them<sup id="fnref-perf2"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn-perf2">2</a></sup>. In this article, lets see how to use Sentry Performance to find bottlenecks in Python web applications.</p>
+<h4>The Pitfalls</h4>
+<p>A common pitfall while identifying performance issues is to do profiling in development environment. Performance in development environment will be quite different from production environment due to difference in system requirements, database size, network latency etc.</p>
+<p>In some cases, performance issues could be happening only for certain users and in specific scenarios.</p>
+<p>Replicating production performance on development machine will be costly. To avoid these, we can use APM tool to monitor performance in production.</p>
+<h4>Sentry Performance</h4>
+<p>Sentry is widely used Open source error tracking tool. Recently, it has introduced Performance to track performance also. Sentry doesn't need any agent running on the host machine to track performance. Enabling performance monitoring is just a single line change in Sentry<sup id="fnref-sentry"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn-sentry">3</a></sup> setup.</p>
+<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sentry_sdk</span>
+
+
+<span class="n">sentry_sdk</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+    <span class="n">dsn</span><span class="o">=</span><span class="s2">"dummy_dsn"</span><span class="p">,</span>
+    <span class="c1"># Trace half the requests</span>
+    <span class="n">traces_sample_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+</pre>
+
+
+<p>Tracing performance will have additional overhead<sup id="fnref-oh"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn-oh">4</a></sup> on the web application response time. Depending on the traffic, server capacity, acceptable overhead, we can decide what percentage of the requests we need to trace.</p>
+<p>Once performance is enabled, we can head over to Sentry web application and see traces for the transactions along with operation breakdown as shown below.</p>
+<p><img src="../images/sentry0.png" style="vertical-align:middle"></p>
+<p>At a glance, we can see percentage of time spent across each component which will pinpoint where the performance problem lies.</p>
+<p>If the app server is taking most of the time, we can explore the spans in detail to pinpoint the exact line where it is taking most time. If database is taking most of the time, we can look out for the number of queries it is running and slowest queries to pinpoint the problem.</p>
+<p>Sentry also provides option to set alerts when there are performance. For example, when the response time for a duration are less than a limit for a specified duration, Sentry can alert developers via email, slack or any other integration channels.</p>
+<h4>Conclusion</h4>
+<p>There are paid APM tools like New Relic, AppDynamics which requires an agent to be installed on the server. As mentioned in earlier articles, there are open source packages like django-silk to monitor performance. It will take time to set up these tools and pinpoint the issue.</p>
+<p>Sentry is the only agentless APM tool<sup id="fnref-note"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn-note">5</a></sup> available for Python applications. Setting up Sentry performance is quite easy and performance issues can be pinpointed without much hassle.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-perf1">
+<p><a href="../2018/12/django-bottleneck-performance-scaling.html">Finding High-impact Performance Bottlenecks</a> <a class="footnote-backref" href="../2020/11/python-web-applications-performance-sentry.html#fnref-perf1" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn-perf2">
+<p><a href="../2019/08/django-profile-optimize-views.html">Optimizing Bottlenecks In Django</a> <a class="footnote-backref" href="../2020/11/python-web-applications-performance-sentry.html#fnref-perf2" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn-sentry">
+<p><a href="https://docs.sentry.io/platforms/python/performance/">Sentry - Performance Monitoring</a> <a class="footnote-backref" href="../2020/11/python-web-applications-performance-sentry.html#fnref-sentry" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn-oh">
+<p><a href="https://github.com/getsentry/sentry-python/issues/668#issuecomment-707768485">Sentry has 8% overhead in Django test suite</a> <a class="footnote-backref" href="../2020/11/python-web-applications-performance-sentry.html#fnref-oh" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn-note">
+<p>Earlier there was Opbeat APM which is now shutdown due to acquistion by Elastic. <a class="footnote-backref" href="../2020/11/python-web-applications-performance-sentry.html#fnref-note" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/10/python-docker-build-slim-fast.html" class="u-url">Make Python Docker Builds Slim &amp; Fast</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -953,103 +1008,6 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 </li>
 </ol>
 </div>
-</div>
-                    </div>
-                        
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/01/disable-transactions-django-tests.html" class="u-url">Disabling Atomic Transactions In Django Test Cases</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p><a href="https://docs.djangoproject.com/en/dev/topics/testing/tools/#testcase">TestCase</a> is the most used class for writing tests in Django. To make tests faster, it wraps all the tests in 2 nested <code>atomic</code> blocks.</p>
-<p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
-<h4>Select for update</h4>
-<p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
-        <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-        <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
-
-
-<p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
-<h4>Threads</h4>
-<p>Let us take a view which uses threads to get data from database.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-    <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
-    <span class="k">return</span> <span class="n">response</span>
-
-<span class="k">class</span> <span class="nc">BookViewSet</span><span class="p">(</span><span class="n">ViewSet</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-            <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
-            <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
-</pre>
-
-
-<p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">()</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre>
-
-
-<p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
-<h4>Transaction Test Case</h4>
-<p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
-
-<span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="o">...</span>
-</pre>
-
-
-<p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
-<p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="o">...</span>
-
-<span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
-    <span class="o">...</span>
-
-<span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
-    <span class="o">...</span>
-</pre>
-
-
-<p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
-<p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
-<p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_fixture_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_setup</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
-</pre>
-
-
-<p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
-<h4>Conclusion</h4>
-<p>Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.</p>
 </div>
                     </div>
                         
