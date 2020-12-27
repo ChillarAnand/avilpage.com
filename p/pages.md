@@ -14,3 +14,5 @@ Pages
 -------
 
 [తెలుగు పుస్తకాలు ఉచితంగా లభించే వెబ్‌సైట్లు](/p/telugu-books-free-download-sites.html)
+
+[Instant WhatsApp](/p/instant-whatsapp.html)
