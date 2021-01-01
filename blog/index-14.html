@@ -75,7 +75,108 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/01/disable-transactions-django-tests.html" class="u-url">Disabling Atomic Transactions In Django Test Cases</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/02/reduce-python-package-footprint.html" class="u-url">How To Reduce Python Package Footprint?</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>PyPi<sup id="fnref-1"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-1">1</a></sup> hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries<sup id="fnref-2"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-2">2</a></sup> along with the package.</p>
+<h4>Build From Source</h4>
+<p>If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB<sup id="fnref-3"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-3">3</a></sup>.</p>
+<pre class="code literal-block"><span></span>$ pip install numpy
+
+$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+ 85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+</pre>
+
+
+<p>Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp; pandas, overall size of the package crosses 250MB.</p>
+<p>An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.</p>
+<pre class="code literal-block"><span></span>$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
+
+$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+ 23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+</pre>
+
+
+<p>We can see the footprint has reduced by ~70% when using sdist instead of wheel. This<sup id="fnref-4"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-4">4</a></sup> article provides more details about these CFLAG optimization when installing a package from source.</p>
+<h4>Shared Packages</h4>
+<p>When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.</p>
+<p>To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.</p>
+<p>For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.</p>
+<pre class="code literal-block"><span></span>$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
+<span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
+<span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.1
+<span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
+
+$ cat project1-requirements.txt  <span class="c1"># project1 requirements</span>
+<span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
+<span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
+<span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
+
+$ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
+<span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.17
+<span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
+<span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
+</pre>
+
+
+<p>After creating a virtual enviroment for a project, we can create a <code>.pth</code> file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.</p>
+<pre class="code literal-block"><span></span>$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
+ ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
+</pre>
+
+
+<p>Then we can install the project requirements which will install only missing packages.</p>
+<pre class="code literal-block"><span></span>$ pip install -r project1-requirements.txt
+</pre>
+
+
+<h4>Global Store</h4>
+<p>The above shared packages solution has couple issues.</p>
+<ol>
+<li>User has to manually create and track shared packages for each Python version and needs to bootstrap it in every project.</li>
+<li>When there is an incompatible version of package in multiple projects, user will end up with duplicate installations of the same version.</li>
+</ol>
+<p>To solve this<sup id="fnref-5"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-5">5</a></sup>, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.</p>
+<p>For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.</p>
+<pre class="code literal-block"><span></span>$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
+
+$ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
+
+<span class="c1"># in project venv</span>
+<span class="nb">echo</span> <span class="s1">'~/.mpip/numpy/3.7_1.17'</span> &gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
+</pre>
+
+
+<p>With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip<sup id="fnref-6"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-6">6</a></sup> as a POC to test this and it seems to work as expected.</p>
+<p>These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn-1">
+<p><a href="https://pypi.org/">https://pypi.org/</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-1" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn-2">
+<p><a href="https://github.com/numpy/numpy/issues/10920">https://github.com/numpy/numpy/issues/10920</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-2" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn-3">
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html">https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-3" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn-4">
+<p><a href="https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4">https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-4" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn-5">
+<p><a href="https://github.com/pypa/packaging-problems/issues/328">https://github.com/pypa/packaging-problems/issues/328</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-5" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+<li id="fn-6">
+<p><a href="https://github.com/ChillarAnand/mpip">https://github.com/ChillarAnand/mpip</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-6" title="Jump back to footnote 6 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/01/disable-transactions-django-tests.html" class="u-url">Disabling Atomic Transactions In Django Test Cases</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -449,7 +550,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
         <div id="coral_thread"></div>
 
         <footer id="footer">
-            Contents © 2020         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            Contents © 2021         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
             
         </footer>
 </div>
