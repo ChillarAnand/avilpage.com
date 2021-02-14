@@ -172,12 +172,9 @@ Earlier we have used, python slim variant the base image. However, there is Alpi
 
 We have to build all packages from source. For example, packages like TensorFlow provide only wheels for installation. To install this on Alpine, we have to install from the source which will take additional effort to figure out dependencies and install.
 
-```
-```
-
 Using Alpine will reduce the image size by ~70 MB but it is not recomended to use Alpine as wheels won't work with this image.
 
-<img src="/images/docker4.png" style="vertical-align:middle" />
+<img src="/images/docker5.png" style="vertical-align:middle" />
 
 [^aw]: [https://github.com/docker-library/docs/issues/904](https://github.com/docker-library/docs/issues/904)
 
