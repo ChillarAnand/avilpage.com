@@ -2,7 +2,7 @@
 .. title: Make Python Docker Builds Slim & Fast
 .. slug: python-docker-build-slim-fast
 .. date: 2020-10-31 18:23:13 UTC+05:30
-.. tags: python, devops
+.. tags: python, devops, featured
 .. category:
 .. link:
 .. description: How to speed up python docker builds and reduce build time.
