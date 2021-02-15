@@ -2,7 +2,7 @@
 .. title: How To Deploy Django Channels To Production
 .. slug: deploying-scaling-django-channels
 .. date: 2018-05-18 21:21:21 UTC+05:30
-.. tags: python, django, devops
+.. tags: python, django, devops, featured
 .. category:
 .. link:
 .. description:

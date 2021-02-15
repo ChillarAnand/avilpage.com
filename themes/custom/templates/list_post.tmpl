@@ -7,6 +7,27 @@
 {% extends 'base.tmpl' %}
 
 {% block content %}
+
+    <article class="listpage">
+        <header>
+            <h1>Most Liked Articles</h1>
+        </header>
+        {{ archive_nav.archive_navigation() }}
+        {{ feeds_translations.translation_link() }}
+        <div class="postlist">
+            {% for group in posts|groupby('tags') %}
+                {% for post in group.list %}
+                    {% if 'featured' in post.tags %}
+                        <a href="{{ post.permalink() }}" class="listtitle">{{ post.title()|e }}</a>
+                        <br />
+                        <br />
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </article>
+
+
     <article class="listpage">
         <header>
             <h1>{{ title|e }}</h1>
@@ -28,6 +49,7 @@
             {% endfor %}
         </div>
     </article>
+
 {% endblock %}
 
 {% block extra_head %}
