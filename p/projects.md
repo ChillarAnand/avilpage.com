@@ -33,4 +33,4 @@
 
 - [pythonindia/junction](https://github.com/pythonindia/junction/commits?author=ChillarAnand) - Software to manage conferences.
 
-- Submitted patches to Python, iPython, celery and other packages.
+- Submitted patches to Python, iPython, Celery and other packages that I use regularly.
