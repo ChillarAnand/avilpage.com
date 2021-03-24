@@ -2,7 +2,7 @@
 .. title: Mastering DICOM - Part #1
 .. slug: mastering-dicom-part-1
 .. date: 2019-12-31 18:59:09 UTC+05:30
-.. tags: python, health-care
+.. tags: python, health-care, dicom
 .. category:
 .. link:
 .. description: How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.
@@ -24,7 +24,7 @@ A patient as per doctor's request will visit a radiology center to undergo CT/MR
 
 After this when patient visits doctor, doctor can see this study on his workstation(which has DICOM viewer) by entering patient details.
 
-In this series of articles, we will how to achieve this seamless transfer of medical data digitally with DICOM.
+In [this series of articles](/tags/dicom.html), we will how to achieve this seamless transfer of medical data digitally with DICOM.
 
 
 ### DICOM standard
