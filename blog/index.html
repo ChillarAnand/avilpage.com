@@ -74,7 +74,76 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/12/minimum-viable-testing-risk-based.html" class="u-url">Minimum Viable Testing - Get Maximum Stability With Minimum Effort</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2021/03/setup-orthanc-demo-server.html" class="u-url">Mastering Dicom #2 - Setup Orthanc Demo Server</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>This is a series of <a href="../tags/dicom.html">articles on mastering Dicom</a>. In the earlier article, we have learnt how PACS/DICOM simplifies the clinical work flow.</p>
+<p>In this article, lets setup a dicom server so that we have a server to play around with Dicom files.</p>
+<h4>Orthanc Server</h4>
+<p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
+<p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
+<p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
+<pre class="code literal-block"><span></span>$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
+    jodogne/orthanc-python
+</pre>
+
+
+<p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
+<h4>Heroku Deployment</h4>
+<p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
+<p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
+<p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
+<table class="codehilitetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td>
+<td class="code">
+<pre class="code literal-block"><span></span><span class="ch">#! /bin/sh</span>
+
+<span class="nb">set</span> -x
+
+<span class="nb">echo</span> <span class="nv">$PORT</span>
+
+sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
+
+Orthanc /etc/orthanc/
+</pre>
+</td>
+</tr></table>
+<p>We can use this shell script as entry point in docker as follows.</p>
+<pre class="code literal-block"><span></span><span class="k">FROM</span> <span class="n">jodogne</span><span class="o">/</span><span class="n">orthanc</span><span class="o">-</span><span class="n">python</span>
+
+<span class="n">EXPOSE</span> <span class="err">$</span><span class="n">PORT</span>
+
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
+<span class="k">ADD</span> <span class="p">.</span> <span class="o">/</span><span class="n">app</span>
+
+<span class="n">ENTRYPOINT</span> <span class="p">[</span> <span class="ss">"./run.sh"</span> <span class="p">]</span>
+</pre>
+
+
+<p>We can create a new app in heroku and we can deploy this container.</p>
+<pre class="code literal-block"><span></span>$ heroku apps:create orthanc-demo
+
+$ heroku container:push web
+$ heroku container:release web
+</pre>
+
+
+<p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/12/minimum-viable-testing-risk-based.html" class="u-url">Minimum Viable Testing - Get Maximum Stability With Minimum Effort</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -889,48 +958,6 @@ commands:
 <p>Remaining steps are self explainatory.</p>
 <h4>Conclusion</h4>
 <p>Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.</p>
-</div>
-                    </div>
-                        
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/04/work-from-home-tips.html" class="u-url">Work From Home Tips For Non-remote Workers</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<p>Remote-first and remote-friendly companies have a different work culture &amp; communication process compared to non-remote companies. Due to COVID-19<sup id="fnref-1"><a class="footnote-ref" href="../2020/04/work-from-home-tips.html#fn-1">1</a></sup> world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.</p>
-<h4>Work Desk</h4>
-<p>It is important to have a dedicated room or at least a desk for work. This creates a virtual boundary between your office work and personal work. Otherwise, you will end up working from bed, dining tables, kitchen etc which will result in body pains due to bad postures.</p>
-<h4>Get Ready</h4>
-<p align="center">
-
-Image Credit:
-<cite>raywenderlich
-<sup id="fnref-2"><a class="footnote-ref" href="../2020/04/work-from-home-tips.html#fn-1">2</a>
-</sup></cite>
-</p>
-
-<p align="center">
-<img src="../images/remote-work.png"></p>
-
-<p>Start your daily routine as if you are going to office. It is easy to stop caring about personal grooming and attire when WFH. Your attire can influence your focus and productivity.</p>
-<p>If you find getting ready is hard, schedule video calls for all meetings with your colleagues. This might give some additional motivation for you to get ready early in the morning. When the work time, go to your work desk and start working.</p>
-<h4>Self Discipline</h4>
-<p>Schedule your work time. Whenever possible try to stick to office working hours. Without proper schedule, you will either end up under working or over working as your personal work and office work gets mixed up.</p>
-<p>Take regular breaks during work hours. Without any distractions, it is easy to get lost in the pixels for longer durations. Taking short breaks for a quick walk and getting a fresh air outside will freshen up.</p>
-<p>With unlimited access to kitchen and snacks, it is hard to avoid binge eating at home. But atleast avoid binge eating during office hours.</p>
-<p>Exercise. Since WFH involves only sitting in a chair through out the day, staying physically active is challenging especially during this pandemic. Exercise few minutes every morning, help yourself in the kitchen by making a meal or doing dishes, clean your house etc., should help in staying physically active.</p>
-<h4>Seek Help</h4>
-<p>WFH can be lonely at times as the social interactions are quite less. Schedule 1 to 1 meetings or virtual coffe meetings with your colleagues to increase social interactions. Discuss WFH problems with your colleagues, friends and remote communities to see how they are tacking those problems.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn-1">
-<p><a href="https://en.wikipedia.org/wiki/Coronavirus_disease_2019">https://en.wikipedia.org/wiki/Coronavirus_disease_2019</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref-1" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn-2">
-<p><a href="https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer">https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref-2" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
 </div>
                     </div>
                         

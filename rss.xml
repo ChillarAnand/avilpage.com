@@ -1,5 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 20 Feb 2021 17:47:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Minimum Viable Testing - Get Maximum Stability With Minimum Effort</title><link>http://avilpage.com/2020/12/minimum-viable-testing-risk-based.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 26 Mar 2021 11:29:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Dicom #2 - Setup Orthanc Demo Server</title><link>http://avilpage.com/2021/03/setup-orthanc-demo-server.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;This is a series of &lt;a href="http://avilpage.com/tags/dicom.html"&gt;articles on mastering Dicom&lt;/a&gt;. In the earlier article, we have learnt how PACS/DICOM simplifies the clinical work flow.&lt;/p&gt;
+&lt;p&gt;In this article, lets setup a dicom server so that we have a server to play around with Dicom files.&lt;/p&gt;
+&lt;h4&gt;Orthanc Server&lt;/h4&gt;
+&lt;p&gt;There are several Dicom servers like Orthanc, Dicoogle etc. &lt;a href="https://en.wikipedia.org/wiki/Orthanc_(server)"&gt;Orthanc&lt;/a&gt; is a lightweight open source dicom server and is widely used by many Health care organisations.&lt;/p&gt;
+&lt;p&gt;Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.&lt;/p&gt;
+&lt;p&gt;Ensure docker is installed on the machine and then run the following command to start Orthanc server.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ docker run -p &lt;span class="m"&gt;4242&lt;/span&gt;:4242 -p &lt;span class="m"&gt;8042&lt;/span&gt;:8042 --rm &lt;span class="se"&gt;\&lt;/span&gt;
+    jodogne/orthanc-python
+&lt;/pre&gt;
+
+
+&lt;p&gt;Once the server is started, we can visit &lt;a href="http://localhost:8042"&gt;http://localhost:8042&lt;/a&gt; and explore Orthanc server.&lt;/p&gt;
+&lt;h4&gt;Heroku Deployment&lt;/h4&gt;
+&lt;p&gt;Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.&lt;/p&gt;
+&lt;p&gt;By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.&lt;/p&gt;
+&lt;p&gt;We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.&lt;/p&gt;
+&lt;table class="codehilitetable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5
+6
+7
+8
+9&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="ch"&gt;#! /bin/sh&lt;/span&gt;
+
+&lt;span class="nb"&gt;set&lt;/span&gt; -x
+
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$PORT&lt;/span&gt;
+
+sed &lt;span class="s1"&gt;'s/ : 8042/ : '&lt;/span&gt;&lt;span class="nv"&gt;$PORT&lt;/span&gt;&lt;span class="s1"&gt;'/g'&lt;/span&gt; -i /etc/orthanc/orthanc.json
+
+Orthanc /etc/orthanc/
+&lt;/pre&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;We can use this shell script as entry point in docker as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;jodogne&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;orthanc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+
+&lt;span class="n"&gt;EXPOSE&lt;/span&gt; &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;PORT&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+&lt;span class="k"&gt;ADD&lt;/span&gt; &lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+
+&lt;span class="n"&gt;ENTRYPOINT&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt; &lt;span class="ss"&gt;"./run.sh"&lt;/span&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;We can create a new app in heroku and we can deploy this container.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;$ heroku apps:create orthanc-demo
+
+$ heroku container:push web
+$ heroku container:release web
+&lt;/pre&gt;
+
+
+&lt;p&gt;Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a &lt;a href="https://orthanc-demo.herokuapp.com"&gt;orthanc demo server&lt;/a&gt; running on heroku.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.&lt;/p&gt;&lt;/div&gt;</description><category>dicom</category><category>health-care</category><guid>http://avilpage.com/2021/03/setup-orthanc-demo-server.html</guid><pubDate>Fri, 26 Mar 2021 00:30:00 GMT</pubDate></item><item><title>Minimum Viable Testing - Get Maximum Stability With Minimum Effort</title><link>http://avilpage.com/2020/12/minimum-viable-testing-risk-based.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Even though Test Driven Development(TDD)&lt;sup id="fnref-tdd"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/12/minimum-viable-testing-risk-based.html#fn-tdd"&gt;1&lt;/a&gt;&lt;/sup&gt; saves time &amp;amp; money in the long run, there are many excuses why developers don't test the software. In this article, lets look at Minimum Viable Testing(aka Risk-Based Testing)&lt;sup id="fnref-mvt"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/12/minimum-viable-testing-risk-based.html#fn-mvt"&gt;2&lt;/a&gt;&lt;/sup&gt; and how it helps to achieve maximum stability with minimum effort.&lt;/p&gt;
 &lt;h4&gt;Minimum Viable Testing&lt;/h4&gt;
 &lt;p&gt;Pareto principle states that 80% of consequences come from 20% of the causes. In software proucts, 80% of the users use 20% of the features. A bug in these 20% features is likely to cause higher impact than the rest. It makes sense to prioritize testing of these features than the rest.&lt;/p&gt;
@@ -745,41 +803,4 @@ commands:
 &lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
 &lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>Work From Home Tips For Non-remote Workers</title><link>http://avilpage.com/2020/04/work-from-home-tips.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Remote-first and remote-friendly companies have a different work culture &amp;amp; communication process compared to non-remote companies. Due to COVID-19&lt;sup id="fnref-1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;1&lt;/a&gt;&lt;/sup&gt; world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.&lt;/p&gt;
-&lt;h4&gt;Work Desk&lt;/h4&gt;
-&lt;p&gt;It is important to have a dedicated room or at least a desk for work. This creates a virtual boundary between your office work and personal work. Otherwise, you will end up working from bed, dining tables, kitchen etc which will result in body pains due to bad postures.&lt;/p&gt;
-&lt;h4&gt;Get Ready&lt;/h4&gt;
-&lt;p align="center"&gt;
-
-Image Credit:
-&lt;cite&gt;raywenderlich
-&lt;sup id="fnref-2"&gt;
-&lt;a class="footnote-ref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fn-1"&gt;2&lt;/a&gt;
-&lt;/sup&gt;
-&lt;/cite&gt;
-&lt;/p&gt;
-
-&lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/remote-work.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Start your daily routine as if you are going to office. It is easy to stop caring about personal grooming and attire when WFH. Your attire can influence your focus and productivity.&lt;/p&gt;
-&lt;p&gt;If you find getting ready is hard, schedule video calls for all meetings with your colleagues. This might give some additional motivation for you to get ready early in the morning. When the work time, go to your work desk and start working.&lt;/p&gt;
-&lt;h4&gt;Self Discipline&lt;/h4&gt;
-&lt;p&gt;Schedule your work time. Whenever possible try to stick to office working hours. Without proper schedule, you will either end up under working or over working as your personal work and office work gets mixed up.&lt;/p&gt;
-&lt;p&gt;Take regular breaks during work hours. Without any distractions, it is easy to get lost in the pixels for longer durations. Taking short breaks for a quick walk and getting a fresh air outside will freshen up.&lt;/p&gt;
-&lt;p&gt;With unlimited access to kitchen and snacks, it is hard to avoid binge eating at home. But atleast avoid binge eating during office hours.&lt;/p&gt;
-&lt;p&gt;Exercise. Since WFH involves only sitting in a chair through out the day, staying physically active is challenging especially during this pandemic. Exercise few minutes every morning, help yourself in the kitchen by making a meal or doing dishes, clean your house etc., should help in staying physically active.&lt;/p&gt;
-&lt;h4&gt;Seek Help&lt;/h4&gt;
-&lt;p&gt;WFH can be lonely at times as the social interactions are quite less. Schedule 1 to 1 meetings or virtual coffe meetings with your colleagues to increase social interactions. Discuss WFH problems with your colleagues, friends and remote communities to see how they are tacking those problems.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn-1"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Coronavirus_disease_2019"&gt;https://en.wikipedia.org/wiki/Coronavirus_disease_2019&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fnref-1" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn-2"&gt;
-&lt;p&gt;&lt;a href="https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer"&gt;https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/04/work-from-home-tips.html#fnref-2" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;&lt;/div&gt;</description><category>careers</category><category>remote</category><guid>http://avilpage.com/2020/04/work-from-home-tips.html</guid><pubDate>Tue, 31 Mar 2020 13:09:58 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item></channel></rss>
