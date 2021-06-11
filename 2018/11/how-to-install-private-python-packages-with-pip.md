@@ -1,7 +1,7 @@
 <!--
 .. title: How To Install Private Python Packages With Pip
 .. slug: how-to-install-private-python-packages-with-pip
-.. date: 2019-01-31 12:12:12 UTC+05:30
+.. date: 2019-01-31 12:12:12 UTC+06:30
 .. tags: python, devops
 .. category:
 .. link:

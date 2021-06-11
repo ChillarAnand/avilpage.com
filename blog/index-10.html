@@ -80,30 +80,26 @@ article: http://ogp.me/ns/article#
 <div class="e-content">
                         <div>
 <p>We can pass <code>--autoreload</code> option when starting celery worker. This will restart worker when codebase changes.</p>
-<pre class="code literal-block"><span></span>celery worker -l info -A foo --autoreload
-</pre>
-
+<pre class="code literal-block"><span></span><code>celery worker -l info -A foo --autoreload
+</code></pre>
 
 <p>Unfortunately, it doesn't work as expected and <a href="https://github.com/celery/celery/issues/1658">it is deprecated</a>.</p>
 <p>During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.</p>
 <p><a href="https://pypi.python.org/pypi/watchdog">Watchdog</a> provides Python API and shell utilities to monitor file system events. We can install it with</p>
-<pre class="code literal-block"><span></span>pip install watchdog
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install watchdog
+</code></pre>
 
 <p>Watchdog provides <code>watchmedo</code> a shell utilitiy to perform actions based on file events. It has <code>auto-restart</code> subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -- celery worker -l info -A foo
-</pre>
-
+<pre class="code literal-block"><span></span><code>watchmedo auto-restart -- celery worker -l info -A foo
+</code></pre>
 
 <p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
-<pre class="code literal-block"><span></span>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
-</pre>
-
+<pre class="code literal-block"><span></span><code>watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
+</code></pre>
 
 <p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
 <p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">shlex</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">shlex</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
 <span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
@@ -122,8 +118,7 @@ article: http://ogp.me/ns/article#
     <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'Starting celery worker with autoreload...'</span><span class="p">)</span>
         <span class="n">autoreload</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">restart_celery</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Now you can run celery worker with <code>python manage.py celery</code> which will start a celery worker and autoreload it when codebase changes.</p>
 </div>
@@ -138,18 +133,16 @@ article: http://ogp.me/ns/article#
 <p>To authenticate with Django apps, a user needs to make a <code>GET</code> request to login page. Django sends login form with a CSRF token. User can submit this form with valid credentials and a session will be initiated.</p>
 <p>Establish session manually is boring and it gets tedious when working with multiple apps in multiple environments(development, staging, production).</p>
 <p>I have written a plugin called <a href="https://pypi.python.org/pypi/httpie-django-auth">httpie-django-auth</a> which automates django authentication. It can be installed with pip</p>
-<pre class="code literal-block"><span></span>pip install httpie-django-auth
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install httpie-django-auth
+</code></pre>
 
 <p>By default, it uses <code>/admin/login</code> to login. If you need to use some other URL for logging, set <code>HTTPIE_DJANGO_AUTH_URL</code> environment variable.</p>
-<pre class="code literal-block"><span></span><span class="nb">export</span> <span class="nv">HTTPIE_DJANGO_AUTH_URL</span><span class="o">=</span><span class="s1">'/accounts/login/'</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nb">export</span> <span class="nv">HTTPIE_DJANGO_AUTH_URL</span><span class="o">=</span><span class="s1">'/accounts/login/'</span>
+</code></pre>
 
 <p>Now you can send authenticated requests to any URL as</p>
-<pre class="code literal-block"><span></span>http :8000/profile -A<span class="o">=</span>django --auth<span class="o">=</span><span class="s1">'username:password'</span>
-</pre>
+<pre class="code literal-block"><span></span><code>http :8000/profile -A<span class="o">=</span>django --auth<span class="o">=</span><span class="s1">'username:password'</span>
+</code></pre>
 </div>
                     </div>
                         
@@ -163,31 +156,26 @@ article: http://ogp.me/ns/article#
 <p>This is a detailed blog post on how to setup your laptop for the same.</p>
 <h3>Autojump</h3>
 <p>When working on terminal, <code>cd</code> is used to traverse directories.</p>
-<pre class="code literal-block"><span></span><span class="nb">cd</span> ~/projects/python/django
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nb">cd</span> ~/projects/python/django
+</code></pre>
 
 <p><code>cd</code> is inefficient to quickly traverse directories which are in different paths and far away from each other.</p>
-<pre class="code literal-block"><span></span><span class="nb">cd</span> /var/lib/elasticsearch/
+<pre class="code literal-block"><span></span><code><span class="nb">cd</span> /var/lib/elasticsearch/
 <span class="nb">cd</span> ~/sandbox/channels/demo
-</pre>
-
+</code></pre>
 
 <p><code>z</code>, a oh-my-zsh plugin is efficient for traversing directories. With <code>z</code>, directory can be changed by typing name of directory.</p>
-<pre class="code literal-block"><span></span>z junction
-</pre>
-
+<pre class="code literal-block"><span></span><code>z junction
+</code></pre>
 
 <p>Instead of full name, just a substring would do.</p>
-<pre class="code literal-block"><span></span>z ju
-</pre>
-
+<pre class="code literal-block"><span></span><code>z ju
+</code></pre>
 
 <p><code>z</code> keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.</p>
 <p>To install <code>z</code>, install <a href="../2015/03/install-oh-my-zsh-on-ubuntu.html">oh-my-zsh</a> and add <code>z</code> to plugins in <code>.zshrc</code> file.</p>
-<pre class="code literal-block"><span></span><span class="nv">plugins</span><span class="o">=(</span>git z<span class="o">)</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nv">plugins</span><span class="o">=(</span>git z<span class="o">)</span>
+</code></pre>
 
 <h3>Aliases</h3>
 <p>Read this old blog post on how <a href="../2014/10/useful-shell-aliases-for-python-and.html">aliases will improve your productivity</a>.</p>
@@ -196,20 +184,17 @@ article: http://ogp.me/ns/article#
 <p>To automate all these things, <a href="https://pypi.python.org/pypi/autoenv/">autoenv</a> provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.</p>
 <p>If you have file named <code>.env</code> in a directory, autoenv will automatically source that file whenever user enters into it.</p>
 <p><code>autoenv</code> is a python package. It can be installed with</p>
-<pre class="code literal-block"><span></span>pip install autoenv
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install autoenv
+</code></pre>
 
 <p>It provides a shell script which needs to sourced.</p>
-<pre class="code literal-block"><span></span><span class="nb">echo</span> <span class="s2">"source `which activate.sh`"</span> &gt;&gt; ~/.bashrc
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nb">echo</span> <span class="s2">"source `which activate.sh`"</span> &gt;&gt; ~/.bashrc
+</code></pre>
 
 <p>You can create a .env file like this in project root.</p>
-<pre class="code literal-block"><span></span><span class="nb">source</span> ~/.virtualenvs/exp/bin/activate
+<pre class="code literal-block"><span></span><code><span class="nb">source</span> ~/.virtualenvs/exp/bin/activate
 <span class="nb">export</span> <span class="nv">SECRET_KEY</span><span class="o">=</span>foobar
-</pre>
-
+</code></pre>
 
 <p>Next time, when your enter into that directory, <code>autoenv</code> finds <code>.env</code> file and it will source it automatically.</p>
 <h3>Autoreload</h3>
@@ -219,29 +204,25 @@ article: http://ogp.me/ns/article#
 <p>Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.</p>
 <p>You can write an init script which will do all these things and load it automatically when ipython starts.</p>
 <p>Here is a <a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py">simple init script</a> which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'ipython_init.py'</span><span class="p">)]</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s1">'ipython_init.py'</span><span class="p">)]</span>
+</code></pre>
 
 <h3>Autocall</h3>
 <p>When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.</p>
 <p>IPython provides <code>autocall</code> option to make functions callable without typing parenthesis. This can be activate with <code>%autocall</code> magic.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="o">%</span><span class="n">autocall</span> <span class="mi">1</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="o">%</span><span class="n">autocall</span> <span class="mi">1</span>
 <span class="n">Automatic</span> <span class="n">calling</span> <span class="ow">is</span><span class="p">:</span> <span class="n">Smart</span>
-</pre>
-
+</code></pre>
 
 <p>Now functions can be called without parenthesis.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span> <span class="mi">5</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span> <span class="mi">5</span>
 <span class="o">------&gt;</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>You can also enable this by default by activating it in ipython config file.</p>
-<pre class="code literal-block"><span></span><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'</span><span class="si">%a</span><span class="s1">utocall  1'</span><span class="p">]</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">c</span><span class="o">.</span><span class="n">InteractiveShellApp</span><span class="o">.</span><span class="n">exec_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'</span><span class="si">%a</span><span class="s1">utocall  1'</span><span class="p">]</span>
+</code></pre>
 
 <p>These are some tips to become more productive with your shell when working on python projects.</p>
 </div>
@@ -256,38 +237,34 @@ article: http://ogp.me/ns/article#
 <p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
 <h3>Writing A Playbook</h3>
 <p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
-<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
+<pre class="code literal-block"><span></span><code><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
 <span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
 
 <span class="n">tasks</span><span class="o">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
     <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
-</pre>
-
+</code></pre>
 
 <p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
-<pre class="code literal-block"><span></span><span class="err">ansible-playbook laptop-setup.yml -i localhost, -c local</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>ansible-playbook laptop-setup.yml -i localhost, -c local
+</code></pre>
 
 <h3>Bootstrap Script</h3>
 <p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
-<pre class="code literal-block"><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="k">update</span> <span class="c1">--yes</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="c1">--yes python python-pip</span>
+<pre class="code literal-block"><span></span><code>sudo apt update --yes
+sudo apt install --yes python python-pip
 
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="c1">--yes libssl-dev</span>
-<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">ansible</span>
+sudo apt install --yes libssl-dev
+sudo -H pip install ansible
 
-<span class="n">wget</span> <span class="o">-</span><span class="k">c</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">path</span><span class="o">/</span><span class="k">to</span><span class="o">/</span><span class="n">playbook</span><span class="p">.</span><span class="n">yml</span>
+wget -c https://path/to/playbook.yml
 
-<span class="n">sudo</span> <span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="n">setup</span><span class="p">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">i</span> <span class="n">localhost</span><span class="p">,</span> <span class="o">-</span><span class="k">c</span> <span class="k">local</span>
-</pre>
-
+sudo ansible-playbook setup.yml -i localhost, -c local
+</code></pre>
 
 <p>Now, to provision a laptop, just run the bootstrap script.</p>
-<pre class="code literal-block"><span></span><span class="err">sh -c "$(wget https://path/to/bootstrap_script.sh"</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>sh -c "$(wget https://path/to/bootstrap_script.sh"
+</code></pre>
 
 <p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
 </div>
@@ -321,52 +298,45 @@ article: http://ogp.me/ns/article#
                         <div>
 <p>Django developers decided to <a href="https://code.djangoproject.com/ticket/23919" target="_blank">drop Python 2 compatability</a> in Django 2.0. There are serveral things that should be refactored/removed.</p>
 <p>For example, in Python 2, programmers has to explicitly specify the class &amp; instance when invoking <code>super</code>.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Foo</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>In Python 3, <code>super</code> can be invoked without arguments and it will choose right class &amp; instance automatically.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>For this refactoring, a simple <code>sed</code> search/replace should suffice. But, there are several hacks in codebase where super calls the grandparent instead of the parent. So, <code>sed</code> won't work in such cases. It is hard to refactor them manually and much harder for reviewers as there are 1364 super calls in code base.</p>
-<pre class="code literal-block"><span></span>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
+<pre class="code literal-block"><span></span><code>→ grep -rI <span class="s2">"super("</span> <span class="p">|</span> wc -l
    <span class="m">1364</span>
-</pre>
-
+</code></pre>
 
 <p>So changes has to be scripted. A <a href="https://github.com/ChillarAnand/01/blob/master/python/super_exp.py" target="_blank">simple python script</a> to replace super calls by class names will fail to capture classes with on top of them, classes with decorators and nested classes.</p>
 <p>To handle all these cases, this python script gets more complicated and there is no guarantee that it can handle all edge cases. So, a better choice is to use syntax trees.</p>
 <p>Python has <a href="https://docs.python.org/3/library/ast.html" target="_blank">ast module</a> to convert code to AST but it can't convert AST back to code. There are 3rd party packages like <a href="https://pypi.python.org/pypi/astor" target="_blank">astor</a> which can do this.</p>
-<pre class="code literal-block"><span></span><span class="c1"># this is a comment</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># this is a comment</span>
 <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
 
    <span class="nb">print</span><span class="p">(</span>
     <span class="s2">"hello world"</span>
 <span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Converting above code to AST and then converting back gives this</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Code to AST is a lossy transformation as they cannot preserve empty lines, comments and code formatting.</p>
-<pre class="code literal-block"><span></span><span class="n">ast_to_code</span><span class="p">(</span><span class="n">code_to_ast</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">!=</span> <span class="n">source_code</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">ast_to_code</span><span class="p">(</span><span class="n">code_to_ast</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">!=</span> <span class="n">source_code</span>
+</code></pre>
 
 <p>For lossless transformation, FST(Full Syntax Trees) is needed.</p>
-<pre class="code literal-block"><span></span><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">fst_to_code</span><span class="p">(</span><span class="n">code_to_fst</span><span class="p">(</span><span class="n">source_code</span><span class="p">))</span> <span class="o">==</span> <span class="n">source_code</span>
+</code></pre>
 
 <p><a href="https://github.com/PyCQA/redbaron" target="_blank">RedBaron</a> package provides FST for given piece of code. With this, just locate super calls, find nearest class node, check class name with super and replace accordingly. With RedBaron, this refactoring can be done in <a href="https://github.com/ChillarAnand/01/blob/master/python/redbaron_super.py" target="_blank">less than 10 lines</a> of code.</p>
 <p>RedBaron has good documentation with relveant examples and its API is similar to BeautifulSoup. To write code that modifies code RedBaron seems to be an apt choice.</p>
@@ -425,7 +395,7 @@ the condition that distinguishes animals and plants from inorganic matter, inclu
 </ul>
 <p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
 <p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -467,37 +437,25 @@ the condition that distinguishes animals and plants from inorganic matter, inclu
 <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
 <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p><strong>Results:</strong></p>
 <p align="center"><img align="center" src="../skew_python/original.png"></p>
-
 <p align="center">Original Image</p>
-
 <hr>
 <p align="center"><img align="center" src="../skew_python/gray.png"></p>
-
 <p align="center">Black &amp; white image</p>
-
 <hr>
 <p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
-
 <p align="center">Histogram of image</p>
-
 <hr>
 <p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
-
 <p align="center">Scores at various angles</p>
-
 <hr>
 <p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
-
 <p align="center">Histogram at 2° (best angle)</p>
-
 <hr>
 <p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
-
 <p align="center">Skew corrected image</p>
 
 <p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>

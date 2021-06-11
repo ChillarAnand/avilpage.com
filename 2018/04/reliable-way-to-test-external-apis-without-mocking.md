@@ -1,7 +1,7 @@
 <!--
 .. title: Reliable Way To Test External APIs Without Mocking
 .. slug: reliable-way-to-test-external-apis-without-mocking
-.. date: 2018-04-08 21:21:21 UTC+05:30
+.. date: 2018-04-08 21:21:21 UTC+06:30
 .. tags: python, testing, django
 .. category:
 .. link:

@@ -1,7 +1,7 @@
 <!--
 .. title: Setup Continous Deployment For Python Chalice
 .. slug: cd-python-chalice-aws
-.. date: 2018-10-30 21:21:21 UTC+05:30
+.. date: 2018-10-30 21:21:21 UTC+06:30
 .. tags: aws, python, devops
 .. category:
 .. link:

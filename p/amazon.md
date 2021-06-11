@@ -1,7 +1,7 @@
 <!--
 .. title: Amazon Affliates Links
 .. slug: amazon
-.. date: 2020-01-09 22:23:41 UTC+05:30
+.. date: 2020-01-09 22:23:41 UTC+06:30
 .. tags: e-commerce
 .. category:  e-commerce
 .. link:

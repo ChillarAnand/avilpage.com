@@ -1,7 +1,7 @@
 <!--
 .. title: Django Tips & Tricks #12 - Automatically Set CSRF Token in Postman
 .. slug: django-tips-csrf-token-postman-curl
-.. date: 2019-02-28 21:21:21 UTC+05:30
+.. date: 2019-02-28 21:21:21 UTC+06:30
 .. tags: python, django, api, django-tips-tricks
 .. category:
 .. link:

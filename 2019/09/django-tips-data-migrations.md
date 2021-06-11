@@ -1,7 +1,7 @@
 <!--
 .. title: Tips On Writing Data Migrations in Django Application
 .. slug: django-tips-data-migrations
-.. date: 2019-09-30 21:21:21 UTC+05:30
+.. date: 2019-09-30 21:21:21 UTC+06:30
 .. tags: python, django, django-tips-tricks
 .. category: programming
 .. link:

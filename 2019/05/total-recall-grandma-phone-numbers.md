@@ -1,7 +1,7 @@
 <!--
 .. title: Why My Grandma Can Recall 100+ Phone Numbers, But We Can't
 .. slug: total-recall-grandma-phone-numbers
-.. date: 2019-06-20 21:21:21 UTC+05:30
+.. date: 2019-06-20 21:21:21 UTC+06:30
 .. tags: life-tips, grandma
 .. category:
 .. link:

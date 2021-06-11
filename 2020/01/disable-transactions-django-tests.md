@@ -1,7 +1,7 @@
 <!--
 .. title: Disabling Atomic Transactions In Django Test Cases
 .. slug: disable-transactions-django-tests
-.. date: 2020-01-31 21:21:21 UTC+05:30
+.. date: 2020-01-31 21:21:21 UTC+06:30
 .. tags: python, django
 .. category:
 .. link:

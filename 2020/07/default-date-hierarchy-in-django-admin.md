@@ -1,7 +1,7 @@
 <!--
 .. title: Set Default Date For Date Hierarchy In Django Admin
 .. slug: default-date-hierarchy-in-django-admin
-.. date: 2020-07-31 20:06:49 UTC+05:30
+.. date: 2020-07-31 20:06:49 UTC+06:30
 .. tags: django, django-tips-tricks, django-admin
 .. category:
 .. link:

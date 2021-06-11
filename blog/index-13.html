@@ -82,22 +82,20 @@ article: http://ogp.me/ns/article#
 <p>In the previous article, we have learnt where to start with <a href="../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
 <h4>Profling APIs With django-silk</h4>
 <p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
 
 
 <span class="nd">@silk_profile</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
-</pre>
-
+</code></pre>
 
 <p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
-<pre class="code literal-block"><span></span><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
+<pre class="code literal-block"><span></span><code><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
-</pre>
-
+</code></pre>
 
 <p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
 <p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
@@ -111,21 +109,18 @@ article: http://ogp.me/ns/article#
 <p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
 <h4>Profling APIs With django-extensions</h4>
 <p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
-<pre class="code literal-block"><span></span>$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
+</code></pre>
 
 <p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
 <p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
 <p>Install snakeviz using pip</p>
-<pre class="code literal-block"><span></span>$ pip install snakeviz
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ pip install snakeviz
+</code></pre>
 
 <p>Open the profile data file using snakeviz.</p>
-<pre class="code literal-block"><span></span>$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
+</code></pre>
 
 <p>It shows icicles graph view and  table view of profile data of that view.</p>
 <p align="center">
@@ -148,7 +143,7 @@ article: http://ogp.me/ns/article#
 <img src="../images/aws-s3-bucket-version1.png"></p>
 
 <p>We can do the same with Python boto3 library.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">boto3</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -164,13 +159,12 @@ article: http://ogp.me/ns/article#
 
 <span class="c1"># disable versioning</span>
 <span class="n">versioning</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <h4>Retrieving Objects</h4>
 <p>Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.</p>
 <p>We can write a simple script to generate a text file with a random text and upload it to S3.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">random</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">string</span>
 
 <span class="kn">import</span> <span class="nn">boto3</span>
@@ -184,8 +178,7 @@ article: http://ogp.me/ns/article#
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="n">s3</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.</p>
 <p>We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at <code>Latest version</code>.</p>
@@ -193,7 +186,7 @@ article: http://ogp.me/ns/article#
 <img src="../images/aws-s3-bucket-version2.png"></p>
 
 <p>We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">boto3</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -212,8 +205,7 @@ article: http://ogp.me/ns/article#
     <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">'Body'</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <h4>Conclusion</h4>
 <p>Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.</p>
@@ -245,15 +237,13 @@ article: http://ogp.me/ns/article#
 <p>When debugging an issue on some other page like <a href="../2019/05/environment-bookmarklet-web-development-tips.html">https://avilpage.com/validate/books/?name=darwin&amp;year=2019</a>, which has URL path and query param, switching between enviroment becomes tedious. To switch to local environment, we have to manually replace the hostname with localhost.</p>
 <p>To avoid this, we can use a bookmarklet to switch the hosts. A <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> is a bookmark which contains a JavaScript code snippet in its URL. This code snippet will be executed when the bookmarklet is clicked.</p>
 <p>Lets create a bookmarklet to replace host in the URL with <a href="http://localhost:8000">http://localhost:8000</a>. Create new bookmark called <code>To Local</code> and in the URL add the following snippet.</p>
-<pre class="code literal-block"><span></span><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</code></pre>
 
 <p>If we click on <code>To Local</code> bookmarklet, it will redirect the current active page to localhost URL.</p>
 <p>We can create one more bookmarklet to switch to production. Create a bookmarklet called <code>To Production</code> and add the following snippet in the URL.</p>
-<pre class="code literal-block"><span></span><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</code></pre>
 
 <p>We can create similar bookmarklets to switch to other enviroments. Now, switching between enviroments on any page is as easy as clicking a button.</p>
 </div>
@@ -268,38 +258,34 @@ article: http://ogp.me/ns/article#
 <p>In this article we will see how to debug PostgreSQL triggers.</p>
 <h4>Triggers</h4>
 <p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
-<pre class="code literal-block"><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</code></pre>
 
 <p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
 <h4>PostgreSQL Logging</h4>
 <p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
-<pre class="code literal-block"><span></span><span class="o">#</span> <span class="n">let</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<pre class="code literal-block"><span></span><code><span class="o">#</span> <span class="n">let</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
 <span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
 
 <span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
 <span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
-</pre>
-
+</code></pre>
 
 <p>Restart postgresql to reflect configuration changes.</p>
-<pre class="code literal-block"><span></span><span class="c1"># Linux</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># Linux</span>
 sudo service postgres restart
 
 <span class="c1"># Mac</span>
 brew services restart postgres
-</pre>
-
+</code></pre>
 
 <p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
 <h4>Triggers Logging</h4>
 <p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
-<pre class="code literal-block"><span></span><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
 <span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
 <span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to deleted record'</span><span class="p">;</span>
-</pre>
-
+</code></pre>
 
 <p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
 <h4>SQL/PostgreSQL Gotchas</h4>
@@ -357,10 +343,9 @@ brew services restart postgres
 
 <p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
 <p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
-<pre class="code literal-block"><span></span><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<pre class="code literal-block"><span></span><code><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
 <span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</pre>
-
+</code></pre>
 
 <p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
 <p align="center">
@@ -385,7 +370,7 @@ brew services restart postgres
 <p>In this article, we will see how to use <a href="https://packaging.python.org/key_projects/#pip">pip</a> to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.</p>
 <h4>Packaging</h4>
 <p>To package python project, we need to create <code>setup.py</code> file which is build script for setuptools. Below is a sample setup file to create a package named <code>library</code>.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">setuptools</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">setuptools</span>
 
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"README.md"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
@@ -406,26 +391,23 @@ brew services restart postgres
         <span class="s2">"Operating System :: OS Independent"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Python provides <a href="https://packaging.python.org/tutorials/packaging-projects/">detailed packaging documentation</a> on structuring and building the package.</p>
 <h4>Installation</h4>
 <p>Once module(s) is packaged and pushed to hosting service, it can be installed with pip.</p>
-<pre class="code literal-block"><span></span><span class="c1"># using https</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># using https</span>
 $ pip install git+https://github.com/chillaranand/library.git
 
 <span class="c1"># using ssh</span>
 pip install git+ssh://git@github.com/chillaranand/library.git
-</pre>
-
+</code></pre>
 
 <p>This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.</p>
-<pre class="code literal-block"><span></span>$ <span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
+<pre class="code literal-block"><span></span><code>$ <span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
 
 $ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chillaranand/library.git
-</pre>
-
+</code></pre>
 
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.</p>
@@ -441,12 +423,11 @@ $ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chill
 <p>In this article we will profile a django webapp, find high-impact performance bottlenecks and then start optimization them to yield better performance.</p>
 <h4>Profiling</h4>
 <p><a href="https://github.com/jazzband/django-silk">django-silk</a> is an open source profiling tool which intercepts and stores HTTP requests data. Install it with pip.</p>
-<pre class="code literal-block"><span></span>pip install django-silk
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install django-silk
+</code></pre>
 
 <p>Add <code>silk</code> to installed apps and include silk middleware in django settings.</p>
-<pre class="code literal-block"><span></span><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+<pre class="code literal-block"><span></span><code><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="o">...</span>
     <span class="s1">'silk.middleware.SilkyMiddleware'</span><span class="p">,</span>
     <span class="o">...</span>
@@ -456,20 +437,17 @@ $ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chill
     <span class="o">...</span>
     <span class="s1">'silk'</span>
 <span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Run migrations so that Silk can create required database tables to store profile data.</p>
-<pre class="code literal-block"><span></span>$ python manage.py makemigrations
+<pre class="code literal-block"><span></span><code>$ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py collectstatic
-</pre>
-
+</code></pre>
 
 <p>Include silk urls in root urlconf to view the profile data.</p>
-<pre class="code literal-block"><span></span><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
+</code></pre>
 
 <p>On silk requests page(<a href="../2018/12/django-bottleneck-performance-scaling.html">http://host/silk/requests/</a>), we can see all requests and sort them by overall time or time spent in database.</p>
 <p align="center">
@@ -477,7 +455,7 @@ $ python manage.py collectstatic
 
 <h4>High Impact Bottlenecks</h4>
 <p>Silk creates <code>silk_request</code> table which contains information about the requests processed by django.</p>
-<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">pgcli</span>
+<pre class="code literal-block"><span></span><code><span class="err">$</span> <span class="n">pgcli</span>
 
 <span class="n">library</span><span class="o">&gt;</span> <span class="err">\</span><span class="n">d</span> <span class="n">silk_request</span><span class="p">;</span>
 
@@ -488,11 +466,10 @@ $ python manage.py collectstatic
 <span class="o">|</span> <span class="n">path</span>               <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">190</span><span class="p">)</span>   <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
 <span class="o">|</span> <span class="n">time_taken</span>         <span class="o">|</span> <span class="n">double</span> <span class="k">precision</span>         <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
 <span class="p">...</span>
-</pre>
-
+</code></pre>
 
 <p>We can group these requests data by <code>path</code>, calculate number of requests, average time taken and impact factor of each path. Since we are considering response time and traffic, impact factor will be product of average response time and number of requests for that path.</p>
-<pre class="code literal-block"><span></span><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
+<pre class="code literal-block"><span></span><code><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
      <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">round</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span> <span class="o">*</span> <span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="o">/</span><span class="k">max</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="o">*</span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span> <span class="n">over</span> <span class="p">()::</span><span class="nb">NUMERIC</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">impact</span>
  <span class="k">FROM</span>
      <span class="p">(</span><span class="k">select</span> <span class="n">path</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">time_taken</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">avg_time</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="k">count</span> <span class="k">from</span> <span class="n">silk_request</span> <span class="k">group</span> <span class="k">by</span> <span class="n">PATH</span><span class="p">)</span>
@@ -509,8 +486,7 @@ $ python manage.py collectstatic
 <span class="o">|</span> <span class="o">/</span>                       <span class="o">|</span> <span class="mi">106</span><span class="p">.</span><span class="mi">51</span>     <span class="o">|</span> <span class="mi">1000</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">32</span>     <span class="o">|</span>
 <span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="k">user</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">494</span><span class="p">.</span><span class="mi">11</span>     <span class="o">|</span> <span class="mi">200</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">29</span>     <span class="o">|</span>
 <span class="p">...</span>
-</pre>
-
+</code></pre>
 
 <p>We can see <code>/point/book/book/</code> has highest impact even though it is neighter most visited nor slowest view. Optimizing this view first yields in overall better performance of webapp.</p>
 <h4>Conclusion</h4>
@@ -529,74 +505,70 @@ $ python manage.py collectstatic
 <h4>Archiving with wget</h4>
 <p>In previous article we have extracted a <a href="../2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html">superset of top 1 million domains</a>. We can use that list or urls to archive. Save this list to a file called <code>urls.txt</code>.</p>
 <p>This can be archived with the following command.</p>
-<pre class="code literal-block"><span></span><span class="nv">file</span><span class="o">=</span>urls.txt
+<pre class="code literal-block"><span></span><code><span class="nv">file</span><span class="o">=</span>urls.txt
 wget -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null
-</pre>
-
+</code></pre>
 
 <p>wget has the ability to continue partially downloaded files. But this option won't work with warc output. So, it is better to split this list into small chunks and process them. One added advantage of this approach is we can parallely download multiple chunks with wget.</p>
-<pre class="code literal-block"><span></span>mkdir -p chunks
+<pre class="code literal-block"><span></span><code>mkdir -p chunks
 split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<span class="o">=</span>.txt -a <span class="m">3</span>
-</pre>
-
+</code></pre>
 
 <p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
-<pre class="code literal-block"><span></span><span class="err">for file in `ls -r chunks/*.txt`</span>
-<span class="err">do</span>
-<span class="err">   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;</span>
-<span class="err">done</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="k">for</span> <span class="nv">file</span> <span class="nv">in</span> `<span class="nv">ls</span> <span class="o">-</span><span class="nv">r</span> <span class="nv">chunks</span><span class="cm">/*.txt`</span>
+<span class="cm">do</span>
+<span class="cm">   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;</span>
+<span class="cm">done</span>
+</code></pre>
 
 <p>To archive 1000 urls, it takes ~15 minutes. In less than 20 minutes, it will download entire million pages.</p>
 <p>Also, each process takes ~8MB of memory. To run 1000 process, a system needs 8GB+ memory. Otherwise, number of parallel processes should be reduced which increases overall run time.</p>
 <p>Each archive chunk will be ~150MB and consume lot of storage. All downloaded acrhives can be zipped to reduce storage.</p>
-<pre class="code literal-block"><span></span>gzip *.warc
-</pre>
-
+<pre class="code literal-block"><span></span><code>gzip *.warc
+</code></pre>
 
 <p>Here is an idempotent shell script to download and archive files in batches.</p>
 <table class="codehilitetable"><tr>
-<td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38</pre></div></td>
+<td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span></pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span></span><span class="ch">#! /bin/sh</span>
+<pre class="code literal-block"><span></span><code><span class="ch">#! /bin/sh</span>
 
 <span class="nb">set</span> -x
 
@@ -614,7 +586,7 @@ sleep <span class="m">1</span>
 <span class="nv">useragent</span><span class="o">=</span><span class="s1">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'</span>
 
 
-<span class="k">for</span> file in <span class="sb">`</span>ls -r <span class="nv">$dir</span>/*.txt<span class="sb">`</span>
+<span class="k">for</span> file <span class="k">in</span> <span class="sb">`</span>ls -r <span class="nv">$dir</span>/*.txt<span class="sb">`</span>
 <span class="k">do</span>
     <span class="nv">warcfile</span><span class="o">=</span><span class="nv">$file</span><span class="s1">'.warc'</span>
     <span class="nv">warczip</span><span class="o">=</span><span class="nv">$warcfile</span><span class="s1">'.gz'</span>
@@ -628,13 +600,13 @@ sleep <span class="m">1</span>
         sleep <span class="m">2</span>
     <span class="k">else</span>
         sleep <span class="m">300</span>
-        <span class="k">for</span> filename in <span class="sb">`</span>find <span class="nv">$dir</span> -name <span class="s1">'*.warc'</span> -mmin +5<span class="sb">`</span>
+        <span class="k">for</span> filename <span class="k">in</span> <span class="sb">`</span>find <span class="nv">$dir</span> -name <span class="s1">'*.warc'</span> -mmin +5<span class="sb">`</span>
         <span class="k">do</span>
             gzip <span class="nv">$filename</span> -9
         <span class="k">done</span>
     <span class="k">fi</span>
 <span class="k">done</span>
-</pre>
+</code></pre>
 </td>
 </tr></table>
 <h4>Conclusion</h4>

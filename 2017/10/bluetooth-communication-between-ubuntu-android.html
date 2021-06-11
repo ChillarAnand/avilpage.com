@@ -110,7 +110,7 @@ article: http://ogp.me/ns/article#
 <p>Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.</p>
 <p>In this article, we will learn how to send data between laptop and android bluetooth.</p>
 <p>First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.</p>
-<pre class="code literal-block"><span></span><span class="err">$</span><span class="w"> </span><span class="n">bluetoothctl</span><span class="w"></span>
+<pre class="code literal-block"><span></span><code><span class="err">$</span><span class="w"> </span><span class="n">bluetoothctl</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Controller</span><span class="w"> </span><span class="mi">24</span><span class="err">:</span><span class="mi">0</span><span class="nl">A</span><span class="p">:</span><span class="mi">64</span><span class="err">:</span><span class="nl">D7</span><span class="p">:</span><span class="mi">99</span><span class="err">:</span><span class="n">AC</span><span class="w"> </span><span class="n">asus</span><span class="w"> </span><span class="o">[</span><span class="n">default</span><span class="o">]</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">94</span><span class="err">:</span><span class="nl">E9</span><span class="p">:</span><span class="mi">79</span><span class="err">:</span><span class="nl">BB</span><span class="p">:</span><span class="nl">F8</span><span class="p">:</span><span class="mi">3</span><span class="n">A</span><span class="w"> </span><span class="n">DESKTOP</span><span class="o">-</span><span class="n">C4ECO3K</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"> </span><span class="n">athene</span><span class="w"></span>
@@ -138,40 +138,35 @@ article: http://ogp.me/ns/article#
 <span class="n">Attempting</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">pair</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"></span>
 <span class="o">[</span><span class="n">CHG</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"> </span><span class="nl">Paired</span><span class="p">:</span><span class="w"> </span><span class="n">yes</span><span class="w"></span>
 <span class="n">Pairing</span><span class="w"> </span><span class="n">successful</span><span class="w"></span>
-</pre>
-
+</code></pre>
 
 <p>To communicate with paired devices, we will use <a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols">RFCOMM protocol</a>. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.</p>
 <p>From ubuntu, lets open a port for communication.</p>
-<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+</code></pre>
 
 <p>From Android, we have to connect to ubuntu. For this, we can use <a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;hl=en">Roboremo</a> app which supports RFCOMM.</p>
-<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+<pre class="code literal-block"><span></span><code>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
 Waiting <span class="k">for</span> connection on channel <span class="m">3</span>
 Connection from <span class="m">88</span>:79:7E:7B:4C:87 to /dev/rfcomm0
 Press CTRL-C <span class="k">for</span> hangup
-</pre>
-
+</code></pre>
 
 <p>Once the connection is established, we can communicate between devices.</p>
 <p>In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.</p>
-<pre class="code literal-block"><span></span><span class="c1"># to send message to bluetooth</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># to send message to bluetooth</span>
 $ <span class="nb">echo</span> <span class="s1">'hello from ubuntu'</span> &gt; /dev/rfcomm0
-</pre>
-
+</code></pre>
 
 <p>We can see the received messages on Android</p>
 <p align="center">
 <img src="../../images/arduino-ubuntu-bluetooth.jpg"></p>
 
 <p>We can also send messages from android and read from ubuntu.</p>
-<pre class="code literal-block"><span></span><span class="c1"># to read messages from bluetooth</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># to read messages from bluetooth</span>
 $ cat /dev/rfcomm0
 hello from android
-</pre>
-
+</code></pre>
 
 <p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
 </div>

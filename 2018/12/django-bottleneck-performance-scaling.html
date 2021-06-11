@@ -114,12 +114,11 @@ article: http://ogp.me/ns/article#
 <p>In this article we will profile a django webapp, find high-impact performance bottlenecks and then start optimization them to yield better performance.</p>
 <h4>Profiling</h4>
 <p><a href="https://github.com/jazzband/django-silk">django-silk</a> is an open source profiling tool which intercepts and stores HTTP requests data. Install it with pip.</p>
-<pre class="code literal-block"><span></span>pip install django-silk
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install django-silk
+</code></pre>
 
 <p>Add <code>silk</code> to installed apps and include silk middleware in django settings.</p>
-<pre class="code literal-block"><span></span><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+<pre class="code literal-block"><span></span><code><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="o">...</span>
     <span class="s1">'silk.middleware.SilkyMiddleware'</span><span class="p">,</span>
     <span class="o">...</span>
@@ -129,20 +128,17 @@ article: http://ogp.me/ns/article#
     <span class="o">...</span>
     <span class="s1">'silk'</span>
 <span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Run migrations so that Silk can create required database tables to store profile data.</p>
-<pre class="code literal-block"><span></span>$ python manage.py makemigrations
+<pre class="code literal-block"><span></span><code>$ python manage.py makemigrations
 $ python manage.py migrate
 $ python manage.py collectstatic
-</pre>
-
+</code></pre>
 
 <p>Include silk urls in root urlconf to view the profile data.</p>
-<pre class="code literal-block"><span></span><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
+</code></pre>
 
 <p>On silk requests page(<a href="#">http://host/silk/requests/</a>), we can see all requests and sort them by overall time or time spent in database.</p>
 <p align="center">
@@ -150,7 +146,7 @@ $ python manage.py collectstatic
 
 <h4>High Impact Bottlenecks</h4>
 <p>Silk creates <code>silk_request</code> table which contains information about the requests processed by django.</p>
-<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">pgcli</span>
+<pre class="code literal-block"><span></span><code><span class="err">$</span> <span class="n">pgcli</span>
 
 <span class="n">library</span><span class="o">&gt;</span> <span class="err">\</span><span class="n">d</span> <span class="n">silk_request</span><span class="p">;</span>
 
@@ -161,11 +157,10 @@ $ python manage.py collectstatic
 <span class="o">|</span> <span class="n">path</span>               <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">190</span><span class="p">)</span>   <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
 <span class="o">|</span> <span class="n">time_taken</span>         <span class="o">|</span> <span class="n">double</span> <span class="k">precision</span>         <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
 <span class="p">...</span>
-</pre>
-
+</code></pre>
 
 <p>We can group these requests data by <code>path</code>, calculate number of requests, average time taken and impact factor of each path. Since we are considering response time and traffic, impact factor will be product of average response time and number of requests for that path.</p>
-<pre class="code literal-block"><span></span><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
+<pre class="code literal-block"><span></span><code><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
      <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">round</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span> <span class="o">*</span> <span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="o">/</span><span class="k">max</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="o">*</span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span> <span class="n">over</span> <span class="p">()::</span><span class="nb">NUMERIC</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">impact</span>
  <span class="k">FROM</span>
      <span class="p">(</span><span class="k">select</span> <span class="n">path</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">time_taken</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">avg_time</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="k">count</span> <span class="k">from</span> <span class="n">silk_request</span> <span class="k">group</span> <span class="k">by</span> <span class="n">PATH</span><span class="p">)</span>
@@ -182,8 +177,7 @@ $ python manage.py collectstatic
 <span class="o">|</span> <span class="o">/</span>                       <span class="o">|</span> <span class="mi">106</span><span class="p">.</span><span class="mi">51</span>     <span class="o">|</span> <span class="mi">1000</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">32</span>     <span class="o">|</span>
 <span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="k">user</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">494</span><span class="p">.</span><span class="mi">11</span>     <span class="o">|</span> <span class="mi">200</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">29</span>     <span class="o">|</span>
 <span class="p">...</span>
-</pre>
-
+</code></pre>
 
 <p>We can see <code>/point/book/book/</code> has highest impact even though it is neighter most visited nor slowest view. Optimizing this view first yields in overall better performance of webapp.</p>
 <h4>Conclusion</h4>

@@ -111,7 +111,7 @@ In practice, due to the pres">
 <p>First we need to get sample readings of magnetometer in various positions. Depending on the magnetometer, we need to connect it to arduino and take readings by rotating it in 8 shape.</p>
 <h4>Calibration</h4>
 <p>Hard iron biases shifts center away from origin. We can eliminate this error by calculating the offsets and shifting the readings.</p>
-<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">mz</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="kt">int</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">mz</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="n">mx_min</span><span class="p">,</span> <span class="n">my_min</span><span class="p">,</span> <span class="n">mz_min</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">mx_max</span><span class="p">,</span> <span class="n">my_max</span><span class="p">,</span> <span class="n">mz_max</span><span class="p">;</span>
@@ -129,11 +129,10 @@ In practice, due to the pres">
 <span class="n">mx_calibrated</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">-</span> <span class="n">mx_offset</span><span class="p">;</span>
 <span class="n">my_calibrated</span> <span class="o">=</span> <span class="n">my</span> <span class="o">-</span> <span class="n">my_offset</span><span class="p">;</span>
 <span class="n">mz_calibrated</span> <span class="o">=</span> <span class="n">mz</span> <span class="o">-</span> <span class="n">mz_offset</span><span class="p">;</span>
-</pre>
-
+</code></pre>
 
 <p>Soft iron biases makes the axial responses uneven which results in ellipsiod shape. An easier way to correct this is to rescale the axial readings to an average value.</p>
-<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="n">mx_scale</span><span class="p">,</span> <span class="n">my_scale</span><span class="p">,</span> <span class="n">mz_scale</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="kt">int</span> <span class="n">mx_scale</span><span class="p">,</span> <span class="n">my_scale</span><span class="p">,</span> <span class="n">mz_scale</span><span class="p">;</span>
 
 <span class="n">mx_scale</span> <span class="o">=</span> <span class="p">(</span><span class="n">mx_max</span> <span class="o">-</span> <span class="n">mx_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
 <span class="n">my_scale</span> <span class="o">=</span> <span class="p">(</span><span class="n">my_max</span> <span class="o">-</span> <span class="n">my_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
@@ -144,8 +143,7 @@ In practice, due to the pres">
 <span class="n">mx_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">mx</span> <span class="o">-</span> <span class="n">mx_offset</span><span class="p">);</span>
 <span class="n">my_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">my</span> <span class="o">-</span> <span class="n">my_offset</span><span class="p">);</span>
 <span class="n">mz_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">mz_offset</span><span class="p">);</span>
-</pre>
-
+</code></pre>
 
 <p>We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime. We can also write an auto update function which will recalibrate offsets &amp; scale for every new reading.</p>
 </div>

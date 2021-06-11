@@ -1,7 +1,7 @@
 <!--
 .. title: Comparision Of Alexa, Majestic & Domcop Top Million Sites
 .. slug: comparision-alexa-majestic-domcorp-top-million-sites
-.. date: 2018-11-02 12:04:58 UTC+05:30
+.. date: 2018-11-02 12:04:58 UTC+06:30
 .. tags: command-line, python, data-analysis
 .. category:
 .. link:

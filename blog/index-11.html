@@ -85,7 +85,7 @@ article: http://ogp.me/ns/article#
 <h4>Renko chart - Price movement</h4>
 <p>First one is based on price movement. In this, we will divide the price movement of current duration by brick size to get the bricks.</p>
 <p>Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
@@ -134,8 +134,7 @@ article: http://ogp.me/ns/article#
 
 <span class="n">bricks</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'bricks'</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">][</span><span class="s1">'bricks'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 <span class="n">plot_renko</span><span class="p">(</span><span class="n">bricks</span><span class="p">,</span> <span class="n">brick_size</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Here is a sample renko chart plotted using the above code.</p>
 <p align="center">
@@ -143,14 +142,13 @@ article: http://ogp.me/ns/article#
 
 <h4>Renko chart - Period close</h4>
 <p>In this bricks are calculated based on the close price of the instrument. Calculation of bricks is sligtly complex compared to price movement chart. I have created a seperate package called <a href="https://pypi.python.org/pypi/stocktrends">stocktrends</a> which has this calculation.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">stocktrends</span> <span class="kn">import</span> <span class="n">Renko</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">stocktrends</span> <span class="kn">import</span> <span class="n">Renko</span>
 
 <span class="n">renko</span> <span class="o">=</span> <span class="n">Renko</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 <span class="n">renko</span><span class="o">.</span><span class="n">brick_size</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">renko</span><span class="o">.</span><span class="n">get_ohlc_data</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tail</span><span class="p">())</span>
-</pre>
-
+</code></pre>
 
 <p>This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.</p>
 </div>
@@ -165,7 +163,7 @@ article: http://ogp.me/ns/article#
 <p>First we need to get sample readings of magnetometer in various positions. Depending on the magnetometer, we need to connect it to arduino and take readings by rotating it in 8 shape.</p>
 <h4>Calibration</h4>
 <p>Hard iron biases shifts center away from origin. We can eliminate this error by calculating the offsets and shifting the readings.</p>
-<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">mz</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="kt">int</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">mz</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="n">mx_min</span><span class="p">,</span> <span class="n">my_min</span><span class="p">,</span> <span class="n">mz_min</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">mx_max</span><span class="p">,</span> <span class="n">my_max</span><span class="p">,</span> <span class="n">mz_max</span><span class="p">;</span>
@@ -183,11 +181,10 @@ article: http://ogp.me/ns/article#
 <span class="n">mx_calibrated</span> <span class="o">=</span> <span class="n">mx</span> <span class="o">-</span> <span class="n">mx_offset</span><span class="p">;</span>
 <span class="n">my_calibrated</span> <span class="o">=</span> <span class="n">my</span> <span class="o">-</span> <span class="n">my_offset</span><span class="p">;</span>
 <span class="n">mz_calibrated</span> <span class="o">=</span> <span class="n">mz</span> <span class="o">-</span> <span class="n">mz_offset</span><span class="p">;</span>
-</pre>
-
+</code></pre>
 
 <p>Soft iron biases makes the axial responses uneven which results in ellipsiod shape. An easier way to correct this is to rescale the axial readings to an average value.</p>
-<pre class="code literal-block"><span></span><span class="kt">int</span> <span class="n">mx_scale</span><span class="p">,</span> <span class="n">my_scale</span><span class="p">,</span> <span class="n">mz_scale</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="kt">int</span> <span class="n">mx_scale</span><span class="p">,</span> <span class="n">my_scale</span><span class="p">,</span> <span class="n">mz_scale</span><span class="p">;</span>
 
 <span class="n">mx_scale</span> <span class="o">=</span> <span class="p">(</span><span class="n">mx_max</span> <span class="o">-</span> <span class="n">mx_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
 <span class="n">my_scale</span> <span class="o">=</span> <span class="p">(</span><span class="n">my_max</span> <span class="o">-</span> <span class="n">my_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
@@ -198,8 +195,7 @@ article: http://ogp.me/ns/article#
 <span class="n">mx_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">mx</span> <span class="o">-</span> <span class="n">mx_offset</span><span class="p">);</span>
 <span class="n">my_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">my</span> <span class="o">-</span> <span class="n">my_offset</span><span class="p">);</span>
 <span class="n">mz_calibrated</span> <span class="o">=</span> <span class="n">avg_scale</span><span class="o">/</span><span class="p">(</span><span class="n">mz</span> <span class="o">-</span> <span class="n">mz_offset</span><span class="p">);</span>
-</pre>
-
+</code></pre>
 
 <p>We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime. We can also write an auto update function which will recalibrate offsets &amp; scale for every new reading.</p>
 </div>
@@ -211,19 +207,18 @@ article: http://ogp.me/ns/article#
                         <div>
 <p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
 <p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 
 
 <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
     <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
 <p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 
@@ -237,15 +232,14 @@ article: http://ogp.me/ns/article#
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre>
-
+</code></pre>
 
 <p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
 <p align="center">
 <img src="../images/django-admin-auto.png" width="600px"></p>
 
 <p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 
@@ -266,8 +260,7 @@ article: http://ogp.me/ns/article#
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre>
-
+</code></pre>
 
 <p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
 <p align="center">
@@ -282,19 +275,16 @@ article: http://ogp.me/ns/article#
 <p>Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.</p>
 <h3>Install TWRP</h3>
 <p>Dowload latest recovery from <a href="https://twrp.me/">twrp.me</a>. Copy it to android device or push it to android using adb.</p>
-<pre class="code literal-block"><span></span>adb push -p twrp-3.1.1-0-mocha.img /sdcard/
-</pre>
-
+<pre class="code literal-block"><span></span><code>adb push -p twrp-3.1.1-0-mocha.img /sdcard/
+</code></pre>
 
 <p>Now put the device into fastboot mode by pressing <strong>Volume down</strong> &amp; <strong>Power</strong> button simultanesouly when you switch it on. When in fastboot mode, flash the downloaded recovery file</p>
-<pre class="code literal-block"><span></span>sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
-</pre>
-
+<pre class="code literal-block"><span></span><code>sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
+</code></pre>
 
 <p>Now we can go to recovery mode using adb.</p>
-<pre class="code literal-block"><span></span><span class="err">adb reboot recovery</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>adb reboot recovery
+</code></pre>
 
 <h3>Merge partitions</h3>
 <p>Before installing custom ROM, we need to merge partitions so that we will have enough space to install ROM. If you are familiar with <a href="https://www.gnu.org/software/parted/">parted</a> command, you can directly merge the partitions from terminal in TWRP recovery.</p>
@@ -313,7 +303,7 @@ article: http://ogp.me/ns/article#
 <div class="e-content">
                         <div>
 <p>Consider <code>Book</code> model which has <code>Author</code> as foreignkey.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 
 <span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -322,11 +312,10 @@ article: http://ogp.me/ns/article#
 <span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>We can register these models with admin interface as follows.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
 
@@ -335,8 +324,7 @@ article: http://ogp.me/ns/article#
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">BookAdmin</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Once they are registed, admin page shows <code>Book</code> model like this.</p>
 <p align="center">
@@ -345,7 +333,7 @@ article: http://ogp.me/ns/article#
 <p>While browsing books, we can see <code>name</code> and <code>author</code>. Here, name field is liked to change view of book. But author field is shown as plain text. If we have to modify author name, we have to go back to authors admin page, search for relevant author and then change name.</p>
 <p>This becomes tedious if we spend lot of time in admin for tasks like this. Instead, if author field is hyperlinked to its change view, we can directly go to that page.</p>
 <p>Django provides an option to <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls">access admin views by its URL reversing system</a>. For example, we can get change view of author model in book app using <code>reverse("admin:book_author_change", args=id)</code>. Now we can use this url to hyperlink author field in book admin.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
 
 
@@ -357,8 +345,7 @@ article: http://ogp.me/ns/article#
         <span class="n">link</span> <span class="o">=</span> <span class="s1">'&lt;a href="</span><span class="si">%s</span><span class="s1">"&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
     <span class="n">author_link</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">'Author'</span>
-</pre>
-
+</code></pre>
 
 <p>Now in the book admin view, author field will be hyperlinked to its change view and we can visit just by clicking it.</p>
 <p align="center">
@@ -398,6 +385,8 @@ article: http://ogp.me/ns/article#
 <p>Once you do this, you will have a clean lockscreen and statusbar without any date or time them.</p>
 <p align="center">
 <img src="../images/remove_clock_android_16.png" height="400px" width="220"></p>
+
+<p>[xposed]:</p>
 </div>
                     </div>
                         
@@ -408,7 +397,7 @@ article: http://ogp.me/ns/article#
 <p>Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.</p>
 <p>In this article, we will learn how to send data between laptop and android bluetooth.</p>
 <p>First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.</p>
-<pre class="code literal-block"><span></span><span class="err">$</span><span class="w"> </span><span class="n">bluetoothctl</span><span class="w"></span>
+<pre class="code literal-block"><span></span><code><span class="err">$</span><span class="w"> </span><span class="n">bluetoothctl</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Controller</span><span class="w"> </span><span class="mi">24</span><span class="err">:</span><span class="mi">0</span><span class="nl">A</span><span class="p">:</span><span class="mi">64</span><span class="err">:</span><span class="nl">D7</span><span class="p">:</span><span class="mi">99</span><span class="err">:</span><span class="n">AC</span><span class="w"> </span><span class="n">asus</span><span class="w"> </span><span class="o">[</span><span class="n">default</span><span class="o">]</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">94</span><span class="err">:</span><span class="nl">E9</span><span class="p">:</span><span class="mi">79</span><span class="err">:</span><span class="nl">BB</span><span class="p">:</span><span class="nl">F8</span><span class="p">:</span><span class="mi">3</span><span class="n">A</span><span class="w"> </span><span class="n">DESKTOP</span><span class="o">-</span><span class="n">C4ECO3K</span><span class="w"></span>
 <span class="o">[</span><span class="n">NEW</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"> </span><span class="n">athene</span><span class="w"></span>
@@ -436,40 +425,35 @@ article: http://ogp.me/ns/article#
 <span class="n">Attempting</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">pair</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"></span>
 <span class="o">[</span><span class="n">CHG</span><span class="o">]</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="mi">88</span><span class="err">:</span><span class="mi">79</span><span class="err">:</span><span class="mi">7</span><span class="nl">E</span><span class="p">:</span><span class="mi">7</span><span class="nl">B</span><span class="p">:</span><span class="mi">4</span><span class="nl">C</span><span class="p">:</span><span class="mi">87</span><span class="w"> </span><span class="nl">Paired</span><span class="p">:</span><span class="w"> </span><span class="n">yes</span><span class="w"></span>
 <span class="n">Pairing</span><span class="w"> </span><span class="n">successful</span><span class="w"></span>
-</pre>
-
+</code></pre>
 
 <p>To communicate with paired devices, we will use <a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols">RFCOMM protocol</a>. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.</p>
 <p>From ubuntu, lets open a port for communication.</p>
-<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+</code></pre>
 
 <p>From Android, we have to connect to ubuntu. For this, we can use <a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;hl=en">Roboremo</a> app which supports RFCOMM.</p>
-<pre class="code literal-block"><span></span>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
+<pre class="code literal-block"><span></span><code>$ sudo rfcomm listen /dev/rfcomm0 <span class="m">3</span>
 Waiting <span class="k">for</span> connection on channel <span class="m">3</span>
 Connection from <span class="m">88</span>:79:7E:7B:4C:87 to /dev/rfcomm0
 Press CTRL-C <span class="k">for</span> hangup
-</pre>
-
+</code></pre>
 
 <p>Once the connection is established, we can communicate between devices.</p>
 <p>In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.</p>
-<pre class="code literal-block"><span></span><span class="c1"># to send message to bluetooth</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># to send message to bluetooth</span>
 $ <span class="nb">echo</span> <span class="s1">'hello from ubuntu'</span> &gt; /dev/rfcomm0
-</pre>
-
+</code></pre>
 
 <p>We can see the received messages on Android</p>
 <p align="center">
 <img src="../images/arduino-ubuntu-bluetooth.jpg"></p>
 
 <p>We can also send messages from android and read from ubuntu.</p>
-<pre class="code literal-block"><span></span><span class="c1"># to read messages from bluetooth</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># to read messages from bluetooth</span>
 $ cat /dev/rfcomm0
 hello from android
-</pre>
-
+</code></pre>
 
 <p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
 </div>
@@ -484,21 +468,18 @@ hello from android
 <p>I use Emacs as IDE and there is <a href="https://github.com/bookest/arduino-mode">arduino mode</a> for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.</p>
 <p>Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.</p>
 <p>In Linux system, to upload a file called <code>foo.ino</code>, we can run</p>
-<pre class="code literal-block"><span></span>arduino --port /dev/ttyACM0 --board arduino:avr:mega
+<pre class="code literal-block"><span></span><code>arduino --port /dev/ttyACM0 --board arduino:avr:mega
  <span class="se">\ </span>--upload foo.ino
-</pre>
-
+</code></pre>
 
 <p>An alternate way is to use <a href="https://github.com/platformio/platformio-core/">platformio</a>, an opensource tool chain for IoT development.</p>
 <p>It can be installed using pip.</p>
-<pre class="code literal-block"><span></span>pip install platformio
-</pre>
-
+<pre class="code literal-block"><span></span><code>pip install platformio
+</code></pre>
 
 <p>Once it is installed, code can be directly uploaded using <code>ci</code> command.</p>
-<pre class="code literal-block"><span></span>pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
-</pre>
-
+<pre class="code literal-block"><span></span><code>pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
+</code></pre>
 
 <p>By this we can use text editor to write code and arduino/platformio to upload code to arduino board.</p>
 </div>
@@ -527,7 +508,7 @@ hello from android
 <p>In registry pattern, a <code>registry</code> maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.</p>
 <p>When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.</p>
 <p>A commonly used approach is to use inheritance as an organizing mechanism. Create <a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses">a meta class which will auto register</a> classes and then create base class with this meta class.</p>
-<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
+<pre class="code literal-block"><span></span><code><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">target_class</span><span class="p">):</span>
@@ -553,24 +534,21 @@ hello from android
 
 <span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
     <span class="k">pass</span>
-</pre>
-
+</code></pre>
 
 <p>Now whenever you subclass <code>BaseClass</code>, it gets registered in the global registry. In the above example, <code>Foo</code>, <code>Bar</code> gets registered automatically.</p>
 <p>Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.</p>
 <p>A simple alternative for this is to use <code>__subclasses__()</code> to get subclasess and register them.</p>
-<pre class="code literal-block"><span></span><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
+</code></pre>
 
 <p>This will work only for direct subclasses and won't with indirect subclasses like this.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
     <span class="k">pass</span>
-</pre>
-
+</code></pre>
 
 <p>To solve this, we can use a function to recursively retrieve all subclasses of a class.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">registry</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -586,19 +564,17 @@ hello from android
 
 
 <span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">)}</span>
-</pre>
-
+</code></pre>
 
 <p><a href="https://www.python.org/dev/peps/pep-0487/">PEP 487</a> provides <code>__init_subclass__</code> hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this <code>__init_subclass__</code> hook.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
             <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.</p>
 </div>

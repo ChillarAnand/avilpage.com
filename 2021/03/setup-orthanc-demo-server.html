@@ -20,6 +20,7 @@ article: http://ogp.me/ns/article#
 <link rel="canonical" href="http://avilpage.com/2021/03/setup-orthanc-demo-server.html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
 <link rel="prev" href="../../2020/12/minimum-viable-testing-risk-based.html" title="Minimum Viable Testing - Get Maximum Stability With Minimum Effort" type="text/html">
+<link rel="next" href="../06/lesser-know-useful-utilities-for-mac.html" title="Lesser Know Useful Utilities For Mac" type="text/html">
 <meta property="og:site_name" content="Avil Page">
 <meta property="og:title" content="Mastering Dicom #2 - Setup Orthanc Demo Server">
 <meta property="og:url" content="http://avilpage.com/2021/03/setup-orthanc-demo-server.html">
@@ -111,10 +112,9 @@ In this article, lets setup a dicom server so that we have a s">
 <p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
 <p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
 <p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
-<pre class="code literal-block"><span></span>$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
+<pre class="code literal-block"><span></span><code>$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
     jodogne/orthanc-python
-</pre>
-
+</code></pre>
 
 <p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
 <h4>Heroku Deployment</h4>
@@ -122,17 +122,17 @@ In this article, lets setup a dicom server so that we have a s">
 <p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
 <p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
 <table class="codehilitetable"><tr>
-<td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9</pre></div></td>
+<td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td>
 <td class="code">
-<pre class="code literal-block"><span></span><span class="ch">#! /bin/sh</span>
+<pre class="code literal-block"><span></span><code><span class="ch">#! /bin/sh</span>
 
 <span class="nb">set</span> -x
 
@@ -141,28 +141,26 @@ In this article, lets setup a dicom server so that we have a s">
 sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
 
 Orthanc /etc/orthanc/
-</pre>
+</code></pre>
 </td>
 </tr></table>
 <p>We can use this shell script as entry point in docker as follows.</p>
-<pre class="code literal-block"><span></span><span class="k">FROM</span> <span class="n">jodogne</span><span class="o">/</span><span class="n">orthanc</span><span class="o">-</span><span class="n">python</span>
+<pre class="code literal-block"><span></span><code>FROM jodogne/orthanc-python
 
-<span class="n">EXPOSE</span> <span class="err">$</span><span class="n">PORT</span>
+EXPOSE $PORT
 
-<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
-<span class="k">ADD</span> <span class="p">.</span> <span class="o">/</span><span class="n">app</span>
+WORKDIR /app
+ADD . /app
 
-<span class="n">ENTRYPOINT</span> <span class="p">[</span> <span class="ss">"./run.sh"</span> <span class="p">]</span>
-</pre>
-
+ENTRYPOINT [ "./run.sh" ]
+</code></pre>
 
 <p>We can create a new app in heroku and we can deploy this container.</p>
-<pre class="code literal-block"><span></span>$ heroku apps:create orthanc-demo
+<pre class="code literal-block"><span></span><code>$ heroku apps:create orthanc-demo
 
 $ heroku container:push web
 $ heroku container:release web
-</pre>
-
+</code></pre>
 
 <p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
 <h4>Conclusion</h4>
@@ -176,6 +174,9 @@ $ heroku container:release web
 <ul class="pager hidden-print">
 <li class="previous">
                 <a href="../../2020/12/minimum-viable-testing-risk-based.html" rel="prev" title="Minimum Viable Testing - Get Maximum Stability With Minimum Effort">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../06/lesser-know-useful-utilities-for-mac.html" rel="next" title="Lesser Know Useful Utilities For Mac">Next post</a>
             </li>
         </ul></nav></aside><div class="full-article-footer">
             <div class="article-footer">

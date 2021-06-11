@@ -1,7 +1,7 @@
 <!--
 .. title: Resources
 .. slug: resources
-.. date: 2020-01-09 22:23:41 UTC+05:30
+.. date: 2020-01-09 22:23:41 UTC+06:30
 .. tags: resources
 .. category: resources
 .. link:

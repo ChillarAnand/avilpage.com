@@ -99,7 +99,7 @@ article: http://ogp.me/ns/article#
             |
             
 
-        3 min read
+        2 min read
 
 
         </div>
@@ -112,38 +112,34 @@ article: http://ogp.me/ns/article#
 <p>Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.</p>
 <h3>Writing A Playbook</h3>
 <p>You should check out Ansible documentation to get familiar with ansible and <a href="https://docs.ansible.com/ansible/playbooks.html">writing playbooks</a>. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.</p>
-<pre class="code literal-block"><span></span><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
+<pre class="code literal-block"><span></span><code><span class="n">hosts</span><span class="o">:</span> <span class="n">all</span>
 <span class="n">sudo</span><span class="o">:</span> <span class="n">True</span>
 
 <span class="n">tasks</span><span class="o">:</span>
   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">install</span> <span class="n">redis</span>
     <span class="n">apt</span><span class="o">:</span> <span class="n">name</span><span class="o">=</span><span class="n">redis</span><span class="o">-</span><span class="n">server</span> <span class="n">update_cache</span><span class="o">=</span><span class="n">yes</span>
-</pre>
-
+</code></pre>
 
 <p>Here is <a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml">a playbook</a> which I use to configure my laptop. As the playbook needs to run locally, just run</p>
-<pre class="code literal-block"><span></span><span class="err">ansible-playbook laptop-setup.yml -i localhost, -c local</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>ansible-playbook laptop-setup.yml -i localhost, -c local
+</code></pre>
 
 <h3>Bootstrap Script</h3>
 <p>To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.</p>
-<pre class="code literal-block"><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="k">update</span> <span class="c1">--yes</span>
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="c1">--yes python python-pip</span>
+<pre class="code literal-block"><span></span><code>sudo apt update --yes
+sudo apt install --yes python python-pip
 
-<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="c1">--yes libssl-dev</span>
-<span class="n">sudo</span> <span class="o">-</span><span class="n">H</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">ansible</span>
+sudo apt install --yes libssl-dev
+sudo -H pip install ansible
 
-<span class="n">wget</span> <span class="o">-</span><span class="k">c</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">path</span><span class="o">/</span><span class="k">to</span><span class="o">/</span><span class="n">playbook</span><span class="p">.</span><span class="n">yml</span>
+wget -c https://path/to/playbook.yml
 
-<span class="n">sudo</span> <span class="n">ansible</span><span class="o">-</span><span class="n">playbook</span> <span class="n">setup</span><span class="p">.</span><span class="n">yml</span> <span class="o">-</span><span class="n">i</span> <span class="n">localhost</span><span class="p">,</span> <span class="o">-</span><span class="k">c</span> <span class="k">local</span>
-</pre>
-
+sudo ansible-playbook setup.yml -i localhost, -c local
+</code></pre>
 
 <p>Now, to provision a laptop, just run the bootstrap script.</p>
-<pre class="code literal-block"><span></span><span class="err">sh -c "$(wget https://path/to/bootstrap_script.sh"</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>sh -c "$(wget https://path/to/bootstrap_script.sh"
+</code></pre>
 
 <p>You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.</p>
 </div>

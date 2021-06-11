@@ -1,7 +1,7 @@
 <!--
 .. title: Verifying TLS Certificate Chain With OpenSSL
 .. slug: verify-tls-certificate-chain-with-openssl
-.. date: 2019-11-30 10:15:14 UTC+05:30
+.. date: 2019-11-30 10:15:14 UTC+06:30
 .. tags: shell, tls, openssl
 .. category: internet
 .. link:

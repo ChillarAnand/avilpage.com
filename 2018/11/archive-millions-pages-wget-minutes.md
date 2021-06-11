@@ -1,7 +1,7 @@
 <!--
 .. title: Archive Million Pages With wget In Minutes
 .. slug: archive-millions-pages-wget-minutes
-.. date: 2018-11-18 17:21:21 UTC+05:30
+.. date: 2018-11-18 17:21:21 UTC+06:30
 .. tags: command-line, warc
 .. category:
 .. link:
