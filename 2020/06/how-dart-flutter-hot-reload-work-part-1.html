@@ -29,6 +29,7 @@ article: http://ogp.me/ns/article#
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2020-06-30T19:17:20+05:30">
 <meta property="article:tag" content="dart">
+<meta property="article:tag" content="featured">
 <meta property="article:tag" content="programming">
 <script data-ad-client="ca-pub-7483923329257191" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
@@ -98,7 +99,7 @@ article: http://ogp.me/ns/article#
             |
             
 
-        6 min read
+        8 min read
 
 
         </div>
@@ -108,7 +109,7 @@ article: http://ogp.me/ns/article#
             <div>
 <p>This will be a series of articles on exploring the internals of Dart &amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.</p>
 <h4>Stateful Hot Reload</h4>
-<pre class="code literal-block"><span></span><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
+<pre class="code literal-block"><span></span><code><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
 
@@ -122,73 +123,68 @@ article: http://ogp.me/ns/article#
 <span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">2</span><span class="p">),</span> <span class="n">adder</span><span class="p">);</span>
 <span class="p">}</span>
-</pre>
+</code></pre>
 
-
-<p>In the above program<sup id="fnref-program"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn-program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref-periodic"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn-periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
+<p>In the above program<sup id="fnref:program"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn:program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref:periodic"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn:periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
 <p>We can run this program from command line using</p>
-<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
-Observatory listening on http://127.0.0.1:8181/d42KmW4LknU<span class="o">=</span>/
-Total is <span class="m">2</span>. Adding <span class="m">2</span>
-Total is <span class="m">4</span>. Adding <span class="m">2</span>
-Total is <span class="m">6</span>. Adding <span class="m">2</span>
-Total is <span class="m">8</span>. Adding <span class="m">2</span>
-...
-</pre>
+<pre class="code literal-block"><span></span><code><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">d42KmW4LknU</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="o">...</span>
+</code></pre>
 
-
-<p>This will start executing the program and will provide a link to observatory<sup id="fnref-observatory"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn-observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
+<p>This will start executing the program and will provide a link to observatory<sup id="fnref:observatory"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn:observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
 <p>As the program is executing, lets open the program in an editor, change delta from 2 to 3.</p>
-<pre class="code literal-block"><span></span>  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
+<pre class="code literal-block"><span></span><code>  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
   <span class="err">#</span> <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
 
   <span class="err">#</span> <span class="n">change</span> <span class="n">to</span>
   <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
-</pre>
-
+</code></pre>
 
 <p>If we restart the program, it will start executing from the beginning and it will lose the state of the program.</p>
-<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
-Observatory listening on http://127.0.0.1:8181/eoP2lpC2ZWw<span class="o">=</span>/
-Total is <span class="m">3</span>. Adding <span class="m">3</span>
-Total is <span class="m">6</span>. Adding <span class="m">3</span>
-Total is <span class="m">9</span>. Adding <span class="m">3</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">eoP2lpC2ZWw</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">3.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">9.</span> <span class="n">Adding</span> <span class="mi">3</span>
+</code></pre>
 
 <p>Instead of restart, we can open the observatory link in browser, open main isolate and click on <code>Reload Source</code> button.</p>
 <p><img src="../../images/dart-vm.png"></p>
 <p>As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.</p>
-<pre class="code literal-block"><span></span>$ dart --observe hot_reload.dart
-Observatory listening on http://127.0.0.1:8181/n_GSAKsyr5s<span class="o">=</span>/
-Total is <span class="m">2</span>. Adding <span class="m">2</span>
-Total is <span class="m">4</span>. Adding <span class="m">2</span>
-Total is <span class="m">6</span>. Adding <span class="m">2</span>
-Total is <span class="m">8</span>. Adding <span class="m">2</span>
-Total is <span class="m">11</span>. Adding <span class="m">3</span> <span class="c1"># after hot reload</span>
-Total is <span class="m">14</span>. Adding <span class="m">3</span>
-Total is <span class="m">17</span>. Adding <span class="m">3</span>
-Total is <span class="m">20</span>. Adding <span class="m">3</span>
-</pre>
+<pre class="code literal-block"><span></span><code><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">n_GSAKsyr5s</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">11.</span> <span class="n">Adding</span> <span class="mi">3</span> <span class="c1"># after hot reload</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">14.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">17.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">20.</span> <span class="n">Adding</span> <span class="mi">3</span>
+</code></pre>
 
-
-<p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref-hot"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn-hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
+<p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref:hot"><a class="footnote-ref" href="how-dart-flutter-hot-reload-work-part-1.html#fn:hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.</p>
 <div class="footnote">
 <hr>
 <ol>
-<li id="fn-program">
-<p>https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref-program" title="Jump back to footnote 1 in the text">↩</a></p>
+<li id="fn:program">
+<p>https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref:program" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
-<li id="fn-periodic">
-<p>https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref-periodic" title="Jump back to footnote 2 in the text">↩</a></p>
+<li id="fn:periodic">
+<p>https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref:periodic" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
-<li id="fn-observatory">
-<p>https://dart-lang.github.io/observatory/ <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref-observatory" title="Jump back to footnote 3 in the text">↩</a></p>
+<li id="fn:observatory">
+<p>https://dart-lang.github.io/observatory/ <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref:observatory" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
-<li id="fn-hot">
-<p>https://github.com/dart-lang/sdk/wiki/Hot-reload <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref-hot" title="Jump back to footnote 4 in the text">↩</a></p>
+<li id="fn:hot">
+<p>https://github.com/dart-lang/sdk/wiki/Hot-reload <a class="footnote-backref" href="how-dart-flutter-hot-reload-work-part-1.html#fnref:hot" title="Jump back to footnote 4 in the text">↩</a></p>
 </li>
 </ol>
 </div>
@@ -196,6 +192,7 @@ Total is <span class="m">20</span>. Adding <span class="m">3</span>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
 <li><a class="tag p-category" href="../../tags/dart.html" rel="tag">dart</a></li>
+            <li><a class="tag p-category" href="../../tags/featured.html" rel="tag">featured</a></li>
             <li><a class="tag p-category" href="../../tags/programming.html" rel="tag">programming</a></li>
         </ul>
 <ul class="pager hidden-print">

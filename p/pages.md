@@ -1,7 +1,7 @@
 <!--
 .. title: Pages
 .. slug: pages
-.. date: 2020-04-30 22:23:41 UTC+05:30
+.. date: 2020-04-30 22:23:41 UTC+06:30
 .. tags: pages
 .. category: pages
 .. link:

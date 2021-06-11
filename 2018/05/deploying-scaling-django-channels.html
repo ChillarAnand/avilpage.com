@@ -99,7 +99,7 @@ article: http://ogp.me/ns/article#
             |
             
 
-        8 min read
+        12 min read
 
 
         </div>
@@ -112,71 +112,69 @@ article: http://ogp.me/ns/article#
 <p>We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.</p>
 <h4>Nginx Setup</h4>
 <p>Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.</p>
-<pre class="code literal-block"><span></span><span class="x">server {</span>
-<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:80;</span>
-<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+<pre class="code literal-block"><span></span><code><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">80</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="x">    return 301 https://avilpage.com$request_uri;</span>
-<span class="x">}</span>
+    <span class="k">return</span> <span class="mi">301</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">$</span><span class="n">request_uri</span><span class="p">;</span>
+<span class="p">}</span>
 
 
-<span class="x">server {</span>
-<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:443 ssl;</span>
-<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+<span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">443</span> <span class="n">ssl</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="x">    ssl_certificate     /root/certs/avilpage.com.chain.crt;</span>
-<span class="x">    ssl_certificate_key /root/certs/avilpage.com.key;</span>
+    <span class="n">ssl_certificate</span>     <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">crt</span><span class="p">;</span>
+    <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
 
-<span class="x">    access_log /var/log/nginx/avilpage.com.access.log;</span>
-<span class="x">    error_log /var/log/nginx/avilpage.com.error.log;</span>
+    <span class="n">access_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+    <span class="n">error_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
 
-<span class="x">    location / {</span>
-<span class="x">            proxy_pass http://0.0.0.0:8000;</span>
-<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
-<span class="x">            proxy_set_header Host $http_host;</span>
-<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
-<span class="x">            proxy_redirect off;</span>
-<span class="x">    }</span>
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">http_host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span> <span class="n">off</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location /ws/ {</span>
-<span class="x">            proxy_pass http://0.0.0.0:9000;</span>
-<span class="x">            proxy_http_version 1.1;</span>
+    <span class="n">location</span> <span class="o">/</span><span class="n">ws</span><span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
+            <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
 
-<span class="x">            proxy_read_timeout 86400;</span>
-<span class="x">            proxy_redirect     off;</span>
+            <span class="n">proxy_read_timeout</span> <span class="mi">86400</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span>     <span class="n">off</span><span class="p">;</span>
 
-<span class="x">            proxy_set_header Upgrade $http_upgrade;</span>
-<span class="x">            proxy_set_header Connection "upgrade";</span>
-<span class="x">            proxy_set_header Host $host;</span>
-<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
-<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
-<span class="x">            proxy_set_header X-Forwarded-Host $server_name;</span>
-<span class="x">    }</span>
+            <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="o">$</span><span class="n">http_upgrade</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">"upgrade"</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Host</span> <span class="o">$</span><span class="n">server_name</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location /static {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static;</span>
-<span class="x">    }</span>
+    <span class="n">location</span> <span class="o">/</span><span class="k">static</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location  /favicon.ico {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">//static/img/favicon.ico;</span>
-<span class="x">    }</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">//</span><span class="k">static</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location  /robots.txt {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static/txt/robots.txt;</span>
-<span class="x">    }</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="n">txt</span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">}</span>
-</pre>
-
+<span class="p">}</span>
+</code></pre>
 
 <h4>WSGI Server Setup</h4>
 <p>We will use gunicorn for wsgi server. We can run gunicorn with</p>
-<pre class="code literal-block"><span></span>$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
+</code></pre>
 
 <p>We can create a systemd unit file to make it as a service.</p>
-<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<pre class="code literal-block"><span></span><code><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">gunicorn</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -198,22 +196,19 @@ article: http://ogp.me/ns/article#
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre>
-
+</code></pre>
 
 <p>Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with</p>
-<pre class="code literal-block"><span></span>$ sudo service gunicorn restart
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ sudo service gunicorn restart
+</code></pre>
 
 <h4>ASGI Server Setup</h4>
 <p>We will use daphne for ASGI server and it can be started with</p>
-<pre class="code literal-block"><span></span>$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
+</code></pre>
 
 <p>We can create a systemd unit file like the previous one to create a service.</p>
-<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<pre class="code literal-block"><span></span><code><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">daphne daemon</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -233,33 +228,28 @@ article: http://ogp.me/ns/article#
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre>
-
+</code></pre>
 
 <h4>Deployment</h4>
 <p>Here is <a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml">an ansible playbook</a> which is used to deploy these config files to our server. To run the playbook on server <code>avilpage.com</code>, execute</p>
-<pre class="code literal-block"><span></span>$ ansible-playbook -i avilpage.com, django_setup.yml
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ ansible-playbook -i avilpage.com, django_setup.yml
+</code></pre>
 
 <h4>Scaling</h4>
 <p>Now that we have deployed channels to production, we can do performance test to see how our server performs under load.</p>
 <p>For WebSockets, we can use <a href="https://www.npmjs.com/package/thor">Thor</a> to run performance test.</p>
-<pre class="code literal-block"><span></span>thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
-</pre>
-
+<pre class="code literal-block"><span></span><code>thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
+</code></pre>
 
 <p>Our server is able to handle <code>100 requests per second</code> with a <code>latency of 800ms</code>. This is good enough for low traffic website.</p>
 <p>To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using <a href="#">shared file descriptors</a>. Unfortunately, it doesn't work as expected. As <a href="https://github.com/django/daphne/issues/182#issuecomment-387507887">mentioned here</a>, we can use systemd templates and spawn multiple daphne process.</p>
 <p>An alternate way is to use <a href="https://pypi.org/project/uvicorn/">uvicorn</a> to start multiple workers. Install uvicorn using pip</p>
-<pre class="code literal-block"><span></span>$ pip install uvicorn
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ pip install uvicorn
+</code></pre>
 
 <p>Start uvicorn ASGI server with</p>
-<pre class="code literal-block"><span></span>$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
+</code></pre>
 
 <p>This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).</p>
 </div>

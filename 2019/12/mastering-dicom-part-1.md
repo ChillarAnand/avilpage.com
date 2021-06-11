@@ -1,7 +1,7 @@
 <!--
 .. title: Mastering DICOM - Part #1
 .. slug: mastering-dicom-part-1
-.. date: 2019-12-31 18:59:09 UTC+05:30
+.. date: 2019-12-31 18:59:09 UTC+06:30
 .. tags: python, health-care, dicom
 .. category:
 .. link:

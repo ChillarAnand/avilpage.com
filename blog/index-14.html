@@ -75,11 +75,115 @@ article: http://ogp.me/ns/article#
         <!--Body content-->
         <div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/04/work-from-home-tips.html" class="u-url">Work From Home Tips For Non-remote Workers</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/04/setup-continuous-deployment-with-kubernetes.html" class="u-url">Continuous Deployment To Kubernetes With Skaffold</a></h1>
             <hr>
 <div class="e-content">
                         <div>
-<p>Remote-first and remote-friendly companies have a different work culture &amp; communication process compared to non-remote companies. Due to COVID-19<sup id="fnref-1"><a class="footnote-ref" href="../2020/04/work-from-home-tips.html#fn-1">1</a></sup> world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.</p>
+<p>In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
+<h4>Prerequisites</h4>
+<p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
+<pre class="code literal-block"><span></span><code>$ kubectl cluster-info
+$ kubectl config get-contexts
+</code></pre>
+
+<p>You should know how to manually deploy your application to kubernetes.</p>
+<pre class="code literal-block"><span></span><code><span class="c1"># push latest docker image to container registry</span>
+$ docker push chillaranand/library
+
+<span class="c1"># deploy latest image to k8s</span>
+$ kubectl apply -f app/deployment.yaml
+$ kubectl apply -f app/service.yaml
+</code></pre>
+
+<h4>Skaffold</h4>
+<p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
+<p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
+<pre class="code literal-block"><span></span><code>$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$ chmod +x skaffold
+$ sudo mv skaffold /usr/local/bin
+</code></pre>
+
+<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
+<pre class="code literal-block"><span></span><code>$ skaffold init
+Configuration skaffold.yaml was written
+
+$ cat skaffold.yaml
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: library
+build:
+  artifacts:
+  - image: docker.io/chillaranand/library
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/deployment.yaml
+    - kubernetes/service.yaml
+</code></pre>
+
+<p>To deploy latest changes to your cluster, run</p>
+<pre class="code literal-block"><span></span><code>$ skaffold run
+</code></pre>
+
+<p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
+<h4>CircleCI Workflow</h4>
+<pre class="code literal-block"><span></span><code>version: <span class="m">2</span>.1
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.19
+  kubernetes: circleci/kubernetes@0.11.0
+
+commands:
+  kubernetes-deploy:
+
+    steps:
+      - setup_remote_docker
+
+      - aws-cli/setup:
+          profile-name: default
+
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.15.10
+
+      - checkout
+
+      - run:
+          name: container registry log <span class="k">in</span>
+          command: <span class="p">|</span>
+            sudo <span class="k">$(</span>aws ecr get-login --region ap-south-1 --no-include-email<span class="k">)</span>
+
+      - run:
+          name: install skaffold
+          command: <span class="p">|</span>
+            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin
+
+      - run:
+          name: update kube config to connect to the required cluster
+          command: <span class="p">|</span>
+            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+
+      - run:
+          name: deploy to k8s
+          command: <span class="p">|</span>
+            skaffold run
+</code></pre>
+
+<p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
+<p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a seperate environment is created for it.</p>
+<p>Remaining steps are self explainatory.</p>
+<h4>Conclusion</h4>
+<p>Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/04/work-from-home-tips.html" class="u-url">Work From Home Tips For Non-remote Workers</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<p>Remote-first and remote-friendly companies have a different work culture &amp; communication process compared to non-remote companies. Due to COVID-19<sup id="fnref:1"><a class="footnote-ref" href="../2020/04/work-from-home-tips.html#fn:1">1</a></sup> world wide pandemic, majority of workers who didn't had prior remote experience are WFH(working from home). This article is intended to provide some helpful tips for such people.</p>
 <h4>Work Desk</h4>
 <p>It is important to have a dedicated room or at least a desk for work. This creates a virtual boundary between your office work and personal work. Otherwise, you will end up working from bed, dining tables, kitchen etc which will result in body pains due to bad postures.</p>
 <h4>Get Ready</h4>
@@ -106,11 +210,11 @@ Image Credit:
 <div class="footnote">
 <hr>
 <ol>
-<li id="fn-1">
-<p><a href="https://en.wikipedia.org/wiki/Coronavirus_disease_2019">https://en.wikipedia.org/wiki/Coronavirus_disease_2019</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref-1" title="Jump back to footnote 1 in the text">↩</a></p>
+<li id="fn:1">
+<p><a href="https://en.wikipedia.org/wiki/Coronavirus_disease_2019">https://en.wikipedia.org/wiki/Coronavirus_disease_2019</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref:1" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
-<li id="fn-2">
-<p><a href="https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer">https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref-2" title="Jump back to footnote 2 in the text">↩</a></p>
+<li id="fn:2">
+<p><a href="https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer">https://www.raywenderlich.com/9573880-staying-motivated-as-a-work-from-home-developer</a> <a class="footnote-backref" href="../2020/04/work-from-home-tips.html#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>
@@ -121,31 +225,29 @@ Image Credit:
             <hr>
 <div class="e-content">
                         <div>
-<p>PyPi<sup id="fnref-1"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-1">1</a></sup> hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries<sup id="fnref-2"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-2">2</a></sup> along with the package.</p>
+<p>PyPi<sup id="fnref:1"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:1">1</a></sup> hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries<sup id="fnref:2"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:2">2</a></sup> along with the package.</p>
 <h4>Build From Source</h4>
-<p>If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB<sup id="fnref-3"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-3">3</a></sup>.</p>
-<pre class="code literal-block"><span></span>$ pip install numpy
+<p>If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB<sup id="fnref:3"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:3">3</a></sup>.</p>
+<pre class="code literal-block"><span></span><code>$ pip install numpy
 
 $ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
  85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre>
-
+</code></pre>
 
 <p>Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp; pandas, overall size of the package crosses 250MB.</p>
 <p>An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.</p>
-<pre class="code literal-block"><span></span>$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
+<pre class="code literal-block"><span></span><code>$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
 
 $ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
  23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre>
+</code></pre>
 
-
-<p>We can see the footprint has reduced by ~70% when using sdist instead of wheel. This<sup id="fnref-4"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-4">4</a></sup> article provides more details about these CFLAG optimization when installing a package from source.</p>
+<p>We can see the footprint has reduced by ~70% when using sdist instead of wheel. This<sup id="fnref:4"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:4">4</a></sup> article provides more details about these CFLAG optimization when installing a package from source.</p>
 <h4>Shared Packages</h4>
 <p>When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.</p>
 <p>To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.</p>
 <p>For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.</p>
-<pre class="code literal-block"><span></span>$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
+<pre class="code literal-block"><span></span><code>$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.1
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
@@ -159,19 +261,16 @@ $ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.17
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
-</pre>
-
+</code></pre>
 
 <p>After creating a virtual enviroment for a project, we can create a <code>.pth</code> file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.</p>
-<pre class="code literal-block"><span></span>$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
+<pre class="code literal-block"><span></span><code>$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
  ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-</pre>
-
+</code></pre>
 
 <p>Then we can install the project requirements which will install only missing packages.</p>
-<pre class="code literal-block"><span></span>$ pip install -r project1-requirements.txt
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ pip install -r project1-requirements.txt
+</code></pre>
 
 <h4>Global Store</h4>
 <p>The above shared packages solution has couple issues.</p>
@@ -179,39 +278,38 @@ $ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
 <li>User has to manually create and track shared packages for each Python version and needs to bootstrap it in every project.</li>
 <li>When there is an incompatible version of package in multiple projects, user will end up with duplicate installations of the same version.</li>
 </ol>
-<p>To solve this<sup id="fnref-5"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-5">5</a></sup>, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.</p>
+<p>To solve this<sup id="fnref:5"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:5">5</a></sup>, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.</p>
 <p>For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.</p>
-<pre class="code literal-block"><span></span>$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
+<pre class="code literal-block"><span></span><code>$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
 
 $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
 <span class="c1"># in project venv</span>
 <span class="nb">echo</span> <span class="s1">'~/.mpip/numpy/3.7_1.17'</span> &gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-</pre>
+</code></pre>
 
-
-<p>With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip<sup id="fnref-6"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn-6">6</a></sup> as a POC to test this and it seems to work as expected.</p>
+<p>With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip<sup id="fnref:6"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:6">6</a></sup> as a POC to test this and it seems to work as expected.</p>
 <p>These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.</p>
 <div class="footnote">
 <hr>
 <ol>
-<li id="fn-1">
-<p><a href="https://pypi.org/">https://pypi.org/</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-1" title="Jump back to footnote 1 in the text">↩</a></p>
+<li id="fn:1">
+<p><a href="https://pypi.org/">https://pypi.org/</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:1" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
-<li id="fn-2">
-<p><a href="https://github.com/numpy/numpy/issues/10920">https://github.com/numpy/numpy/issues/10920</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-2" title="Jump back to footnote 2 in the text">↩</a></p>
+<li id="fn:2">
+<p><a href="https://github.com/numpy/numpy/issues/10920">https://github.com/numpy/numpy/issues/10920</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:2" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
-<li id="fn-3">
-<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html">https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-3" title="Jump back to footnote 3 in the text">↩</a></p>
+<li id="fn:3">
+<p><a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html">https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:3" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
-<li id="fn-4">
-<p><a href="https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4">https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-4" title="Jump back to footnote 4 in the text">↩</a></p>
+<li id="fn:4">
+<p><a href="https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4">https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:4" title="Jump back to footnote 4 in the text">↩</a></p>
 </li>
-<li id="fn-5">
-<p><a href="https://github.com/pypa/packaging-problems/issues/328">https://github.com/pypa/packaging-problems/issues/328</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-5" title="Jump back to footnote 5 in the text">↩</a></p>
+<li id="fn:5">
+<p><a href="https://github.com/pypa/packaging-problems/issues/328">https://github.com/pypa/packaging-problems/issues/328</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:5" title="Jump back to footnote 5 in the text">↩</a></p>
 </li>
-<li id="fn-6">
-<p><a href="https://github.com/ChillarAnand/mpip">https://github.com/ChillarAnand/mpip</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref-6" title="Jump back to footnote 6 in the text">↩</a></p>
+<li id="fn:6">
+<p><a href="https://github.com/ChillarAnand/mpip">https://github.com/ChillarAnand/mpip</a> <a class="footnote-backref" href="../2020/02/reduce-python-package-footprint.html#fnref:6" title="Jump back to footnote 6 in the text">↩</a></p>
 </li>
 </ol>
 </div>
@@ -226,18 +324,17 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
 <h4>Select for update</h4>
 <p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
         <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
         <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
 <h4>Threads</h4>
 <p>Let us take a view which uses threads to get data from database.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
@@ -250,11 +347,10 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
             <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
 
@@ -262,23 +358,21 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
         <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
 <h4>Transaction Test Case</h4>
 <p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
 
 <span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
-</pre>
-
+</code></pre>
 
 <p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
 <p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="o">...</span>
 
 <span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
@@ -286,13 +380,12 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
 <span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="o">...</span>
-</pre>
-
+</code></pre>
 
 <p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
 <p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
 <p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
-<pre class="code literal-block"><span></span><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
@@ -306,8 +399,7 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
     <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
 <h4>Conclusion</h4>
@@ -364,7 +456,7 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <h4>Chain of Trust</h4>
 <p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
 <p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
-<pre class="code literal-block"><span></span>$ openssl s_client -showcerts -connect avilpage.com:443
+<pre class="code literal-block"><span></span><code>$ openssl s_client -showcerts -connect avilpage.com:443
 
 CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
 <span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
@@ -393,23 +485,21 @@ MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
 -----END CERTIFICATE-----
 
     Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
-</pre>
-
+</code></pre>
 
 <p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
 <p>We can decode these pem files and see the information in these certificates using</p>
-<pre class="code literal-block"><span></span>$ openssl x509 -noout -text -in server.crt
+<pre class="code literal-block"><span></span><code>$ openssl x509 -noout -text -in server.crt
 
 Certificate:
     Data:
         Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
     Signature Algorithm: sha256WithRSAEncryption
     ----
-</pre>
-
+</code></pre>
 
 <p>We can also get only the subject and issuer of the certificate with</p>
-<pre class="code literal-block"><span></span>$ openssl x509 -noout -subject -noout -issuer -in server.pem
+<pre class="code literal-block"><span></span><code>$ openssl x509 -noout -subject -noout -issuer -in server.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
@@ -418,8 +508,7 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
-</pre>
-
+</code></pre>
 
 <p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
 <p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
@@ -428,10 +517,9 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 <img src="../images/tls-openssl1.png"></p>
 
 <p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
-<pre class="code literal-block"><span></span>$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+<pre class="code literal-block"><span></span><code>$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
 server.pem: OK
-</pre>
-
+</code></pre>
 
 <p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
 <h4>Conclusion</h4>
@@ -446,17 +534,16 @@ server.pem: OK
 <p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
 <h4>Metaprogramming</h4>
 <p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
-<pre class="code literal-block"><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<pre class="code literal-block"><span></span><code><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre>
-
+</code></pre>
 
 <p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
 <p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
 <h4>Metaprogramming In Django</h4>
 <p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
-<pre class="code literal-block"><span></span>$ ./manage.py inspectdb
+<pre class="code literal-block"><span></span><code>$ ./manage.py inspectdb
 
 from django.db import models
 
@@ -464,22 +551,20 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
     <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
     ...
-</pre>
-
+</code></pre>
 
 <p>In django admin, models can be registered like this.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 <span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
 
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
 <p>Django ORM generates SQL statements for given ORM statements in Python.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
 <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -499,8 +584,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
 
 <span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
-</pre>
-
+</code></pre>
 
 <p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
 <p>We can also use these techniques in everyday programming. Here are some use cases.</p>
@@ -523,7 +607,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <h4>Use Management Commands</h4>
 <p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
 <p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
 <span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
@@ -538,13 +622,12 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
         <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
             <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
-
+</code></pre>
 
 <p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
 <h4>Link Data Migrations &amp; Schema Migrations</h4>
 <p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
@@ -558,20 +641,18 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
     <span class="p">]</span>
-</pre>
-
+</code></pre>
 
 <h4>Watch Out For DB Queries</h4>
 <p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
 <p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
 <p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
-<pre class="code literal-block"><span></span><span class="c1"># instead of</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># instead of</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># use</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>

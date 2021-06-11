@@ -113,7 +113,7 @@ article: http://ogp.me/ns/article#
 <h4>Chain of Trust</h4>
 <p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
 <p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
-<pre class="code literal-block"><span></span>$ openssl s_client -showcerts -connect avilpage.com:443
+<pre class="code literal-block"><span></span><code>$ openssl s_client -showcerts -connect avilpage.com:443
 
 CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
 <span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
@@ -142,23 +142,21 @@ MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
 -----END CERTIFICATE-----
 
     Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
-</pre>
-
+</code></pre>
 
 <p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
 <p>We can decode these pem files and see the information in these certificates using</p>
-<pre class="code literal-block"><span></span>$ openssl x509 -noout -text -in server.crt
+<pre class="code literal-block"><span></span><code>$ openssl x509 -noout -text -in server.crt
 
 Certificate:
     Data:
         Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
     Signature Algorithm: sha256WithRSAEncryption
     ----
-</pre>
-
+</code></pre>
 
 <p>We can also get only the subject and issuer of the certificate with</p>
-<pre class="code literal-block"><span></span>$ openssl x509 -noout -subject -noout -issuer -in server.pem
+<pre class="code literal-block"><span></span><code>$ openssl x509 -noout -subject -noout -issuer -in server.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
@@ -167,8 +165,7 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
-</pre>
-
+</code></pre>
 
 <p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
 <p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
@@ -177,10 +174,9 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 <img src="../../images/tls-openssl1.png"></p>
 
 <p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
-<pre class="code literal-block"><span></span>$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+<pre class="code literal-block"><span></span><code>$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
 server.pem: OK
-</pre>
-
+</code></pre>
 
 <p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
 <h4>Conclusion</h4>

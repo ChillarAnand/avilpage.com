@@ -117,7 +117,7 @@ article: http://ogp.me/ns/article#
                         <div>
 <p><a href="https://en.wikipedia.org/wiki/Udev">udev</a> is responsible for managing devices on Linux. It provides <code>udevadm</code>, a CLI utility to monitor and control devices.</p>
 <p>If we run <code>udevadm monitor</code> on terminal and connect a USB drive or hard disk or a mobile via USB to your computer, it will show that kernel has detected the device and it will send a signal to udev about it.</p>
-<pre class="code literal-block"><span></span>→ udevadm monitor
+<pre class="code literal-block"><span></span><code>→ udevadm monitor
 monitor will print the received events <span class="k">for</span>:
 UDEV - the event which udev sends out after rule processing
 KERNEL - the kernel uevent
@@ -128,12 +128,11 @@ KERNEL<span class="o">[</span><span class="m">4336</span>.902553<span class="o">
 UDEV  <span class="o">[</span><span class="m">4336</span>.911201<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
 UDEV  <span class="o">[</span><span class="m">4336</span>.936453<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
 UDEV  <span class="o">[</span><span class="m">4337</span>.947174<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
-</pre>
-
+</code></pre>
 
 <p><a href="https://pypi.python.org/pypi/pyudev">Pyudev</a>, a third party package provides python bindings for udev. It can be installed with <code>pip install pyudev</code>.</p>
 <p>With this we can create a simple monitor to detect USB events.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">pyudev</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">pyudev</span>
 
 <span class="n">context</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
 <span class="n">monitor</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Monitor</span><span class="o">.</span><span class="n">from_netlink</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
@@ -143,14 +142,12 @@ UDEV  <span class="o">[</span><span class="m">4337</span>.947174<span class="o">
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'add'</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1"> connected'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
         <span class="c1"># do something</span>
-</pre>
-
+</code></pre>
 
 <p>Save this to a file say monitor.py and run it with <code>python monitor.py</code> and connect a mobile or pendrive and it will show something like this.</p>
-<pre class="code literal-block"><span></span>Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'</span><span class="o">)</span> connected
+<pre class="code literal-block"><span></span><code>Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'</span><span class="o">)</span> connected
 Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'</span><span class="o">)</span> connected
-</pre>
-
+</code></pre>
 
 <p>Here we are just detecting <code>add</code> event. Similary we can detect other events like <code>delete</code>.</p>
 <p>This is useful for automatically running shell scripts once the device gets plugged or unplugged.</p>
@@ -167,7 +164,7 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
 <p><a href="https://getnikola.com">Nikola</a> has great documentation and setup was simpler. I used <code>import_blogger</code> plugin and imported all the data. All the posts and pages were working well with exact same urls.</p>
 <p>Blogger tags all posts of particular label under <code>/search/label/foo</code>. I have used these urls in some posts. Nikola shows posts under <code>/categories/foo.html</code>.</p>
 <p>This is where nikola <code>REDIRECTIONS</code> come in handy. Using this, a list of from &amp; to urls can be mapped. I wrote a simple function for redirections and then enabled <code>STRIP_INDEXES</code> which removes trailing <code>.html</code>.</p>
-<pre class="code literal-block"><span></span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'python'</span><span class="p">,</span> <span class="s1">'emacs'</span><span class="p">,</span> <span class="s1">'zen'</span><span class="p">,</span> <span class="s1">'django'</span><span class="p">,</span> <span class="s1">'chrome'</span><span class="p">]</span>
+<pre class="code literal-block"><span></span><code><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'python'</span><span class="p">,</span> <span class="s1">'emacs'</span><span class="p">,</span> <span class="s1">'zen'</span><span class="p">,</span> <span class="s1">'django'</span><span class="p">,</span> <span class="s1">'chrome'</span><span class="p">]</span>
 <span class="n">LABEL_REDIRECTIONS</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
@@ -175,8 +172,7 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
         <span class="s1">'/search/label/</span><span class="si">{}</span><span class="s1">/index.html'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
         <span class="s1">'/categories/</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
     <span class="p">))</span>
-</pre>
-
+</code></pre>
 
 <p>Since I stripped <code>.html</code> from urls, old urls broke. So I generated a list of old urls and wrote another function to redirect them to new urls.</p>
 <p>Nikola has few builtin themes. I wanted something minimalistic and so I rolled out custom theme which you are seeing right now.</p>
@@ -191,15 +187,13 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
 <p>Emblem.js is a ember friendly templating engine used as an alternative for handlebars.js.</p>
 <p>Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.</p>
 <p><code>slim-mode</code> is available on melpa. To install it, run</p>
-<pre class="code literal-block"><span></span><span class="err">M-x install-package slim-mode</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>M-x install-package slim-mode
+</code></pre>
 
 <p>After installing it, activate <code>slim-mode</code> by running <code>M-x slim-mode</code>.</p>
 <p>Instead of activating manually, <code>auto-mode-alist</code> can be used to set major modes that needs to activated for files with specific extension. To activate slim-mode for emblem files which will be ending with <code>.em</code> or <code>.emblem</code>, use</p>
-<pre class="code literal-block"><span></span><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">'auto-mode-alist</span> <span class="o">'</span><span class="p">(</span><span class="s">"\\.\\(em\\|emblem\\)"</span> <span class="o">.</span> <span class="nv">slim-mode</span><span class="p">))</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">'auto-mode-alist</span> <span class="o">'</span><span class="p">(</span><span class="s">"\\.\\(em\\|emblem\\)"</span> <span class="o">.</span> <span class="nv">slim-mode</span><span class="p">))</span>
+</code></pre>
 
 <p>By adding this line to emacs configuration file, slim-mode gets activated for emblem.js files.</p>
 </div>

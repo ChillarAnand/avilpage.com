@@ -1,7 +1,7 @@
 <!--
 .. title: Convert Browser Requests To Python Requests For Scraping
 .. slug: convert-browser-requests-to-python-requests
-.. date: 2018-03-26 21:21:21 UTC+05:30
+.. date: 2018-03-26 21:21:21 UTC+06:30
 .. tags: python, scraping
 .. category:
 .. link:

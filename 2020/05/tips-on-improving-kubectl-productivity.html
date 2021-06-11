@@ -111,16 +111,15 @@ article: http://ogp.me/ns/article#
 <h4>Aliases</h4>
 <p>Aliases in general improve the productivity when using a shell.</p>
 <p>kubectl provides shortcuts for commands. For example,</p>
-<pre class="code literal-block"><span></span><span class="c1"># instead of running full command</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># instead of running full command</span>
 $ kubectl get services
 
 <span class="c1"># we can use short hand version</span>
 $ kubectl get svc
-</pre>
-
+</code></pre>
 
 <p>It also provides completion for commands.</p>
-<pre class="code literal-block"><span></span><span class="c1"># enable completion for zsh</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># enable completion for zsh</span>
 $ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
 
 <span class="c1"># type `kubectl ` and hit `&lt;TAB&gt;` will show possible options</span>
@@ -132,11 +131,10 @@ apply          certificate    convert
 
 <span class="c1"># type `kubectl g`, and hit `&lt;TAB&gt;` will show possible options</span>
 $ kubectl get
-</pre>
-
+</code></pre>
 
 <p>However, setup up aliases for most commanly used commands will lot of time.</p>
-<pre class="code literal-block"><span></span><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
+<pre class="code literal-block"><span></span><code><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
 
 <span class="nb">alias</span> <span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
 <span class="nb">alias</span> <span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
@@ -151,25 +149,23 @@ $ kubectl get
 
 <span class="nb">alias</span> <span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
 <span class="nb">alias</span> <span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
-</pre>
-
+</code></pre>
 
 <p>If you don't write your own aliases, there is <a href="https://github.com/ahmetb/kubectl-aliases">kubectl-aliases</a> which provides exhuastive list of aliases. We can source this file in rc file and start using them.</p>
 <h4>Use Functions</h4>
 <p>Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.</p>
 <p>For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.</p>
-<pre class="code literal-block"><span></span>kp<span class="o">()</span> <span class="o">{</span>
+<pre class="code literal-block"><span></span><code>kp<span class="o">()</span> <span class="o">{</span>
     kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">'{print $1}'</span><span class="k">)</span> <span class="p">|</span> grep <span class="s1">'token:'</span> <span class="p">|</span> awk <span class="s1">'{print $2}'</span> <span class="p">|</span> pbcopy
     open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
     kubectl proxy
 <span class="o">}</span>
-</pre>
-
+</code></pre>
 
 <p>Now from the shell, when we run <code>kp</code>, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.</p>
 <h4>Use Labels</h4>
 <p>To describe a pod or tail logs from a pod, we can use pod names.</p>
-<pre class="code literal-block"><span></span>$ kubectl get pods
+<pre class="code literal-block"><span></span><code>$ kubectl get pods
 NAME                             READY   STATUS
 hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
 
@@ -177,15 +173,13 @@ hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
 $ kubectl describe pod hello-world-79d794c659-tpfv2
 
 $ kubectl logs -f pod/hello-world-79d794c659-tpfv2
-</pre>
-
+</code></pre>
 
 <p>When the app gets updated, the name of pod also updates. So, instead of using pod name, we can use pod labels.</p>
-<pre class="code literal-block"><span></span>$ kubectl describe pod -l<span class="o">=</span>hello-world
+<pre class="code literal-block"><span></span><code>$ kubectl describe pod -l<span class="o">=</span>hello-world
 
 $ kubectl logs -f -l<span class="o">=</span>pod/hello-world
-</pre>
-
+</code></pre>
 
 <h4>Kubectl Tools</h4>
 <p>k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.</p>

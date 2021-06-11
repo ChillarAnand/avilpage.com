@@ -1,7 +1,7 @@
 <!--
 .. title: Tips On Improving kubectl Productivity
 .. slug: tips-on-improving-kubectl-productivity
-.. date: 2020-05-31 18:42:00 UTC+05:30
+.. date: 2020-06-31 18:42:00 UTC+06:30
 .. tags: kubenetes, devops
 .. category:
 .. link:

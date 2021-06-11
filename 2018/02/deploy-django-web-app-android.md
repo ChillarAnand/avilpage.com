@@ -1,7 +1,7 @@
 <!--
 .. title: Running Django Web Apps On Android Devices
 .. slug: deploy-django-web-app-android
-.. date: 2018-02-19 17:40:56 UTC+05:30
+.. date: 2018-02-19 17:40:56 UTC+06:30
 .. tags: python, django, android
 .. category:
 .. link:

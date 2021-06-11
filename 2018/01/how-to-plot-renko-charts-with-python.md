@@ -1,7 +1,7 @@
 <!--
 .. title: How To Plot Renko Charts With Python?
 .. slug: how-to-plot-renko-charts-with-python
-.. date: 2018-01-10 14:57:23 UTC+05:30
+.. date: 2018-01-10 14:57:23 UTC+06:30
 .. tags: python, trading, technical-analysis
 .. category: programming, python
 .. link:

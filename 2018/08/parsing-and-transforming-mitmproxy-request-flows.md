@@ -1,7 +1,7 @@
 <!--
 .. title: Parsing & Transforming mitmproxy Request Flows
 .. slug: parsing-and-transforming-mitmproxy-request-flows
-.. date: 2018-08-11 21:21:21 UTC+05:30
+.. date: 2018-08-11 21:21:21 UTC+06:30
 .. tags: python
 .. category:
 .. link:

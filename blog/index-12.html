@@ -83,7 +83,7 @@ article: http://ogp.me/ns/article#
 <p><a href="http://s3.amazonaws.com/alexa-static/top-1m.csv.zip">Alexa</a>, <a href="https://blog.majestic.com/development/majestic-million-csv-daily/">Majestic</a> &amp; <a href="https://www.domcop.com/top-10-million-domains">Domcop</a>(based on <a href="https://commoncrawl.org/">CommonCrawl</a> data) provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.</p>
 <h4>Collecting data</h4>
 <p>Lets download data from above sources and extract domain names. The data format is different for each source. We can use <code>awk</code> tool to extract domains column from the source. After extracting data, sort it and save it to a file.</p>
-<pre class="code literal-block"><span></span><span class="c1"># alexa</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># alexa</span>
 
 $ wget http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
 
@@ -106,10 +106,9 @@ $ head -n <span class="m">5</span> alexa
 <span class="m">00004</span>.tel
 <span class="m">00008888</span>.tumblr.com
 0002rick.tumblr.com
-</pre>
+</code></pre>
 
-
-<pre class="code literal-block"><span></span><span class="c1"># Domcop</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># Domcop</span>
 
 $ wget https://www.domcop.com/files/top/top10milliondomains.csv.zip
 
@@ -132,10 +131,9 @@ $ head -n <span class="m">5</span> domcop
 <span class="m">0000180</span>.fortunecity.com
 <span class="m">000139418</span>.wixsite.com
 000fashions.blogspot.com
-</pre>
+</code></pre>
 
-
-<pre class="code literal-block"><span></span><span class="c1"># Majestic</span>
+<pre class="code literal-block"><span></span><code><span class="c1"># Majestic</span>
 
 $ wget http://downloads.majestic.com/majestic_million.csv
 
@@ -156,12 +154,11 @@ $ head -n <span class="m">5</span> majestic
 <span class="m">0000</span>.jp
 0000www.com
 <span class="m">0000</span>.xn--p1ai
-</pre>
-
+</code></pre>
 
 <h4>Comparing Data</h4>
 <p>We have collected and extracted domains from above sources. Lets compare the domains to see how similar they are using <code>comm</code>.</p>
-<pre class="code literal-block"><span></span>$ comm -123 alexa domcop --total
+<pre class="code literal-block"><span></span><code>$ comm -123 alexa domcop --total
 <span class="m">871851</span>  <span class="m">871851</span>  <span class="m">128149</span>  total
 
 $ comm -123 alexa majestic --total
@@ -169,13 +166,11 @@ $ comm -123 alexa majestic --total
 
 $ comm -123 domcop majestic --total
 <span class="m">784388</span>  <span class="m">784388</span>  <span class="m">215612</span>  total
-</pre>
+</code></pre>
 
-
-<pre class="code literal-block"><span></span>$ comm -12 alexa domcop <span class="p">|</span> comm -123 - majestic --total
+<pre class="code literal-block"><span></span><code>$ comm -12 alexa domcop <span class="p">|</span> comm -123 - majestic --total
 <span class="m">31314</span>   <span class="m">903165</span>  <span class="m">96835</span>   total
-</pre>
-
+</code></pre>
 
 <p>So, only 96,835(9.6%) domains are common between all the datasets and the overlap between any two sources is ~20%. Here is a venn diagram showing the overlap between them.</p>
 <p align="center">
@@ -202,25 +197,24 @@ $ comm -123 domcop majestic --total
 <p>This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.</p>
 <p>Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.</p>
 <p>We can use a custom buildpsec file to directly deploy the code from build step.</p>
-<pre class="code literal-block"><span></span><span class="n">version</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span>
+<pre class="code literal-block"><span></span><code><span class="n">version</span><span class="o">:</span> <span class="mf">0.1</span>
 
-<span class="n">phases</span><span class="p">:</span>
-  <span class="n">install</span><span class="p">:</span>
-    <span class="n">commands</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Entering</span> <span class="n">the</span> <span class="n">install</span> <span class="n">phase</span>
+<span class="n">phases</span><span class="o">:</span>
+  <span class="k">install</span><span class="o">:</span>
+    <span class="n">commands</span><span class="o">:</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Entering</span> <span class="n">the</span> <span class="k">install</span> <span class="k">phase</span>
       <span class="o">-</span> <span class="n">echo</span> <span class="n">Installing</span> <span class="n">dependencies</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">awscli</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="o">--</span><span class="k">upgrade</span> <span class="n">awscli</span>
       <span class="o">-</span> <span class="n">aws</span> <span class="o">--</span><span class="n">version</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">chalice</span>
-      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="n">chalice</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
 
-  <span class="n">build</span><span class="p">:</span>
-    <span class="n">commands</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">entered</span> <span class="n">the</span> <span class="n">build</span> <span class="n">phase</span>
-      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="k">on</span> <span class="ss">`date`</span>
+  <span class="n">build</span><span class="o">:</span>
+    <span class="n">commands</span><span class="o">:</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">entered</span> <span class="n">the</span> <span class="n">build</span> <span class="k">phase</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="k">on</span> <span class="n n-Quoted">`date`</span>
       <span class="o">-</span> <span class="n">chalice</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">stage</span> <span class="n">staging</span>
-</pre>
-
+</code></pre>
 
 <p>This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.</p>
 <h4>Conclusion</h4>
@@ -239,12 +233,11 @@ $ comm -123 domcop majestic --total
 
 <p>Exporting multiple requests with this interface becomes tedious. Instead we can save all requests to a file and write a python script to export them.</p>
 <p>Start mitmproxy with this command so that all request flows are appended to <code>requests.mitm</code> file for later use.</p>
-<pre class="code literal-block"><span></span>$ mitmproxy -w +requests.mitm
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ mitmproxy -w +requests.mitm
+</code></pre>
 
 <p>Here is a python script to parse this dump file and print request URLs.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
 
 
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">'requests.mitm'</span>
@@ -254,11 +247,10 @@ $ comm -123 domcop majestic --total
 
     <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p><code>flow.request</code> object has more attributes to provide information about the request.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">31</span><span class="p">]:</span>
 <span class="p">[</span><span class="o">...</span>
  <span class="s1">'host'</span><span class="p">,</span>
@@ -270,11 +262,10 @@ $ comm -123 domcop majestic --total
  <span class="s1">'raw_content'</span><span class="p">,</span>
  <span class="o">...</span>
  <span class="s1">'wrap'</span><span class="p">]</span>
-</pre>
-
+</code></pre>
 
 <p>We can use the mitmproxy export utilities to transform mitm flows to other formats.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">33</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">mitmproxy.addons</span> <span class="kn">import</span> <span class="n">export</span>
 
@@ -286,8 +277,7 @@ $ comm -123 domcop majestic --total
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">httpie_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="s2">"http GET http://mitm.it/favicon.ico 'Host:mitm.it' 'Proxy-Connection:keep-alive' 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' 'DNT:1' 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' 'Referer:http://mitm.it/' 'Accept-Encoding:gzip, deflate' 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' 'content-length:0'"</span>
-</pre>
-
+</code></pre>
 
 <p>With these utilities we can transform mitmproxy request flow to curl command or any other custom form to fit our needs.</p>
 </div>
@@ -305,19 +295,17 @@ $ comm -123 domcop majestic --total
 <img src="../images/linux-performance-analysis-tools.png" height="300px" width="600"></p>
 
 <p>atop shows live &amp; historical data measurement at system level as well as process level. To get the glimpse of system resource(CPU, memory, network, disk) usage install and run atop with</p>
-<pre class="code literal-block"><span></span>$ sudo apt install --yes atop
+<pre class="code literal-block"><span></span><code>$ sudo apt install --yes atop
 
 $ atop
-</pre>
-
+</code></pre>
 
 <p align="center">
 <img src="../images/atop.png" height="300px" width="600"></p>
 
 <p>By default, atop shows resources used in the last interval only and sorts them by CPU usage. We can use</p>
-<pre class="code literal-block"><span></span>$ atop -A -f <span class="m">4</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ atop -A -f <span class="m">4</span>
+</code></pre>
 
 <p><code>-A</code> sorts the processes automatically in the order of the most busy system resource.</p>
 <p><code>-f</code> shows both active as well as inactive system resources in the ouput.</p>
@@ -339,13 +327,12 @@ $ atop
 <p>When building REST APIs or micro services where django templating engine is not used, <a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank">this method won't work</a>. In these situations, we have to log SQL queries to console.</p>
 <h4>Using django-extensions</h4>
 <p><a href="https://pypi.org/project/django-extensions/">Django-extensions</a> provides lot of utilities for productive development. For <code>runserver_plus</code> and <code>shell_plus</code> commands, it accepts and optional <code>--print-sql</code> argument, which prints all the SQL queries that are being executed.</p>
-<pre class="code literal-block"><span></span>./manage.py runserver_plus --print-sql
+<pre class="code literal-block"><span></span><code>./manage.py runserver_plus --print-sql
 ./manage.py shell_plus --print-sql
-</pre>
-
+</code></pre>
 
 <p>Whenever an SQL query gets executed, it prints the query and time taken for it in console.</p>
-<pre class="code literal-block"><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<pre class="code literal-block"><span></span><code><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -365,17 +352,16 @@ $ atop
 <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.002107</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
 
 <span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">chillar</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
-</pre>
-
+</code></pre>
 
 <h4>Using django-querycount</h4>
 <p><a href="https://pypi.org/project/django-querycount/">Django-querycount</a> provides a middleware to show SQL query count and show duplicate queries on console.</p>
-<pre class="code literal-block"><span></span><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
+<pre class="code literal-block"><span></span><code><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
 <span class="p">|</span> Type <span class="p">|</span> Database  <span class="p">|</span>   Reads  <span class="p">|</span>  Writes  <span class="p">|</span>  Totals  <span class="p">|</span> Duplicates <span class="p">|</span>
 <span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
 <span class="p">|</span> RESP <span class="p">|</span>  default  <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>    <span class="m">0</span>     <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>     <span class="m">1</span>      <span class="p">|</span>
 <span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-Total queries: <span class="m">3</span> in <span class="m">1</span>.7738s
+Total queries: <span class="m">3</span> <span class="k">in</span> <span class="m">1</span>.7738s
 
 
 Repeated <span class="m">1</span> times.
@@ -384,26 +370,23 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <span class="s2">"django_session"</span> WHERE <span class="o">(</span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span> <span class="o">=</span>
 <span class="s1">'dummy_key AND "django_session"."expire_date"</span>
 <span class="s1">&gt; '</span><span class="m">2018</span>-05-31T09:38:56.369469+00:00<span class="err">'</span>::timestamptz<span class="o">)</span>
-</pre>
-
+</code></pre>
 
 <p>This package provides <a href="https://github.com/bradmontgomery/django-querycount#settings">additional settings</a> to customize output.</p>
 <h4>Django logging</h4>
 <p>Instead of using any 3rd party package, we can use <code>django.db.backends</code> logger to print all the SQL queries.</p>
 <p>Add <code>django.db.backends</code> to loggers list and set log level and handlers.</p>
-<pre class="code literal-block"><span></span>    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
+<pre class="code literal-block"><span></span><code>    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'django.db.backends'</span><span class="p">:</span> <span class="p">{</span>
             <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
             <span class="s1">'handlers'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'console'</span><span class="p">,</span> <span class="p">],</span>
         <span class="p">},</span>
-</pre>
-
+</code></pre>
 
 <p>In runserver console, we can see all SQL queries that are being executed.</p>
-<pre class="code literal-block"><span></span><span class="err">(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)</span>
-<span class="err">[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
+[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
+</code></pre>
 
 <p>These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.</p>
 </div>
@@ -418,71 +401,69 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <p>We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.</p>
 <h4>Nginx Setup</h4>
 <p>Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.</p>
-<pre class="code literal-block"><span></span><span class="x">server {</span>
-<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:80;</span>
-<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+<pre class="code literal-block"><span></span><code><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">80</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="x">    return 301 https://avilpage.com$request_uri;</span>
-<span class="x">}</span>
+    <span class="k">return</span> <span class="mi">301</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">$</span><span class="n">request_uri</span><span class="p">;</span>
+<span class="p">}</span>
 
 
-<span class="x">server {</span>
-<span class="x">    listen </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">:443 ssl;</span>
-<span class="x">    server_name </span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x"> www.</span><span class="cp">{{</span> <span class="nv">server_name</span> <span class="cp">}}</span><span class="x">;</span>
+<span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">443</span> <span class="n">ssl</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="x">    ssl_certificate     /root/certs/avilpage.com.chain.crt;</span>
-<span class="x">    ssl_certificate_key /root/certs/avilpage.com.key;</span>
+    <span class="n">ssl_certificate</span>     <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">crt</span><span class="p">;</span>
+    <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
 
-<span class="x">    access_log /var/log/nginx/avilpage.com.access.log;</span>
-<span class="x">    error_log /var/log/nginx/avilpage.com.error.log;</span>
+    <span class="n">access_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+    <span class="n">error_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
 
-<span class="x">    location / {</span>
-<span class="x">            proxy_pass http://0.0.0.0:8000;</span>
-<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
-<span class="x">            proxy_set_header Host $http_host;</span>
-<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
-<span class="x">            proxy_redirect off;</span>
-<span class="x">    }</span>
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">http_host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span> <span class="n">off</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location /ws/ {</span>
-<span class="x">            proxy_pass http://0.0.0.0:9000;</span>
-<span class="x">            proxy_http_version 1.1;</span>
+    <span class="n">location</span> <span class="o">/</span><span class="n">ws</span><span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
+            <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
 
-<span class="x">            proxy_read_timeout 86400;</span>
-<span class="x">            proxy_redirect     off;</span>
+            <span class="n">proxy_read_timeout</span> <span class="mi">86400</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span>     <span class="n">off</span><span class="p">;</span>
 
-<span class="x">            proxy_set_header Upgrade $http_upgrade;</span>
-<span class="x">            proxy_set_header Connection "upgrade";</span>
-<span class="x">            proxy_set_header Host $host;</span>
-<span class="x">            proxy_set_header X-Real-IP $remote_addr;</span>
-<span class="x">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span>
-<span class="x">            proxy_set_header X-Forwarded-Host $server_name;</span>
-<span class="x">    }</span>
+            <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="o">$</span><span class="n">http_upgrade</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">"upgrade"</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Host</span> <span class="o">$</span><span class="n">server_name</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location /static {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static;</span>
-<span class="x">    }</span>
+    <span class="n">location</span> <span class="o">/</span><span class="k">static</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location  /favicon.ico {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">//static/img/favicon.ico;</span>
-<span class="x">    }</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">//</span><span class="k">static</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">    location  /robots.txt {</span>
-<span class="x">        alias </span><span class="cp">{{</span> <span class="nv">project_root</span> <span class="cp">}}</span><span class="x">/static/txt/robots.txt;</span>
-<span class="x">    }</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="n">txt</span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="x">}</span>
-</pre>
-
+<span class="p">}</span>
+</code></pre>
 
 <h4>WSGI Server Setup</h4>
 <p>We will use gunicorn for wsgi server. We can run gunicorn with</p>
-<pre class="code literal-block"><span></span>$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
+</code></pre>
 
 <p>We can create a systemd unit file to make it as a service.</p>
-<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<pre class="code literal-block"><span></span><code><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">gunicorn</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -504,22 +485,19 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre>
-
+</code></pre>
 
 <p>Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with</p>
-<pre class="code literal-block"><span></span>$ sudo service gunicorn restart
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ sudo service gunicorn restart
+</code></pre>
 
 <h4>ASGI Server Setup</h4>
 <p>We will use daphne for ASGI server and it can be started with</p>
-<pre class="code literal-block"><span></span>$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
+</code></pre>
 
 <p>We can create a systemd unit file like the previous one to create a service.</p>
-<pre class="code literal-block"><span></span><span class="k">[Unit]</span>
+<pre class="code literal-block"><span></span><code><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">daphne daemon</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -539,33 +517,28 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre>
-
+</code></pre>
 
 <h4>Deployment</h4>
 <p>Here is <a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml">an ansible playbook</a> which is used to deploy these config files to our server. To run the playbook on server <code>avilpage.com</code>, execute</p>
-<pre class="code literal-block"><span></span>$ ansible-playbook -i avilpage.com, django_setup.yml
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ ansible-playbook -i avilpage.com, django_setup.yml
+</code></pre>
 
 <h4>Scaling</h4>
 <p>Now that we have deployed channels to production, we can do performance test to see how our server performs under load.</p>
 <p>For WebSockets, we can use <a href="https://www.npmjs.com/package/thor">Thor</a> to run performance test.</p>
-<pre class="code literal-block"><span></span>thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
-</pre>
-
+<pre class="code literal-block"><span></span><code>thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
+</code></pre>
 
 <p>Our server is able to handle <code>100 requests per second</code> with a <code>latency of 800ms</code>. This is good enough for low traffic website.</p>
 <p>To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using <a href="../2018/05/deploying-scaling-django-channels.html">shared file descriptors</a>. Unfortunately, it doesn't work as expected. As <a href="https://github.com/django/daphne/issues/182#issuecomment-387507887">mentioned here</a>, we can use systemd templates and spawn multiple daphne process.</p>
 <p>An alternate way is to use <a href="https://pypi.org/project/uvicorn/">uvicorn</a> to start multiple workers. Install uvicorn using pip</p>
-<pre class="code literal-block"><span></span>$ pip install uvicorn
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ pip install uvicorn
+</code></pre>
 
 <p>Start uvicorn ASGI server with</p>
-<pre class="code literal-block"><span></span>$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
+</code></pre>
 
 <p>This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).</p>
 </div>
@@ -576,47 +549,44 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <div class="e-content">
                         <div>
 <p>Let us write a function which retrieves user information from GitHub API.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">requests</span>
 
 
 <span class="k">def</span> <span class="nf">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'https://api.github.com/users/{username}'</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'https://api.github.com/users/</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s1">'</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">None</span>
-</pre>
-
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre>
 
 <p>To test this function, we can write a test case to call the external API and check if it is returning valid data.</p>
-<pre class="code literal-block"><span></span><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
+<pre class="code literal-block"><span></span><code><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
+</code></pre>
 
 <p>Even though this test case is reliable, this won't be efficient when we have many APIs to test as it sends unwanted requests to external API and makes tests slower due to I/O.</p>
 <p>A widely used solution to avoid external API calls is <a href="https://en.wikipedia.org/wiki/Mock_object">mocking</a>. Instead of getting the response from external API, use a mock object which returns similar data.</p>
-<pre class="code literal-block"><span></span><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<pre class="code literal-block"><span></span><code><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 
 
 <span class="k">def</span> <span class="nf">test_get_github_user_info_with_mock</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s1">'requests.get'</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_get</span><span class="p">:</span>
         <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
 
-        <span class="n">mock_get</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">mock_get</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"login"</span><span class="p">:</span> <span class="n">username</span><span class="p">}</span>
         <span class="n">mock_get</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">json_response</span>
 
         <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+        <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
+</code></pre>
 
 <p>This solves above problems but creates additional problems.</p>
 <ul>
@@ -624,7 +594,7 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <li>Maintenance. We need to ensure mock responses are up to date with API.</li>
 </ul>
 <p>To avoid this, we can cache the responses using <a href="https://pypi.python.org/pypi/requests-cache">requests-cache</a>.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">requests_cache</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">requests_cache</span>
 
 <span class="n">requests_cache</span><span class="o">.</span><span class="n">install_cache</span><span class="p">(</span><span class="s1">'github_cache'</span><span class="p">)</span>
 
@@ -634,8 +604,7 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre>
-
+</code></pre>
 
 <p>When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.</p>
 <p>When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.</p>
@@ -654,17 +623,15 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <img src="../images/requests-python-browser.png" height="300px" width="600"></p>
 
 <p>Here is one such request.</p>
-<pre class="code literal-block"><span></span><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
+</code></pre>
 
 <p>Once we get curl command, we can directly convert it to python requests using <a href="https://pypi.python.org/pypi/uncurl/">uncurl</a>.</p>
-<pre class="code literal-block"><span></span>$ pip install uncurl
-</pre>
-
+<pre class="code literal-block"><span></span><code>$ pip install uncurl
+</code></pre>
 
 <p>Since the copied curl request is in clipboard, we can pipe it to uncurl.</p>
-<pre class="code literal-block"><span></span><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
+<pre class="code literal-block"><span></span><code><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
 
 <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://avilpage.com/dummy"</span><span class="p">,</span>
     <span class="n">data</span><span class="o">=</span><span class="s1">'page=2&amp;category=python'</span><span class="p">,</span>
@@ -683,8 +650,7 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
         <span class="s2">"ASPSESSIONIDSABAAQDA"</span><span class="p">:</span> <span class="s2">"FKOHHAGAFODIIGNNNDFKNGLM"</span>
     <span class="p">},</span>
 <span class="p">)</span>
-</pre>
-
+</code></pre>
 
 <p>If we have to use some other programming language, we can use <a href="https://curl.trillworks.com/">curlconverter</a> to convert curl command to Go or Node.js equivalent code.</p>
 <p>Now, we can use this code to get contents of current page and then continue scraping from the urls in it.</p>
@@ -700,36 +666,31 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 <p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
 <p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
 <p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
-<pre class="code literal-block"><span></span>rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
-</pre>
-
+<pre class="code literal-block"><span></span><code>rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
+</code></pre>
 
 <p>Now ssh into android, install django and start django server.</p>
-<pre class="code literal-block"><span></span>$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
-</pre>
+<pre class="code literal-block"><span></span><code>$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
+</code></pre>
 
-
-<pre class="code literal-block"><span></span>$ python -m pip install django
+<pre class="code literal-block"><span></span><code>$ python -m pip install django
 $ <span class="nb">cd</span> /data/local/django-bookmarks
 $ python manage.py runvserver
-</pre>
-
+</code></pre>
 
 <p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
-<pre class="code literal-block"><span></span>$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
+<pre class="code literal-block"><span></span><code>$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
 
 Forwarding HTTP traffic from https://incepro.serveo.net
 Press g to start a GUI session and ctrl-c to quit.
-</pre>
-
+</code></pre>
 
 <p>Now we can share our django app with anyone.</p>
 <p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
-<pre class="code literal-block"><span></span>ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
+<pre class="code literal-block"><span></span><code>ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
 -H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
 http://incepro.serveo/list/
-</pre>
-
+</code></pre>
 
 <p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
 <p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
@@ -742,7 +703,7 @@ http://incepro.serveo/list/
                         <div>
 <p>Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.</p>
 <p>Let us take a simple add task and measure queueing time.</p>
-<pre class="code literal-block"><span></span><span class="kn">import</span> <span class="nn">timeit</span>
+<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">timeit</span>
 
 <span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
 
@@ -752,7 +713,7 @@ http://incepro.serveo/list/
 <span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="n">broker</span><span class="o">=</span><span class="n">broker</span><span class="p">)</span>
 
 
-<span class="nd">@app.task</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span>
 <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
 
@@ -762,9 +723,8 @@ http://incepro.serveo/list/
 <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tasks</span><span class="p">)]</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 <span class="n">rate</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">//</span><span class="n">duration</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">"{} tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
-</pre>
-
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
+</code></pre>
 
 <p>On development machine, with AMD A4-5000 CPU, queueing time is as follows</p>
 <ul>
@@ -782,9 +742,8 @@ http://incepro.serveo/list/
 </ul>
 <p>For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.</p>
 <p>Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.</p>
-<pre class="code literal-block"><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
-</pre>
-
+<pre class="code literal-block"><span></span><code><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
+</code></pre>
 
 <p>This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.</p>
 </div>

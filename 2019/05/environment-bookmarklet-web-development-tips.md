@@ -1,7 +1,7 @@
 <!--
 .. title: Switching Hosts With Bookmarklets - Web Development Tips
 .. slug: environment-bookmarklet-web-development-tips
-.. date: 2019-05-08 21:10:52 UTC+05:30
+.. date: 2019-06-08 21:10:52 UTC+06:30
 .. tags: chrome, web-development, web-development-tips
 .. category:
 .. link:
