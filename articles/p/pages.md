@@ -13,6 +13,9 @@
 Pages
 -------
 
+
+[NSE - FNO Lot Size Revision in 45 Stocks](/p/fno-lot-size-revision-nse.html)
+
 [తెలుగు పుస్తకాలు ఉచితంగా లభించే వెబ్‌సైట్లు](/p/telugu-books-free-download-sites.html)
 
 [Instant WhatsApp](/p/instant-whatsapp.html)
