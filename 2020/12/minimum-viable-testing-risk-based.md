@@ -1,7 +1,7 @@
 <!--
 .. title: Minimum Viable Testing - Get Maximum Stability With Minimum Effort
 .. slug: minimum-viable-testing-risk-based
-.. date: 2020-12-31 19:23:11 UTC+06:30
+.. date: 2020-12-31 19:23:11 UTC+05:30
 .. tags: testing
 .. category:
 .. link:

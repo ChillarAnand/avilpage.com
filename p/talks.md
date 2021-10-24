@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-### [Python Workshop](https://pythonexpress.in/workshop/260/)
+### [Python Workshop](https://github.com/ChillarAnand/python-101)
 @ [YIT College - 2 day workshop](http://www.yit.edu.in/) [ [Content](https://github.com/ChillarAnand/python-101) ]
 <br />
 <br />

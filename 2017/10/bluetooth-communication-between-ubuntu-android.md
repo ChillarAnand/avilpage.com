@@ -5,7 +5,7 @@
 .. tags: android, bluetooth, ubuntu
 .. category: tech, how-to
 .. link:
-.. description: How to do bluetooth serial communication from ubuntu laptop to android smart phone or bluetooth device like HC-06
+.. description: How to do bluetooth serial communication from ubuntu laptop to android smart phone or bluetooth device like HC-05
 .. type: text
 -->
 

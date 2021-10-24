@@ -1,7 +1,7 @@
 <!--
 .. title: Finding Performance Issues In Python Web Apps with Sentry
 .. slug: python-web-applications-performance-sentry
-.. date: 2020-11-30 23:59:54 UTC+06:30
+.. date: 2020-11-30 23:59:54 UTC+05:30
 .. tags: python, django, sentry, apm
 .. category:
 .. link:

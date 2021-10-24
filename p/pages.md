@@ -1,7 +1,7 @@
 <!--
 .. title: Pages
 .. slug: pages
-.. date: 2020-04-30 22:23:41 UTC+06:30
+.. date: 2020-04-30 22:23:41 UTC+05:30
 .. tags: pages
 .. category: pages
 .. link:
@@ -12,6 +12,9 @@
 
 Pages
 -------
+
+
+[NSE - FNO Lot Size Revision in 45 Stocks](/p/fno-lot-size-revision-nse.html)
 
 [తెలుగు పుస్తకాలు ఉచితంగా లభించే వెబ్‌సైట్లు](/p/telugu-books-free-download-sites.html)
 

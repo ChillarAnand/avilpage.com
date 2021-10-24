@@ -1,7 +1,7 @@
 <!--
 .. title: Find High-impact Performance Bottlenecks in Django Apps
 .. slug: django-bottleneck-performance-scaling
-.. date: 2018-12-11 08:08:08 UTC+06:30
+.. date: 2018-12-11 08:08:08 UTC+05:30
 .. tags: python, django, apm, django-tips-tricks, featured
 .. category:
 .. link:

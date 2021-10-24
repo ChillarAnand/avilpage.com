@@ -1,7 +1,7 @@
 <!--
 .. title: తెలుగు పుస్తకాలు ఉచితంగా లభించే వెబ్‌సైట్లు (Websites To Download Telugu Books For Free)
 .. slug: telugu-books-free-download-sites
-.. date: 2020-04-06 21:33:00 UTC+06:30
+.. date: 2020-04-05 21:33:00 UTC+05:30
 .. tags:
 .. category:
 .. link:
