@@ -1,7 +1,7 @@
 <!--
 .. title: Instant WhatsApp
 .. slug: instant-whatsapp
-.. date: 2020-12-27 06:21:21 UTC+06:30
+.. date: 2020-12-27 06:21:21 UTC+05:30
 .. tags: flutter
 .. category:
 .. link:

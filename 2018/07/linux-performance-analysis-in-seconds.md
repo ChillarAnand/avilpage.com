@@ -1,7 +1,7 @@
 <!--
 .. title: Linux Performance Analysis In Less Than 10 Seconds
 .. slug: linux-performance-analysis-in-seconds
-.. date: 2018-07-24 21:21:21 UTC+06:30
+.. date: 2018-07-24 21:21:21 UTC+05:30
 .. tags: linux, command-line
 .. category:
 .. link:

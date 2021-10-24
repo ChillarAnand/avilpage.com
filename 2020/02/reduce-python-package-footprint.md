@@ -1,7 +1,7 @@
 <!--
 .. title: How To Reduce Python Package Footprint?
 .. slug: reduce-python-package-footprint
-.. date: 2020-02-29 20:20:38 UTC+06:30
+.. date: 2020-02-29 20:20:38 UTC+05:30
 .. tags: python, pypi, featured
 .. category:
 .. link:

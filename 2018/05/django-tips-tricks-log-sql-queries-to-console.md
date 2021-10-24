@@ -1,7 +1,7 @@
 <!--
 .. title: Django Tips & Tricks #10 - Log SQL Queries To Console
 .. slug: django-tips-tricks-log-sql-queries-to-console
-.. date: 2018-06-14 21:21:21 UTC+06:30
+.. date: 2018-06-14 21:21:21 UTC+05:30
 .. tags: django-tips-tricks, python, django
 .. category:
 .. link:
@@ -79,7 +79,7 @@ SELECT "django_session"."session_key",
 "django_session"."session_data", "django_session"."expire_date" FROM
 "django_session" WHERE ("django_session"."session_key" =
 'dummy_key AND "django_session"."expire_date"
-> '2018-06-31T09:38:56.369469+00:00'::timestamptz)
+> '2018-05-31T09:38:56.369469+00:00'::timestamptz)
 ```
 
 This package provides [additional settings][qc-settings] to customize output.

@@ -1,7 +1,7 @@
 <!--
 .. title: Continuous Deployment To Kubernetes With Skaffold
 .. slug: setup-continuous-deployment-with-kubernetes
-.. date: 2020-04-30 16:45:36 UTC+06:30
+.. date: 2020-04-30 16:45:36 UTC+05:30
 .. tags: kubernetes, devops
 .. category:
 .. link:

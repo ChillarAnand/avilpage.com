@@ -1,7 +1,7 @@
 <!--
 .. title: Versioning & Retrieving All Files From AWS S3 With Boto
 .. slug: aws-s3-bucket-objects-versions
-.. date: 2019-07-24 21:21:21 UTC+06:30
+.. date: 2019-07-24 21:21:21 UTC+05:30
 .. tags: aws, python
 .. category:
 .. link:

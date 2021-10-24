@@ -1,7 +1,7 @@
 <!--
 .. title: How To Deploy Mirth Connect To Kubernetes
 .. slug: deploy-mirth-to-kubernetes
-.. date: 2020-09-30 23:25:46 UTC+06:30
+.. date: 2020-09-30 23:25:46 UTC+05:30
 .. tags: devops, kubernetes, mirth-connect, health-care
 .. category:
 .. link:

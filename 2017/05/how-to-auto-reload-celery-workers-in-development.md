@@ -1,7 +1,7 @@
 <!--
 .. title: How To Auto Reload Celery Workers In Development?
 .. slug: how-to-auto-reload-celery-workers-in-development
-.. date: 2017-06-07 04:22:47 UTC
+.. date: 2017-05-07 04:22:47 UTC
 .. tags: celery, automation, python
 .. category: programming, python
 .. link:
