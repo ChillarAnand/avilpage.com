@@ -2,7 +2,7 @@
 .. title: A Typo Got Me $100 Bug Bounty
 .. slug: typo-lead-to-bug-bounty
 .. date: 2021-10-25 08:52:19 UTC+05:30
-.. tags: bug-bounty
+.. tags: bug-bounty, draft
 .. category:
 .. link:
 .. description:
