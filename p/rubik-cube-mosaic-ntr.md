@@ -18,7 +18,7 @@ Making of Rubik Cube Mosaic of Tarak Anna...
 After Covid, importing of cubes in bulk has become a big problem. However there were few suppliers who had old stock. I have ordered 2 cartons of cubes. Each carton contains 360 cubes. A total of 720 cubes were delivered.
 
 <p align="center">
-<img src="/images/cube1.jpg" />
+<img src="/images/cube1.png" />
 </p>
 
 <p align="center">
