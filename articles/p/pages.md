@@ -14,6 +14,9 @@ Pages
 -------
 
 
+[Rubik Cube Mosaic of Jr. NTR](/p/rubik-cube-mosaic-ntr.html)
+
+
 [Never Do Poor Mans Covered Call In Indian Stock Market](/p/poor-mans-covered-call-india.html)
 
 [NSE - FNO Lot Size Revision in 45 Stocks](/p/fno-lot-size-revision-nse.html)
