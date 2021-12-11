@@ -1,14 +1,5 @@
-Accessing Kubernetes Services By Name Using FQDN
+Learn to appeal to emotion instead of logic
 
-Lets consider a simple web application with 1 app service and 1 db service.
-
-https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#services
-https://medium.com/google-cloud/kubernetes-routing-internal-services-through-fqdn-d98db92b79d3
-https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-intro/
-
-
-
-How A Typo Led Me To A 100$ Bounty?
 
 
 Python resources blog
@@ -24,12 +15,17 @@ https://fs.blog/2020/03/chestertons-fence/
 
 
 
+
+
 Range filter in django admin
 
 https://github.com/silentsokolov/django-admin-rangefilter/blob/master/README.rst
 
 
+
 But people expect author to write complete stories
+
+
 
 How solving rubik cube lead to 2 job offers
 one cube - two cubicles - rubik cube - wipro/consulting jobs
@@ -63,10 +59,14 @@ Prefer areas with better infrastructure.
 Don't travel at all.
 
 
+
+
 CORS trouble shoot
 Client
 Local backend
 Production server
+
+
 
 
 3 simple habits that cured my phone addiction
@@ -83,21 +83,7 @@ https://web.archive.org/web/20140819035349/https://www.theguardian.com/news/data
 
 
 
-Confessions of a software engineer
-
-
 why i had to write a software program at midnight for modi & ivanka trump?
-
-
-It all starts with a problem
-Job search
-Interview
-Salary
-Work
-Politics
-Life
-And the problem never ends
-We won't have jobs if the problem ends
 
 
 
@@ -125,16 +111,20 @@ In the end he had to kill his brother
 నా పిచ్చి పిచ్చి ఆలోచనలకూ ఫుల్ స్టాప్ పెడుతూ, తాను హాయ్ అంది చిరునవ్వు చిందిస్తూ.
 
 
+
 The meaning of life
 We are evolved to seek promise of happiness but not happiness itself.
+
 
 The person who forgot destination or lost his way only asks where Am i where am I going?
 In the same way when we lose meaning of life wet all what is the meaning of life
 
 
+
 Even a simple thing as chair won't have same purpose.
 One chair will hold you still.
 Other chair will move you.
+
 
 Similar to the greatest chess move of all time.
 It doesn't exist.
@@ -145,7 +135,9 @@ It depends on the context.
 
 The meaning of life is to find something that is worth suffering for.
 
+
 Time heals everything, so give it time.
+
 
 
 HOWTO Configure Atlassian Jira to use Letsencrypt certificate with default Tomcat
@@ -178,14 +170,14 @@ Over 1 year, the average Vim user saves 11 minutes in productivity.
 
 However, they lose 27 hours through evangelising Vim to non-users.
 
+For a beginner who is getting started with programming, learning emacs/vim will add additional burden. They can just use common editors like VS Code or Intellij IDEs.
+
+
+I am not against Emacs or Vim. I have used Vim as my primary editor for about 2 years and Emacs for about 5 years. I wrote plugins for Emacs & Vim. In 2014, I even wrote a ~30 page book evangalizing Emacs.
 
 
 
-Kel Project
-https://github.com/kelproject
 
-Teresa
-https://github.com/luizalabs/teresa
 
 
 Up & Running With Mirth
