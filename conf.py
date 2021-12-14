@@ -137,6 +137,7 @@ NAVIGATION_LINKS = {
 		("/p/projects.html", "Projects"),
 		("/p/pages.html", "Pages"),
 		("/p/about.html", "About"),
+		("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
 		# ("/archive.html", "Archives"),
 		# ("/categories/index.html", "Tags"),
 		("/rss.xml", "RSS"),
