@@ -33,6 +33,10 @@ Jr. NTR - 2021
 <img src="/images/rubik-cube-mosaic-ntr.png" />
 </p>
 
+Making Video
+
+<embed width="600" height="400" src="https://www.youtube.com/watch?v=BlAc0Kt60SM" type="application/x-shockwave-flash" allowfullscreen="true">
+
 
 ### About the collection
 
