@@ -2,7 +2,7 @@
 .. title: Why My Grandma Can Recall 100+ Phone Numbers, But We Can't
 .. slug: total-recall-grandma-phone-numbers
 .. date: 2019-06-20 21:21:21 UTC+05:30
-.. tags: life-tips, grandma
+.. tags: life-tips, grandma, musings
 .. category:
 .. link:
 .. description: How many phone numbers do you remember? Most people don't even remember the phone numbers of family and friends. It has to do with smart phone usage.
