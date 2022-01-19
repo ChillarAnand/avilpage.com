@@ -1,7 +1,7 @@
 <!--
 .. title: On Resuming Writing Challenge
 .. slug: resuming-writing-challenge
-.. date: 2022-01-11 06:06:06 UTC+05:30
+.. date: 2022-01-19 06:06:06 UTC+05:30
 .. tags: personal, writing
 .. category:
 .. link:
