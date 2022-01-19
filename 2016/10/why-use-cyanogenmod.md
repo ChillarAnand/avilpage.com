@@ -2,8 +2,8 @@
 .. title: Why I Use CyanogenMod?
 .. slug: why-use-cyanogenmod
 .. date: 2016-10-31 14:05:09 UTC
-.. tags: cyanogenmod, customization, xposed
-.. category: tech, android
+.. tags: android, mobile
+.. category: tech
 .. link:
 .. description:
 .. type: text
