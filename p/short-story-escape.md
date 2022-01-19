@@ -16,7 +16,7 @@
 
 "When did you see him last?", asked the S.I., cutting the other person.
 
-"Inamtes have seen him around 5PM."
+"Inmates have seen him around 5PM."
 
 "Ask the gaurds to look for him in surroundings and also enquire at the near by shops. Inform me if you find anything." said the S.I.
 
