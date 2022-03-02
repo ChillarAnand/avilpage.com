@@ -43,6 +43,9 @@ One feature Frappe Framework lacks when compared to integration engines is sendi
 [Frappe Healthcare][] is an HIS system built on top of Frappe/ERPNext. If a hospital is using Frappe Healthcare, then there won't be a need to use integration engine as Frappe framework can take care of most of these things.
 
 
+<img src="/images/frappe-his.png" />
+
+
 ### Conclusion
 
 In healthcare, integration engines are used extensively to tackle data exchange between systems. Due to its low-code development and batteries included approach, even though Frappe is a web application framework, it can be used as an integration engine as well.
