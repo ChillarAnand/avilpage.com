@@ -121,7 +121,48 @@ article: http://ogp.me/ns/article#
                     <a href="rss.xml" type="application/rss+xml">RSS feed</a>
             </p>
 
-    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/frappe-framework-mirth.html" class="u-url">Using Frappe Framework As An Integration Engine</a></h1>
+    </header><article class="postbox h-entry post-text"><h1 class="p-name"><a href="03/fuzzy-search-frappe-framework.html" class="u-url">Adding Fuzzy Search To Frappe Framework</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>As software developers, we use fuzzy search a lot especially when using Emacs or any other editors/IDEs. For example to search a file called <code>patient_history.js</code>, in the editor, we can just type <code>pah</code> and editor will narrow it down.</p>
+<p><img src="../images/frappe-fuzzy-search-1.png"></p>
+<p>This is quite handy as we can open any file with just few characters.</p>
+<p>FF is a low code, open source, web framework in Python and Javascript. All sites built with FF will have a global search bar(aka awesome bar) as shown below. Here, we can search for doctypes, reports, pages etc.</p>
+<p><img src="../images/frappe-fuzzy-search-2.png"></p>
+<p>To open <code>Patient History</code>, we have to type almost the entire text in search bar. If we type <code>pah</code> like we have typed in the editor, it won't show any results.</p>
+<p><img src="../images/frappe-fuzzy-search-3.png"></p>
+<p>Instead, we can add fuzzy search here so that we can search for any item with just a frew key strokes.</p>
+<h4>Fuzzy Search</h4>
+<p>There are many third party packages which implement fuzzy search in programming languages. However we can't use any of these fuzzy search packages directly. These editors internally use a scoring algorithm to rank the results and display results based on score.</p>
+<p>It internally considers many factors mentioned below for scoring.</p>
+<ul>
+<li>
+<p>Matched letters</p>
+</li>
+<li>
+<p>CamelCase letters</p>
+</li>
+<li>
+<p>snake_case letters</p>
+</li>
+<li>
+<p>Consecutive matching letters</p>
+</li>
+</ul>
+<p>We can come up with a scoring mechanism for these factors and based on the matches, we can rank the results. I have implemented a custom fuzzy search alogirthm based on the above factors but it was slow and results were not good in some cases.</p>
+<p>Then I stumbled up this <a href="https://github.com/forrestthewoods/lib_fts/blob/master/code/fts_fuzzy_match.js">fts_fuzzy_match</a> implementation. This is a reverse engineered implementation of sublime text fuzzy search and it has a detailed scoring mechanism as well. It assigns negative ranking to mismatched letters and bonus points for consecutive matches.</p>
+<p>This works well and is as effective as most IDEs search. Now that there is a solid fuzzy search, all we need to do is hook this up in FF.</p>
+<p>FF internally has a fuzzy search function and we can directly hook it up here as shown here.</p>
+<p>After that, we can search for anything in just few key strokes. For example to open patient history, we can just type <code>pah</code> and it will show results like this.</p>
+<p><img src="../images/frappe-fuzzy-search-4.png"></p>
+<h4>Conclusion</h4>
+<p>Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="02/frappe-framework-mirth.html" class="u-url">Using Frappe Framework As An Integration Engine</a></h1>
             <hr>
 <div class="e-content">
                         <div>

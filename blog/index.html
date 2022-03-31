@@ -115,7 +115,48 @@ article: http://ogp.me/ns/article#
         <hr>
 <!--Body content--><div class="row">
             
-        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2022/02/frappe-framework-mirth.html" class="u-url">Using Frappe Framework As An Integration Engine</a></h1>
+        <article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2022/03/fuzzy-search-frappe-framework.html" class="u-url">Adding Fuzzy Search To Frappe Framework</a></h1>
+            <hr>
+<div class="e-content">
+                        <div>
+<h4>Introduction</h4>
+<p>As software developers, we use fuzzy search a lot especially when using Emacs or any other editors/IDEs. For example to search a file called <code>patient_history.js</code>, in the editor, we can just type <code>pah</code> and editor will narrow it down.</p>
+<p><img src="../images/frappe-fuzzy-search-1.png"></p>
+<p>This is quite handy as we can open any file with just few characters.</p>
+<p>FF is a low code, open source, web framework in Python and Javascript. All sites built with FF will have a global search bar(aka awesome bar) as shown below. Here, we can search for doctypes, reports, pages etc.</p>
+<p><img src="../images/frappe-fuzzy-search-2.png"></p>
+<p>To open <code>Patient History</code>, we have to type almost the entire text in search bar. If we type <code>pah</code> like we have typed in the editor, it won't show any results.</p>
+<p><img src="../images/frappe-fuzzy-search-3.png"></p>
+<p>Instead, we can add fuzzy search here so that we can search for any item with just a frew key strokes.</p>
+<h4>Fuzzy Search</h4>
+<p>There are many third party packages which implement fuzzy search in programming languages. However we can't use any of these fuzzy search packages directly. These editors internally use a scoring algorithm to rank the results and display results based on score.</p>
+<p>It internally considers many factors mentioned below for scoring.</p>
+<ul>
+<li>
+<p>Matched letters</p>
+</li>
+<li>
+<p>CamelCase letters</p>
+</li>
+<li>
+<p>snake_case letters</p>
+</li>
+<li>
+<p>Consecutive matching letters</p>
+</li>
+</ul>
+<p>We can come up with a scoring mechanism for these factors and based on the matches, we can rank the results. I have implemented a custom fuzzy search alogirthm based on the above factors but it was slow and results were not good in some cases.</p>
+<p>Then I stumbled up this <a href="https://github.com/forrestthewoods/lib_fts/blob/master/code/fts_fuzzy_match.js">fts_fuzzy_match</a> implementation. This is a reverse engineered implementation of sublime text fuzzy search and it has a detailed scoring mechanism as well. It assigns negative ranking to mismatched letters and bonus points for consecutive matches.</p>
+<p>This works well and is as effective as most IDEs search. Now that there is a solid fuzzy search, all we need to do is hook this up in FF.</p>
+<p>FF internally has a fuzzy search function and we can directly hook it up here as shown here.</p>
+<p>After that, we can search for anything in just few key strokes. For example to open patient history, we can just type <code>pah</code> and it will show results like this.</p>
+<p><img src="../images/frappe-fuzzy-search-4.png"></p>
+<h4>Conclusion</h4>
+<p>Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.</p>
+</div>
+                    </div>
+                        
+        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2022/02/frappe-framework-mirth.html" class="u-url">Using Frappe Framework As An Integration Engine</a></h1>
             <hr>
 <div class="e-content">
                         <div>
@@ -626,125 +667,6 @@ CMD [ "-m" "flask" "run" ]
 <ol>
 <li id="fn:nc">
 <p><a href="https://hub.docker.com/r/nextgenhealthcare/connect/">https://hub.docker.com/r/nextgenhealthcare/connect/</a> <a class="footnote-backref" href="../2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-</div>
-                    </div>
-                        
-        </article><article class="postbox h-entry post-text"><h1 class="p-name"><a href="../2020/08/bluetooth-terminal-python-asyncio.html" class="u-url">Serial Bluetooth Terminal With Python Asyncio</a></h1>
-            <hr>
-<div class="e-content">
-                        <div>
-<h4>Introduction</h4>
-<p>PySerial package provides a tool called miniterm<sup id="fnref:miniterm"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:miniterm">1</a></sup>, which provides a terminal to interact with any serial ports.</p>
-<p>However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.</p>
-<p>In this article, lets write a simple terminal to address the above issues.</p>
-<h4>Bluetooth Receiver</h4>
-<p>pyserial-asyncio<sup id="fnref:pyserial-asyncio"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:pyserial-asyncio">2</a></sup> package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.</p>
-<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-
-<span class="kn">import</span> <span class="nn">serial_asyncio</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Rx &lt;== </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
-    <span class="n">reader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
-    <span class="n">receiver</span> <span class="o">=</span> <span class="n">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">receiver</span><span class="p">])</span>
-
-
-<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
-<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</code></pre>
-
-<p>Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal<sup id="fnref:asbt"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:asbt">4</a></sup>.</p>
-<p>Here a screenshot of messages being send from an Android device.</p>
-<p><img src="../images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"></p>
-<p>We can listen to these messages on laptop via serial port by running the following command.</p>
-<pre class="code literal-block"><span></span><code>$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
-<span class="m">2020</span>-08-31 <span class="m">10</span>:44:50.995281 Rx &lt;<span class="o">==</span> ping from android
-<span class="m">2020</span>-08-31 <span class="m">10</span>:44:57.702866 Rx &lt;<span class="o">==</span> <span class="nb">test</span> message
-</code></pre>
-
-<h4>Bluetooth Sender</h4>
-<p>Now lets write a sender to send messages typed on the terminal to the bluetooth.</p>
-<p>To read input from terminal, we need to use aioconsole <sup id="fnref:aioc"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:aioc">3</a></sup>. It provides async input equivalent function to read input typed on the terminal.</p>
-<pre class="code literal-block"><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-
-<span class="kn">import</span> <span class="nn">serial_asyncio</span>
-<span class="kn">import</span> <span class="nn">aioconsole</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">writer</span><span class="p">):</span>
-    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioconsole</span><span class="o">.</span><span class="n">get_standard_streams</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdin</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Tx ==&gt; </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
-    <span class="n">sender</span> <span class="o">=</span> <span class="n">send</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">sender</span><span class="p">])</span>
-
-
-<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
-<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</code></pre>
-
-<p>We can run the program with the following command and send messages to phone's bluetooth.</p>
-<pre class="code literal-block"><span></span><code>$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
-
-ping from mac
-<span class="m">2020</span>-08-31 <span class="m">10</span>:46:52.222676 <span class="nv">Tx</span> <span class="o">==</span>&gt; ping from mac
-<span class="m">2020</span>-08-31 <span class="m">10</span>:46:58.423492 <span class="nv">Tx</span> <span class="o">==</span>&gt; <span class="nb">test</span> message
-</code></pre>
-
-<p>Here a screenshot of messages received on Android device.</p>
-<p><img src="../images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"></p>
-<h4>Conclusion</h4>
-<p>If we combine the above two programmes, we get a simple bluetooth client to interact with any bluetooth via serial interface. Here is the complete code <sup id="fnref:gist"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:gist">5</a></sup> for the client.</p>
-<p>In the next article, lets see how to interact with Bluetooth LE devices.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:miniterm">
-<p><a href="https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm">miniterm</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:miniterm" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:pyserial-asyncio">
-<p><a href="https://pypi.org/project/pyserial-asyncio/">pyserial-asyncio on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:pyserial-asyncio" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:aioc">
-<p><a href="https://pypi.org/project/aioconsole/">aioconsole on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:aioc" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:asbt">
-<p><a href="https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal">Serial Bluetooth Terminal on Play Store</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:asbt" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-<li id="fn:gist">
-<p><a href="https://gist.github.com/ChillarAnand/a7be6adeb84a63d48e8dda27aab7ac94">Python async client</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:gist" title="Jump back to footnote 5 in the text">↩</a></p>
 </li>
 </ol>
 </div>
