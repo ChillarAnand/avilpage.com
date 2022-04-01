@@ -48,7 +48,7 @@ Then I stumbled up this [fts_fuzzy_match](https://github.com/forrestthewoods/lib
 
 This works well and is as effective as most IDEs search. Now that there is a solid fuzzy search, all we need to do is hook this up in FF.
 
-FF internally has a fuzzy search function and we can directly hook it up here as shown here.
+FF internally has a fuzzy search function and we can directly hook it up here [as shown here](https://github.com/frappe/frappe/pull/16478).
 
 After that, we can search for anything in just few key strokes. For example to open patient history, we can just type `pah` and it will show results like this.
 
