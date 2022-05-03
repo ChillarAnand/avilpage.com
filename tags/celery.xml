@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about celery)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/celery.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 31 Mar 2022 17:01:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Load Testing Celery With Different Brokers</title><link>http://avilpage.com/2018/02/load-testing-celery-brokers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about celery)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/celery.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 03 May 2022 13:29:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Load Testing Celery With Different Brokers</title><link>http://avilpage.com/2018/02/load-testing-celery-brokers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.&lt;/p&gt;
 &lt;p&gt;Let us take a simple add task and measure queueing time.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;timeit&lt;/span&gt;
 
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;celery&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Celery&lt;/span&gt;
 
@@ -22,7 +22,7 @@
 &lt;span class="n"&gt;duration&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timeit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;default_timer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;start_time&lt;/span&gt;
 &lt;span class="n"&gt;rate&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;duration&lt;/span&gt;
 &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="si"&gt;{}&lt;/span&gt;&lt;span class="s2"&gt; tasks/sec"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;On development machine, with AMD A4-5000 CPU, queueing time is as follows&lt;/p&gt;
 &lt;ul&gt;
@@ -40,30 +40,30 @@
 &lt;/ul&gt;
 &lt;p&gt;For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.&lt;/p&gt;
 &lt;p&gt;Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chunks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;tasks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chunks&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.&lt;/p&gt;&lt;/div&gt;</description><category>celery</category><category>python</category><guid>http://avilpage.com/2018/02/load-testing-celery-brokers.html</guid><pubDate>Fri, 09 Feb 2018 13:49:18 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;celery worker -l info -A foo --autoreload
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.&lt;/p&gt;</description><category>celery</category><category>python</category><guid>http://avilpage.com/2018/02/load-testing-celery-brokers.html</guid><pubDate>Fri, 09 Feb 2018 13:49:18 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;celery worker -l info -A foo --autoreload
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Unfortunately, it doesn't work as expected and &lt;a href="https://github.com/celery/celery/issues/1658"&gt;it is deprecated&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://pypi.python.org/pypi/watchdog"&gt;Watchdog&lt;/a&gt; provides Python API and shell utilities to monitor file system events. We can install it with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;pip install watchdog
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip install watchdog
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Watchdog provides &lt;code&gt;watchmedo&lt;/code&gt; a shell utilitiy to perform actions based on file events. It has &lt;code&gt;auto-restart&lt;/code&gt; subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;watchmedo auto-restart -- celery worker -l info -A foo
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo auto-restart -- celery worker -l info -A foo
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;watchmedo auto-restart -d . -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo auto-restart -d . -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes.&lt;/p&gt;
 &lt;p&gt;The same functionality can be used to reload celery workers. Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
 
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.core.management.base&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseCommand&lt;/span&gt;
@@ -82,9 +82,9 @@
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
         &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Starting celery worker with autoreload...'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
         &lt;span class="n"&gt;autoreload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;&lt;/div&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item><item><title>Scaling Celery - Sending Tasks To Remote Machines</title><link>http://avilpage.com/2014/11/scaling-celery-sending-tasks-to-remote.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
+&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>http://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item><item><title>Scaling Celery - Sending Tasks To Remote Machines</title><link>http://avilpage.com/2014/11/scaling-celery-sending-tasks-to-remote.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
     &lt;h4 style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 1.25em; line-height: 1.4; margin-bottom: 16px; margin-top: 1em; position: relative;"&gt;
     Celery:&lt;/h4&gt;
 
@@ -258,5 +258,4 @@ celery worker -l info -A remote
     Depending on your need, you might have to set up a cluster of servers and route tasks accordingly to scale.
     &lt;/div&gt;
 
-  &lt;/div&gt;
-</description><category>celery</category><category>django</category><category>python</category><guid>http://avilpage.com/2014/11/scaling-celery-sending-tasks-to-remote.html</guid><pubDate>Sun, 09 Nov 2014 08:35:00 GMT</pubDate></item></channel></rss>
+  &lt;/div&gt;</description><category>celery</category><category>django</category><category>python</category><guid>http://avilpage.com/2014/11/scaling-celery-sending-tasks-to-remote.html</guid><pubDate>Sun, 09 Nov 2014 08:35:00 GMT</pubDate></item></channel></rss>

@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about android)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/android.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 31 Mar 2022 17:01:21 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Running Django Web Apps On Android Devices</title><link>http://avilpage.com/2018/02/deploy-django-web-app-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about android)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/android.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 03 May 2022 13:29:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Running Django Web Apps On Android Devices</title><link>http://avilpage.com/2018/02/deploy-django-web-app-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.&lt;/p&gt;
 &lt;p&gt;First install &lt;a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid"&gt;SSHDroid&lt;/a&gt; app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.&lt;/p&gt;
 &lt;p&gt;Now install &lt;a href="https://play.google.com/store/apps/details?id=org.qpython.qpy"&gt;QPython&lt;/a&gt;. This comes bundled with pip, which will install required python packages.&lt;/p&gt;
 &lt;p&gt;Instead of installing these two apps, we can use &lt;a href="https://github.com/termux/termux-app/"&gt;Termux&lt;/a&gt;, &lt;a href="https://github.com/corbinlc/GNURootDebian"&gt;GNURoot Debian&lt;/a&gt; or some other app which provides Linux environment in Android. These apps will provide &lt;code&gt;apt&lt;/code&gt; package manager, which can install &lt;code&gt;python&lt;/code&gt; and &lt;code&gt;openssh-server&lt;/code&gt; packages.&lt;/p&gt;
 &lt;p&gt;I have used &lt;a href="https://github.com/ChillarAnand/django-bookmarks"&gt;django-bookmarks&lt;/a&gt;, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;rsync -razP django-bookmarks :&lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;:/data/local/
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;rsync -razP django-bookmarks :&lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;:/data/local/
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Now ssh into android, install django and start django server.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ ssh -v &lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ ssh -v &lt;span class="nv"&gt;$USER&lt;/span&gt;@&lt;span class="nv"&gt;$HOST&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ python -m pip install django
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ python -m pip install django
 $ &lt;span class="nb"&gt;cd&lt;/span&gt; /data/local/django-bookmarks
 $ python manage.py runvserver
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This will start development server on port 8000. To share this webapp with others, we will expose it with &lt;a href="https://serveo.net/"&gt;serveo&lt;/a&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ ssh -R &lt;span class="m"&gt;80&lt;/span&gt;:localhost:8000 serveo.net
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ ssh -R &lt;span class="m"&gt;80&lt;/span&gt;:localhost:8000 serveo.net
 
 Forwarding HTTP traffic from https://incepro.serveo.net
 Press g to start a GUI session and ctrl-c to quit.
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Now we can share our django app with anyone.&lt;/p&gt;
 &lt;p&gt;I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;ab -k -c &lt;span class="m"&gt;50&lt;/span&gt; -n &lt;span class="m"&gt;1000&lt;/span&gt;  &lt;span class="se"&gt;\&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ab -k -c &lt;span class="m"&gt;50&lt;/span&gt; -n &lt;span class="m"&gt;1000&lt;/span&gt;  &lt;span class="se"&gt;\&lt;/span&gt;
 -H &lt;span class="s2"&gt;"Accept-Encoding: gzip, deflate"&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
 http://incepro.serveo/list/
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;It is able to server 15+ requests concurrently with an average response time of 800ms.&lt;/p&gt;
-&lt;p&gt;We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/02/deploy-django-web-app-android.html</guid><pubDate>Mon, 19 Feb 2018 12:10:56 GMT</pubDate></item><item><title>How To Install Custom ROMs In Xiamo MiPad?</title><link>http://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.&lt;/p&gt;
+&lt;p&gt;We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.&lt;/p&gt;</description><category>android</category><category>django</category><category>python</category><guid>http://avilpage.com/2018/02/deploy-django-web-app-android.html</guid><pubDate>Mon, 19 Feb 2018 12:10:56 GMT</pubDate></item><item><title>How To Install Custom ROMs In Xiamo MiPad?</title><link>http://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.&lt;/p&gt;
 &lt;h3&gt;Install TWRP&lt;/h3&gt;
 &lt;p&gt;Dowload latest recovery from &lt;a href="https://twrp.me/"&gt;twrp.me&lt;/a&gt;. Copy it to android device or push it to android using adb.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;adb push -p twrp-3.1.1-0-mocha.img /sdcard/
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;adb push -p twrp-3.1.1-0-mocha.img /sdcard/
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Now put the device into fastboot mode by pressing &lt;strong&gt;Volume down&lt;/strong&gt; &amp;amp; &lt;strong&gt;Power&lt;/strong&gt; button simultanesouly when you switch it on. When in fastboot mode, flash the downloaded recovery file&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Now we can go to recovery mode using adb.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;adb reboot recovery
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;adb reboot recovery
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h3&gt;Merge partitions&lt;/h3&gt;
 &lt;p&gt;Before installing custom ROM, we need to merge partitions so that we will have enough space to install ROM. If you are familiar with &lt;a href="https://www.gnu.org/software/parted/"&gt;parted&lt;/a&gt; command, you can directly merge the partitions from terminal in TWRP recovery.&lt;/p&gt;
@@ -54,7 +54,7 @@ http://incepro.serveo/list/
 &lt;/p&gt;
 
 &lt;h3&gt;Install ROM&lt;/h3&gt;
-&lt;p&gt;After partitions are merged, it is straight forward to install any custom ROM. Download a custom ROM like lineage or RR, push it to device and then install it from TWRP. After reboot, you will see the custom ROM booting.&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</guid><pubDate>Sun, 19 Nov 2017 10:39:27 GMT</pubDate></item><item><title>How To Remove Clock From LockScreen/StatusBar?</title><link>http://avilpage.com/2017/11/how-to-remove-clock-lock-screen-status-bar.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Last year, I wrote a blog post on &lt;a href="http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html"&gt;how to remove clock from lock screen and status bar&lt;/a&gt; if &lt;a href="http://repo.xposed.info/module/de.robv.android.xposed.installer"&gt;xposed&lt;/a&gt; is installed on your android device. You can also do this without xposed if you are using RR(Resurrection Remix) as it comes with a lot of inbuilt customization.&lt;/p&gt;
+&lt;p&gt;After partitions are merged, it is straight forward to install any custom ROM. Download a custom ROM like lineage or RR, push it to device and then install it from TWRP. After reboot, you will see the custom ROM booting.&lt;/p&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</guid><pubDate>Sun, 19 Nov 2017 10:39:27 GMT</pubDate></item><item><title>How To Remove Clock From LockScreen/StatusBar?</title><link>http://avilpage.com/2017/11/how-to-remove-clock-lock-screen-status-bar.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Last year, I wrote a blog post on &lt;a href="http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html"&gt;how to remove clock from lock screen and status bar&lt;/a&gt; if &lt;a href="http://repo.xposed.info/module/de.robv.android.xposed.installer"&gt;xposed&lt;/a&gt; is installed on your android device. You can also do this without xposed if you are using RR(Resurrection Remix) as it comes with a lot of inbuilt customization.&lt;/p&gt;
 &lt;h4&gt;Remove Clock From LockScreen&lt;/h4&gt;
 &lt;p&gt;To remove clock from lockscreen, go to &lt;strong&gt;Settings&lt;/strong&gt; -&amp;gt; &lt;strong&gt;Configurations&lt;/strong&gt; -&amp;gt; &lt;strong&gt;Lock screen&lt;/strong&gt; -&amp;gt;  &lt;strong&gt;Show lock screen lock&lt;/strong&gt;.&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -88,10 +88,10 @@ http://incepro.serveo/list/
 &lt;img src="http://avilpage.com/images/remove_clock_android_16.png" height="400px" width="220"&gt;
 &lt;/p&gt;
 
-&lt;p&gt;[xposed]:&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2017/11/how-to-remove-clock-lock-screen-status-bar.html</guid><pubDate>Mon, 13 Nov 2017 20:24:38 GMT</pubDate></item><item><title>Bluetooth Serial Communication Between Ubuntu &amp; Android</title><link>http://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.&lt;/p&gt;
+&lt;p&gt;[xposed]:&lt;/p&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2017/11/how-to-remove-clock-lock-screen-status-bar.html</guid><pubDate>Mon, 13 Nov 2017 20:24:38 GMT</pubDate></item><item><title>Bluetooth Serial Communication Between Ubuntu &amp; Android</title><link>http://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.&lt;/p&gt;
 &lt;p&gt;In this article, we will learn how to send data between laptop and android bluetooth.&lt;/p&gt;
 &lt;p&gt;First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;asus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DESKTOP&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;C4ECO3K&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;athene&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -119,25 +119,25 @@ http://incepro.serveo/list/
 &lt;span class="n"&gt;Attempting&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Paired&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;Pairing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;To communicate with paired devices, we will use &lt;a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols"&gt;RFCOMM protocol&lt;/a&gt;. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.&lt;/p&gt;
 &lt;p&gt;From ubuntu, lets open a port for communication.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;From Android, we have to connect to ubuntu. For this, we can use &lt;a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;amp;hl=en"&gt;Roboremo&lt;/a&gt; app which supports RFCOMM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
 Waiting &lt;span class="k"&gt;for&lt;/span&gt; connection on channel &lt;span class="m"&gt;3&lt;/span&gt;
 Connection from &lt;span class="m"&gt;88&lt;/span&gt;:79:7E:7B:4C:87 to /dev/rfcomm0
 Press CTRL-C &lt;span class="k"&gt;for&lt;/span&gt; hangup
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Once the connection is established, we can communicate between devices.&lt;/p&gt;
 &lt;p&gt;In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
 $ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'hello from ubuntu'&lt;/span&gt; &amp;gt; /dev/rfcomm0
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;We can see the received messages on Android&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -145,12 +145,12 @@ $ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'hello from ub
 &lt;/p&gt;
 
 &lt;p&gt;We can also send messages from android and read from ubuntu.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
 $ cat /dev/rfcomm0
 hello from android
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>bluetooth</category><category>ubuntu</category><guid>http://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item><item><title>Why I Use CyanogenMod?</title><link>http://avilpage.com/2016/10/why-use-cyanogenmod.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;When listening to music, to switch tracks I want to use volume buttons. For this I have to use &lt;a href="https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&amp;amp;hl=en"&gt;Pocket Skip Track&lt;/a&gt; app.
+&lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;</description><category>android</category><category>bluetooth</category><category>ubuntu</category><guid>http://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item><item><title>Why I Use CyanogenMod?</title><link>http://avilpage.com/2016/10/why-use-cyanogenmod.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When listening to music, to switch tracks I want to use volume buttons. For this I have to use &lt;a href="https://play.google.com/store/apps/details?id=com.silentlexx.volbtntrackctrl&amp;amp;hl=en"&gt;Pocket Skip Track&lt;/a&gt; app.
 CyanogenMod has inbuilt support for that.&lt;/p&gt;
 &lt;p&gt;To interact with mobile from computer over wifi, &lt;a href="https://play.google.com/store/apps/details?id=com.ttxapps.wifiadb"&gt;wifi adb&lt;/a&gt; is required. CyanogenMod provides an option to enable this in &lt;code&gt;Developer Options&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;To put mobile in recovery mode, &lt;a href="http://repo.xposed.info/module/com.ceco.kitkat.gravitybox"&gt;Gravity Box&lt;/a&gt; is required. This should be used only after installing Xposed framework. CyanogenMod has &lt;code&gt;Advanced reboot&lt;/code&gt; which provides option to put phone in recovery mode.&lt;/p&gt;
@@ -161,7 +161,7 @@ CyanogenMod has inbuilt circle/text indicators.&lt;/p&gt;
 &lt;p&gt;To adapt mobile display to the time of the day, flux app is required on stock android. CyanogenMod has inbuilt option for this.&lt;/p&gt;
 &lt;p&gt;To get superuser permissions, I have to root stock android. CyanogenMod comes with root permissions. To run &lt;code&gt;adb&lt;/code&gt; as root on stock android, &lt;code&gt;adbd insecure&lt;/code&gt; app is required. CyanogenMod works without it.&lt;/p&gt;
 &lt;p&gt;Stock android also doesn't provide any options to customize status bar. CyanogenMod has several options to customize it.&lt;/p&gt;
-&lt;p&gt;There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>mobile</category><guid>http://avilpage.com/2016/10/why-use-cyanogenmod.html</guid><pubDate>Mon, 31 Oct 2016 14:05:09 GMT</pubDate></item><item><title>Remove Clock From LockScreen/StatusBar On Android</title><link>http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div&gt;&lt;p&gt;I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. With Xposed framework we can remove clock from lock screen and status bar.&lt;/p&gt;
+&lt;p&gt;There are several other things where CyanogenMod excels when compared to stock android like themes, privacy guard e.t.c. However, CyanogenMod comes with a lot of inbuilt features(batteries included) and that is the main reason for me to use it.&lt;/p&gt;</description><category>android</category><category>mobile</category><guid>http://avilpage.com/2016/10/why-use-cyanogenmod.html</guid><pubDate>Mon, 31 Oct 2016 14:05:09 GMT</pubDate></item><item><title>Remove Clock From LockScreen/StatusBar On Android</title><link>http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I have been living without time from a few years and it is a bliss. I have removed time from my laptop. For android mobile, I couldn't find a reliable way to remove time and I used to change timezone to a random zone. With Xposed framework we can remove clock from lock screen and status bar.&lt;/p&gt;
 &lt;p&gt;Before proceeding, make sure your phone is &lt;a href="http://www.xda-developers.com/root/"&gt;rooted&lt;/a&gt; and &lt;a href="http://repo.xposed.info/module/de.robv.android.xposed.installer"&gt;Xposed framework&lt;/a&gt; is installed.&lt;/p&gt;
 &lt;h4&gt;Remove Clock From LockScreen&lt;/h4&gt;
 &lt;p&gt;To remove clock from lockscreen, download &lt;a href="http://repo.xposed.info/module/com.ssrdroide.lockscreenwidgets"&gt;Lock screen widgets&lt;/a&gt; module and activate it.&lt;/p&gt;
@@ -196,4 +196,4 @@ CyanogenMod has inbuilt circle/text indicators.&lt;/p&gt;
 &lt;p&gt;Once you do this, you will have a neat lockscreen without any time on it.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="http://avilpage.com/remove_clock_android/remove_clock_anrdoid_6.png" height="400px" width="220"&gt;
-&lt;/p&gt;&lt;/div&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html</guid><pubDate>Thu, 15 Sep 2016 13:24:38 GMT</pubDate></item></channel></rss>
+&lt;/p&gt;</description><category>android</category><category>how-to</category><guid>http://avilpage.com/2016/09/remove-clock-lock-screen-status-bar-android.html</guid><pubDate>Thu, 15 Sep 2016 13:24:38 GMT</pubDate></item></channel></rss>
