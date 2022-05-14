@@ -131,17 +131,17 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 #          else they won’t be highlighted when active.
 
 NAVIGATION_LINKS = {
-	DEFAULT_LANG: (
-		("/", "Articles"),
-		("/p/talks.html", "Talks"),
-		("/p/projects.html", "Projects"),
-		("/p/pages.html", "Pages"),
-		("/p/about.html", "About"),
-		("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
-		# ("/archive.html", "Archives"),
-		# ("/categories/index.html", "Tags"),
-		("/rss.xml", "RSS"),
-	),
+        DEFAULT_LANG: (
+                ("/p/archives.html", "Archives"),
+                ("/p/talks.html", "Talks"),
+                ("/p/projects.html", "Projects"),
+                ("/p/pages.html", "Pages"),
+                ("/p/about.html", "About"),
+                ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
+                # ("/archive.html", "Archives"),
+                # ("/categories/index.html", "Tags"),
+                ("/rss.xml", "RSS"),
+        ),
 }
 
 # Name of the theme to use.
@@ -153,9 +153,9 @@ THEME = 'bootstrap4-jinja'
 
 
 # use archive as home page
-INDEX_PATH = 'blog'
-ARCHIVE_PATH = ''
-ARCHIVE_FILENAME = 'index.html'
+INDEX_PATH = 'foo'
+# ARCHIVE_PATH = ''
+# ARCHIVE_FILENAME = 'index.html'
 
 
 # Primary color of your theme. This will be used to customize your theme and
