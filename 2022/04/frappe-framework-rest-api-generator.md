@@ -43,7 +43,7 @@ With traditional API generators, managing roles & permissions involves additiona
 
 #### Hooks
 
-Even though REST API generators give API out of the box, there will be scenarios where custom business logic needs to be hooked in for various events. 
+Even though REST API generators give API out of the box, there will be scenarios where custom business logic needs to be hooked in for various events.
 In such scenarios, developers end up using an alternate framework/tool to manage hooks and business logic.
 
 Frappe provides server scripts by which arbitrary python code can be executed dynamically based on model events. There is no need to set up another framework for these things.

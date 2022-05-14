@@ -2,8 +2,8 @@
 .. title: Why Blog Posts Are Better Than Scientific Papers?
 .. slug: blog_posts_are_better_than_scientific_papers
 .. date: 2017-01-08 17:03:38 UTC
-.. tags: research, blogging
-.. category: blogging
+.. tags: blogging, opinion
+.. category: tech, blogging
 .. link:
 .. description: A few reasons why blog posts are better than scientific papers?
 .. type: text

@@ -1,5 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tech, programming)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/cat_tech-programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 03 May 2022 13:29:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Concurrent Downloads - Bash Vs Python</title><link>http://avilpage.com/2016/05/concurrent-downloads-bash-vs-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tech, programming)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/cat_tech-programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 14 May 2022 07:41:33 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).&lt;/p&gt;
+&lt;p&gt;In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.&lt;/p&gt;
+&lt;h4&gt;Chain of Trust&lt;/h4&gt;
+&lt;p&gt;TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.&lt;/p&gt;
+&lt;p&gt;Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl s_client -showcerts -connect avilpage.com:443
+
+CONNECTED&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;00000006&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert High Assurance EV Root CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert SHA2 High Assurance Server CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;ST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; California, &lt;span class="nv"&gt;L&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; San Francisco, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GitHub, Inc."&lt;/span&gt;, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.github.com
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+---
+Certificate chain
+ &lt;span class="m"&gt;0&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/ST&lt;span class="o"&gt;=&lt;/span&gt;California/L&lt;span class="o"&gt;=&lt;/span&gt;San Francisco/O&lt;span class="o"&gt;=&lt;/span&gt;GitHub, Inc./CN&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+-----BEGIN CERTIFICATE-----
+MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
+aTrrJ67dru040my
+-----END CERTIFICATE-----
+ &lt;span class="m"&gt;1&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+-----BEGIN CERTIFICATE-----
+MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
+&lt;span class="nv"&gt;cPUeybQ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+-----END CERTIFICATE-----
+
+    Verify &lt;span class="k"&gt;return&lt;/span&gt; code: &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ok&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into &lt;code&gt;server.pem&lt;/code&gt; and &lt;code&gt;intermediate.pem&lt;/code&gt; files.&lt;/p&gt;
+&lt;p&gt;We can decode these pem files and see the information in these certificates using&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl x509 -noout -text -in server.crt
+
+Certificate:
+    Data:
+        Version: &lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;0x2&lt;span class="o"&gt;)&lt;/span&gt;
+    Signature Algorithm: sha256WithRSAEncryption
+    ----
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can also get only the subject and issuer of the certificate with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl x509 -noout -subject -noout -issuer -in server.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+
+$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.&lt;/p&gt;
+&lt;p&gt;If you are using a Linux machine, all the root certificate will readily available in &lt;code&gt;.pem&lt;/code&gt; format in &lt;code&gt;/etc/ssl/certs&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;If you are using a Mac, open &lt;code&gt;Keychain Access&lt;/code&gt;, search and export the relevant root certificate in &lt;code&gt;.pem&lt;/code&gt; format.&lt;/p&gt;
+&lt;p algin="center"&gt;
+&lt;img src="http://avilpage.com/images/tls-openssl1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We have all the 3 certificates in the chain of trust and we can validate them with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+server.pem: OK
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If there is some issue with validation OpenSSL will throw an error with relevant information.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.&lt;/p&gt;</description><category>openssl</category><category>shell</category><guid>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</guid><pubDate>Sat, 30 Nov 2019 04:45:14 GMT</pubDate></item><item><title>Automatic Magnetometer Calibration With Arduino</title><link>http://avilpage.com/2017/12/automatic-magnetometer-calibration-with-arduino.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;If we take readings from a 3-axis &lt;a href="https://en.wikipedia.org/wiki/Magnetometer"&gt;magnetometers&lt;/a&gt; like HMC5883L, AK8963C (used in MPU9250) or LSM303DLHC and plot them, its response should be a sphere with ceter at origin.&lt;/p&gt;
+&lt;p&gt;In practice, due to the presence of hard and soft iron distortions, the response will be an ellipsiod with its center shifted away from origin. We need to calibrate the magnetometer to nullify the distortions.&lt;/p&gt;
+&lt;p&gt;First we need to get sample readings of magnetometer in various positions. Depending on the magnetometer, we need to connect it to arduino and take readings by rotating it in 8 shape.&lt;/p&gt;
+&lt;h4&gt;Calibration&lt;/h4&gt;
+&lt;p&gt;Hard iron biases shifts center away from origin. We can eliminate this error by calculating the offsets and shifting the readings.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_min&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_min&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_min&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_max&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_max&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_max&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_calibrated&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_calibrated&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_calibrated&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// get min/max values by taking readings&lt;/span&gt;
+&lt;span class="c1"&gt;// from magnetometer of your choice&lt;/span&gt;
+
+&lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_min&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_min&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz_min&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_max&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;mx_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;my_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;mz_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Soft iron biases makes the axial responses uneven which results in ellipsiod shape. An easier way to correct this is to rescale the axial readings to an average value.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_scale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_scale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_scale&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;mx_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_max&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;my_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my_max&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;mz_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz_max&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_min&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;float&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_scale&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_scale&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+
+&lt;span class="n"&gt;mx_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mx&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mx_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;my_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;my&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;my_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;mz_calibrated&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;avg_scale&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;mz&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mz_offset&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can caclulate these biases once and store them in our code so that we don't need to calibrate it everytime. We can also write an auto update function which will recalibrate offsets &amp;amp; scale for every new reading.&lt;/p&gt;</description><category>arduino</category><category>how-to</category><guid>http://avilpage.com/2017/12/automatic-magnetometer-calibration-with-arduino.html</guid><pubDate>Sat, 02 Dec 2017 21:21:21 GMT</pubDate></item><item><title>Arduino Programming From Text Editor &amp; Command Line</title><link>http://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;To program Arduino, we can use &lt;a href="https://www.arduino.cc/en/main/software"&gt;Arduino IDE&lt;/a&gt; which facilitates writing and uploading code to the board.&lt;/p&gt;
+&lt;p&gt;If we are using a text editor for programming, it will have lot of customisations which speed up development process. In such case, it is better to use same text editor for arduino programming too.&lt;/p&gt;
+&lt;p&gt;I use Emacs as IDE and there is &lt;a href="https://github.com/bookest/arduino-mode"&gt;arduino mode&lt;/a&gt; for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.&lt;/p&gt;
+&lt;p&gt;Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.&lt;/p&gt;
+&lt;p&gt;In Linux system, to upload a file called &lt;code&gt;foo.ino&lt;/code&gt;, we can run&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;arduino --port /dev/ttyACM0 --board arduino:avr:mega
+ &lt;span class="se"&gt;\ &lt;/span&gt;--upload foo.ino
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;An alternate way is to use &lt;a href="https://github.com/platformio/platformio-core/"&gt;platformio&lt;/a&gt;, an opensource tool chain for IoT development.&lt;/p&gt;
+&lt;p&gt;It can be installed using pip.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip install platformio
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once it is installed, code can be directly uploaded using &lt;code&gt;ci&lt;/code&gt; command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pio ci --board&lt;span class="o"&gt;=&lt;/span&gt;megaatmega2560 --project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"upload_port=/dev/ttyACM0"&lt;/span&gt; --project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"targets=upload"&lt;/span&gt; foo.ino
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;</description><category>arduino</category><category>command-line</category><guid>http://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item><item><title>emblem-mode for Emacs</title><link>http://avilpage.com/2016/07/emblem-mode-for-emacs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Emblem.js is a ember friendly templating engine used as an alternative for handlebars.js.&lt;/p&gt;
+&lt;p&gt;Emblem.js doesn't have any official plugins for emacs. However they recommend to use slim plugins as they are similar.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;slim-mode&lt;/code&gt; is available on melpa. To install it, run&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;M-x install-package slim-mode
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;After installing it, activate &lt;code&gt;slim-mode&lt;/code&gt; by running &lt;code&gt;M-x slim-mode&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Instead of activating manually, &lt;code&gt;auto-mode-alist&lt;/code&gt; can be used to set major modes that needs to activated for files with specific extension. To activate slim-mode for emblem files which will be ending with &lt;code&gt;.em&lt;/code&gt; or &lt;code&gt;.emblem&lt;/code&gt;, use&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;add-to-list&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;'auto-mode-alist&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;'&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"\\.\\(em\\|emblem\\)"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;slim-mode&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;By adding this line to emacs configuration file, slim-mode gets activated for emblem.js files.&lt;/p&gt;</description><category>emblem</category><category>slim-mode</category><category>til</category><guid>http://avilpage.com/2016/07/emblem-mode-for-emacs.html</guid><pubDate>Mon, 25 Jul 2016 17:32:35 GMT</pubDate></item><item><title>Concurrent Downloads - Bash Vs Python</title><link>http://avilpage.com/2016/05/concurrent-downloads-bash-vs-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
             &lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;
                 I just found one more free telugu book &lt;code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;"&gt;Graded
       readings in modern literary Telugu&lt;/code&gt; by Golla Narayanaswami Reddy and Dan M Matson in &lt;a href="http://dsal.uchicago.edu/digbooks/dig_toc.html?BOOKID=PL4775.R4_1967" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;"&gt;Digital South Asia Library&lt;/a&gt;.
