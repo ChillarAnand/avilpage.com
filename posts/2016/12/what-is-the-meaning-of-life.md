@@ -3,7 +3,7 @@ t<!--
 .. slug: the-meaning-of-life
 .. date: 2016-12-25 18:29:23 UTC
 .. tags: life, featured
-.. category: philosophy
+.. category: entertainment
 .. link:
 .. description: Have you ever wondered what is the meaning of life? Then you will find answer for it here.
 .. type: text

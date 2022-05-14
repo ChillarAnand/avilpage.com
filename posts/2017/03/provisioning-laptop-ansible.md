@@ -2,10 +2,10 @@
 .. title: Provisioning Laptop(s) With Ansible
 .. slug: provisioning-laptop-ansible
 .. date: 2017-03-11 14:16:32 UTC
-.. tags: ansible, python, ubuntu
+.. tags: automation, ansible, linux
 .. category: programming, python
 .. link:
-.. description: How to automatically sync configuration between systems?
+.. description: How to automatically sync configuration between systems using ansible?
 .. type: text
 -->
 
