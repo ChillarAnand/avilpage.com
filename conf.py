@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
 import time
 
 # !! This is the configuration of Nikola. !! #
@@ -78,7 +77,7 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 
 NAVIGATION_LINKS = {
         DEFAULT_LANG: (
-                ("/p/archives.html", "Archives"),
+                ("/archive.html", "Archive"),
                 ("/tags", "Tags"),
                 ("/p/talks.html", "Talks"),
                 ("/p/projects.html", "Projects"),
@@ -99,10 +98,10 @@ THEME = 'bootstrap4-jinja'
 # THEME = 'planetoid'
 
 
-# use archive as home page
-INDEX_PATH = 'foo'
-# ARCHIVE_PATH = ''
-# ARCHIVE_FILENAME = 'index.html'
+# archive config
+INDEX_PATH = 'blog'
+ARCHIVE_PATH = ''
+ARCHIVE_FILENAME = 'archive.html'
 
 
 # Primary color of your theme. This will be used to customize your theme and

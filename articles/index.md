@@ -13,13 +13,7 @@
 I am Pandikunta Anand Reddy also known as Chillar Anand on the web.
 
 
-I am an artist and software engineer by profession.
-
-
-I have setup this blog when I was in college and continuing this blog to keep a track of things I am interested in learning.
-
-
-I write about programming, careers, arts & life in general. You can browse tags or archives if you want to explore.
+I am an artist and software engineer by profession. I write about programming, careers, arts & life in general. You can browse tags or archives if you want to explore.
 
 
 You can use [this form](https://forms.gle/Hre4z4aLqJA5zYWe6) to reach out for any queries or suggestions. I will get back to you as soon as possible.
