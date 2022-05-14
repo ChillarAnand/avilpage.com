@@ -145,8 +145,11 @@ NAVIGATION_LINKS = {
 }
 
 # Name of the theme to use.
-THEME = "avilpage"
-THEME = "custom"
+# THEME = 'custom'
+# THEME = "avilpage"
+# THEME = 'bootstrap4'
+THEME = 'bootstrap4-jinja'
+# THEME = 'planetoid'
 
 
 # use archive as home page
