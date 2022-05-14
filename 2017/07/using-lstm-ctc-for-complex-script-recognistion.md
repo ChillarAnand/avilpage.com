@@ -2,8 +2,8 @@
 .. title: Using LSTM-CTC For Complex Script Recognistion
 .. slug: using-lstm-ctc-for-complex-script-recognistion
 .. date: 2017-07-22 14:09:32 UTC
-.. tags: python, deep-learning
-.. category: data-science
+.. tags: machine-learning
+.. category: tech, programming, python
 .. link:
 .. description:
 .. type: text

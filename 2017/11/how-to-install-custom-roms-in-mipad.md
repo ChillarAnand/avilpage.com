@@ -3,7 +3,7 @@
 .. slug: how-to-install-custom-roms-in-mipad
 .. date: 2017-11-19 10:39:27 UTC
 .. tags: how-to, android
-.. category: tech, android, how-to
+.. category: tech, android
 .. link:
 .. description:
 .. type: text

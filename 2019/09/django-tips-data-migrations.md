@@ -2,10 +2,10 @@
 .. title: Tips On Writing Data Migrations in Django Application
 .. slug: django-tips-data-migrations
 .. date: 2019-09-30 21:21:21 UTC+05:30
-.. tags: python, django, django-tips-tricks
-.. category: programming
+.. tags: django, django-tips-tricks
+.. category: tech, programming, python
 .. link:
-.. description:
+.. description: Django Tips & Tricks - How to write data migrations in django.
 .. type: text
 -->
 

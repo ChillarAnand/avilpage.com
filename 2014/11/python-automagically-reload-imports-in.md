@@ -3,7 +3,7 @@
 .. slug: python-automagically-reload-imports-in
 .. date: 2014-11-19 17:21:00
 .. tags: productivity, ipython
-.. category: programming
+.. category: tech, programming, python
 .. link:
 .. description: Reload imports automatically in ipython shell
 .. type: text
