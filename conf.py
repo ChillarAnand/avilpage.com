@@ -27,61 +27,7 @@ SITE_URL = "http://avilpage.com/"
 # BASE_URL = "http://avilpage.com/"
 
 BLOG_EMAIL = ""
-BLOG_DESCRIPTION = ""  # (translatable)
-
-# Nikola is multilingual!
-#
-# Currently supported languages are:
-#
-# en        English
-# ar        Arabic
-# az        Azerbaijani
-# bg        Bulgarian
-# bs        Bosnian
-# ca        Catalan
-# cs        Czech [ALTERNATIVELY cz]
-# da        Danish
-# de        German
-# el        Greek [NOT gr]
-# eo        Esperanto
-# es        Spanish
-# et        Estonian
-# eu        Basque
-# fa        Persian
-# fi        Finnish
-# fr        French
-# gl        Galician
-# hi        Hindi
-# hr        Croatian
-# hu        Hungarian
-# id        Indonesian
-# it        Italian
-# ja        Japanese [NOT jp]
-# ko        Korean
-# lt        Lithuanian
-# nb        Norwegian (Bokmål)
-# nl        Dutch
-# pa        Punjabi
-# pl        Polish
-# pt        Portuguese
-# pt_br     Portuguese (Brazil)
-# ru        Russian
-# sk        Slovak
-# sl        Slovene
-# sq        Albanian
-# sr        Serbian (Cyrillic)
-# sr_latin  Serbian (Latin)
-# sv        Swedish
-# tr        Turkish [NOT tr_TR]
-# uk        Ukrainian
-# ur        Urdu
-# zh_cn     Chinese (Simplified)
-#
-# If you want to use Nikola with a non-supported language you have to provide
-# a module containing the necessary translations
-# (cf. the modules at nikola/data/themes/base/messages/).
-# If a specific post is not translated to a language, then the version
-# in the default language will be shown instead.
+BLOG_DESCRIPTION = "Avil Page - Personal & tech blog by Chillar Anand"  # (translatable)
 
 # What is the default language?
 DEFAULT_LANG = "en"
@@ -133,11 +79,12 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 NAVIGATION_LINKS = {
         DEFAULT_LANG: (
                 ("/p/archives.html", "Archives"),
+                ("/tags", "Tags"),
                 ("/p/talks.html", "Talks"),
                 ("/p/projects.html", "Projects"),
                 ("/p/pages.html", "Pages"),
-                ("/p/about.html", "About"),
-                ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
+                # ("/p/about.html", "About"),
+                # ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
                 # ("/archive.html", "Archives"),
                 # ("/categories/index.html", "Tags"),
                 ("/rss.xml", "RSS"),
