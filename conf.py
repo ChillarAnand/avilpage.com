@@ -91,11 +91,8 @@ NAVIGATION_LINKS = {
 }
 
 # Name of the theme to use.
-# THEME = 'custom'
-# THEME = "avilpage"
-# THEME = 'bootstrap4'
+# THEME = 'avilpage'
 THEME = 'bootstrap4-jinja'
-# THEME = 'planetoid'
 
 
 # archive config
