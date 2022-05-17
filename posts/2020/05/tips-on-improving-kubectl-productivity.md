@@ -2,8 +2,8 @@
 .. title: Tips On Improving kubectl Productivity
 .. slug: tips-on-improving-kubectl-productivity
 .. date: 2020-05-31 18:42:00 UTC+05:30
-.. tags: kubenetes, devops
-.. category:
+.. tags: kubernetes, devops
+.. category: tech
 .. link:
 .. description: How to improve your productivity with kubectl from any shell and using some k8s specific tools.
 .. type: text
