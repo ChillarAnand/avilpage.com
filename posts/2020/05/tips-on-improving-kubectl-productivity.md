@@ -45,7 +45,7 @@ apply          certificate    convert
 $ kubectl get
 ```
 
-However, setup up aliases for most commanly used commands will lot of time.
+Even though completions are helpful, setting up up aliases for most commanly used commands will save a lot of time.
 
 ```sh
 alias k='kubectl'
@@ -100,13 +100,17 @@ $ kubectl describe pod hello-world-79d794c659-tpfv2
 $ kubectl logs -f pod/hello-world-79d794c659-tpfv2
 ```
 
-When the app gets updated, the name of pod also updates. So, instead of using pod name, we can use pod labels.
+When the app gets updated, the name of pod also updates. If your shell has auto completion feature, it will autocomplete to previous name.
+
+So, instead of using pod name, we can use pod labels as mentioned below.
 
 ```sh
 $ kubectl describe pod -l=hello-world
 
 $ kubectl logs -f -l=pod/hello-world
 ```
+
+We run the command once and next time shell will show autocomplete and we can use that directly.
 
 
 ### Kubectl Tools
