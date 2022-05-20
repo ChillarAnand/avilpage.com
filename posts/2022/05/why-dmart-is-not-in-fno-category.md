@@ -35,7 +35,7 @@ In 2021 alone, SEBI released 6 circulars thrugh which 32 new stocks are added in
 
 ### DMART
 
-DMART has met the above FNO criteria long back. Even after it has met the criteria, there were more than 6 reviews and suprisingly DMART was not added to the FNO segement.
+DMART has met the above FNO criteria long back. Even after it has met the criteria, there were more than 6 reviews[^c1][^c2][^c3] and suprisingly DMART was not added to the FNO segement.
 
 There is a long discussion on Zerodha TradingQ&A forum[^tqa] on why DMART was not added to FNO category but no one could give any explaination.
 
@@ -51,5 +51,10 @@ Hoping to solve the mystery soon.
 [^fno]: [https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm](https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm)
 
 [^circular_framework]: [https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html](https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html)
+
+
+[^c1]: [https://archives.nseindia.com/content/circulars/FAOP50456.pdf](https://archives.nseindia.com/content/circulars/FAOP50456.pdf)
+[^c2]: [https://archives.nseindia.com/content/circulars/FAOP50414.pdf](https://archives.nseindia.com/content/circulars/FAOP50414.pdf)
+[^c3]: [https://archives.nseindia.com/content/circulars/FAOP50429.pdf](https://archives.nseindia.com/content/circulars/FAOP50429.pdf)
 
 [^tqa]: [https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721](https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721)
