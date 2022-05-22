@@ -2,8 +2,8 @@
 .. title: Work From Home Tips For Non-remote Workers
 .. slug: work-from-home-tips
 .. date: 2020-03-31 18:39:58 UTC+05:30
-.. tags: careers, remote
-.. category:
+.. tags: careers
+.. category: tech
 .. link:
 .. description:
 .. type: text
