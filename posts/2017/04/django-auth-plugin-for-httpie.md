@@ -3,7 +3,7 @@
 .. slug: django-auth-plugin-for-httpie
 .. date: 2017-04-20 15:00:28 UTC
 .. tags: python, django, django-tips-tricks
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: how to authenticate django web app using httpie?
 .. type: text

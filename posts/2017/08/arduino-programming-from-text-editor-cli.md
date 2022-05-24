@@ -3,7 +3,7 @@
 .. slug: arduino-programming-from-text-editor-cli
 .. date: 2017-08-24 13:29:59 UTC
 .. tags: arduino, command-line
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: how to use a text editor like emacs or vim for arduino programming and uploading code from command line interface
 .. type: text

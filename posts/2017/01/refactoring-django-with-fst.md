@@ -3,7 +3,7 @@
 .. slug: refactoring-django-with-fst
 .. date: 2017-01-29 17:51:37 UTC
 .. tags: python, django, featured
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: Writing python code to modify code using Full Syntax Trees
 .. type: text

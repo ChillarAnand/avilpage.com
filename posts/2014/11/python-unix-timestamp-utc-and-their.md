@@ -3,7 +3,7 @@
 .. slug: python-unix-timestamp-utc-and-their
 .. date: 2014-11-22 18:26:00
 .. tags: python, linux
-.. category: tech, programming, python
+.. category: python
 .. description: Conversion of various timestamps in Python programming language.
 -->
 

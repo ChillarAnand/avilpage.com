@@ -3,7 +3,7 @@
 .. slug: using-lstm-ctc-for-complex-script-recognistion
 .. date: 2017-07-22 14:09:32 UTC
 .. tags: machine-learning
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description:
 .. type: text

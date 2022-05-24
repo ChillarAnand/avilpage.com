@@ -3,7 +3,7 @@
 .. slug: django-tricks-auto-register-models-admin
 .. date: 2017-11-24 21:21:21 UTC
 .. tags: python, django, django-tips-tricks
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: Django productivity tips. How to auto register all models with all fields from all apps in django admin.
 .. type: text

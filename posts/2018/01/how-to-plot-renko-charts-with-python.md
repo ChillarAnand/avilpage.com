@@ -3,7 +3,7 @@
 .. slug: how-to-plot-renko-charts-with-python
 .. date: 2018-01-10 14:57:23 UTC+05:30
 .. tags: python, trading, technical-analysis
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: How to plot renko charts for stocks using OHLC data with python?
 .. type: text
