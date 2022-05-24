@@ -3,7 +3,7 @@
 .. slug: automatic-magnetometer-calibration-with-arduino
 .. date: 2017-12-02 21:21:21 UTC
 .. tags: arduino, how-to
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description:
 .. type: text

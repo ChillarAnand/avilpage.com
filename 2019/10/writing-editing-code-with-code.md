@@ -2,8 +2,8 @@
 .. title: Writing & Editing Code With Code - Part 1
 .. slug: writing-editing-code-with-code
 .. date: 2019-10-31 21:21:21 UTC+05:30
-.. tags: metaprogramming, python
-.. category:
+.. tags: python
+.. category: programming
 .. link:
 .. description:
 .. type: text

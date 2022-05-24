@@ -3,7 +3,7 @@
 .. slug: deploy-mirth-to-kubernetes
 .. date: 2020-09-30 23:25:46 UTC+05:30
 .. tags: devops, kubernetes, mirth-connect, HealthIT
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: How to Deploy NextGen Connect (aka Mirth Connect) to a Kubernetes cluster.
 .. type: text

@@ -3,7 +3,7 @@
 .. slug: migrate-from-blogger-to-static-site-nikola
 .. date: 2016-08-07 11:32:15 UTC
 .. tags: blogging
-.. category: tech, blogging
+.. category: blogging
 .. link:
 .. description:
 .. type: text

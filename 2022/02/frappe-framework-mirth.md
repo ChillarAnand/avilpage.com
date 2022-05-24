@@ -3,7 +3,7 @@
 .. slug: frappe-framework-mirth
 .. date: 2022-02-28 21:31:40 UTC+05:30
 .. tags: frappe-framework, HealthIT
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: How open source frappe framework can be used as an alternative to integration engines like mirth connect.
 .. type: text

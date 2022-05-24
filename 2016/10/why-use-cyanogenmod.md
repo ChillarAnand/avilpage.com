@@ -3,7 +3,7 @@
 .. slug: why-use-cyanogenmod
 .. date: 2016-10-31 14:05:09 UTC
 .. tags: android, opinion
-.. category: tech, android
+.. category: android
 .. link:
 .. description: Why should you use cyanogenmod instead of stock ROM in Android mobile devices?
 .. type: text

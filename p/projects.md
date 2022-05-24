@@ -18,8 +18,6 @@
 
 - [pyflash](https://github.com/ChillarAnand/pyflash) - Get flash like superpowers by automating everyday tasks.
 
-- [emacsism](https://github.com/ChillarAnand/emacsism) - A glimpse of divine editing experience with emacs.
-
 - [NetworkInfoWidget](https://github.com/ChillarAnand/NetworkInfoWidget) - Android widget to show network name & ip address.
 
 - [Stock Trends](https://github.com/ChillarAnand/stocktrends) - Python package to calculate sentiment trends in stocks.
@@ -32,5 +30,7 @@
 - [jorgenschaefer/elpy](https://github.com/jorgenschaefer/elpy/commits?author=ChillarAnand) - Emacs Python Development Environment.
 
 - [pythonindia/junction](https://github.com/pythonindia/junction/commits?author=ChillarAnand) - Software to manage conferences.
+
+- [frappe/frappe](https://github.com/frappe/frappe/commits?author=ChillarAnand) - Low code web framework.
 
 - Submitted patches to Python, iPython, Celery and other packages that I use regularly.

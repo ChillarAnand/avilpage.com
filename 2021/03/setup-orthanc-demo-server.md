@@ -3,7 +3,7 @@
 .. slug: setup-orthanc-demo-server
 .. date: 2021-03-26 06:00:00 UTC+05:30
 .. tags: dicom, HealthIT
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: Setup orthanc pacs & dicom server locally or on aws for learning dicom.
 .. type: text

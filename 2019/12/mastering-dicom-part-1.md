@@ -3,7 +3,7 @@
 .. slug: mastering-dicom-part-1
 .. date: 2019-12-31 18:59:09 UTC+05:30
 .. tags: python, HealthIT, dicom
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: How to query and retrieve DICOM files store in a remote PACS using c-find command with Python.
 .. type: text
