@@ -2,8 +2,8 @@
 .. title: Archive Million Pages With wget In Minutes
 .. slug: archive-millions-pages-wget-minutes
 .. date: 2018-11-18 17:21:21 UTC+05:30
-.. tags: command-line, warc
-.. category:
+.. category: programming
+.. tags: command-line
 .. link:
 .. description: How to archive millions of pages without using any tools in few minutes.
 .. type: text

@@ -3,7 +3,7 @@
 .. slug: setup-continuous-deployment-with-kubernetes
 .. date: 2020-04-30 16:45:36 UTC+05:30
 .. tags: kubernetes, devops
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: How to setup continuous deployment to kubernetes in a continuous integration environment?
 .. type: text

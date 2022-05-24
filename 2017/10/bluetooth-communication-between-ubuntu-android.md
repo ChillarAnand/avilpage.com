@@ -3,7 +3,7 @@
 .. slug: bluetooth-communication-between-ubuntu-android
 .. date: 2017-10-03 14:53:04 UTC
 .. tags: android, bluetooth, ubuntu
-.. category: tech, how-to
+.. category: tech
 .. link:
 .. description: How to do bluetooth serial communication from ubuntu laptop to android smart phone or bluetooth device like HC-05
 .. type: text

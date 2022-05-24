@@ -3,7 +3,7 @@
 .. slug: emblem-mode-for-emacs
 .. date: 2016-07-25 17:32:35 UTC
 .. tags: emblem, slim-mode, til
-.. category: tech, programming
+.. category: programming
 .. link:
 .. description: How write emblem code in emacs?
 .. type: text

@@ -3,7 +3,7 @@
 .. slug: django-tips-data-migrations
 .. date: 2019-09-30 21:21:21 UTC+05:30
 .. tags: django, django-tips-tricks
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: Django Tips & Tricks - How to write data migrations in django.
 .. type: text

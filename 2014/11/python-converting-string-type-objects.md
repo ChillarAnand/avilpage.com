@@ -2,7 +2,7 @@
 .. title: Converting Strings To Correct Types In Python
 .. slug: python-converting-string-type-objects
 .. date: 2014-11-17 19:40:00
-.. category: tech, programming, python
+.. category: python
 .. tags: python
 .. description: How to convert string type objects to correct type in python
 

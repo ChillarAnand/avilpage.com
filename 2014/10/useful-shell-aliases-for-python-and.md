@@ -3,7 +3,7 @@
 .. slug: useful-shell-aliases-for-python-and
 .. date: 2014-10-25 18:27:00
 .. tags: python, command-line, django, django-tips-tricks
-.. category: tech, programming, python
+.. category: python
 .. description: Using shell aliases for productivity.
 -->
 

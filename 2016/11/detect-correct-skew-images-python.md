@@ -3,7 +3,7 @@
 .. slug: detect-correct-skew-images-python
 .. date: 2016-11-12 12:11:17 UTC
 .. tags: skew, ocr, image processing, featured
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: How to find skew in images to OCR them and fix the skew?
 .. type: text

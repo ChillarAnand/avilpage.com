@@ -4,7 +4,7 @@
 .. date: 2017-11-14 21:21:21 UTC
 .. updated: 2018-09-07 08:21:21 UTC
 .. tags: python, django, django-tips-tricks
-.. category: tech, programming, python
+.. category: python
 .. link:
 .. description: Django admin productivity tips. How to hyperlink foreignkey fields in django admin interface for faster access.
 .. type: text
