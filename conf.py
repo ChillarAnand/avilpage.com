@@ -1510,3 +1510,6 @@ RENDER_STATIC_TAG_CLOUDS = {
                 'round_factor': 0.3,
         },
 }
+
+
+WARN_ABOUT_TAG_METADATA = False
