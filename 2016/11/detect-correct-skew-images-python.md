@@ -2,7 +2,7 @@
 .. title: Detect & Correct Skew In Images Using Python
 .. slug: detect-correct-skew-images-python
 .. date: 2016-11-12 12:11:17 UTC
-.. tags: skew, ocr, image processing, featured
+.. tags: python, image processing, featured
 .. category: python
 .. link:
 .. description: How to find skew in images to OCR them and fix the skew?
@@ -14,6 +14,7 @@ When scanning a document, a slight skew gets into the scanned image. If you are 
 There are several techniques that are used to skew correction.
 
 - Projection profile method
+
 - Hough transform
 
 - Topline method
