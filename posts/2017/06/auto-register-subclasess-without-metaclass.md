@@ -2,8 +2,8 @@
 .. title: Auto Register Subclasses Without Metaclass in Python
 .. slug: auto-register-subclasess-without-metaclass
 .. date: 2017-06-10 15:30:27 UTC
-.. tags: metaclass, design patterns, python
-.. category: python
+.. tags: python
+.. category: programming
 .. link:
 .. description: How to auto register subclasses without using metaclasses
 .. type: text

@@ -2,7 +2,7 @@
 .. title: Automagically Reload Imports In iPython!
 .. slug: python-automagically-reload-imports-in
 .. date: 2014-11-19 17:21:00
-.. tags: productivity, ipython
+.. tags: python
 .. category: python
 .. link:
 .. description: Reload imports automatically in ipython shell
