@@ -1,5 +1,5 @@
 <!--
-.. title: Mastering PACS/DICOM #1 - Understanding Workflows
+.. title: Mastering DICOM - #1 Clinical Workflows 101
 .. slug: mastering-dicom-part-1
 .. date: 2019-12-31 18:59:09 UTC+05:30
 .. tags: python, HealthIT, dicom

@@ -1,5 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2022)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/cat_2022.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 04 Jul 2022 01:02:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Using Frappe Framework As REST API Generator</title><link>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2022)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/cat_2022.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 04 Aug 2022 09:47:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering DICOM - Setup Modality Worklist SCP</title><link>http://avilpage.com/2022/07/dicom-modality-worklist-scp.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information&lt;/p&gt;
+&lt;h4&gt;Using Orthanc Worklist Plugin&lt;/h4&gt;
+&lt;p&gt;Orthanc server has worklist plugin&lt;sup id="fnref:owp"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:owp"&gt;1&lt;/a&gt;&lt;/sup&gt; which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.&lt;/p&gt;
+&lt;p&gt;Generate default configuration by running the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ ./Orthanc --config&lt;span class="o"&gt;=&lt;/span&gt;config.json
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;  "Plugins" : [
+    "libModalityWorklists.dylib"
+  ],
+
+  "Worklists" : {
+    "Enable": true,
+    "Database": "./WorklistsDatabase",
+    "FilterIssuerAet": false,
+    "LimitAnswers": 0
+  },
+
+  "DicomModalities" : {
+      "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
+      "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
+  }
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once the plugin is enabled, we can use findscu to send C-FIND query.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ findscu -W -k &lt;span class="s2"&gt;"ScheduledProcedureStepSequence"&lt;/span&gt; &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1 &lt;span class="m"&gt;4242&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will retrieve all worklist files from the server.&lt;/p&gt;
+&lt;h4&gt;Using wlmscpfs&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;dcmtk&lt;/code&gt; &lt;sup id="fnref:dcmtk"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:dcmtk"&gt;2&lt;/a&gt;&lt;/sup&gt; is a collection of utilities for DICOM standard. It has &lt;code&gt;wlmscpfs&lt;/code&gt; application which implements basic Service Class Provider(SCP). We can start the service by running the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once the service is started modalities can send C-FIND query to this service.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We have seen how to setup MWL SCP using Orthanc &amp;amp; wmlscpfs. Now that we have PACS &amp;amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:owp"&gt;
+&lt;p&gt;&lt;a href="https://book.orthanc-server.com/plugins/worklists-plugin.html"&gt;https://book.orthanc-server.com/plugins/worklists-plugin.html&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:dcmtk"&gt;
+&lt;p&gt;&lt;a href="https://github.com/DCMTK/dcmtk"&gt;https://github.com/DCMTK/dcmtk&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>dicom</category><guid>http://avilpage.com/2022/07/dicom-modality-worklist-scp.html</guid><pubDate>Sun, 31 Jul 2022 12:49:29 GMT</pubDate></item><item><title>Using Frappe Framework As REST API Generator</title><link>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When a company plans to build a mobile application and/or a web application, they need to create REST APIs to store data. This is a common requirement for CRUD applications.&lt;/p&gt;
 &lt;p&gt;In the Python ecosystem, there are several projects like Django Rest Framework, Flask-RESTful, FastApi which does the heavy lifting of implementing REST APIs. In other ecosystems, there are similar projects/frameworks for this job.&lt;/p&gt;
 &lt;h4&gt;REST API Generators&lt;/h4&gt;
@@ -32,40 +81,7 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 &lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/api/rest"&gt;https://frappeframework.com/docs/user/en/api/rest&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><guid>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</guid><pubDate>Sat, 30 Apr 2022 13:31:53 GMT</pubDate></item><item><title>Adding Fuzzy Search To Frappe Framework</title><link>http://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;As software developers, we use fuzzy search a lot especially when using Emacs or any other editors/IDEs. For example to search a file called &lt;code&gt;patient_history.js&lt;/code&gt;, in the editor, we can just type &lt;code&gt;pah&lt;/code&gt; and editor will narrow it down.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-1.png"&gt;&lt;/p&gt;
-&lt;p&gt;This is quite handy as we can open any file with just few characters.&lt;/p&gt;
-&lt;p&gt;FF is a low code, open source, web framework in Python and Javascript. All sites built with FF will have a global search bar(aka awesome bar) as shown below. Here, we can search for doctypes, reports, pages etc.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-2.png"&gt;&lt;/p&gt;
-&lt;p&gt;To open &lt;code&gt;Patient History&lt;/code&gt;, we have to type almost the entire text in search bar. If we type &lt;code&gt;pah&lt;/code&gt; like we have typed in the editor, it won't show any results.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-3.png"&gt;&lt;/p&gt;
-&lt;p&gt;Instead, we can add fuzzy search here so that we can search for any item with just a frew key strokes.&lt;/p&gt;
-&lt;h4&gt;Fuzzy Search&lt;/h4&gt;
-&lt;p&gt;There are many third party packages which implement fuzzy search in programming languages. However we can't use any of these fuzzy search packages directly. These editors internally use a scoring algorithm to rank the results and display results based on score.&lt;/p&gt;
-&lt;p&gt;It internally considers many factors mentioned below for scoring.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Matched letters&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;CamelCase letters&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;snake_case letters&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Consecutive matching letters&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We can come up with a scoring mechanism for these factors and based on the matches, we can rank the results. I have implemented a custom fuzzy search alogirthm based on the above factors but it was slow and results were not good in some cases.&lt;/p&gt;
-&lt;p&gt;Then I stumbled up this &lt;a href="https://github.com/forrestthewoods/lib_fts/blob/master/code/fts_fuzzy_match.js"&gt;fts_fuzzy_match&lt;/a&gt; implementation. This is a reverse engineered implementation of sublime text fuzzy search and it has a detailed scoring mechanism as well. It assigns negative ranking to mismatched letters and bonus points for consecutive matches.&lt;/p&gt;
-&lt;p&gt;This works well and is as effective as most IDEs search. Now that there is a solid fuzzy search, all we need to do is hook this up in FF.&lt;/p&gt;
-&lt;p&gt;FF internally has a fuzzy search function and we can directly hook it up here as shown here.&lt;/p&gt;
-&lt;p&gt;After that, we can search for anything in just few key strokes. For example to open patient history, we can just type &lt;code&gt;pah&lt;/code&gt; and it will show results like this.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-4.png"&gt;&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.&lt;/p&gt;</description><category>frappe-framework</category><category>js</category><guid>http://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</guid><pubDate>Thu, 31 Mar 2022 16:00:33 GMT</pubDate></item><item><title>On Resuming Writing Challenge</title><link>http://avilpage.com/2022/01/resuming-writing-challenge.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p align="center"&gt;
+&lt;/div&gt;</description><guid>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</guid><pubDate>Sat, 30 Apr 2022 13:31:53 GMT</pubDate></item><item><title>On Resuming Writing Challenge</title><link>http://avilpage.com/2022/01/resuming-writing-challenge.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p align="center"&gt;
 &lt;img height="300" width="800" src="http://avilpage.com/images/writing_challenge.jpg"&gt;
 &lt;/p&gt;
 

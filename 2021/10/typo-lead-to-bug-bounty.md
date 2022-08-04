@@ -2,10 +2,10 @@
 .. title: A Typo Got Me $100 Bug Bounty
 .. slug: typo-lead-to-bug-bounty
 .. date: 2021-10-25 08:52:19 UTC+05:30
-.. tags: bug-bounty, musings
-.. category:
+.. tags: security
+.. category: security
 .. link:
-.. description:
+.. description: How a typo got me bug bounty.
 .. type: text
 -->
 

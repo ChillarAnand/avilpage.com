@@ -2,8 +2,8 @@
 .. title: Adding Fuzzy Search To Frappe Framework
 .. slug: fuzzy-search-frappe-framework
 .. date: 2022-03-31 21:30:33 UTC+05:30
-.. tags: js, frappe-framework
-.. category:
+.. tags: frappe-framework, javascript
+.. category: programming
 .. link:
 .. description: How to add smart search to frappe framework awesome bar.
 .. type: text

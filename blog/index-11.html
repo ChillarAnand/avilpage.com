@@ -85,7 +85,64 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/01/how-to-plot-renko-charts-with-python.html" class="u-url">How To Plot Renko Charts With Python?</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2018/02/load-testing-celery-brokers.html" rel="bookmark">
+            <time class="published dt-published" datetime="2018-02-09T19:19:18+05:30" itemprop="datePublished" title="2018-02-09">2018-02-09</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.</p>
+<p>Let us take a simple add task and measure queueing time.</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">timeit</span>
+
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
+
+<span class="n">broker</span> <span class="o">=</span> <span class="s1">'memory://'</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="n">broker</span><span class="o">=</span><span class="n">broker</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span>
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+
+<span class="n">tasks</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tasks</span><span class="p">)]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+<span class="n">rate</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">//</span><span class="n">duration</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
+</pre></div>
+
+<p>On development machine, with AMD A4-5000 CPU, queueing time is as follows</p>
+<ul>
+<li>memory ---&gt; 400 tasks/sec</li>
+<li>rabbitmq ---&gt; 300 tasks/sec</li>
+<li>redis ---&gt; 250 tasks/sec</li>
+<li>postgres ---&gt; 30 tasks/sec</li>
+</ul>
+<p>On production machine, with Intel(R) Xeon(R) CPU E5-2676, queueing time is as follows</p>
+<ul>
+<li>memory ---&gt; 2000 tasks/sec</li>
+<li>rabbitmq ---&gt; 1400 tasks/sec</li>
+<li>redis ---&gt; 1200 tasks/sec</li>
+<li>postgres ---&gt; 200 tasks/sec</li>
+</ul>
+<p>For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.</p>
+<p>Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.</p>
+<div class="code"><pre class="code literal-block"><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+<p>This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/01/how-to-plot-renko-charts-with-python.html" class="u-url">How To Plot Renko Charts With Python?</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -557,90 +614,6 @@ hello from android
 
 <p>Open source OCR software <a href="https://github.com/tmbdev/ocropy/">ocorpy</a> uses BLSTM-CTC for text recognistion. <a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> started using the same in its latest(4.0) version.</p>
 <p>I have <a href="https://github.com/ChillarAnand/likitham">trained a model</a> to recognize Telugu script using ocropy and the accuracy is ~99% which is far better when compared to OCR softwares without CTC which are accurate to ~70%.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2017/06/auto-register-subclasess-without-metaclass.html" class="u-url">Auto Register Subclasses Without Metaclass in Python</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2017/06/auto-register-subclasess-without-metaclass.html" rel="bookmark">
-            <time class="published dt-published" datetime="2017-06-10T15:30:27Z" itemprop="datePublished" title="2017-06-10">2017-06-10</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>In registry pattern, a <code>registry</code> maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.</p>
-<p>When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.</p>
-<p>A commonly used approach is to use inheritance as an organizing mechanism. Create <a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses">a meta class which will auto register</a> classes and then create base class with this meta class.</p>
-<div class="code"><pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
-
-
-<span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">target_class</span><span class="p">):</span>
-    <span class="n">REGISTRY</span><span class="p">[</span><span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_class</span>
-
-
-<span class="k">class</span> <span class="nc">MetaRegistry</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">):</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">class_dict</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span>
-
-
-<span class="k">class</span> <span class="nc">BaseClass</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaRegistry</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
-    <span class="k">pass</span>
-
-
-<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
-    <span class="k">pass</span>
-</pre></div>
-
-<p>Now whenever you subclass <code>BaseClass</code>, it gets registered in the global registry. In the above example, <code>Foo</code>, <code>Bar</code> gets registered automatically.</p>
-<p>Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.</p>
-<p>A simple alternative for this is to use <code>__subclasses__()</code> to get subclasess and register them.</p>
-<div class="code"><pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
-</pre></div>
-
-<p>This will work only for direct subclasses and won't with indirect subclasses like this.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
-    <span class="k">pass</span>
-</pre></div>
-
-<p>To solve this, we can use a function to recursively retrieve all subclasses of a class.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">registry</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-
-    <span class="n">subs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">registry</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="n">sub</span>
-        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">sub</span>
-
-
-<span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">)}</span>
-</pre></div>
-
-<p><a href="https://www.python.org/dev/peps/pep-0487/">PEP 487</a> provides <code>__init_subclass__</code> hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this <code>__init_subclass__</code> hook.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
-            <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-</pre></div>
-
-<p>This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.</p>
     </div>
     </article>
 </div>

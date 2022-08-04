@@ -1,5 +1,5 @@
 <!--
-.. title: Mastering PACS/DICOM #2 - Setup Orthanc Demo Server
+.. title: Mastering DICOM - #2 Setup Orthanc DICOM Server
 .. slug: setup-orthanc-demo-server
 .. date: 2021-03-26 06:00:00 UTC+05:30
 .. tags: dicom, HealthIT

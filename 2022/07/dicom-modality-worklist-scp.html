@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering DICOM - Setup Modality Worklist SCP | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../05/twilio-frappe.html" title="Twilio Integration With Frappe Framework" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Mastering DICOM - Setup Modality Worklist SCP">
+<meta property="og:url" content="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html">
+<meta property="og:description" content="Introduction
+In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can s">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-07-31T18:19:29+05:30">
+<meta property="article:tag" content="dicom">
+<style>
+
+ navbar, .body-content {
+     margin-right: 20%;
+     margin-left: 20%;
+ }
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Archive</a>
+                </li>
+<li class="nav-item">
+<a href="../../tags" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/talks.html" class="nav-link">Talks</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/pages.html" class="nav-link">Pages</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right">
+<li class="nav-item">
+    <a href="dicom-modality-worklist-scp.md" id="sourcelink" class="nav-link">Source</a>
+    </li>
+
+                    
+                </ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+        <div class="body-content">
+            <!--Body content-->
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Mastering DICOM - Setup Modality Worklist SCP</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="#" rel="bookmark">
+            <time class="published dt-published" datetime="2022-07-31T18:19:29+05:30" itemprop="datePublished" title="2022-07-31">2022-07-31</time></a>
+            </p>
+                    <p class="sourceline"><a href="dicom-modality-worklist-scp.md" class="sourcelink">Source</a></p>
+
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <h4>Introduction</h4>
+<p>In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information</p>
+<h4>Using Orthanc Worklist Plugin</h4>
+<p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
+<p>Generate default configuration by running the following command.</p>
+<div class="code"><pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
+</pre></div>
+
+<p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
+<div class="code"><pre class="code literal-block">  "Plugins" : [
+    "libModalityWorklists.dylib"
+  ],
+
+  "Worklists" : {
+    "Enable": true,
+    "Database": "./WorklistsDatabase",
+    "FilterIssuerAet": false,
+    "LimitAnswers": 0
+  },
+
+  "DicomModalities" : {
+      "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
+      "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
+  }
+</pre></div>
+
+<p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
+<div class="code"><pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
+</pre></div>
+
+<p>This will retrieve all worklist files from the server.</p>
+<h4>Using wlmscpfs</h4>
+<p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
+<div class="code"><pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+</pre></div>
+
+<p>Once the service is started modalities can send C-FIND query to this service.</p>
+<h4>Conclusion</h4>
+<p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:owp">
+<p><a href="https://book.orthanc-server.com/plugins/worklists-plugin.html">https://book.orthanc-server.com/plugins/worklists-plugin.html</a> <a class="footnote-backref" href="dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:dcmtk">
+<p><a href="https://github.com/DCMTK/dcmtk">https://github.com/DCMTK/dcmtk</a> <a class="footnote-backref" href="dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/dicom.html" rel="tag">dicom</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../05/twilio-frappe.html" rel="prev" title="Twilio Integration With Frappe Framework">Previous post</a>
+            </li>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer">
+                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+                
+            </footer>
+</div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

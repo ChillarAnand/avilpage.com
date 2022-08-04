@@ -84,7 +84,69 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/05/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - Setup Modality Worklist SCP</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/07/dicom-modality-worklist-scp.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-07-31T18:19:29+05:30" itemprop="datePublished" title="2022-07-31">2022-07-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information</p>
+<h4>Using Orthanc Worklist Plugin</h4>
+<p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
+<p>Generate default configuration by running the following command.</p>
+<div class="code"><pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
+</pre></div>
+
+<p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
+<div class="code"><pre class="code literal-block">  "Plugins" : [
+    "libModalityWorklists.dylib"
+  ],
+
+  "Worklists" : {
+    "Enable": true,
+    "Database": "./WorklistsDatabase",
+    "FilterIssuerAet": false,
+    "LimitAnswers": 0
+  },
+
+  "DicomModalities" : {
+      "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
+      "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
+  }
+</pre></div>
+
+<p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
+<div class="code"><pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
+</pre></div>
+
+<p>This will retrieve all worklist files from the server.</p>
+<h4>Using wlmscpfs</h4>
+<p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
+<div class="code"><pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+</pre></div>
+
+<p>Once the service is started modalities can send C-FIND query to this service.</p>
+<h4>Conclusion</h4>
+<p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:owp">
+<p><a href="https://book.orthanc-server.com/plugins/worklists-plugin.html">https://book.orthanc-server.com/plugins/worklists-plugin.html</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:dcmtk">
+<p><a href="https://github.com/DCMTK/dcmtk">https://github.com/DCMTK/dcmtk</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/05/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -466,7 +528,7 @@ Photo by Kaboompics on Pexels
 <h4>Conclusion</h4>
 <p>These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.</p>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2021/03/setup-orthanc-demo-server.html" class="u-url">Mastering PACS/DICOM #2 - Setup Orthanc Demo Server</a></h1>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2021/03/setup-orthanc-demo-server.html" class="u-url">Mastering DICOM - #2 Setup Orthanc DICOM Server</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -524,39 +586,6 @@ $ heroku container:release web
 <p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/12/minimum-viable-testing-risk-based.html" class="u-url">Minimum Viable Testing - Get Maximum Stability With Minimum Effort</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2020/12/minimum-viable-testing-risk-based.html" rel="bookmark">
-            <time class="published dt-published" datetime="2020-12-31T19:23:11+05:30" itemprop="datePublished" title="2020-12-31">2020-12-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>Even though Test Driven Development(TDD)<sup id="fnref:tdd"><a class="footnote-ref" href="../2020/12/minimum-viable-testing-risk-based.html#fn:tdd">1</a></sup> saves time &amp; money in the long run, there are many excuses why developers don't test the software. In this article, lets look at Minimum Viable Testing(aka Risk-Based Testing)<sup id="fnref:mvt"><a class="footnote-ref" href="../2020/12/minimum-viable-testing-risk-based.html#fn:mvt">2</a></sup> and how it helps to achieve maximum stability with minimum effort.</p>
-<h4>Minimum Viable Testing</h4>
-<p>Pareto principle states that 80% of consequences come from 20% of the causes. In software proucts, 80% of the users use 20% of the features. A bug in these 20% features is likely to cause higher impact than the rest. It makes sense to prioritize testing of these features than the rest.</p>
-<p>Assessing the importance of a feature or risk of a bug depends on the product that we are testing. For example, in a project a paid feature gets more importance than free feature.</p>
-<p>In TDD, we start with writing tests and then writing code. Compared to TDD, MVT consumes less time. When it comes to testing, there are unit tests, integration tests, snapshot tests, ui tests and so on.</p>
-<p>When getting started with testing, it is important to have integration tests in place to make sure if something is working. Also the cost of integration tests is much cheaper compared to unit tests.</p>
-<p>Most of the SAAS products have a web/mobile application and an API server to handle requests for the front end applications. Having UI tests for the applications and integration tests for APIs for the most crucial functionality should cover the ground. This will make sure any new code that is being pushed doesnt break the core functionality.</p>
-<h4>Conclusion</h4>
-<p>Even though RBT helps with building a test suite quicker that TDD, it should be seen as an alternate option to TDD. We should see RBT as a starting point for testing from which we can take next step towards achieving full stability for the product.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:tdd">
-<p><a href="https://en.wikipedia.org/wiki/Test-driven_development">https://en.wikipedia.org/wiki/Test-driven_development</a> <a class="footnote-backref" href="../2020/12/minimum-viable-testing-risk-based.html#fnref:tdd" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:mvt">
-<p><a href="https://en.wikipedia.org/wiki/Risk-based_testing">https://en.wikipedia.org/wiki/Risk-based_testing</a> <a class="footnote-backref" href="../2020/12/minimum-viable-testing-risk-based.html#fnref:mvt" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
     </div>
     </article>
 </div>
