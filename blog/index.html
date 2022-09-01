@@ -84,7 +84,78 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - Setup Modality Worklist SCP</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/08/frappe-health-snomed-ct.html" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/08/frappe-health-snomed-ct.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-08-31T16:29:13+05:30" itemprop="datePublished" title="2022-08-31">2022-08-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Frappe Health<sup id="fnref:FH"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:FH">1</a></sup> is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework<sup id="fnref:ff"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ff">2</a></sup>, a low code highly customizable framework.</p>
+<p>Frappe Health provides support for integrating various medical coding standards<sup id="fnref:mcs"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:mcs">3</a></sup>. In the patient encounter doctype, doctors can search and add pre-configured medical codes.</p>
+<p><img src="../images/snomed-frappe-health1.png"></p>
+<p>In this article, let’s see how to integrate Frappe Health with SNOMED CT.</p>
+<h4>SNOMED CT Integration</h4>
+<p>SNOMED CT<sup id="fnref:snomed"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:snomed">4</a></sup> is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.</p>
+<p>Since SNOMED CT is a huge dataset, it takes a lot of effort to import the entire dataset into Frappe Health. It also provides REST API to query SNOMED terms. Also, if your healthcare organization is focusing on only a specific domain, it doesn’t make sense to import the entire dataset.</p>
+<p>In such scenarios, it is better to map only the required diagnosis, symptoms, and other clinical objects.</p>
+<p>Frappe Health has a Diagnosis doctype where practitioners can enter diagnosis. We can add an additional field called <code>Snomed Code</code> to link diagnosis to relevant SNOMED code.</p>
+<p><img src="../images/snomed-frappe-health2.png"></p>
+<p>Frappe framework provides server script<sup id="fnref:ss"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ss">5</a></sup> to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.</p>
+<p><img src="../images/snomed-frappe-health3.png"></p>
+<p>Here is a simple python server script that adds relevant snomed codes to diagnosis.</p>
+<div class="code"><pre class="code literal-block"><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">diagnosis</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&amp;limit=50&amp;term="</span> <span class="o">+</span> <span class="n">diagnosis</span> <span class="o">+</span> <span class="s2">"&amp;conceptActive=true&amp;lang=english&amp;skipTo=0&amp;returnLimit=100"</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">make_get_request</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'id'</span><span class="p">]</span>
+<span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'fsn'</span><span class="p">][</span><span class="s1">'term'</span><span class="p">]</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">get_doc</span><span class="p">({</span>
+    <span class="s1">'doctype'</span><span class="p">:</span> <span class="s1">'Medical Code'</span><span class="p">,</span>
+    <span class="s1">'code'</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+    <span class="s1">'medical_code_standard'</span><span class="p">:</span> <span class="s1">'SNOMED'</span><span class="p">,</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">doc</span><span class="o">.</span><span class="n">medical_code</span> <span class="o">=</span> <span class="n">medical_code</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+
+<p>After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.</p>
+<p><img src="../images/snomed-frappe-health4.png"></p>
+<p>The server script makes sure all the diagnosis objects are codified automatically without any manual effort.</p>
+<p>Since Frappe Framework &amp; Frappe Health are low code, extremely customizable, we are able to integrate it with SNOMED in just a few minutes. Similarly, we can codify other clinical objects like Symptoms, Procedures, Medications, etc.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:FH">
+<p><a href="https://github.com/frappe/health">https://github.com/frappe/health</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ff">
+<p><a href="https://frappeframework.com">https://frappeframework.com</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:mcs">
+<p><a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard">https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:snomed">
+<p><a href="https://www.nlm.nih.gov/healthit/snomedct/index.html">https://www.nlm.nih.gov/healthit/snomedct/index.html</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:ss">
+<p><a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script">https://frappeframework.com/docs/user/en/desk/scripting/server-script</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - Setup Modality Worklist SCP</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -146,21 +217,21 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </ol>
 </div>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/05/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/06/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
             </span></p>
             <p class="dateline">
-            <a href="../2022/05/twilio-frappe.html" rel="bookmark">
+            <a href="../2022/06/twilio-frappe.html" rel="bookmark">
             <time class="published dt-published" datetime="2022-06-30T11:46:02+05:30" itemprop="datePublished" title="2022-06-30">2022-06-30</time></a>
             </p>
         </div>
     </header><div class="e-content entry-content">
-    <p>Frappe<sup id="fnref:frappe"><a class="footnote-ref" href="../2022/05/twilio-frappe.html#fn:frappe">1</a></sup> is a low code framework for rapidly developing web applications. Twilio<sup id="fnref:twilio"><a class="footnote-ref" href="../2022/05/twilio-frappe.html#fn:twilio">2</a></sup> is a SAAS platform for SMS, Video etc with APIs.</p>
+    <p>Frappe<sup id="fnref:frappe"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:frappe">1</a></sup> is a low code framework for rapidly developing web applications. Twilio<sup id="fnref:twilio"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:twilio">2</a></sup> is a SAAS platform for SMS, Video etc with APIs.</p>
 <p>In this post, lets see how to setup Twilio Integration with Frappe.</p>
 <h4>Sending SMS</h4>
-<p>Frappe has inbuilt SMS manager<sup id="fnref:sms"><a class="footnote-ref" href="../2022/05/twilio-frappe.html#fn:sms">3</a></sup> where users can confgiure SMS gateway and send SMS to mobiles directly.</p>
+<p>Frappe has inbuilt SMS manager<sup id="fnref:sms"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:sms">3</a></sup> where users can confgiure SMS gateway and send SMS to mobiles directly.</p>
 <p>To send out messages/SMS with Twilio, we just need to configure Twilio API keys in SMS settings.</p>
 <p>First, create an account in Twilio and collect the following information from the account.</p>
 <ul>
@@ -182,7 +253,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>For <code>authorization</code> parameter, we need to enter base64 encoded value of <code>account_sid:auth_token</code>.</p>
 <p>Once these values are set, we can go to SMS Center and send out dummy messages to ensure all settings are configured properly.</p>
 <h4>Twilio App</h4>
-<p>If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install <code>twilio-integration</code><sup id="fnref:tl"><a class="footnote-ref" href="../2022/05/twilio-frappe.html#fn:tl">4</a></sup> app. We can install the app on our site by running the following commands.</p>
+<p>If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install <code>twilio-integration</code><sup id="fnref:tl"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:tl">4</a></sup> app. We can install the app on our site by running the following commands.</p>
 <div class="code"><pre class="code literal-block">bench get-app https://github.com/frappe/twilio-integration.git
 bench --site example.com install-app twilio_integration
 </pre></div>
@@ -198,16 +269,16 @@ bench --site example.com install-app twilio_integration
 <hr>
 <ol>
 <li id="fn:frappe">
-<p><a href="https://github.com/frappe/frappe">https://github.com/frappe/frappe</a> <a class="footnote-backref" href="../2022/05/twilio-frappe.html#fnref:frappe" title="Jump back to footnote 1 in the text">↩</a></p>
+<p><a href="https://github.com/frappe/frappe">https://github.com/frappe/frappe</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:frappe" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
 <li id="fn:twilio">
-<p><a href="https://www.twilio.com">https://www.twilio.com</a> <a class="footnote-backref" href="../2022/05/twilio-frappe.html#fnref:twilio" title="Jump back to footnote 2 in the text">↩</a></p>
+<p><a href="https://www.twilio.com">https://www.twilio.com</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:twilio" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 <li id="fn:sms">
-<p><a href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting">https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting</a> <a class="footnote-backref" href="../2022/05/twilio-frappe.html#fnref:sms" title="Jump back to footnote 3 in the text">↩</a></p>
+<p><a href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting">https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:sms" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
 <li id="fn:tl">
-<p><a href="https://github.com/frappe/twilio-integration">https://github.com/frappe/twilio-integration</a> <a class="footnote-backref" href="../2022/05/twilio-frappe.html#fnref:tl" title="Jump back to footnote 4 in the text">↩</a></p>
+<p><a href="https://github.com/frappe/twilio-integration">https://github.com/frappe/twilio-integration</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:tl" title="Jump back to footnote 4 in the text">↩</a></p>
 </li>
 </ol>
 </div>
@@ -527,65 +598,6 @@ Photo by Kaboompics on Pexels
 <p><br></p>
 <h4>Conclusion</h4>
 <p>These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2021/03/setup-orthanc-demo-server.html" class="u-url">Mastering DICOM - #2 Setup Orthanc DICOM Server</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2021/03/setup-orthanc-demo-server.html" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-26T06:00:00+05:30" itemprop="datePublished" title="2021-03-26">2021-03-26</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>This is a series of <a href="../tags/dicom.html">articles on mastering Dicom</a>. In the earlier article, we have learnt how PACS/DICOM simplifies the clinical work flow.</p>
-<p>In this article, lets setup a dicom server so that we have a server to play around with Dicom files.</p>
-<h4>Orthanc Server</h4>
-<p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
-<p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
-<p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
-<div class="code"><pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
-    jodogne/orthanc-python
-</pre></div>
-
-<p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
-<h4>Heroku Deployment</h4>
-<p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
-<p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
-<p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
-
-<span class="nb">set</span> -x
-
-<span class="nb">echo</span> <span class="nv">$PORT</span>
-
-sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
-
-Orthanc /etc/orthanc/
-</pre></div>
-
-<p>We can use this shell script as entry point in docker as follows.</p>
-<div class="code"><pre class="code literal-block">FROM jodogne/orthanc-python
-
-EXPOSE $PORT
-
-WORKDIR /app
-ADD . /app
-
-ENTRYPOINT [ "./run.sh" ]
-</pre></div>
-
-<p>We can create a new app in heroku and we can deploy this container.</p>
-<div class="code"><pre class="code literal-block">$ heroku apps:create orthanc-demo
-
-$ heroku container:push web
-$ heroku container:release web
-</pre></div>
-
-<p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
-<h4>Conclusion</h4>
-<p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
     </div>
     </article>
 </div>

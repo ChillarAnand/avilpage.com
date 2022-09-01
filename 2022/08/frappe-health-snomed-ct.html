@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to integrate Frappe Health with snomed ct?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integrating Frappe Health with SNOMED CT | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../07/dicom-modality-worklist-scp.html" title="Mastering DICOM - Setup Modality Worklist SCP" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Integrating Frappe Health with SNOMED CT">
+<meta property="og:url" content="http://avilpage.com/2022/08/frappe-health-snomed-ct.html">
+<meta property="og:description" content="How to integrate Frappe Health with snomed ct?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-08-31T16:29:13+05:30">
+<meta property="article:tag" content="HealthIT">
+<style>
+
+ navbar, .body-content {
+     margin-right: 20%;
+     margin-left: 20%;
+ }
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Archive</a>
+                </li>
+<li class="nav-item">
+<a href="../../tags" class="nav-link">Tags</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/talks.html" class="nav-link">Talks</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/pages.html" class="nav-link">Pages</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right">
+<li class="nav-item">
+    <a href="frappe-health-snomed-ct.md" id="sourcelink" class="nav-link">Source</a>
+    </li>
+
+                    
+                </ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+        <div class="body-content">
+            <!--Body content-->
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="#" rel="bookmark">
+            <time class="published dt-published" datetime="2022-08-31T16:29:13+05:30" itemprop="datePublished" title="2022-08-31">2022-08-31</time></a>
+            </p>
+                    <p class="sourceline"><a href="frappe-health-snomed-ct.md" class="sourcelink">Source</a></p>
+
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <h4>Introduction</h4>
+<p>Frappe Health<sup id="fnref:FH"><a class="footnote-ref" href="frappe-health-snomed-ct.html#fn:FH">1</a></sup> is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework<sup id="fnref:ff"><a class="footnote-ref" href="frappe-health-snomed-ct.html#fn:ff">2</a></sup>, a low code highly customizable framework.</p>
+<p>Frappe Health provides support for integrating various medical coding standards<sup id="fnref:mcs"><a class="footnote-ref" href="frappe-health-snomed-ct.html#fn:mcs">3</a></sup>. In the patient encounter doctype, doctors can search and add pre-configured medical codes.</p>
+<p><img src="../../images/snomed-frappe-health1.png"></p>
+<p>In this article, let’s see how to integrate Frappe Health with SNOMED CT.</p>
+<h4>SNOMED CT Integration</h4>
+<p>SNOMED CT<sup id="fnref:snomed"><a class="footnote-ref" href="frappe-health-snomed-ct.html#fn:snomed">4</a></sup> is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.</p>
+<p>Since SNOMED CT is a huge dataset, it takes a lot of effort to import the entire dataset into Frappe Health. It also provides REST API to query SNOMED terms. Also, if your healthcare organization is focusing on only a specific domain, it doesn’t make sense to import the entire dataset.</p>
+<p>In such scenarios, it is better to map only the required diagnosis, symptoms, and other clinical objects.</p>
+<p>Frappe Health has a Diagnosis doctype where practitioners can enter diagnosis. We can add an additional field called <code>Snomed Code</code> to link diagnosis to relevant SNOMED code.</p>
+<p><img src="../../images/snomed-frappe-health2.png"></p>
+<p>Frappe framework provides server script<sup id="fnref:ss"><a class="footnote-ref" href="frappe-health-snomed-ct.html#fn:ss">5</a></sup> to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.</p>
+<p><img src="../../images/snomed-frappe-health3.png"></p>
+<p>Here is a simple python server script that adds relevant snomed codes to diagnosis.</p>
+<div class="code"><pre class="code literal-block"><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">diagnosis</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&amp;limit=50&amp;term="</span> <span class="o">+</span> <span class="n">diagnosis</span> <span class="o">+</span> <span class="s2">"&amp;conceptActive=true&amp;lang=english&amp;skipTo=0&amp;returnLimit=100"</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">make_get_request</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'id'</span><span class="p">]</span>
+<span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'fsn'</span><span class="p">][</span><span class="s1">'term'</span><span class="p">]</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">get_doc</span><span class="p">({</span>
+    <span class="s1">'doctype'</span><span class="p">:</span> <span class="s1">'Medical Code'</span><span class="p">,</span>
+    <span class="s1">'code'</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+    <span class="s1">'medical_code_standard'</span><span class="p">:</span> <span class="s1">'SNOMED'</span><span class="p">,</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">doc</span><span class="o">.</span><span class="n">medical_code</span> <span class="o">=</span> <span class="n">medical_code</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+
+<p>After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.</p>
+<p><img src="../../images/snomed-frappe-health4.png"></p>
+<p>The server script makes sure all the diagnosis objects are codified automatically without any manual effort.</p>
+<p>Since Frappe Framework &amp; Frappe Health are low code, extremely customizable, we are able to integrate it with SNOMED in just a few minutes. Similarly, we can codify other clinical objects like Symptoms, Procedures, Medications, etc.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:FH">
+<p><a href="https://github.com/frappe/health">https://github.com/frappe/health</a> <a class="footnote-backref" href="frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ff">
+<p><a href="https://frappeframework.com">https://frappeframework.com</a> <a class="footnote-backref" href="frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:mcs">
+<p><a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard">https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard</a> <a class="footnote-backref" href="frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:snomed">
+<p><a href="https://www.nlm.nih.gov/healthit/snomedct/index.html">https://www.nlm.nih.gov/healthit/snomedct/index.html</a> <a class="footnote-backref" href="frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:ss">
+<p><a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script">https://frappeframework.com/docs/user/en/desk/scripting/server-script</a> <a class="footnote-backref" href="frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/healthit.html" rel="tag">HealthIT</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../07/dicom-modality-worklist-scp.html" rel="prev" title="Mastering DICOM - Setup Modality Worklist SCP">Previous post</a>
+            </li>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer">
+                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+                
+            </footer>
+</div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
