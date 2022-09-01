@@ -85,7 +85,66 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/12/minimum-viable-testing-risk-based.html" class="u-url">Minimum Viable Testing - Get Maximum Stability With Minimum Effort</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2021/03/setup-orthanc-demo-server.html" class="u-url">Mastering DICOM - #2 Setup Orthanc DICOM Server</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2021/03/setup-orthanc-demo-server.html" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-26T06:00:00+05:30" itemprop="datePublished" title="2021-03-26">2021-03-26</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>This is a series of <a href="../tags/dicom.html">articles on mastering Dicom</a>. In the earlier article, we have learnt how PACS/DICOM simplifies the clinical work flow.</p>
+<p>In this article, lets setup a dicom server so that we have a server to play around with Dicom files.</p>
+<h4>Orthanc Server</h4>
+<p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
+<p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
+<p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
+<div class="code"><pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
+    jodogne/orthanc-python
+</pre></div>
+
+<p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
+<h4>Heroku Deployment</h4>
+<p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
+<p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
+<p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+
+<span class="nb">set</span> -x
+
+<span class="nb">echo</span> <span class="nv">$PORT</span>
+
+sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
+
+Orthanc /etc/orthanc/
+</pre></div>
+
+<p>We can use this shell script as entry point in docker as follows.</p>
+<div class="code"><pre class="code literal-block">FROM jodogne/orthanc-python
+
+EXPOSE $PORT
+
+WORKDIR /app
+ADD . /app
+
+ENTRYPOINT [ "./run.sh" ]
+</pre></div>
+
+<p>We can create a new app in heroku and we can deploy this container.</p>
+<div class="code"><pre class="code literal-block">$ heroku apps:create orthanc-demo
+
+$ heroku container:push web
+$ heroku container:release web
+</pre></div>
+
+<p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
+<h4>Conclusion</h4>
+<p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/12/minimum-viable-testing-risk-based.html" class="u-url">Minimum Viable Testing - Get Maximum Stability With Minimum Effort</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
