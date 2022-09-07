@@ -2,8 +2,8 @@
 .. title: How To Install Custom ROMs In Xiamo MiPad?
 .. slug: how-to-install-custom-roms-in-mipad
 .. date: 2017-11-19 10:39:27 UTC
-.. category: android
-.. tags: how-to, ROM
+.. category: tech
+.. tags: android
 .. link:
 .. description:
 .. type: text

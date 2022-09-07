@@ -3,7 +3,7 @@
 .. slug: how-to-debug-postgres-triggers
 .. date: 2019-04-30 21:21:21 UTC+05:30
 .. category: programming
-.. tags: database, postgresql
+.. tags: database
 .. link:
 .. description: How to debug and fix issues with postgresql triggers?
 .. type: text
