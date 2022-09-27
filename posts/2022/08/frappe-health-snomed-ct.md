@@ -2,7 +2,7 @@
 .. title: Integrating Frappe Health with SNOMED CT
 .. slug: frappe-health-snomed-ct
 .. date: 2022-08-31 16:29:13 UTC+05:30
-.. tags: HealthIT
+.. tags: HealthIT, frappe-framework
 .. category:
 .. link:
 .. description: How to integrate Frappe Health with snomed ct?

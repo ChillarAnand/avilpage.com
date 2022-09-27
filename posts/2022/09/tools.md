@@ -2,7 +2,7 @@
 .. title: Tools That I Use Regularly
 .. slug: tools
 .. date: 2022-09-15 10:34:38 UTC+05:30
-.. tags: tech
+.. tags: tech, draft
 .. category: tech
 .. link:
 .. description: Recommended tools for android, ios, linux, mac.
@@ -41,11 +41,19 @@ This post is just to keep a track of tools that I use on various platforms.
 
 ### Macbook
 
+[CheatSheet](https://www.mediaatelier.com/CheatSheet)
+
+[Debookee Tools](https://apps.apple.com/us/app/debookee-tools/id1110355801?mt=12)
+
+[Flycut](https://github.com/TermiT/Flycut)
+
 [Grand Perspective](https://en.wikipedia.org/wiki/GrandPerspective)
 
 [iGlance](https://github.com/iglance/iGlance)
 
 [Karabiner Elements](https://karabiner-elements.pqrs.org/)
+
+
 
 
 ### Linux
@@ -62,5 +70,7 @@ This post is just to keep a track of tools that I use on various platforms.
 [Brave](https://brave.com)
 
 [Espanso](https://espanso.org)
+
+
 
 [mitmproxy](https://mitmproxy.org)
