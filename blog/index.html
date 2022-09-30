@@ -84,7 +84,73 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/08/frappe-health-snomed-ct.html" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/09/how-to-root-redmi-9-prime-lancelot.html" class="u-url">How To Root Xiamo Redmi 9 Prime Without TWRP</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/09/how-to-root-redmi-9-prime-lancelot.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-28T06:14:45+05:30" itemprop="datePublished" title="2022-09-28">2022-09-28</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Rooting<sup id="fnref:root"><a class="footnote-ref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:root">1</a></sup> an android device voids warranty but gives a great control over the device. For most of the popular devices, TWRP<sup id="fnref:twrp"><a class="footnote-ref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:twrp">2</a></sup> recovery is available. Once a device bootloader is unlocked, we can install TWRP recovery. After that we can flash Magisk to gain root access.</p>
+<p>For some devices like Redmi 9 Prime(codename: lancelot), TWRP recovery is not available officially. There are couple of unofficial images but they are not working as expected and are causing bootloop.</p>
+<p>In this article, lets see how to root lancelot device.</p>
+<h4>Rooting Lancelot</h4>
+<p>First ensure that the device bootloader is unlocked and your system has adb &amp; fastboot installed. To root without TWRP, we need to obtain patched <code>boot.img</code> &amp; <code>vbmeta.img</code> and flash them in fastboot mode.</p>
+<p>First we need to download the stock ROM of the device to extract boot.img file. We can go to manufacturers site and download the same stock ROM<sup id="fnref:lancelot"><a class="footnote-ref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:lancelot">3</a></sup> that is running on the device. Once the ROM is downloaded, we can unzip it. There we can find boot.img file.</p>
+<p align="center">
+<img src="../images/root-redmi-9-prime.png"></p>
+
+<p>We need to patch this file. To patch this, download magisk app on the device. Click on install and select the boot.img file to patch. After a few minutes, it will generate a patched boot file.</p>
+<p align="center">
+<img height="440" width="220" src="../images/root-redmi-9-prime-2.jpeg"></p>
+
+<p>We can download this file to system by running the following command.</p>
+<div class="code"><pre class="code literal-block">$ adb pull -p /storage/emulated/0/Download/magisk_patched-25200_cU1ws.img .
+</pre></div>
+
+<p>Now we need to download patched vbmeta file. This is available in XDA<sup id="fnref:xda"><a class="footnote-ref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:xda">4</a></sup> forum. Click <a href="https://forum.xda-developers.com/attachments/vbmeta_redmi9-img.5082027/">this link</a> to download it.</p>
+<p>Once we have both patched files, we can reboot the device in fastboot mode by using the following commands.</p>
+<div class="code"><pre class="code literal-block">$ adb devices
+
+$ adb reboot bootloader
+</pre></div>
+
+<p>When the device is in fastboot mode, run the following commands to root it.</p>
+<div class="code"><pre class="code literal-block">$ fastboot --disable-verity --disable-verification flash vbmeta vbmeta_redmi9.img
+
+$ fastboot flash boot magisk_patched-25200_cU1ws.img
+
+$ fastboot reboot
+</pre></div>
+
+<p>Once the deivce is rebooted, we can install root checker app and verify that the device is rooted successfully.</p>
+<h4>Final Thoughts</h4>
+<p>When we buy a Mac or PC(Linux/Windows), it is rooted by default. For Linux/Mac, we can run programs as sudo. For windows, we can just run a program as an administrator. There are no extra steps to root/jailbreak these devices.</p>
+<p>But most mobile companies make rooting hard and only tech savy users can root the device. It would be great if mobile phones are rooted by default.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:root">
+<p><a href="https://en.wikipedia.org/wiki/Rooting_(Android)">https://en.wikipedia.org/wiki/Rooting_(Android)</a> <a class="footnote-backref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:root" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:twrp">
+<p><a href="https://en.wikipedia.org/wiki/TWRP_(software)">https://en.wikipedia.org/wiki/TWRP_(software)</a> <a class="footnote-backref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:twrp" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:lancelot">
+<p><a href="https://xiaomifirmwareupdater.com/miui/lancelot/">https://xiaomifirmwareupdater.com/miui/lancelot/</a> <a class="footnote-backref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:lancelot" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:xda">
+<p><a href="https://forum.xda-developers.com/t/guide-magisk-root-access-for-redmi-9-mediatek-helio-g80-without-twrp.4149531/">Guide @ XDA</a> <a class="footnote-backref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:xda" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/08/frappe-health-snomed-ct.html" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -155,7 +221,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </ol>
 </div>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - Setup Modality Worklist SCP</a></h1>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - #3 Setup Modality Worklist SCP</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -538,66 +604,6 @@ Photo by Kaboompics on Pexels
 </li>
 </ol>
 </div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2021/06/lesser-know-useful-utilities-for-mac.html" class="u-url">Lesser Know Useful Utilities For Mac</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2021/06/lesser-know-useful-utilities-for-mac.html" rel="bookmark">
-            <time class="published dt-published" datetime="2021-06-11T08:00:00+06:30" itemprop="datePublished" title="2021-06-11">2021-06-11</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>When using Mac, there are few utilities which come in handy for day to day operations and also aid in productivity. </p>
-<p>Here are some of the useful but lesser know utilities for mac.</p>
-<p><br></p>
-<h4>iGlance</h4>
-<p align="center">
-<img height="400" width="800" src="../images/iglance.png"></p>
-
-<p><a href="https://github.com/iglance/iGlance">iGlance</a> is a system monitor tool that shows all the stats right from the menu bar itself.</p>
-<p><br></p>
-<h4>Debokee Tools</h4>
-<p align="center">
-<img src="../images/debokee.png"></p>
-
-<p>Wondering which network your Mac connected to? If you use multiple wireless networks, then <a href="https://apps.apple.com/us/app/debookee-tools/id1110355801?mt=12">Debokee Tools</a> can show the connected wireless network name directly in the menu bar.</p>
-<p><br></p>
-<h4>Espanso</h4>
-<p align="center">
-<img src="../images/espanso.gif"></p>
-
-<p><a href="https://github.com/federico-terzi/espanso">Espanso</a> is a text expanding tool that improves productivity across the system. We can set up shortcuts for frequently typed things like email, phone number etc so that we don't have to type them again and again.</p>
-<p><br></p>
-<h4>Karabiner-Elements</h4>
-<p><a href="https://karabiner-elements.pqrs.org/">Karabiner Elements</a> allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc. </p>
-<p><br></p>
-<h4>Flycut</h4>
-<p><a href="https://github.com/TermiT/Flycut">Flycut</a> is a simple clipboard manager, stores history. When you want to copy/paste frequently, this comes in handy.</p>
-<p><br></p>
-<h4>CheatSheet</h4>
-<p align="center">
-<img src="../images/cheatsheet.png"></p>
-
-<p>Ever wondered what are the keybindings when using any application? With <a href="https://www.mediaatelier.com/CheatSheet/">CheatSheet</a>, we can just hold <code>⌘</code> key bit longer, and it will show all the available shortcuts in the application.</p>
-<p><br></p>
-<h4>Bandwidth+</h4>
-<p align="center">
-<img src="../images/bandwidth.png"></p>
-
-<p><a href="https://apps.apple.com/us/app/bandwidth/id490461369?mt=12">Bandwidth+</a> tracks network usage on Mac. If there are multiple networks, it gives detailed information about the network consumed on all the networks.</p>
-<p><br></p>
-<h4>Grand Perspective</h4>
-<p align="center">
-<img src="../images/grand_perspective.png"></p>
-
-<p>If Mac is running low on disk space, <a href="https://apps.apple.com/us/app/grandperspective/id1111570163?mt=12">Grand Perspective</a> shows a graphical view of the disk usage. It will be much easier to pinpoint large files that are consuming the disk and then clean them up.</p>
-<p><br></p>
-<h4>Conclusion</h4>
-<p>These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.</p>
     </div>
     </article>
 </div>

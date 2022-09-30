@@ -1,9 +1,9 @@
 <!--
-.. title: Find High-impact Performance Bottlenecks in Django Apps
+.. title: Find High-impact Performance Bottlenecks in Django
 .. slug: django-bottleneck-performance-scaling
 .. date: 2018-12-11 08:08:08 UTC+05:30
-.. tags: python, django, apm, django-tips-tricks, featured
-.. category:
+.. tags: python, django, featured, profiling
+.. category: programming
 .. link:
 .. description: How to find bottlenecks in django web application and scale it.
 .. type: text

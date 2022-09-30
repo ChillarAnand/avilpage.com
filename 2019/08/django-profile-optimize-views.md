@@ -2,7 +2,7 @@
 .. title: Profiling & Optimizing Bottlenecks In Django
 .. slug: django-profile-optimize-views
 .. date: 2019-08-31 21:21:21 UTC+05:30
-.. tags: django, python
+.. tags: django, python, profiling
 .. category:
 .. link:
 .. description: How to find performance bottlenecks and optimize them?

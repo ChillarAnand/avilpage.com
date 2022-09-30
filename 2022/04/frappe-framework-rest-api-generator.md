@@ -2,7 +2,7 @@
 .. title: Using Frappe Framework As REST API Generator
 .. slug: frappe-framework-rest-api-generator
 .. date: 2022-04-30 19:01:53 UTC+05:30
-.. tags:
+.. tags: frappe-framework
 .. category:
 .. link:
 .. description:

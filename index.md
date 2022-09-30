@@ -17,7 +17,7 @@ I write about programming, careers, arts & life in general. You can browse tags 
 You can use [this form](https://forms.gle/Hre4z4aLqJA5zYWe6) to reach out for any queries or suggestions. I will get back to you as soon as possible.
 
 
-### Elsewhere on web
+If you want to reach out on other platforms, you can use the links below.
 
 
 - [Goodreads](https://www.goodreads.com/review/list/9669859-anand-pandikunta?shelf=read){:target="_blank"}

@@ -85,7 +85,222 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/07/default-date-hierarchy-in-django-admin.html" class="u-url">Set Default Date For Date Hierarchy In Django Admin</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/07/deploy-mirth-to-kubernetes.html" class="u-url">How To Deploy Mirth Connect To Kubernetes</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2020/07/deploy-mirth-to-kubernetes.html" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-30T23:25:46+05:30" itemprop="datePublished" title="2020-09-30">2020-09-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
+<h4>Deployment To k8s</h4>
+<p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref:nc"><a class="footnote-ref" href="../2020/07/deploy-mirth-to-kubernetes.html#fn:nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
+<div class="code"><pre class="code literal-block"><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
+</pre></div>
+
+<p>We can use this docker image and create a k8s deployment to start a container.</p>
+<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<span class="nv">apiVersion</span>: <span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
+<span class="nv">kind</span>: <span class="nv">Deployment</span>
+<span class="nv">metadata</span>:
+  <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+  <span class="nv">namespace</span>: <span class="nv">default</span>
+<span class="nv">spec</span>:
+  <span class="nv">template</span>:
+    <span class="nv">spec</span>:
+      <span class="nv">containers</span>:
+      <span class="o">-</span> <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+        <span class="nv">image</span>: <span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">nextgenhealthcare</span><span class="o">/</span><span class="k">connect</span>
+        <span class="nv">ports</span>:
+        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">http</span>
+          <span class="nv">containerPort</span>: <span class="mi">8080</span>
+        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">https</span>
+          <span class="nv">containerPort</span>: <span class="mi">8443</span>
+        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">hl7</span><span class="o">-</span><span class="nv">test</span>
+          <span class="nv">containerPort</span>: <span class="mi">9001</span>
+        <span class="nv">env</span>:
+          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE</span>
+            <span class="nv">value</span>: <span class="nv">postgres</span>
+          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE_URL</span>
+            <span class="nv">value</span>: <span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
+</pre></div>
+
+<p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
+<div class="code"><pre class="code literal-block">$ kubectl apply -f connect-deployment.yaml
+</pre></div>
+
+<p>To access this container, we can create a service to expose this deployment to public.</p>
+<div class="code"><pre class="code literal-block"><span class="o">---</span><span class="w"></span>
+<span class="n">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span><span class="w"></span>
+<span class="n">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Service</span><span class="w"></span>
+<span class="n">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span><span class="w"></span>
+<span class="w">  </span><span class="n">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span><span class="w"> </span><span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span><span class="w"></span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span><span class="w"> </span><span class="s2">"443"</span><span class="w"></span>
+<span class="w">    </span><span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span><span class="w"> </span><span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="w"></span>
+<span class="n">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">type</span><span class="p">:</span><span class="w"> </span><span class="n">LoadBalancer</span><span class="w"></span>
+<span class="w">  </span><span class="n">selector</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">app</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span><span class="w"></span>
+<span class="w">  </span><span class="n">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">http</span><span class="w"></span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="w"></span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8080</span><span class="w"></span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">https</span><span class="w"></span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">443</span><span class="w"></span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8443</span><span class="w"></span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">hl7</span><span class="o">-</span><span class="n">test</span><span class="w"></span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span><span class="w"></span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span><span class="w"></span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
+</pre></div>
+
+<p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
+<p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
+<h4>Conclusion</h4>
+<p>Earlier, there were no official docker images for Mirth Connect and it was bit diffucult to dockerize Mirth Connect and deploy it. With the release of official Docker images, deploying Mirth Connect to k8s or any other container orchestration platform has become much easier.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:nc">
+<p><a href="https://hub.docker.com/r/nextgenhealthcare/connect/">https://hub.docker.com/r/nextgenhealthcare/connect/</a> <a class="footnote-backref" href="../2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/08/bluetooth-terminal-python-asyncio.html" class="u-url">Serial Bluetooth Terminal With Python Asyncio</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2020/08/bluetooth-terminal-python-asyncio.html" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-31T21:21:21+05:30" itemprop="datePublished" title="2020-08-31">2020-08-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>PySerial package provides a tool called miniterm<sup id="fnref:miniterm"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:miniterm">1</a></sup>, which provides a terminal to interact with any serial ports.</p>
+<p>However miniterm sends each and every character as we type instead of sending entire message at once. In addition to this, it doesn't provide any timestamps on the messages transferred.</p>
+<p>In this article, lets write a simple terminal to address the above issues.</p>
+<h4>Bluetooth Receiver</h4>
+<p>pyserial-asyncio<sup id="fnref:pyserial-asyncio"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:pyserial-asyncio">2</a></sup> package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="kn">import</span> <span class="nn">serial_asyncio</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">readuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Rx &lt;== </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
+    <span class="n">reader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
+    <span class="n">receiver</span> <span class="o">=</span> <span class="n">receive</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">receiver</span><span class="p">])</span>
+
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+<p>Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal<sup id="fnref:asbt"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:asbt">4</a></sup>.</p>
+<p>Here a screenshot of messages being send from an Android device.</p>
+<p><img src="../images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"></p>
+<p>We can listen to these messages on laptop via serial port by running the following command.</p>
+<div class="code"><pre class="code literal-block">$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+<span class="m">2020</span>-08-31 <span class="m">10</span>:44:50.995281 Rx &lt;<span class="o">==</span> ping from android
+<span class="m">2020</span>-08-31 <span class="m">10</span>:44:57.702866 Rx &lt;<span class="o">==</span> <span class="nb">test</span> message
+</pre></div>
+
+<h4>Bluetooth Sender</h4>
+<p>Now lets write a sender to send messages typed on the terminal to the bluetooth.</p>
+<p>To read input from terminal, we need to use aioconsole <sup id="fnref:aioc"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:aioc">3</a></sup>. It provides async input equivalent function to read input typed on the terminal.</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+<span class="kn">import</span> <span class="nn">serial_asyncio</span>
+<span class="kn">import</span> <span class="nn">aioconsole</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">writer</span><span class="p">):</span>
+    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioconsole</span><span class="o">.</span><span class="n">get_standard_streams</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stdin</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s1"> Tx ==&gt; </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">)</span>
+    <span class="n">sender</span> <span class="o">=</span> <span class="n">send</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">([</span><span class="n">sender</span><span class="p">])</span>
+
+
+<span class="n">port</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">baudrate</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+<p>We can run the program with the following command and send messages to phone's bluetooth.</p>
+<div class="code"><pre class="code literal-block">$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+
+ping from mac
+<span class="m">2020</span>-08-31 <span class="m">10</span>:46:52.222676 <span class="nv">Tx</span> <span class="o">==</span>&gt; ping from mac
+<span class="m">2020</span>-08-31 <span class="m">10</span>:46:58.423492 <span class="nv">Tx</span> <span class="o">==</span>&gt; <span class="nb">test</span> message
+</pre></div>
+
+<p>Here a screenshot of messages received on Android device.</p>
+<p><img src="../images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"></p>
+<h4>Conclusion</h4>
+<p>If we combine the above two programmes, we get a simple bluetooth client to interact with any bluetooth via serial interface. Here is the complete code <sup id="fnref:gist"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:gist">5</a></sup> for the client.</p>
+<p>In the next article, lets see how to interact with Bluetooth LE devices.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:miniterm">
+<p><a href="https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm">miniterm</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:miniterm" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:pyserial-asyncio">
+<p><a href="https://pypi.org/project/pyserial-asyncio/">pyserial-asyncio on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:pyserial-asyncio" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:aioc">
+<p><a href="https://pypi.org/project/aioconsole/">aioconsole on PyPi</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:aioc" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:asbt">
+<p><a href="https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal">Serial Bluetooth Terminal on Play Store</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:asbt" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:gist">
+<p><a href="https://gist.github.com/ChillarAnand/a7be6adeb84a63d48e8dda27aab7ac94">Python async client</a> <a class="footnote-backref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fnref:gist" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2020/07/default-date-hierarchy-in-django-admin.html" class="u-url">Set Default Date For Date Hierarchy In Django Admin</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -744,167 +959,6 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <h4>Conclusion</h4>
 <p>In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.</p>
 <p>In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2019/11/verify-tls-certificate-chain-with-openssl.html" class="u-url">Verifying TLS Certificate Chain With OpenSSL</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2019/11/verify-tls-certificate-chain-with-openssl.html" rel="bookmark">
-            <time class="published dt-published" datetime="2019-11-30T10:15:14+05:30" itemprop="datePublished" title="2019-11-30">2019-11-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).</p>
-<p>In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.</p>
-<h4>Chain of Trust</h4>
-<p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
-<p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
-<div class="code"><pre class="code literal-block">$ openssl s_client -showcerts -connect avilpage.com:443
-
-CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
-<span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
-verify <span class="k">return</span>:1
-<span class="nv">depth</span><span class="o">=</span><span class="m">1</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert SHA2 High Assurance Server CA
-verify <span class="k">return</span>:1
-<span class="nv">depth</span><span class="o">=</span><span class="m">0</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">ST</span> <span class="o">=</span> California, <span class="nv">L</span> <span class="o">=</span> San Francisco, <span class="nv">O</span> <span class="o">=</span> <span class="s2">"GitHub, Inc."</span>, <span class="nv">CN</span> <span class="o">=</span> www.github.com
-verify <span class="k">return</span>:1
----
-Certificate chain
- <span class="m">0</span> s:/C<span class="o">=</span>US/ST<span class="o">=</span>California/L<span class="o">=</span>San Francisco/O<span class="o">=</span>GitHub, Inc./CN<span class="o">=</span>www.github.com
-   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
------BEGIN CERTIFICATE-----
-MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
-MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
-0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
-aTrrJ67dru040my
------END CERTIFICATE-----
- <span class="m">1</span> s:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
-   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert High Assurance EV Root CA
------BEGIN CERTIFICATE-----
-MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
-MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
-0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
-<span class="nv">cPUeybQ</span><span class="o">=</span>
------END CERTIFICATE-----
-
-    Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
-</pre></div>
-
-<p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
-<p>We can decode these pem files and see the information in these certificates using</p>
-<div class="code"><pre class="code literal-block">$ openssl x509 -noout -text -in server.crt
-
-Certificate:
-    Data:
-        Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
-    Signature Algorithm: sha256WithRSAEncryption
-    ----
-</pre></div>
-
-<p>We can also get only the subject and issuer of the certificate with</p>
-<div class="code"><pre class="code literal-block">$ openssl x509 -noout -subject -noout -issuer -in server.pem
-
-<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
-<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
-
-$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
-
-<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
-<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
-</pre></div>
-
-<p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
-<p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
-<p>If you are using a Mac, open <code>Keychain Access</code>, search and export the relevant root certificate in <code>.pem</code> format.</p>
-<p algin="center">
-<img src="../images/tls-openssl1.png"></p>
-
-<p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
-<div class="code"><pre class="code literal-block">$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
-server.pem: OK
-</pre></div>
-
-<p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
-<h4>Conclusion</h4>
-<p>In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2019/10/writing-editing-code-with-code.html" class="u-url">Writing &amp; Editing Code With Code - Part 1</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2019/10/writing-editing-code-with-code.html" rel="bookmark">
-            <time class="published dt-published" datetime="2019-10-31T21:21:21+05:30" itemprop="datePublished" title="2019-10-31">2019-10-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
-<h4>Metaprogramming</h4>
-<p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
-<div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre></div>
-
-<p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
-<p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
-<h4>Metaprogramming In Django</h4>
-<p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
-<div class="code"><pre class="code literal-block">$ ./manage.py inspectdb
-
-from django.db import models
-
-class Book<span class="o">(</span>models.Model<span class="o">)</span>:
-    <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    ...
-</pre></div>
-
-<p>In django admin, models can be registered like this.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-
-<span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
-
-
-<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
-</pre></div>
-
-<p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
-<p>Django ORM generates SQL statements for given ORM statements in Python.</p>
-<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
-<span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_superuser"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"username"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"first_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_name"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"email"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_staff"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"is_active"</span><span class="p">,</span>
-       <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"date_joined"</span>
-  <span class="n">FROM</span> <span class="s2">"auth_user"</span>
- <span class="n">ORDER</span> <span class="n">BY</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span> <span class="n">DESC</span>
- <span class="n">LIMIT</span> <span class="mi">1</span>
-
-
-<span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
-
-<span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
-</pre></div>
-
-<p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
-<p>We can also use these techniques in everyday programming. Here are some use cases.</p>
-<ol>
-<li>Generate REST API automatically.</li>
-<li>Automatically generate unit test cases based on a template.</li>
-<li>Generate integration tests automatically from the network traffic.</li>
-</ol>
-<p>These are a some of the things related to web development where we can use metaprogramming techniques to generate/modify code. We will learn more about this in the next part of the article.</p>
     </div>
     </article>
 </div>

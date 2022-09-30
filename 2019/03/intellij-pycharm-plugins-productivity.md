@@ -2,8 +2,8 @@
 .. title: Essential PyCharm (Intellij) Plugins To Improve Productivity
 .. slug: intellij-pycharm-plugins-productivity
 .. date: 2019-03-31 21:21:21 UTC+05:30
-.. tags: python, pycharm, django
-.. category:
+.. tags: python
+.. category: programming
 .. link:
 .. description:
 .. type: text

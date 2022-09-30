@@ -2,7 +2,7 @@
 .. title: Verifying TLS Certificate Chain With OpenSSL
 .. slug: verify-tls-certificate-chain-with-openssl
 .. date: 2019-11-30 10:15:14 UTC+05:30
-.. tags: shell, openssl
+.. tags: command-line
 .. category: programming
 .. link:
 .. description: How to verify certificate chain with openssl on the command line in linux or mac?

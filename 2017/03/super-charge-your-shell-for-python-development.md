@@ -2,8 +2,8 @@
 .. title: Super Charge Your Shell For Python Development
 .. slug: super-charge-your-shell-for-python-development
 .. date: 2017-03-26 02:40:31 UTC
-.. tags: python, automation, shell
-.. category: python
+.. tags: python, command-line
+.. category: programming
 .. link:
 .. description: Shell tips and tricks for python & django developers to save your time.
 .. type: text

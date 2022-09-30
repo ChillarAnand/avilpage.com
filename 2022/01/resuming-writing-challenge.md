@@ -2,8 +2,8 @@
 .. title: On Resuming Writing Challenge
 .. slug: resuming-writing-challenge
 .. date: 2022-01-19 06:06:06 UTC+05:30
-.. tags: personal, writing
-.. category:
+.. tags: musings
+.. category: musings
 .. link:
 .. description: 1,00,000 reward to readers who calls out that there is no new blog post every month.
 .. type: text

@@ -1,5 +1,5 @@
 <!--
-.. title: How To Remove Clock From LockScreen/StatusBar?
+.. title: Remove Clock From LockScreen/StatusBar On Android RR
 .. slug: how-to-remove-clock-lock-screen-status-bar
 .. date: 2017-11-13 20:24:38 UTC
 .. tags: how-to, android
@@ -49,6 +49,3 @@ Once you do this, you will have a clean lockscreen and statusbar without any dat
 <p align="center">
 <img src="/images/remove_clock_android_16.png" height="400px" width="220" />
 </p>
-
-
-[xposed]:
