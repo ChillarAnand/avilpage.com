@@ -14,6 +14,7 @@ This post is just to keep a track of tools that I use on various platforms.
 
 ### Android
 
+[CPU Stats](https://play.google.com/store/apps/details?id=jp.takke.cpustats)
 
 [Fastkey Launcher](https://m.apkpure.com/fastkey-launcher/io.fastkey.launcher)
 
@@ -27,9 +28,13 @@ This post is just to keep a track of tools that I use on various platforms.
 
 [Network Cell Info & WiFi](https://play.google.com/store/apps/details?id=com.wilysis.cellinfo)
 
+[scrcpy](https://github.com/Genymobile/scrcpy)
+
 [Open Signal](https://play.google.com/store/apps/details?id=com.staircase3.opensignal)
 
 [Termux](https://play.google.com/store/apps/details?id=com.termux)
+
+[Universal Android Debloater](https://github.com/0x192/universal-android-debloater)
 
 [Your Hour](https://www.yourhour.app)
 
