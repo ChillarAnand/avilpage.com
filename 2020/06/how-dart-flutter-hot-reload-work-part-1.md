@@ -2,8 +2,8 @@
 .. title: How Dart, Flutter Stateful Hot Reload Work? - Part 1
 .. slug: how-dart-flutter-hot-reload-work-part-1
 .. date: 2020-06-30 19:17:20 UTC+05:30
-.. tags: dart, programming, featured
-.. category:
+.. tags: dart, featured
+.. category: programming
 .. link:
 .. description: How do Dart/Flutter stateful hot reload work internally?
 .. type: text

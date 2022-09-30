@@ -85,7 +85,121 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/12/the-meaning-of-life.html" class="u-url">What Is The Meaning Of Life?</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2016/12/the-meaning-of-life.html" rel="bookmark">
+            <time class="published dt-published" datetime="2016-12-25T18:29:23Z" itemprop="datePublished" title="2016-12-25">2016-12-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>The meaning of life is</p>
+<blockquote cite="https://en.oxforddictionaries.com/definition/life">
+
+the condition that distinguishes animals and plants from inorganic matter, including the capacity for growth, reproduction, functional activity, and continual change preceding death.
+
+</blockquote>
+
+<p>Source: Oxford Dictionary</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/11/detect-correct-skew-images-python.html" class="u-url">Detect &amp; Correct Skew In Images Using Python</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2016/11/detect-correct-skew-images-python.html" rel="bookmark">
+            <time class="published dt-published" datetime="2016-11-12T12:11:17Z" itemprop="datePublished" title="2016-11-12">2016-11-12</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>When scanning a document, a slight skew gets into the scanned image. If you are using the scanned image to extract information from it, detecting and correcting skew is crucial.</p>
+<p>There are several techniques that are used to skew correction.</p>
+<ul>
+<li>
+<p>Projection profile method</p>
+</li>
+<li>
+<p>Hough transform</p>
+</li>
+<li>
+<p>Topline method</p>
+</li>
+<li>
+<p>Scanline method</p>
+</li>
+</ul>
+<p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
+<p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
+
+<span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+
+<span class="c1"># convert to binary</span>
+<span class="n">wd</span><span class="p">,</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'1'</span><span class="p">)</span><span class="o">.</span><span class="n">getdata</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">bin_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ht</span><span class="p">,</span> <span class="n">wd</span><span class="p">))</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'binary.png'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
+
+
+<span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">limit</span><span class="p">,</span> <span class="n">limit</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">hist</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">find_score</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+<span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Best angle: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
+
+<span class="c1"># correct skew</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
+</pre></div>
+
+<p><strong>Results:</strong></p>
+<p align="center"><img align="center" src="../skew_python/original.png"></p>
+<p align="center">Original Image</p>
+<hr>
+<p align="center"><img align="center" src="../skew_python/gray.png"></p>
+<p align="center">Black &amp; white image</p>
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
+<p align="center">Histogram of image</p>
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
+<p align="center">Scores at various angles</p>
+<hr>
+<p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
+<p align="center">Histogram at 2° (best angle)</p>
+<hr>
+<p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
+<p align="center">Skew corrected image</p>
+
+<p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -468,62 +582,6 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
 <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">In addition to them, helm provides a function called <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">helm-semantic</code> which shows all available tags in the current file. This works without TAGS file. Helm also has <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">helm-etags-select</code> which provides helm interface to select tags.</div>
 <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">If you are working with a python projects, you can use <a href="https://github.com/jorgenschaefer/elpy" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;">elpy</a> which navigates tags (using Jedi in the backend) without any TAGS file.</div>
 <h1 style="border-bottom-color: rgb(238, 238, 238); border-bottom-style: solid; border-bottom-width: 1px; box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 2.25em; line-height: 1.2; margin: 1em 0px 16px; padding-bottom: 0.3em; position: relative;"><a aria-hidden="true" class="anchor" href="http://localhost:6419/#adding-attributes-to-django-forms" id="user-content-adding-attributes-to-django-forms" style="box-sizing: border-box; color: #4078c0; cursor: pointer; display: block; left: 0px; line-height: 1; margin-left: -30px; padding-left: 30px; padding-right: 6px; position: absolute; text-decoration: none; top: 0px;"></a></h1>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/03/django-tips-make-deleting-easy-in-admin.html" class="u-url">Django Tips &amp; Tricks #6 - Make Deleting Easy In Admin</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2016/03/django-tips-make-deleting-easy-in-admin.html" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-07T17:38:00+05:30" itemprop="datePublished" title="2016-03-07">2016-03-07</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <div dir="ltr" style="text-align: left;" trbidi="on">
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Lets say we have a model as shown in some project.</div>
-<div class="highlight highlight-source-python" style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; overflow: auto; padding: 16px; word-break: normal; word-wrap: normal;"><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">from</span> django.db <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> models<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">class</span> <span class="pl-en" style="box-sizing: border-box; color: #795da3;">Resource</span>(<span class="pl-e" style="box-sizing: border-box; color: #795da3;">models</span>.<span class="pl-e" style="box-sizing: border-box; color: #795da3;">Model</span>):<br><span class="pl-s" style="box-sizing: border-box; color: #183691;">"""</span><br><span class="pl-s" style="box-sizing: border-box; color: #183691;">    Model to hold resources for books.</span><br><span class="pl-s" style="box-sizing: border-box; color: #183691;">    <span class="pl-pds" style="box-sizing: border-box;">"""</span></span><br>    book <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> models.ForeignKey(<span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>Book<span class="pl-pds" style="box-sizing: border-box;">'</span></span>)<br>    book_type <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> models.IntegerField()<br>    url <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> models.URLField()</pre></div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">This model can be registered in admin as follows.</div>
-<div class="highlight highlight-source-python" style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; overflow: auto; padding: 16px; word-break: normal; word-wrap: normal;"><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">from</span> django.contrib <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> admin<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">from</span> . <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> models<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">class</span> <span class="pl-en" style="box-sizing: border-box; color: #795da3;">ResourceAdmin</span>(<span class="pl-e" style="box-sizing: border-box; color: #795da3;">admin</span>.<span class="pl-e" style="box-sizing: border-box; color: #795da3;">ModelAdmin</span>):<br>    list_display <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> (<span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>book<span class="pl-pds" style="box-sizing: border-box;">'</span></span>, <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>book_type<span class="pl-pds" style="box-sizing: border-box;">'</span></span>, <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>url<span class="pl-pds" style="box-sizing: border-box;">'</span></span>)<br><br><br>admin.site.register(models.Resource, ResourceAdmin)</pre></div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">This will generate a nice admin interface to modify the data.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><a href="https://cloud.githubusercontent.com/assets/4463796/13577519/d6e3bb1e-e4b8-11e5-935b-41633883fed3.png" style="box-sizing: border-box; color: #4078c0; text-decoration: none;" target="_blank"><img alt="django-admin-delete" src="https://cloud.githubusercontent.com/assets/4463796/13577519/d6e3bb1e-e4b8-11e5-935b-41633883fed3.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a></div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Now if we want to delete a record, we need to follow these steps.</div>
-<ul style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px; margin-top: 0px; padding: 0px 0px 0px 2em;">
-<li style="box-sizing: border-box;">First, we have to select that record</li>
-<li style="box-sizing: border-box;">Next, we have to click on the action dropdown</li>
-<li style="box-sizing: border-box;">Next, we have to select <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">delete</code> action</li>
-<li style="box-sizing: border-box;">Next, we have to click <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">Go</code> button.</li>
-<li style="box-sizing: border-box;">In the next page we have to confirm that we have to delete.</li>
-</ul>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Just to delete a single record, we have to click 5 times. That's too many clicks for a single action.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">To simplify the process, we can have simple <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">delete</code> button for the objects as shown. This can be achieved by writing a function which will insert delete button for every record.</div>
-<div class="highlight highlight-source-python" style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; font-stretch: normal; line-height: 1.45; overflow: auto; padding: 16px; word-break: normal; word-wrap: normal;"><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">from</span> django.contrib <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> admin<br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">from</span> . <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">import</span> models<br><br><br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">class</span> <span class="pl-en" style="box-sizing: border-box; color: #795da3;">ResourceAdmin</span>(<span class="pl-e" style="box-sizing: border-box; color: #795da3;">admin</span>.<span class="pl-e" style="box-sizing: border-box; color: #795da3;">ModelAdmin</span>):<br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">def</span> <span class="pl-en" style="box-sizing: border-box; color: #795da3;">delete</span>(<span class="pl-smi" style="box-sizing: border-box;">self</span>, <span class="pl-smi" style="box-sizing: border-box;">obj</span>):<br><span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">return</span> <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>&lt;input type="button" value="Delete" onclick="location.href=<span class="pl-cce" style="box-sizing: border-box;">\'</span><span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">%s</span>/delete/<span class="pl-cce" style="box-sizing: border-box;">\'</span>" /&gt;<span class="pl-pds" style="box-sizing: border-box;">'</span></span>.format(obj.pk)<br><br>    delete.allow_tags <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> <span class="pl-c1" style="box-sizing: border-box; color: #0086b3;">True</span><br>    delete.short_description <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>Delete object<span class="pl-pds" style="box-sizing: border-box;">'</span></span><br><br>    list_display <span class="pl-k" style="box-sizing: border-box; color: #a71d5d;">=</span> (<span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>book<span class="pl-pds" style="box-sizing: border-box;">'</span></span>,  <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>book_type<span class="pl-pds" style="box-sizing: border-box;">'</span></span>, <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>url<span class="pl-pds" style="box-sizing: border-box;">'</span></span>, <span class="pl-s" style="box-sizing: border-box; color: #183691;"><span class="pl-pds" style="box-sizing: border-box;">'</span>delete<span class="pl-pds" style="box-sizing: border-box;">'</span></span>)<br><br><br>admin.site.register(models.Book)</pre></div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Now we have an admin with delete button for the records.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"><a href="https://cloud.githubusercontent.com/assets/4463796/13577518/d6de98fa-e4b8-11e5-9303-7f88ec929464.png" style="box-sizing: border-box; color: #4078c0; outline: 0px;" target="_blank"><img alt="django-admin-delete" src="https://cloud.githubusercontent.com/assets/4463796/13577518/d6de98fa-e4b8-11e5-9303-7f88ec929464.png" style="border: 0px; box-sizing: border-box; max-width: 100%;"></a></div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">To delete an object, just click on <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;">delete</code> button and then confirm to delete it. Now, we are deleting objects with just 2 clicks.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
-<br>Read more <a href="http://www.avilpage.com/search/label/django%20tips" target="">django tips</a>.<br>Read more <a href="http://www.avilpage.com/search/label/django">posts about django</a>.<br><br>
-</div>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/02/auto-convert-upload-books-to-kindle.html" class="u-url">Auto Convert &amp; Upload Books To Kindle</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2016/02/auto-convert-upload-books-to-kindle.html" rel="bookmark">
-            <time class="published dt-published" datetime="2016-02-28T16:02:00+05:30" itemprop="datePublished" title="2016-02-28">2016-02-28</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <div dir="ltr" style="text-align: left;" trbidi="on">
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I have ebooks in various formats like pdf, epub, mobi e.t.c. If I want to read books in laptop, I could use ebook reader like <a href="https://github.com/kovidgoyal/calibre" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Calibre</a> which can open supports most of the formats.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">If I have to read them on Kindle paperwhite, it becomes a problem as it supports only few formats. So whenever I get an ebook, I have to convert it to mobi format and send it to kindle.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I can connect kindle to laptop via USB cable and I can copy books. I can also send books to <a href="http://www.amazon.com/gp/sendtokindle/email" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">kindle via email</a>.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I found an <a href="https://ifttt.com/recipes/168186-drop-ebooks-and-documents-into-dropbox-folder-to-send-to-kindle-via-gmail-as-azw-ebook" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">IFTTT recipe</a>, to automate all this process. I just need to create a folder to store all the books in dropbox. Then use IFTTT recipe to link dropbox folder which has books and gmail to send books to kindle email.</div>
-<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Now when I move required books into dropbox folder in my laptop, they will automatically appear in my kinde.</div>
 </div>
     </div>
     </article>

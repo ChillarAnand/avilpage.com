@@ -85,7 +85,60 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/05/automatically-pep8-your-python-code.html" class="u-url">Automatically PEP8 &amp; Format Your Python Code</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/07/django-tips-make-django-development.html" class="u-url">Django Tips &amp; Tricks #4 - Make Django Development Server Persistent</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2015/07/django-tips-make-django-development.html" rel="bookmark">
+            <time class="published dt-published" datetime="2015-07-20T18:41:00+05:30" itemprop="datePublished" title="2015-07-20">2015-07-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">I use Emacs for writing Python code. I also use <a href="https://github.com/ChillarAnand/real-auto-save" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">real-auto-save</a> to save my files after 10 seconds of inactivity.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">While coding, when I stop writing in the middle, after 10 seconds Emacs auto saves the file. Django recognizes this &amp; reloads the development server.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">Once I complete writing code, I go to browser &amp; refresh the page. Since the code I was writing was incomplete somewhere in the middle and had some errors, Django development server was stopped and page won't reload. Now I have to go back to terminal and restart the server and again go back to browser to refresh page.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">To overcome this, Django server must be made persistent. The easiest way to accomplish this is to use a <a href="http://stackoverflow.com/questions/25199550/auto-restart-django-development-server-on-file-save-after-previous-error" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">simple bash script as described here</a>.</div>
+<pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;">$ while true; do python manage.py runserver; sleep 4; done<br></code></pre>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">When Django development server stops, after 4 seconds it tries to start automatically and goes on forever.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;">Instead of typing that everytime, it better to write this as a shell script and put it in system path, so that it can be used in any project.</div>
+<pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; font-stretch: normal; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;">while true; do<br>  echo "Re-starting Django runserver"<br>  python manage.py runserver<br>  sleep 4<br>done<br></code></pre>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px;">Save this &amp; make it executable(<code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; margin: 0px; padding: 0.2em 0px;">chmod +x</code>), use it is ./filename.sh and to stop use <code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; margin: 0px; padding: 0.2em 0px;">Ctrl-c Ctrl-c</code>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/06/git-etiquette-meaningful-messages.html" class="u-url">Git Etiquette: Meaningful Messages &amp; Linear Logs!</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2015/06/git-etiquette-meaningful-messages.html" rel="bookmark">
+            <time class="published dt-published" datetime="2015-06-17T16:59:00+05:30" itemprop="datePublished" title="2015-06-17">2015-06-17</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<h3 style="text-align: left;">Why Elegant Git Logs Matter?</h3>I will show You few commit messages &amp; logs from two different projects. Based only on those messages/logs, You need to decide which project is the best.<br><br><h4 style="text-align: left;">Project 1:</h4>
+<div><br></div>
+<div style="text-align: center;"><a href="http://2.bp.blogspot.com/-B6ywHekOKj8/VYGjD0HcA0I/AAAAAAAANwc/HzOOlPQRDuo/s1600/git-log8.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="552" src="http://2.bp.blogspot.com/-B6ywHekOKj8/VYGjD0HcA0I/AAAAAAAANwc/HzOOlPQRDuo/s640/git-log8.png" width="640"></a></div>
+<div><br></div>
+<div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-oBfd3GDwnU8/VYGjDFVOxgI/AAAAAAAANwQ/5Kooota69H8/s1600/git-log4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em; text-align: center;"><img border="0" height="339" src="http://3.bp.blogspot.com/-oBfd3GDwnU8/VYGjDFVOxgI/AAAAAAAANwQ/5Kooota69H8/s640/git-log4.png" width="640"></a></div>
+<div style="text-align: left;"></div>
+<div class="separator" style="clear: both; text-align: center;"><br></div>
+<br><h4 style="text-align: left;">Project 2:</h4>
+<br><div class="separator" style="clear: both; text-align: center;"><a href="http://3.bp.blogspot.com/-P1J1lUyA0No/VYGjEC-jn1I/AAAAAAAANwg/_aCRJamsfdA/s1600/git-log9.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="496" src="http://3.bp.blogspot.com/-P1J1lUyA0No/VYGjEC-jn1I/AAAAAAAANwg/_aCRJamsfdA/s640/git-log9.png" width="640"></a></div>
+<br><div class="separator" style="clear: both; text-align: center;"></div>
+<div><br></div>
+<div style="text-align: center;"><a href="http://2.bp.blogspot.com/-V9Mo7qYzqzM/VYGjD8z6vXI/AAAAAAAANwY/T4mxPsj51XA/s1600/git-log6.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="318" src="http://2.bp.blogspot.com/-V9Mo7qYzqzM/VYGjD8z6vXI/AAAAAAAANwY/T4mxPsj51XA/s640/git-log6.png" width="640"></a></div>
+<br>I hope that explains why We need  to maintain elegant git logs.<br><br><h3 style="text-align: left;">How To Maintain Elegant Logs?</h3>
+<br>First let's see how to write good commit messages. There are several blog  posts  &amp; guides about this. Here is the summary of all those taken from <a href="http://chris.beams.io/posts/git-commit/" target="_blank">this article</a>.<br><br>1. Separate subject from body with a blank line<br>2. Limit the subject line to 50 characters<br>3. Capitalize the subject line<br>4. Do not end the subject line with a period<br>5. Use the imperative mood in the subject line<br>6. Wrap the body at 72 characters<br>7. Use the body to explain what and why vs. how<br><br>If You are doing something hacky, writing a little message in commit on why you did that will help other developers to understand that a lot better. Even if You don't follow all rules, some of them will help you in writing great commit message next time. If You are mainainter of a project, ask Your team members to write meaningful messages.<br><br>The next that need to be taken care is commits. If a team member or someone else has submitted a pull request, once you merge the commit, just rebase it to remove unnecessary merge commits from log. Also make sure to squash  redundant commits and You have almost a linear log.<br><div style="text-align: center;"><br></div>A side benefit of this is, You can see recent commit there instead of merge commit, if your project is hosted on github.<br><br><div style="text-align: center;"><a href="http://1.bp.blogspot.com/-nDLmU2DsDhs/VYGjB86NHJI/AAAAAAAANv4/pba4wkAWiMc/s1600/git-log2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="88" src="http://1.bp.blogspot.com/-nDLmU2DsDhs/VYGjB86NHJI/AAAAAAAANv4/pba4wkAWiMc/s400/git-log2.png" width="400"></a></div>
+<br>The two minutes You spent on writing a meaningful message or maintaining linear log will<br>will help You a  lot few months down the line &amp; will save countless hours and sleepless nights for future contributors.<br><br><br><span style="background-color: white; color: #666666; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px;">Read more </span><a href="http://www.avilpage.com/search/label/tech" style="background-color: white; color: #5421bb; font-family: 'Trebuchet MS', Trebuchet, Verdana, sans-serif; font-size: 16.7999992370605px; line-height: 20.1599979400635px; text-decoration: none;">articles about Technology!</a>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/05/automatically-pep8-your-python-code.html" class="u-url">Automatically PEP8 &amp; Format Your Python Code</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -652,44 +705,6 @@ So far we have seen what an Emacs package is capable of doing. Now, lets start t
 </div>
      </div>
   </div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/02/bangpypers-talks-emacs-as-python-ide.html" class="u-url">BangPypers Talks - Emacs  As Python IDE!</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2015/02/bangpypers-talks-emacs-as-python-ide.html" rel="bookmark">
-            <time class="published dt-published" datetime="2015-02-23T20:32:00+05:30" itemprop="datePublished" title="2015-02-23">2015-02-23</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <div dir="ltr" style="text-align: left;" trbidi="on">
-<a href="http://bangalore.python.org.in/" target="_blank">BangPypers</a> is the Bangalore Python Usergroup. It is one of the largest and oldest Python user groups in India. On 3rd Saturday of every month there will be meetup. This month(Feb 2014) took place at IBM, Domlur. I gave a talk about setting up Emacs as Python IDE.<br><br>When  I started using Emacs, I spent a lot of time to configure &amp; make it an IDE. Recently I came across <a href="https://github.com/jorgenschaefer/elpy" target="_blank">elpy</a>(emacs lisp python enviroment) &amp;  liked it a lot. With just couple of lines You can turn emacs into Python IDE. So I stressed a lot about elpy during the talk.<br><br>I talked about other important packages I used &amp; other things that can be done with emacs.<br><br><br><a href="http://bangalore.python.org.in/blog/2015/02/21/feb-meetup-report/">Meetup Report</a><br><br><a href="http://chillaranand.github.io/emacs-py-ide/" target="_blank">Slides</a><br><div><br></div>
-<div><a href="https://github.com/ChillarAnand/.emacs.d" target="_blank">My .emacs.d</a></div>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/02/bangalore-django-user-group-beginners.html" class="u-url">Bangalore Django User Group - Beginners Workshop</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2015/02/bangalore-django-user-group-beginners.html" rel="bookmark">
-            <time class="published dt-published" datetime="2015-02-16T20:40:00+05:30" itemprop="datePublished" title="2015-02-16">2015-02-16</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <div dir="ltr" style="text-align: left;" trbidi="on">During <a href="http://www.avilpage.com/2014/12/bangpypers-dev-sprint.html" target="">BangPypers december dev sprint</a> Few weeks back, Krace &amp; Siva asked me if I can take a Django workshop. I agreed. They have worked on logistics &amp; scheduled for February at IBM, Domlur.<br><div><br></div>
-<div>I reached there by 9.30 AM. 26 people attended the session. Due to some problems we started a bit late than what we have planned. Krace, Siva &amp; Ankur assisted a lot during the session.</div>
-<div><br></div>
-<div>We planned to cover the basics of Django &amp; CRUD operations by building a simple app. We covered basics &amp; simple create view. Due to time constraint we were unable to cover the remaining.</div>
-<div><br></div>
-<div>Content: <a href="https://github.com/ChillarAnand/django-bookmarks">https://github.com/ChillarAnand/django-bookmarks</a>
-</div>
-<div>Slides: <a href="http://chillaranand.github.io/django-bookmarks/">http://chillaranand.github.io/django-bookmarks/</a>
-</div>
-</div>
     </div>
     </article>
 </div>

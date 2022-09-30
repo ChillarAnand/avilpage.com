@@ -2,7 +2,7 @@
 .. title: The Intelligence Behind Python Slices
 .. slug: a-slice-of-python-intelligence-behind
 .. date: 2015-03-22 16:01:00
-.. tags: slices, featured
+.. tags: featured
 .. category: python
 .. description:
 -->

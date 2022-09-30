@@ -1,9 +1,9 @@
 <!--
-.. title: Finding Performance Issues In Python Web Apps with Sentry
+.. title: Find Performance Issues In Web Apps with Sentry
 .. slug: python-web-applications-performance-sentry
 .. date: 2020-11-30 23:59:54 UTC+05:30
-.. tags: python, django, sentry, apm
-.. category:
+.. tags: python, sentry, profiling
+.. category: programming
 .. link:
 .. description: How to find performance bottlenecks in python web applications built with flask, django, asgi.
 .. type: text

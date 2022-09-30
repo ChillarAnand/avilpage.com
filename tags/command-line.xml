@@ -1,5 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 Sep 2022 03:57:36 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Archive Million Pages With wget In Minutes</title><link>http://avilpage.com/2018/11/archive-millions-pages-wget-minutes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 Sep 2022 08:00:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).&lt;/p&gt;
+&lt;p&gt;In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.&lt;/p&gt;
+&lt;h4&gt;Chain of Trust&lt;/h4&gt;
+&lt;p&gt;TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.&lt;/p&gt;
+&lt;p&gt;Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl s_client -showcerts -connect avilpage.com:443
+
+CONNECTED&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;00000006&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert High Assurance EV Root CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert Inc, &lt;span class="nv"&gt;OU&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.digicert.com, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; DigiCert SHA2 High Assurance Server CA
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+&lt;span class="nv"&gt;depth&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="nv"&gt;C&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; US, &lt;span class="nv"&gt;ST&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; California, &lt;span class="nv"&gt;L&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; San Francisco, &lt;span class="nv"&gt;O&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"GitHub, Inc."&lt;/span&gt;, &lt;span class="nv"&gt;CN&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; www.github.com
+verify &lt;span class="k"&gt;return&lt;/span&gt;:1
+---
+Certificate chain
+ &lt;span class="m"&gt;0&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/ST&lt;span class="o"&gt;=&lt;/span&gt;California/L&lt;span class="o"&gt;=&lt;/span&gt;San Francisco/O&lt;span class="o"&gt;=&lt;/span&gt;GitHub, Inc./CN&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+-----BEGIN CERTIFICATE-----
+MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
+aTrrJ67dru040my
+-----END CERTIFICATE-----
+ &lt;span class="m"&gt;1&lt;/span&gt; s:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+   i:/C&lt;span class="o"&gt;=&lt;/span&gt;US/O&lt;span class="o"&gt;=&lt;/span&gt;DigiCert Inc/OU&lt;span class="o"&gt;=&lt;/span&gt;www.digicert.com/CN&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+-----BEGIN CERTIFICATE-----
+MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
+0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
+&lt;span class="nv"&gt;cPUeybQ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+-----END CERTIFICATE-----
+
+    Verify &lt;span class="k"&gt;return&lt;/span&gt; code: &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;ok&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into &lt;code&gt;server.pem&lt;/code&gt; and &lt;code&gt;intermediate.pem&lt;/code&gt; files.&lt;/p&gt;
+&lt;p&gt;We can decode these pem files and see the information in these certificates using&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl x509 -noout -text -in server.crt
+
+Certificate:
+    Data:
+        Version: &lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;0x2&lt;span class="o"&gt;)&lt;/span&gt;
+    Signature Algorithm: sha256WithRSAEncryption
+    ----
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can also get only the subject and issuer of the certificate with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl x509 -noout -subject -noout -issuer -in server.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;www.github.com
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+
+$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
+
+&lt;span class="nv"&gt;subject&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert SHA2 High Assurance Server CA
+&lt;span class="nv"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;CN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DigiCert High Assurance EV Root CA
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.&lt;/p&gt;
+&lt;p&gt;If you are using a Linux machine, all the root certificate will readily available in &lt;code&gt;.pem&lt;/code&gt; format in &lt;code&gt;/etc/ssl/certs&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;If you are using a Mac, open &lt;code&gt;Keychain Access&lt;/code&gt;, search and export the relevant root certificate in &lt;code&gt;.pem&lt;/code&gt; format.&lt;/p&gt;
+&lt;p algin="center"&gt;
+&lt;img src="http://avilpage.com/images/tls-openssl1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We have all the 3 certificates in the chain of trust and we can validate them with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+server.pem: OK
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If there is some issue with validation OpenSSL will throw an error with relevant information.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.&lt;/p&gt;</description><category>command-line</category><guid>http://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</guid><pubDate>Sat, 30 Nov 2019 04:45:14 GMT</pubDate></item><item><title>Archive Million Pages With wget In Minutes</title><link>http://avilpage.com/2018/11/archive-millions-pages-wget-minutes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://github.com/webrecorder/webrecorder"&gt;webrecorder&lt;/a&gt;, &lt;a href="https://github.com/internetarchive/heritrix3"&gt;heritrix&lt;/a&gt;, &lt;a href="https://nutch.apache.org/"&gt;nutch&lt;/a&gt;, &lt;a href="https://scrapy.org/"&gt;scrapy&lt;/a&gt;, &lt;a href="https://github.com/gocolly/colly"&gt;colly&lt;/a&gt;, &lt;a href="https://github.com/scrapinghub/frontera"&gt;frontera&lt;/a&gt; are popular tools for large scale web crawling and archiving.&lt;/p&gt;
 &lt;p&gt;These tools require some learning curve and some of them don't have inbuilt support for warc(&lt;a href="https://en.wikipedia.org/wiki/Web_ARChive"&gt;Web ARChive&lt;/a&gt;) output format.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;wget&lt;/code&gt; comes bundled with most *nix systems and has inbuilt support for warc output. In this article we will see how to quickly archive web pages with wget.&lt;/p&gt;
@@ -213,7 +287,81 @@ $ atop
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pio ci --board&lt;span class="o"&gt;=&lt;/span&gt;megaatmega2560 --project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"upload_port=/dev/ttyACM0"&lt;/span&gt; --project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"targets=upload"&lt;/span&gt; foo.ino
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;</description><category>arduino</category><category>command-line</category><guid>http://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item><item><title>Concurrent Downloads - Bash Vs Python</title><link>http://avilpage.com/2016/05/concurrent-downloads-bash-vs-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
+&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;</description><category>arduino</category><category>command-line</category><guid>http://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item><item><title>Super Charge Your Shell For Python Development</title><link>http://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Last month, I gave a lightning talk about supercharging your shell for python development at &lt;a href="http://www.meetup.com/BangPypers/"&gt;BangPypers meetup&lt;/a&gt;.&lt;/p&gt;
+&lt;iframe width="600" height="350" src="https://www.youtube.com/embed/lvmJ0tWCjFA" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+
+&lt;p&gt;This is a detailed blog post on how to setup your laptop for the same.&lt;/p&gt;
+&lt;h3&gt;Autojump&lt;/h3&gt;
+&lt;p&gt;When working on terminal, &lt;code&gt;cd&lt;/code&gt; is used to traverse directories.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ~/projects/python/django
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;cd&lt;/code&gt; is inefficient to quickly traverse directories which are in different paths and far away from each other.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /var/lib/elasticsearch/
+&lt;span class="nb"&gt;cd&lt;/span&gt; ~/sandbox/channels/demo
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;z&lt;/code&gt;, a oh-my-zsh plugin is efficient for traversing directories. With &lt;code&gt;z&lt;/code&gt;, directory can be changed by typing name of directory.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;z junction
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Instead of full name, just a substring would do.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;z ju
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;z&lt;/code&gt; keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.&lt;/p&gt;
+&lt;p&gt;To install &lt;code&gt;z&lt;/code&gt;, install &lt;a href="http://avilpage.com/2015/03/install-oh-my-zsh-on-ubuntu.html"&gt;oh-my-zsh&lt;/a&gt; and add &lt;code&gt;z&lt;/code&gt; to plugins in &lt;code&gt;.zshrc&lt;/code&gt; file.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;plugins&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;git z&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Aliases&lt;/h3&gt;
+&lt;p&gt;Read this old blog post on how &lt;a href="http://avilpage.com/2014/10/useful-shell-aliases-for-python-and.html"&gt;aliases will improve your productivity&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;Autoenv&lt;/h3&gt;
+&lt;p&gt;When working on multiple projects, it becomes necessary to use virtualenvs so that multiple versions of same package can be used. In addition to that, it be necessary to set environment variables on a per project basis.&lt;/p&gt;
+&lt;p&gt;To automate all these things, &lt;a href="https://pypi.python.org/pypi/autoenv/"&gt;autoenv&lt;/a&gt; provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.&lt;/p&gt;
+&lt;p&gt;If you have file named &lt;code&gt;.env&lt;/code&gt; in a directory, autoenv will automatically source that file whenever user enters into it.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;autoenv&lt;/code&gt; is a python package. It can be installed with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip install autoenv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It provides a shell script which needs to sourced.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"source `which activate.sh`"&lt;/span&gt; &amp;gt;&amp;gt; ~/.bashrc
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;You can create a .env file like this in project root.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;source&lt;/span&gt; ~/.virtualenvs/exp/bin/activate
+&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;SECRET_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Next time, when your enter into that directory, &lt;code&gt;autoenv&lt;/code&gt; finds &lt;code&gt;.env&lt;/code&gt; file and it will source it automatically.&lt;/p&gt;
+&lt;h3&gt;Autoreload&lt;/h3&gt;
+&lt;p&gt;I have written a sepeate blog post on how to &lt;a href="http://avilpage.com/2014/11/python-automagically-reload-imports-in.html"&gt;automagically reload imports&lt;/a&gt; long time back.&lt;/p&gt;
+&lt;h3&gt;Autoimports&lt;/h3&gt;
+&lt;p&gt;When you copy code and paste it in ipython interpreter, it might fail with &lt;code&gt;ImportError&lt;/code&gt; if required modules aren't already imported by the interpreter.&lt;/p&gt;
+&lt;p&gt;Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.&lt;/p&gt;
+&lt;p&gt;You can write an init script which will do all these things and load it automatically when ipython starts.&lt;/p&gt;
+&lt;p&gt;Here is a &lt;a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py"&gt;simple init script&lt;/a&gt; which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_files&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'ipython_init.py'&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Autocall&lt;/h3&gt;
+&lt;p&gt;When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.&lt;/p&gt;
+&lt;p&gt;IPython provides &lt;code&gt;autocall&lt;/code&gt; option to make functions callable without typing parenthesis. This can be activate with &lt;code&gt;%autocall&lt;/code&gt; magic.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;autocall&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;Automatic&lt;/span&gt; &lt;span class="n"&gt;calling&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Smart&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now functions can be called without parenthesis.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="o"&gt;------&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;You can also enable this by default by activating it in ipython config file.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_lines&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="si"&gt;%a&lt;/span&gt;&lt;span class="s1"&gt;utocall  1'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;These are some tips to become more productive with your shell when working on python projects.&lt;/p&gt;</description><category>command-line</category><category>python</category><guid>http://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</guid><pubDate>Sun, 26 Mar 2017 02:40:31 GMT</pubDate></item><item><title>Concurrent Downloads - Bash Vs Python</title><link>http://avilpage.com/2016/05/concurrent-downloads-bash-vs-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
             &lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;
                 I just found one more free telugu book &lt;code style="background-color: rgba(0, 0, 0, 0.0392157); border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6px; margin: 0px; padding: 0.2em 0px;"&gt;Graded
       readings in modern literary Telugu&lt;/code&gt; by Golla Narayanaswami Reddy and Dan M Matson in &lt;a href="http://dsal.uchicago.edu/digbooks/dig_toc.html?BOOKID=PL4775.R4_1967" style="box-sizing: border-box; color: #4078c0; cursor: pointer; text-decoration: none;"&gt;Digital South Asia Library&lt;/a&gt;.
@@ -336,4 +484,4 @@ $ atop
 &lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"python manage.py test"&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Just add the above aliases to your &lt;code&gt;~/.bashrc&lt;/code&gt; or &lt;code&gt;~/.zshrc&lt;/code&gt;. That's it. Hpy alsng!&lt;/p&gt;</description><category>command-line</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2014/10/useful-shell-aliases-for-python-and.html</guid><pubDate>Sat, 25 Oct 2014 12:57:00 GMT</pubDate></item><item><title>A Weather Widget For Your Terminal!</title><link>http://avilpage.com/2014/06/a-weather-widget-on-your-terminal.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;Getting weather info right on the terminal..?? Sounds cool.. Isn't it? With Python, it's even easier to make one! Lets get started.&lt;br&gt;&lt;br&gt;First we need to determine the location of the user. So let's find out ip address. There are a lot of sites which gives the ip address but &lt;a href="http://checkip.dyndns.org/" target="_blank"&gt;this site&lt;/a&gt; is the simplest &amp;amp; very easy to get.&lt;br&gt;&lt;br&gt;Once we have the ip address, we can use it to determine the location and then use any weather api to get the info. However &lt;a href="http://worldweatheronline.com/" target="_blank"&gt;Worldweatheronline&lt;/a&gt; api gives weather info directly based on the api, which makes it easier to fetch data.&lt;br&gt;&lt;br&gt;We can get the data in JSON format and by parsing it we can make the weather widget.&lt;br&gt;&lt;br&gt;I wrote a &lt;a href="https://github.com/ChillarAnand/Weather-on-Terminal" target="_blank"&gt;simple script&lt;/a&gt; for that and here is the sample output of the script.&lt;br&gt;&lt;br&gt;&lt;div class="separator" style="clear: both; text-align: center;"&gt;&lt;a href="http://4.bp.blogspot.com/-_b09ZZBmFHk/U48GvsG0wPI/AAAAAAAAKj8/LU7WmtkKO_o/s1600/weather-widget-terminal.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"&gt;&lt;img border="0" src="http://4.bp.blogspot.com/-_b09ZZBmFHk/U48GvsG0wPI/AAAAAAAAKj8/LU7WmtkKO_o/s1600/weather-widget-terminal.png"&gt;&lt;/a&gt;&lt;/div&gt;&lt;div style="text-align: center;"&gt;  &lt;/div&gt;&lt;/div&gt;</description><category>command-line</category><category>python</category><guid>http://avilpage.com/2014/06/a-weather-widget-on-your-terminal.html</guid><pubDate>Wed, 04 Jun 2014 06:16:00 GMT</pubDate></item><item><title>Access Clipboard From Terminal In Ubuntu Using Xclip!</title><link>http://avilpage.com/2014/04/access-clipboard-from-terminal-in.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;If You are going back and forth between terminal and any other application, accessing system clipboard contents from command line will be invaluable.&lt;br&gt;&lt;br&gt;If You are using mac, there are inbuilt commands pbcopy &amp;amp; pbpaste. But in Ubuntu these are not available. You need to install a small utility called xclip. Go ahead and install it.&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; color: #eeeeee; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;&lt;span class="hljs-built_in" style="box-sizing: border-box; color: #268bd2;"&gt;sudo&lt;/span&gt; apt-get install xclip&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;br&gt;Now, You can copy any text ( or the output one command ) into the clipboard using xclip. To copy contents of fruits.txt to clipboard,&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; color: #eeeeee; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;cat fruits.txt | xclip&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;br&gt;If You want to see the contents of clipboard, You can use&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; color: #eeeeee; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;xclip -o&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;br&gt;This copy and paste will work only in the terminal, If You switch to another application and try to paste there, it wont work.&lt;br&gt;&lt;br&gt;If You want to paste in another application, You need to copy like this&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; color: #eeeeee; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;cat fruits.txt | xclip -selection clipboard&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;br&gt;Now, You can switch to any other application &amp;amp; You can paste (CTRL + V) the contents.&lt;br&gt;&lt;br&gt;&lt;h2 style="text-align: left;"&gt;Tip:&lt;/h2&gt;Instead of typing all of this everytime, You can setup alias in .bashrc file&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;&lt;span style="color: #eeeeee;"&gt;alias c='xclip -selection clipboard'&lt;br&gt;alias v='xclip -o'&lt;/span&gt;&lt;span style="color: #eeeeee;"&gt;&lt;br&gt;&lt;/span&gt;&lt;/code&gt;&lt;div style="text-align: left;"&gt;&lt;br&gt;&lt;/div&gt;&lt;br&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;Now You can easily copy the contents like this&lt;br&gt;&lt;br&gt;&lt;div dir="ltr" trbidi="on"&gt;&lt;div style="text-align: center;"&gt;&lt;pre style="box-sizing: border-box;"&gt;&lt;code class="bash hljs " style="background-color: #333333; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; border-top-left-radius: 6px; border-top-right-radius: 6px; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 10px inset, rgba(255, 255, 255, 0.0980392) 0px 1px 0px, rgba(0, 0, 0, 0.498039) 0px -1px 0px; box-sizing: border-box; display: block; padding: 15px 20px; position: relative; text-align: left;"&gt;&lt;span style="color: #eeeeee;"&gt;cat fruits.txt | c&lt;/span&gt;&lt;/code&gt;&lt;div style="text-align: left;"&gt;&lt;br&gt;&lt;/div&gt;&lt;br&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;I found this a lot helpful while switching between browser and terminal.&lt;br&gt;&lt;br&gt;&lt;/div&gt;</description><category>command-line</category><category>ubuntu</category><guid>http://avilpage.com/2014/04/access-clipboard-from-terminal-in.html</guid><pubDate>Sun, 20 Apr 2014 14:01:00 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Just add the above aliases to your &lt;code&gt;~/.bashrc&lt;/code&gt; or &lt;code&gt;~/.zshrc&lt;/code&gt;. That's it. Hpy alsng!&lt;/p&gt;</description><category>command-line</category><category>django</category><category>django-tips-tricks</category><category>python</category><guid>http://avilpage.com/2014/10/useful-shell-aliases-for-python-and.html</guid><pubDate>Sat, 25 Oct 2014 12:57:00 GMT</pubDate></item></channel></rss>
