@@ -2,84 +2,64 @@
 .. title: Tech Talks
 .. slug: talks
 .. date: 2017-08-24 13:29:59 UTC
-.. tags:
+.. tags: tech
 .. category: talks
 .. link:
 .. description: Talks given by chillar anand at various conferences
 .. type: text
 -->
 
-### [Python Traceback For Humans!](http://chillaranand.github.io/py-trace/)
-@[PyConIndia]() [ [Code](https://github.com/ChillarAnand/py-trace/tree/gh-pages/code) ] [ [Video](https://www.youtube.com/watch?v=EGhG8VEatBE) ]
-<br />
-<br />
+
+Here are some of the talks I have given at various conferences and events.
 
 
-### [Supercharge Your Shell For Python Development](http://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html)
-@[BangPypers Meetup](http://bangalore.python.org.in/blog/2017/02/18/feb-short-talks/) [ [Video](https://www.youtube.com/watch?v=nQVMljKldvo) ]
-<br />
+#### [Python Traceback For Humans](https://www.youtube.com/watch?v=EGhG8VEatBE) @PythonIndia
 <br />
 
 
-### [Django Gotchas!](http://chillaranand.github.io/django-gotcha/)
-@[Bangalore Django User Group Meetup]() [Slides]((http://chillaranand.github.io/django-gotcha/))
-<br />
+#### [Supercharge Your Shell For Python Development](https://www.youtube.com/watch?v=nQVMljKldvo) @BangPypers
 <br />
 
 
-### [How To Teach Neural Networks To Your Grandma?](https://chillaranand.github.io/neural-networks-101/)
-@[BangPypers Meetup]() [ [Content](https://github.com/ChillarAnand/neural-networks-101) ]
-<br />
-<br />
+#### [Django Gotchas!](http://chillaranand.github.io/django-gotcha/) @BangaloreDjangoUserGroup
 
-
-### [Just Queue It - Queue Everything & Delight Everyone!](http://chillaranand.github.io/just-queue-it/)
-@[PyBelgaum]() [Slides](https://chillaranand.github.io/just-queue-it/)
-<br />
 <br />
 
 
-
-### [Getting Started With Python Pandas](http://chillaranand.github.io/pandas-101/)
-@[BangPypers Meetup]() [ [Code](https://github.com/ChillarAnand/pandas-101/tree/master/code) ]
-<br />
+#### [How To Teach Neural Networks To Your Grandma?](https://chillaranand.github.io/neural-networks-101/) @BangPypers
 <br />
 
 
-### [Emacs As Python IDE!](http://chillaranand.github.io/emacs-py-ide/)
-@[PyCon India Open Space]()
-<br />
+#### [Just Queue It - Queue Everything & Delight Everyone!](http://chillaranand.github.io/just-queue-it/) @PyBelgaum
 <br />
 
 
-### [Enough iPython For Everyday Programming!](http://chillaranand.github.io/everyday-ipython/)
-@[BangPypers Meetup]()
-<br />
+#### [Getting Started With Python Pandas](http://chillaranand.github.io/pandas-101/) @BangPypers
 <br />
 
 
-### [What Made Emacs Different?](http://chillaranand.github.io/emacs-different/)
-@[Barcamp Bangalore Spring]()
+#### [Emacs As Python IDE!](http://chillaranand.github.io/emacs-py-ide/) @PyConIndia OpenSpace
 <br />
+
+
+#### [Enough iPython For Everyday Programming!](http://chillaranand.github.io/everyday-ipython/) @BangPypers
+<br />
+
+
+#### [What Made Emacs Different?](http://chillaranand.github.io/emacs-different/) @BarcampBangalore
 <br />
 
 
 
-### [Python For BioInformatics!](http://chillaranand.github.io/py-bio/)
-@[PESIT College]()
-<br />
+#### [Python For BioInformatics!](http://chillaranand.github.io/py-bio/) @PESIT
 <br />
 
 
 
-### [Emacs as Python IDE!](http://chillaranand.github.io/emacs-py-ide/)
-@[BangPypers Meetup]()
-<br />
+#### [Emacs as Python IDE!](http://chillaranand.github.io/emacs-py-ide/) @BangPypers
 <br />
 
 
 
-### [Getting Started With Django](http://chillaranand.github.io/django-bookmarks/)
-@[Bangalore Django User Group Meetup]()
-<br />
+#### [Getting Started With Django](http://chillaranand.github.io/django-bookmarks/) @BangaloreDjangoUserGroup
 <br />
