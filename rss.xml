@@ -1,25 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>http://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="http://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 Sep 2022 15:15:30 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Root Xiamo Redmi 9 Prime Without TWRP</title><link>http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Rooting&lt;sup id="fnref:root"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:root"&gt;1&lt;/a&gt;&lt;/sup&gt; an android device voids warranty but gives a great control over the device. For most of the popular devices, TWRP&lt;sup id="fnref:twrp"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:twrp"&gt;2&lt;/a&gt;&lt;/sup&gt; recovery is available. Once a device bootloader is unlocked, we can install TWRP recovery. After that we can flash Magisk to gain root access.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 11 Oct 2022 04:28:00 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Local Kubernetes Cluster with K3s on Mac M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC. To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac.&lt;/p&gt;
+&lt;p&gt;An easy way to spin up Linux VMs on Mac M1 is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
+&lt;h4&gt;K3s Setup&lt;/h4&gt;
+&lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass info k3s
+Name:           k3s
+State:          Running
+IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
+Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
+Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
+Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
+Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
+Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
+Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
+                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
+                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
+&lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass shell k3s
+
+ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
+&lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/k8s-mac-m1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
+
+$ multipass shell k3s-worker
+
+ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
+$ multipass purge
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
+&lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:k8s"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Kubernetes"&gt;https://en.wikipedia.org/wiki/Kubernetes&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k8s" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:k3s"&gt;
+&lt;p&gt;&lt;a href="https://k3s.io/"&gt;https://k3s.io/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k3s" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:multipass"&gt;
+&lt;p&gt;&lt;a href="https://github.com/canonical/multipass"&gt;https://github.com/canonical/multipass&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:multipass" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:lens"&gt;
+&lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>How To Root Xiamo Redmi 9 Prime Without TWRP</title><link>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Rooting&lt;sup id="fnref:root"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:root"&gt;1&lt;/a&gt;&lt;/sup&gt; an android device voids warranty but gives a great control over the device. For most of the popular devices, TWRP&lt;sup id="fnref:twrp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:twrp"&gt;2&lt;/a&gt;&lt;/sup&gt; recovery is available. Once a device bootloader is unlocked, we can install TWRP recovery. After that we can flash Magisk to gain root access.&lt;/p&gt;
 &lt;p&gt;For some devices like Redmi 9 Prime(codename: lancelot), TWRP recovery is not available officially. There are couple of unofficial images but they are not working as expected and are causing bootloop.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how to root lancelot device.&lt;/p&gt;
 &lt;h4&gt;Rooting Lancelot&lt;/h4&gt;
 &lt;p&gt;First ensure that the device bootloader is unlocked and your system has adb &amp;amp; fastboot installed. To root without TWRP, we need to obtain patched &lt;code&gt;boot.img&lt;/code&gt; &amp;amp; &lt;code&gt;vbmeta.img&lt;/code&gt; and flash them in fastboot mode.&lt;/p&gt;
-&lt;p&gt;First we need to download the stock ROM of the device to extract boot.img file. We can go to manufacturers site and download the same stock ROM&lt;sup id="fnref:lancelot"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:lancelot"&gt;3&lt;/a&gt;&lt;/sup&gt; that is running on the device. Once the ROM is downloaded, we can unzip it. There we can find boot.img file.&lt;/p&gt;
+&lt;p&gt;First we need to download the stock ROM of the device to extract boot.img file. We can go to manufacturers site and download the same stock ROM&lt;sup id="fnref:lancelot"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:lancelot"&gt;3&lt;/a&gt;&lt;/sup&gt; that is running on the device. Once the ROM is downloaded, we can unzip it. There we can find boot.img file.&lt;/p&gt;
 &lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/root-redmi-9-prime.png"&gt;
+&lt;img src="https://avilpage.com/images/root-redmi-9-prime.png"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;We need to patch this file. To patch this, download magisk app on the device. Click on install and select the boot.img file to patch. After a few minutes, it will generate a patched boot file.&lt;/p&gt;
 &lt;p align="center"&gt;
-&lt;img height="440" width="220" src="http://avilpage.com/images/root-redmi-9-prime-2.jpeg"&gt;
+&lt;img height="440" width="220" src="https://avilpage.com/images/root-redmi-9-prime-2.jpeg"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;We can download this file to system by running the following command.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ adb pull -p /storage/emulated/0/Download/magisk_patched-25200_cU1ws.img .
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Now we need to download patched vbmeta file. This is available in XDA&lt;sup id="fnref:xda"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:xda"&gt;4&lt;/a&gt;&lt;/sup&gt; forum. Click &lt;a href="https://forum.xda-developers.com/attachments/vbmeta_redmi9-img.5082027/"&gt;this link&lt;/a&gt; to download it.&lt;/p&gt;
+&lt;p&gt;Now we need to download patched vbmeta file. This is available in XDA&lt;sup id="fnref:xda"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:xda"&gt;4&lt;/a&gt;&lt;/sup&gt; forum. Click &lt;a href="https://forum.xda-developers.com/attachments/vbmeta_redmi9-img.5082027/"&gt;this link&lt;/a&gt; to download it.&lt;/p&gt;
 &lt;p&gt;Once we have both patched files, we can reboot the device in fastboot mode by using the following commands.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ adb devices
 
@@ -42,31 +132,31 @@ $ fastboot reboot
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:root"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Rooting_(Android)"&gt;https://en.wikipedia.org/wiki/Rooting_(Android)&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:root" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Rooting_(Android)"&gt;https://en.wikipedia.org/wiki/Rooting_(Android)&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:root" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:twrp"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/TWRP_(software)"&gt;https://en.wikipedia.org/wiki/TWRP_(software)&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:twrp" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/TWRP_(software)"&gt;https://en.wikipedia.org/wiki/TWRP_(software)&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:twrp" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:lancelot"&gt;
-&lt;p&gt;&lt;a href="https://xiaomifirmwareupdater.com/miui/lancelot/"&gt;https://xiaomifirmwareupdater.com/miui/lancelot/&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:lancelot" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://xiaomifirmwareupdater.com/miui/lancelot/"&gt;https://xiaomifirmwareupdater.com/miui/lancelot/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:lancelot" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:xda"&gt;
-&lt;p&gt;&lt;a href="https://forum.xda-developers.com/t/guide-magisk-root-access-for-redmi-9-mediatek-helio-g80-without-twrp.4149531/"&gt;Guide @ XDA&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:xda" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://forum.xda-developers.com/t/guide-magisk-root-access-for-redmi-9-mediatek-helio-g80-without-twrp.4149531/"&gt;Guide @ XDA&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:xda" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>android</category><guid>http://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</guid><pubDate>Wed, 28 Sep 2022 00:44:45 GMT</pubDate></item><item><title>Integrating Frappe Health with SNOMED CT</title><link>http://avilpage.com/2022/08/frappe-health-snomed-ct.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Frappe Health&lt;sup id="fnref:FH"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:FH"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework&lt;sup id="fnref:ff"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ff"&gt;2&lt;/a&gt;&lt;/sup&gt;, a low code highly customizable framework.&lt;/p&gt;
-&lt;p&gt;Frappe Health provides support for integrating various medical coding standards&lt;sup id="fnref:mcs"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:mcs"&gt;3&lt;/a&gt;&lt;/sup&gt;. In the patient encounter doctype, doctors can search and add pre-configured medical codes.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/snomed-frappe-health1.png"&gt;&lt;/p&gt;
+&lt;/div&gt;</description><category>android</category><guid>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</guid><pubDate>Wed, 28 Sep 2022 00:44:45 GMT</pubDate></item><item><title>Integrating Frappe Health with SNOMED CT</title><link>https://avilpage.com/2022/08/frappe-health-snomed-ct.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Frappe Health&lt;sup id="fnref:FH"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:FH"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework&lt;sup id="fnref:ff"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ff"&gt;2&lt;/a&gt;&lt;/sup&gt;, a low code highly customizable framework.&lt;/p&gt;
+&lt;p&gt;Frappe Health provides support for integrating various medical coding standards&lt;sup id="fnref:mcs"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:mcs"&gt;3&lt;/a&gt;&lt;/sup&gt;. In the patient encounter doctype, doctors can search and add pre-configured medical codes.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health1.png"&gt;&lt;/p&gt;
 &lt;p&gt;In this article, let’s see how to integrate Frappe Health with SNOMED CT.&lt;/p&gt;
 &lt;h4&gt;SNOMED CT Integration&lt;/h4&gt;
-&lt;p&gt;SNOMED CT&lt;sup id="fnref:snomed"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:snomed"&gt;4&lt;/a&gt;&lt;/sup&gt; is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.&lt;/p&gt;
+&lt;p&gt;SNOMED CT&lt;sup id="fnref:snomed"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:snomed"&gt;4&lt;/a&gt;&lt;/sup&gt; is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.&lt;/p&gt;
 &lt;p&gt;Since SNOMED CT is a huge dataset, it takes a lot of effort to import the entire dataset into Frappe Health. It also provides REST API to query SNOMED terms. Also, if your healthcare organization is focusing on only a specific domain, it doesn’t make sense to import the entire dataset.&lt;/p&gt;
 &lt;p&gt;In such scenarios, it is better to map only the required diagnosis, symptoms, and other clinical objects.&lt;/p&gt;
 &lt;p&gt;Frappe Health has a Diagnosis doctype where practitioners can enter diagnosis. We can add an additional field called &lt;code&gt;Snomed Code&lt;/code&gt; to link diagnosis to relevant SNOMED code.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/snomed-frappe-health2.png"&gt;&lt;/p&gt;
-&lt;p&gt;Frappe framework provides server script&lt;sup id="fnref:ss"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ss"&gt;5&lt;/a&gt;&lt;/sup&gt; to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/snomed-frappe-health3.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health2.png"&gt;&lt;/p&gt;
+&lt;p&gt;Frappe framework provides server script&lt;sup id="fnref:ss"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ss"&gt;5&lt;/a&gt;&lt;/sup&gt; to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health3.png"&gt;&lt;/p&gt;
 &lt;p&gt;Here is a simple python server script that adds relevant snomed codes to diagnosis.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt;
 
@@ -90,32 +180,32 @@ $ fastboot reboot
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/snomed-frappe-health4.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health4.png"&gt;&lt;/p&gt;
 &lt;p&gt;The server script makes sure all the diagnosis objects are codified automatically without any manual effort.&lt;/p&gt;
 &lt;p&gt;Since Frappe Framework &amp;amp; Frappe Health are low code, extremely customizable, we are able to integrate it with SNOMED in just a few minutes. Similarly, we can codify other clinical objects like Symptoms, Procedures, Medications, etc.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:FH"&gt;
-&lt;p&gt;&lt;a href="https://github.com/frappe/health"&gt;https://github.com/frappe/health&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/frappe/health"&gt;https://github.com/frappe/health&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:ff"&gt;
-&lt;p&gt;&lt;a href="https://frappeframework.com"&gt;https://frappeframework.com&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://frappeframework.com"&gt;https://frappeframework.com&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:mcs"&gt;
-&lt;p&gt;&lt;a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard"&gt;https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard"&gt;https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:snomed"&gt;
-&lt;p&gt;&lt;a href="https://www.nlm.nih.gov/healthit/snomedct/index.html"&gt;https://www.nlm.nih.gov/healthit/snomedct/index.html&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.nlm.nih.gov/healthit/snomedct/index.html"&gt;https://www.nlm.nih.gov/healthit/snomedct/index.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:ss"&gt;
-&lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script"&gt;https://frappeframework.com/docs/user/en/desk/scripting/server-script&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script"&gt;https://frappeframework.com/docs/user/en/desk/scripting/server-script&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>frappe-framework</category><category>HealthIT</category><guid>http://avilpage.com/2022/08/frappe-health-snomed-ct.html</guid><pubDate>Wed, 31 Aug 2022 10:59:13 GMT</pubDate></item><item><title>Mastering DICOM - #3 Setup Modality Worklist SCP</title><link>http://avilpage.com/2022/07/dicom-modality-worklist-scp.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>frappe-framework</category><category>HealthIT</category><guid>https://avilpage.com/2022/08/frappe-health-snomed-ct.html</guid><pubDate>Wed, 31 Aug 2022 10:59:13 GMT</pubDate></item><item><title>Mastering DICOM - #3 Setup Modality Worklist SCP</title><link>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information&lt;/p&gt;
 &lt;h4&gt;Using Orthanc Worklist Plugin&lt;/h4&gt;
-&lt;p&gt;Orthanc server has worklist plugin&lt;sup id="fnref:owp"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:owp"&gt;1&lt;/a&gt;&lt;/sup&gt; which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.&lt;/p&gt;
+&lt;p&gt;Orthanc server has worklist plugin&lt;sup id="fnref:owp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:owp"&gt;1&lt;/a&gt;&lt;/sup&gt; which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.&lt;/p&gt;
 &lt;p&gt;Generate default configuration by running the following command.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ ./Orthanc --config&lt;span class="o"&gt;=&lt;/span&gt;config.json
 &lt;/pre&gt;&lt;/div&gt;
@@ -144,7 +234,7 @@ $ fastboot reboot
 
 &lt;p&gt;This will retrieve all worklist files from the server.&lt;/p&gt;
 &lt;h4&gt;Using wlmscpfs&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;dcmtk&lt;/code&gt; &lt;sup id="fnref:dcmtk"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:dcmtk"&gt;2&lt;/a&gt;&lt;/sup&gt; is a collection of utilities for DICOM standard. It has &lt;code&gt;wlmscpfs&lt;/code&gt; application which implements basic Service Class Provider(SCP). We can start the service by running the following command.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;dcmtk&lt;/code&gt; &lt;sup id="fnref:dcmtk"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:dcmtk"&gt;2&lt;/a&gt;&lt;/sup&gt; is a collection of utilities for DICOM standard. It has &lt;code&gt;wlmscpfs&lt;/code&gt; application which implements basic Service Class Provider(SCP). We can start the service by running the following command.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -155,16 +245,16 @@ $ fastboot reboot
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:owp"&gt;
-&lt;p&gt;&lt;a href="https://book.orthanc-server.com/plugins/worklists-plugin.html"&gt;https://book.orthanc-server.com/plugins/worklists-plugin.html&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://book.orthanc-server.com/plugins/worklists-plugin.html"&gt;https://book.orthanc-server.com/plugins/worklists-plugin.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:dcmtk"&gt;
-&lt;p&gt;&lt;a href="https://github.com/DCMTK/dcmtk"&gt;https://github.com/DCMTK/dcmtk&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/DCMTK/dcmtk"&gt;https://github.com/DCMTK/dcmtk&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>dicom</category><guid>http://avilpage.com/2022/07/dicom-modality-worklist-scp.html</guid><pubDate>Sun, 31 Jul 2022 12:49:29 GMT</pubDate></item><item><title>Twilio Integration With Frappe Framework</title><link>http://avilpage.com/2022/06/twilio-frappe.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Frappe&lt;sup id="fnref:frappe"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/06/twilio-frappe.html#fn:frappe"&gt;1&lt;/a&gt;&lt;/sup&gt; is a low code framework for rapidly developing web applications. Twilio&lt;sup id="fnref:twilio"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/06/twilio-frappe.html#fn:twilio"&gt;2&lt;/a&gt;&lt;/sup&gt; is a SAAS platform for SMS, Video etc with APIs.&lt;/p&gt;
+&lt;/div&gt;</description><category>dicom</category><guid>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</guid><pubDate>Sun, 31 Jul 2022 12:49:29 GMT</pubDate></item><item><title>Twilio Integration With Frappe Framework</title><link>https://avilpage.com/2022/06/twilio-frappe.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Frappe&lt;sup id="fnref:frappe"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:frappe"&gt;1&lt;/a&gt;&lt;/sup&gt; is a low code framework for rapidly developing web applications. Twilio&lt;sup id="fnref:twilio"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:twilio"&gt;2&lt;/a&gt;&lt;/sup&gt; is a SAAS platform for SMS, Video etc with APIs.&lt;/p&gt;
 &lt;p&gt;In this post, lets see how to setup Twilio Integration with Frappe.&lt;/p&gt;
 &lt;h4&gt;Sending SMS&lt;/h4&gt;
-&lt;p&gt;Frappe has inbuilt SMS manager&lt;sup id="fnref:sms"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/06/twilio-frappe.html#fn:sms"&gt;3&lt;/a&gt;&lt;/sup&gt; where users can confgiure SMS gateway and send SMS to mobiles directly.&lt;/p&gt;
+&lt;p&gt;Frappe has inbuilt SMS manager&lt;sup id="fnref:sms"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:sms"&gt;3&lt;/a&gt;&lt;/sup&gt; where users can confgiure SMS gateway and send SMS to mobiles directly.&lt;/p&gt;
 &lt;p&gt;To send out messages/SMS with Twilio, we just need to configure Twilio API keys in SMS settings.&lt;/p&gt;
 &lt;p&gt;First, create an account in Twilio and collect the following information from the account.&lt;/p&gt;
 &lt;ul&gt;
@@ -182,42 +272,42 @@ $ fastboot reboot
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;These details need to be added to SMS settings in the following format.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-twilio.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-twilio.png"&gt;&lt;/p&gt;
 &lt;p&gt;For &lt;code&gt;authorization&lt;/code&gt; parameter, we need to enter base64 encoded value of &lt;code&gt;account_sid:auth_token&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Once these values are set, we can go to SMS Center and send out dummy messages to ensure all settings are configured properly.&lt;/p&gt;
 &lt;h4&gt;Twilio App&lt;/h4&gt;
-&lt;p&gt;If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install &lt;code&gt;twilio-integration&lt;/code&gt;&lt;sup id="fnref:tl"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/06/twilio-frappe.html#fn:tl"&gt;4&lt;/a&gt;&lt;/sup&gt; app. We can install the app on our site by running the following commands.&lt;/p&gt;
+&lt;p&gt;If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install &lt;code&gt;twilio-integration&lt;/code&gt;&lt;sup id="fnref:tl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:tl"&gt;4&lt;/a&gt;&lt;/sup&gt; app. We can install the app on our site by running the following commands.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;bench get-app https://github.com/frappe/twilio-integration.git
 bench --site example.com install-app twilio_integration
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Once the app is installed, we can go to &lt;code&gt;Twilio Settings&lt;/code&gt; and configure the keys as shown below.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/twilio-settings.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/twilio-settings.png"&gt;&lt;/p&gt;
 &lt;p&gt;After that we can setup &lt;code&gt;Voice Call Settings&lt;/code&gt; to manage incoming/outgoing calls.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/twilio-voice.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/twilio-voice.png"&gt;&lt;/p&gt;
 &lt;p&gt;To send messages via Whatsapp, we can set the channel as &lt;code&gt;Whatsapp&lt;/code&gt; in Notification doctype.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/twilio-whatsapp.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/twilio-whatsapp.png"&gt;&lt;/p&gt;
 &lt;p&gt;This is how we can send SMS, Whatsapp messages &amp;amp; manage calls via Twilio using Frappe Framework.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:frappe"&gt;
-&lt;p&gt;&lt;a href="https://github.com/frappe/frappe"&gt;https://github.com/frappe/frappe&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/06/twilio-frappe.html#fnref:frappe" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/frappe/frappe"&gt;https://github.com/frappe/frappe&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/06/twilio-frappe.html#fnref:frappe" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:twilio"&gt;
-&lt;p&gt;&lt;a href="https://www.twilio.com"&gt;https://www.twilio.com&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/06/twilio-frappe.html#fnref:twilio" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.twilio.com"&gt;https://www.twilio.com&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/06/twilio-frappe.html#fnref:twilio" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:sms"&gt;
-&lt;p&gt;&lt;a href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting"&gt;https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/06/twilio-frappe.html#fnref:sms" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting"&gt;https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/06/twilio-frappe.html#fnref:sms" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:tl"&gt;
-&lt;p&gt;&lt;a href="https://github.com/frappe/twilio-integration"&gt;https://github.com/frappe/twilio-integration&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/06/twilio-frappe.html#fnref:tl" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/frappe/twilio-integration"&gt;https://github.com/frappe/twilio-integration&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/06/twilio-frappe.html#fnref:tl" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>frappe-framework</category><guid>http://avilpage.com/2022/06/twilio-frappe.html</guid><pubDate>Thu, 30 Jun 2022 06:16:02 GMT</pubDate></item><item><title>Why DMART is not in FNO category?</title><link>http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;FNO Segment&lt;/h4&gt;
-&lt;p&gt;There are 4000+ companies&lt;sup id="fnref:wiki_nse"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:wiki_nse"&gt;1&lt;/a&gt;&lt;/sup&gt; that are traded in NSE/BSE. Of these, 198 stocks are included in FNO segement&lt;sup id="fnref:fno"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:fno"&gt;2&lt;/a&gt;&lt;/sup&gt;. For these stocks, Futures &amp;amp; Options(FNO) contracts will be available and these stocks won't have any fixed ciruit limits.&lt;/p&gt;
+&lt;/div&gt;</description><category>frappe-framework</category><guid>https://avilpage.com/2022/06/twilio-frappe.html</guid><pubDate>Thu, 30 Jun 2022 06:16:02 GMT</pubDate></item><item><title>Why DMART is not in FNO category?</title><link>https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;FNO Segment&lt;/h4&gt;
+&lt;p&gt;There are 4000+ companies&lt;sup id="fnref:wiki_nse"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:wiki_nse"&gt;1&lt;/a&gt;&lt;/sup&gt; that are traded in NSE/BSE. Of these, 198 stocks are included in FNO segement&lt;sup id="fnref:fno"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:fno"&gt;2&lt;/a&gt;&lt;/sup&gt;. For these stocks, Futures &amp;amp; Options(FNO) contracts will be available and these stocks won't have any fixed ciruit limits.&lt;/p&gt;
 &lt;h4&gt;FNO Reviews&lt;/h4&gt;
-&lt;p&gt;On 11th April 2018, SEBI released a circular(SEBI/HO/MRD/DP/CIR/P/2018/67) on a framework&lt;sup id="fnref:circular_framework"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:circular_framework"&gt;3&lt;/a&gt;&lt;/sup&gt; for reviewing stocks in derivatives segement. Based on this framework, a stock has to meet the below criteria be added in FNO segement.&lt;/p&gt;
+&lt;p&gt;On 11th April 2018, SEBI released a circular(SEBI/HO/MRD/DP/CIR/P/2018/67) on a framework&lt;sup id="fnref:circular_framework"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:circular_framework"&gt;3&lt;/a&gt;&lt;/sup&gt; for reviewing stocks in derivatives segement. Based on this framework, a stock has to meet the below criteria be added in FNO segement.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;The stock shall be chosen from amongst the top 500 stocks in terms of average daily market capitalization and average daily traded value in the previous six months on a rolling basis.&lt;/p&gt;
@@ -235,8 +325,8 @@ bench --site example.com install-app twilio_integration
 &lt;p&gt;If a stock is in FNO category and fails to meet this criteria, it will be removed from FNO segment.&lt;/p&gt;
 &lt;p&gt;In 2021 alone, SEBI released 6 circulars thrugh which 32 new stocks are added in the FNO segment.&lt;/p&gt;
 &lt;h4&gt;DMART&lt;/h4&gt;
-&lt;p&gt;DMART has met the above FNO criteria long back. Even after it has met the criteria, there were more than 6 reviews&lt;sup id="fnref:c1"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c1"&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;sup id="fnref:c2"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c2"&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;sup id="fnref:c3"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c3"&gt;6&lt;/a&gt;&lt;/sup&gt; and suprisingly DMART was not added to the FNO segement.&lt;/p&gt;
-&lt;p&gt;There is a long discussion on Zerodha TradingQ&amp;amp;A forum&lt;sup id="fnref:tqa"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:tqa"&gt;7&lt;/a&gt;&lt;/sup&gt; on why DMART was not added to FNO category but no one could give any explaination.&lt;/p&gt;
+&lt;p&gt;DMART has met the above FNO criteria long back. Even after it has met the criteria, there were more than 6 reviews&lt;sup id="fnref:c1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c1"&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;sup id="fnref:c2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c2"&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;sup id="fnref:c3"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:c3"&gt;6&lt;/a&gt;&lt;/sup&gt; and suprisingly DMART was not added to the FNO segement.&lt;/p&gt;
+&lt;p&gt;There is a long discussion on Zerodha TradingQ&amp;amp;A forum&lt;sup id="fnref:tqa"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fn:tqa"&gt;7&lt;/a&gt;&lt;/sup&gt; on why DMART was not added to FNO category but no one could give any explaination.&lt;/p&gt;
 &lt;p&gt;After that, I have sent an email to SEBI &amp;amp; NSE seeking clarification for the same. It has been more than 6 months and they haven't responded yet. I have reached out to few people in the trading community privately to get clarification on the same. But nobody I know has any clue on this.&lt;/p&gt;
 &lt;p&gt;I am still looking for an answer. If you can shed some light, please send out a message to me. I would like to have a quick chat with you regarding the same.&lt;/p&gt;
 &lt;p&gt;Hoping to solve the mystery soon.&lt;/p&gt;
@@ -244,38 +334,38 @@ bench --site example.com install-app twilio_integration
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:wiki_nse"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/National_Stock_Exchange_of_India"&gt;https://en.wikipedia.org/wiki/National_Stock_Exchange_of_India&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:wiki_nse" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/National_Stock_Exchange_of_India"&gt;https://en.wikipedia.org/wiki/National_Stock_Exchange_of_India&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:wiki_nse" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:fno"&gt;
-&lt;p&gt;&lt;a href="https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm"&gt;https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:fno" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm"&gt;https://www1.nseindia.com/products/content/derivatives/equities/fo_underlying_home.htm&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:fno" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:circular_framework"&gt;
-&lt;p&gt;&lt;a href="https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html"&gt;https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:circular_framework" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html"&gt;https://www.sebi.gov.in/legal/circulars/apr-2018/review-of-framework-for-stocks-in-derivatives-segment_38629.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:circular_framework" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:c1"&gt;
-&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50456.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50456.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c1" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50456.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50456.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c1" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:c2"&gt;
-&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50414.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50414.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c2" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50414.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50414.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c2" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:c3"&gt;
-&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50429.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50429.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c3" title="Jump back to footnote 6 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://archives.nseindia.com/content/circulars/FAOP50429.pdf"&gt;https://archives.nseindia.com/content/circulars/FAOP50429.pdf&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:c3" title="Jump back to footnote 6 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:tqa"&gt;
-&lt;p&gt;&lt;a href="https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721"&gt;https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:tqa" title="Jump back to footnote 7 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721"&gt;https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:tqa" title="Jump back to footnote 7 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>trading</category><guid>http://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</guid><pubDate>Sun, 15 May 2022 07:14:24 GMT</pubDate></item><item><title>Using Frappe Framework As REST API Generator</title><link>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>trading</category><guid>https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</guid><pubDate>Sun, 15 May 2022 07:14:24 GMT</pubDate></item><item><title>Using Frappe Framework As REST API Generator</title><link>https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When a company plans to build a mobile application and/or a web application, they need to create REST APIs to store data. This is a common requirement for CRUD applications.&lt;/p&gt;
 &lt;p&gt;In the Python ecosystem, there are several projects like Django Rest Framework, Flask-RESTful, FastApi which does the heavy lifting of implementing REST APIs. In other ecosystems, there are similar projects/frameworks for this job.&lt;/p&gt;
 &lt;h4&gt;REST API Generators&lt;/h4&gt;
 &lt;p&gt;By using the above mentioned frameworks, developers can build REST APIs at a faster rate. Still, developers have to develop and maintain code for these APIs.&lt;/p&gt;
-&lt;p&gt;To avoid even this work, there are REST API generators like postgrest&lt;sup id="fnref:postgrest"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:postgrest"&gt;1&lt;/a&gt;&lt;/sup&gt;, prest which can instantly generate REST APIs by inspecting database schema. With these, developers just have to design the DB schema and these tools take care of generating APIs without writing a single line of code.&lt;/p&gt;
+&lt;p&gt;To avoid even this work, there are REST API generators like postgrest&lt;sup id="fnref:postgrest"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:postgrest"&gt;1&lt;/a&gt;&lt;/sup&gt;, prest which can instantly generate REST APIs by inspecting database schema. With these, developers just have to design the DB schema and these tools take care of generating APIs without writing a single line of code.&lt;/p&gt;
 &lt;p&gt;In this post, let us see how Frappe framework can be used as a REST API generator and what are the advantages of using Frappe.&lt;/p&gt;
 &lt;h4&gt;Frappe Framework&lt;/h4&gt;
 &lt;p&gt;Frappe framework is meta data driven low code, web framework written in Python and Javascript.&lt;/p&gt;
 &lt;h5&gt;Web UI&lt;/h5&gt;
-&lt;p&gt;Frappe framework provides web UI to create models(called doctypes in Frappe) and it provides REST API&lt;sup id="fnref:rest_api"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:rest_api"&gt;2&lt;/a&gt;&lt;/sup&gt; for all the models out of the box.&lt;/p&gt;
+&lt;p&gt;Frappe framework provides web UI to create models(called doctypes in Frappe) and it provides REST API&lt;sup id="fnref:rest_api"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:rest_api"&gt;2&lt;/a&gt;&lt;/sup&gt; for all the models out of the box.&lt;/p&gt;
 &lt;p&gt;There is no need to write manual SQL queries to manage schema. With some training even non-developers can even manage models in Frappe.&lt;/p&gt;
 &lt;h5&gt;Roles &amp;amp; Permissions&lt;/h5&gt;
 &lt;p&gt;With traditional API generators, managing roles &amp;amp; permissions involves additional development and maintenance costs. Frappes comes with an authentication system and it has support for role based permissions out of the box. From the web UI, users can manage roles &amp;amp; permissions.&lt;/p&gt;
@@ -292,20 +382,20 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:postgrest"&gt;
-&lt;p&gt;&lt;a href="https://github.com/PostgREST/postgrest"&gt;https://github.com/PostgREST/postgrest&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:postgrest" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/PostgREST/postgrest"&gt;https://github.com/PostgREST/postgrest&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:postgrest" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:rest_api"&gt;
-&lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/api/rest"&gt;https://frappeframework.com/docs/user/en/api/rest&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/api/rest"&gt;https://frappeframework.com/docs/user/en/api/rest&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>frappe-framework</category><guid>http://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</guid><pubDate>Sat, 30 Apr 2022 13:31:53 GMT</pubDate></item><item><title>Adding Fuzzy Search To Frappe Framework</title><link>http://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>frappe-framework</category><guid>https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</guid><pubDate>Sat, 30 Apr 2022 13:31:53 GMT</pubDate></item><item><title>Adding Fuzzy Search To Frappe Framework</title><link>https://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;As software developers, we use fuzzy search a lot especially when using Emacs or any other editors/IDEs. For example to search a file called &lt;code&gt;patient_history.js&lt;/code&gt;, in the editor, we can just type &lt;code&gt;pah&lt;/code&gt; and editor will narrow it down.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-1.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-fuzzy-search-1.png"&gt;&lt;/p&gt;
 &lt;p&gt;This is quite handy as we can open any file with just few characters.&lt;/p&gt;
 &lt;p&gt;FF is a low code, open source, web framework in Python and Javascript. All sites built with FF will have a global search bar(aka awesome bar) as shown below. Here, we can search for doctypes, reports, pages etc.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-2.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-fuzzy-search-2.png"&gt;&lt;/p&gt;
 &lt;p&gt;To open &lt;code&gt;Patient History&lt;/code&gt;, we have to type almost the entire text in search bar. If we type &lt;code&gt;pah&lt;/code&gt; like we have typed in the editor, it won't show any results.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-3.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-fuzzy-search-3.png"&gt;&lt;/p&gt;
 &lt;p&gt;Instead, we can add fuzzy search here so that we can search for any item with just a frew key strokes.&lt;/p&gt;
 &lt;h4&gt;Fuzzy Search&lt;/h4&gt;
 &lt;p&gt;There are many third party packages which implement fuzzy search in programming languages. However we can't use any of these fuzzy search packages directly. These editors internally use a scoring algorithm to rank the results and display results based on score.&lt;/p&gt;
@@ -329,16 +419,16 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 &lt;p&gt;This works well and is as effective as most IDEs search. Now that there is a solid fuzzy search, all we need to do is hook this up in FF.&lt;/p&gt;
 &lt;p&gt;FF internally has a fuzzy search function and we can directly hook it up here as shown here.&lt;/p&gt;
 &lt;p&gt;After that, we can search for anything in just few key strokes. For example to open patient history, we can just type &lt;code&gt;pah&lt;/code&gt; and it will show results like this.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-fuzzy-search-4.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-fuzzy-search-4.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.&lt;/p&gt;</description><category>frappe-framework</category><category>javascript</category><guid>http://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</guid><pubDate>Thu, 31 Mar 2022 16:00:33 GMT</pubDate></item><item><title>Using Frappe Framework As An Integration Engine</title><link>http://avilpage.com/2022/02/frappe-framework-mirth.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.&lt;/p&gt;</description><category>frappe-framework</category><category>javascript</category><guid>https://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</guid><pubDate>Thu, 31 Mar 2022 16:00:33 GMT</pubDate></item><item><title>Using Frappe Framework As An Integration Engine</title><link>https://avilpage.com/2022/02/frappe-framework-mirth.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In healthcare orgainsations, data exchange between systems is complicated and has interopolabilty issues. Integration engines are widely used in healthcare industry for bi-directional data transfer.&lt;/p&gt;
 &lt;p&gt;In this article, let us look at the advantages of using interface engines and how Frappe Framework can be used as an interface engine.&lt;/p&gt;
 &lt;h4&gt;Integration Engines&lt;/h4&gt;
 &lt;p&gt;In a traditional agile development approach, building a new interface might take weeks/months. With an integration engine, a new interface can be replicated in a matter of hours with little or no scripting at all.&lt;/p&gt;
 &lt;p&gt;Creating a REST API, listening to a webhook, transforming a data between channels, broadcasting a message, sending/receiving HL7 messages or any other commonly performed task can be implemented in integration engine without much effort.&lt;/p&gt;
 &lt;p&gt;Due to this integration engines like &lt;a href="https://en.wikipedia.org/wiki/Mirth_Connect"&gt;Mirth Connect&lt;/a&gt; are widely used in healthcare.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/mirth-integration-engine.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/mirth-integration-engine.png"&gt;&lt;/p&gt;
 &lt;p&gt;The above diagram shows usage of integration engine in a healthcare orgainsation.&lt;/p&gt;
 &lt;h4&gt;Frappe Framework&lt;/h4&gt;
 &lt;p&gt;Frappe Framework is a low code web application framework with batteries included. Even though Frappe is lablled as a framework, it can be used as an integration engine as well.&lt;/p&gt;
@@ -346,11 +436,11 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 &lt;p&gt;Users can schedule custom cron jobs, setup emails, enable data transformations and other tasks without much coding.&lt;/p&gt;
 &lt;p&gt;One feature Frappe Framework lacks when compared to integration engines is sending/receiving HL7 messages on ad-hoc ports. This feature is not available out of the box. Users need to develop a custom app or use any 3rd party app for it.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/frappe/healthcare"&gt;Frappe Healthcare&lt;/a&gt; is an HIS(Healthcare Information System) built on top of Frappe/ERPNext. If a hospital is using Frappe Healthcare, then there won't be a need to use integration engine as Frappe framework can take care of most of these things.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/frappe-his.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-his.png"&gt;&lt;/p&gt;
 &lt;p&gt;The above diagram shows usage of Frappe Healthcare as HIS in a healthcare orgainsation.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In healthcare, integration engines are used extensively to tackle data exchange between systems. Due to its low-code development and batteries included approach, even though Frappe is a web application framework, it can be used as an integration engine as well.&lt;/p&gt;</description><category>frappe-framework</category><category>HealthIT</category><guid>http://avilpage.com/2022/02/frappe-framework-mirth.html</guid><pubDate>Mon, 28 Feb 2022 16:01:40 GMT</pubDate></item><item><title>On Resuming Writing Challenge</title><link>http://avilpage.com/2022/01/resuming-writing-challenge.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p align="center"&gt;
-&lt;img height="300" width="800" src="http://avilpage.com/images/writing_challenge.jpg"&gt;
+&lt;p&gt;In healthcare, integration engines are used extensively to tackle data exchange between systems. Due to its low-code development and batteries included approach, even though Frappe is a web application framework, it can be used as an integration engine as well.&lt;/p&gt;</description><category>frappe-framework</category><category>HealthIT</category><guid>https://avilpage.com/2022/02/frappe-framework-mirth.html</guid><pubDate>Mon, 28 Feb 2022 16:01:40 GMT</pubDate></item><item><title>On Resuming Writing Challenge</title><link>https://avilpage.com/2022/01/resuming-writing-challenge.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p align="center"&gt;
+&lt;img height="300" width="800" src="https://avilpage.com/images/writing_challenge.jpg"&gt;
 &lt;/p&gt;
 
 &lt;p align="center"&gt;
@@ -366,31 +456,4 @@ Photo by Kaboompics on Pexels
 &lt;p&gt;Due to this, I decided to take up the writing challenge again this year.&lt;/p&gt;
 &lt;p&gt;Instead of limiting the 1,00,000 reward to my friend, I decided to extend it to all the readers.&lt;/p&gt;
 &lt;p&gt;The first person who calls out that there is no new blog post in a month will get the 1,00,000 reward. The next three people will get a small gift as a token of appreciation.&lt;/p&gt;
-&lt;p&gt;I will try my best to write at least one post every month. Let's wait till the end of the year and see how it goes.&lt;/p&gt;</description><category>musings</category><guid>http://avilpage.com/2022/01/resuming-writing-challenge.html</guid><pubDate>Wed, 19 Jan 2022 00:36:06 GMT</pubDate></item><item><title>A Typo Got Me $100 Bug Bounty</title><link>http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;On a lazy evening, while on a call with a friend, I made a typo while entering the url. Instead of typing &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;http://app-00421.on-aptible.com&lt;/a&gt;, I typed &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;http://app-00412.on-aptible.com&lt;/a&gt;&lt;sup id="fnref:aptible"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fn:aptible"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;p&gt;In this article, lets see how this typing mistake got me a bug bounty.&lt;/p&gt;
-&lt;h4&gt;Vulnerability&lt;/h4&gt;
-&lt;p&gt;A &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;bug bounty program&lt;/a&gt;&lt;sup id="fnref:bb"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fn:bb"&gt;2&lt;/a&gt;&lt;/sup&gt; is a deal offered by companies by which individuals can receive recognition and compensation for reporting bugs, security exploits and vulnerabilities.&lt;/p&gt;
-&lt;p&gt;Aptible provides HIPAA&lt;sup id="fnref:hipaa"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fn:hipaa"&gt;3&lt;/a&gt;&lt;/sup&gt; compliant PAAS platform so that healthcare companies can deploy their apps without compliance hassle.&lt;/p&gt;
-&lt;p&gt;After deploying an application on aptible, users can create an endpoint for public access. For this purpose, atpible generates domain names in sequential order.&lt;/p&gt;
-&lt;p&gt;Due to this, a set of publicly exposed servers will have incremental domain names. A lot of companies use these sequentially generated domain names for staging &amp;amp; testing purposes. In general, many companies don't bother about implementing security best practices on non-production servers.&lt;/p&gt;
-&lt;p&gt;When I was trying to access a demo site at &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;http://app-00421.on-aptible.com&lt;/a&gt;, I made a typo and visited &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;http://app-00412.on-aptible.com&lt;/a&gt;. This site was a staging site of some other company without any authentication. The company's source code, AWS keys and a lot of sensitive information was publicly accessible.&lt;/p&gt;
-&lt;p&gt;I quickly sent an email to that company regarding this issue and they took their site offline. As per &lt;a href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html"&gt;Aptible disclosure policy&lt;/a&gt;&lt;sup id="fnref:disclosure"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fn:disclosure"&gt;4&lt;/a&gt;&lt;/sup&gt;, this bug is out of scope. However I sent an email to their team regarding the severity of the issue. Since sequential domain names are generating additional target surface for attackers, I suggested to move to random urls.&lt;/p&gt;
-&lt;p&gt;For this disclosure, they have provided a bounty of 100$ and Aptible decided to move away from sequential domain names.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:aptible"&gt;
-&lt;p&gt;URL has been changed for anonymity. &lt;a class="footnote-backref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fnref:aptible" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:bb"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Bug_bounty_program"&gt;https://en.wikipedia.org/wiki/Bug_bounty_program&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fnref:bb" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:hipaa"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act"&gt;HIPAA - Wikipedia&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fnref:hipaa" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:disclosure"&gt;
-&lt;p&gt;&lt;a href="https://www.aptible.com/legal/responsible-disclosure/"&gt;https://www.aptible.com/legal/responsible-disclosure/&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html#fnref:disclosure" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>security</category><guid>http://avilpage.com/2021/10/typo-lead-to-bug-bounty.html</guid><pubDate>Mon, 25 Oct 2021 03:22:19 GMT</pubDate></item></channel></rss>
+&lt;p&gt;I will try my best to write at least one post every month. Let's wait till the end of the year and see how it goes.&lt;/p&gt;</description><category>musings</category><guid>https://avilpage.com/2022/01/resuming-writing-challenge.html</guid><pubDate>Wed, 19 Jan 2022 00:36:06 GMT</pubDate></item></channel></rss>

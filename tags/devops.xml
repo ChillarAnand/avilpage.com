@@ -1,5 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 Sep 2022 08:00:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Make Python Docker Builds Slim &amp; Fast</title><link>http://avilpage.com/2020/10/python-docker-build-slim-fast.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 11 Oct 2022 04:28:00 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Local Kubernetes Cluster with K3s on Mac M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC. To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac.&lt;/p&gt;
+&lt;p&gt;An easy way to spin up Linux VMs on Mac M1 is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
+&lt;h4&gt;K3s Setup&lt;/h4&gt;
+&lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass info k3s
+Name:           k3s
+State:          Running
+IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
+Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
+Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
+Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
+Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
+Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
+Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
+                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
+                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
+&lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass shell k3s
+
+ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
+&lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/k8s-mac-m1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
+
+$ multipass shell k3s-worker
+
+ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
+$ multipass purge
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
+&lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:k8s"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Kubernetes"&gt;https://en.wikipedia.org/wiki/Kubernetes&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k8s" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:k3s"&gt;
+&lt;p&gt;&lt;a href="https://k3s.io/"&gt;https://k3s.io/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k3s" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:multipass"&gt;
+&lt;p&gt;&lt;a href="https://github.com/canonical/multipass"&gt;https://github.com/canonical/multipass&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:multipass" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:lens"&gt;
+&lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>Make Python Docker Builds Slim &amp; Fast</title><link>https://avilpage.com/2020/10/python-docker-build-slim-fast.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When using Docker, if the build is taking time or the build image is huge, it will waste system resources as well as our time. In this article, let's see how to reduce build time as well as image size when using Docker for Python projects.&lt;/p&gt;
 &lt;h4&gt;Project&lt;/h4&gt;
 &lt;p&gt;Let us take a hello world application written in flask.&lt;/p&gt;
@@ -50,7 +140,7 @@ flask               &lt;span class="m"&gt;0&lt;/span&gt;.1     06d3e985f12e    &
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;With the current docker, here are the results.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker0.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker0.png" style="vertical-align:middle"&gt;&lt;/p&gt;
 &lt;h4&gt;1. Install requirements first&lt;/h4&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7
 
@@ -70,7 +160,7 @@ CMD [ "-m" "flask" "run" ]
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Let us modify the docker file to install requirements first and then add code to the docker image.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker1.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker1.png" style="vertical-align:middle"&gt;&lt;/p&gt;
 &lt;p&gt;Now, build without cache took almost the same time. With cache, the build is completed in a second. Since docker caches step by step, it has cached python package installation step and thereby reducing the build time.&lt;/p&gt;
 &lt;h4&gt;2. Disable Cache&lt;/h4&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7
@@ -91,53 +181,53 @@ CMD [ "-m" "flask" "run" ]
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;By default, pip will cache the downloaded packages. Since we don't need a cache inside docker, let's disable pip cache by passing &lt;code&gt;--no-cache&lt;/code&gt; argument.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker2.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker2.png" style="vertical-align:middle"&gt;&lt;/p&gt;
 &lt;p&gt;This reduced the docker image size by ~20MB. In real-world projects, where there are a good number of dependencies, the overall image size will be reduced a lot.&lt;/p&gt;
 &lt;h4&gt;3. Use slim variant&lt;/h4&gt;
-&lt;p&gt;Till now, we have been using defacto Python variant. It has a large number of common debian packages. There is a slim variant that doesn't contain all these common packages&lt;sup id="fnref:dpy"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:dpy"&gt;4&lt;/a&gt;&lt;/sup&gt;. Since we don't need all these debian packages, let's use slim variant.&lt;/p&gt;
+&lt;p&gt;Till now, we have been using defacto Python variant. It has a large number of common debian packages. There is a slim variant that doesn't contain all these common packages&lt;sup id="fnref:dpy"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:dpy"&gt;4&lt;/a&gt;&lt;/sup&gt;. Since we don't need all these debian packages, let's use slim variant.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7-slim
 
 ...
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker3.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker3.png" style="vertical-align:middle"&gt;&lt;/p&gt;
 &lt;p&gt;This reduced the docker image size by ~750 MB without affecting the build time.&lt;/p&gt;
 &lt;h4&gt;4. Build from source&lt;/h4&gt;
-&lt;p&gt;Python packages can be installed via wheels (.whl files) for a faster and smoother installation. We can also install them via source code. If we look at Pandas project files on PyPi&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt;, it provides both wheels as well as tar zip source files. Pip will prefer wheels over source code the installation process will be much smoother.&lt;/p&gt;
+&lt;p&gt;Python packages can be installed via wheels (.whl files) for a faster and smoother installation. We can also install them via source code. If we look at Pandas project files on PyPi&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt;, it provides both wheels as well as tar zip source files. Pip will prefer wheels over source code the installation process will be much smoother.&lt;/p&gt;
 &lt;p&gt;To reduce Docker image size, we can build from source instead of using the wheel. This will increase build time as the python package will take some time to compile while building.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker4.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker4.png" style="vertical-align:middle"&gt;&lt;/p&gt;
 &lt;p&gt;Here build size is reduced by ~20MB but the build has increased to 15 minutes.&lt;/p&gt;
 &lt;h4&gt;5. Use Alpine&lt;/h4&gt;
-&lt;p&gt;Earlier we have used, python slim variant the base image. However, there is Alpine variant which is much smaller than slim. One caveat with using alpine is Python wheels won't work with this image&lt;sup id="fnref:aw"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:aw"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Earlier we have used, python slim variant the base image. However, there is Alpine variant which is much smaller than slim. One caveat with using alpine is Python wheels won't work with this image&lt;sup id="fnref:aw"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:aw"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;p&gt;We have to build all packages from source. For example, packages like TensorFlow provide only wheels for installation. To install this on Alpine, we have to install from the source which will take additional effort to figure out dependencies and install.&lt;/p&gt;
 &lt;p&gt;Using Alpine will reduce the image size by ~70 MB but it is not recomended to use Alpine as wheels won't work with this image.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/docker5.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;All the docker files used in the article are available on github&lt;sup id="fnref:gh"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:gh"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/docker5.png" style="vertical-align:middle"&gt;&lt;/p&gt;
+&lt;p&gt;All the docker files used in the article are available on github&lt;sup id="fnref:gh"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:gh"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have started with a docker build of 1.01 GB and reduced it to 0.13 GB. We have also optimized build times using the docker caching mechanism. We can use appropriate steps to optimize build for size or speed or both.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:pandas"&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/project/pandas/#files"&gt;https://pypi.org/project/pandas/#files&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/pandas/#files"&gt;https://pypi.org/project/pandas/#files&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:aw"&gt;
-&lt;p&gt;&lt;a href="https://github.com/docker-library/docs/issues/904"&gt;https://github.com/docker-library/docs/issues/904&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:aw" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/docker-library/docs/issues/904"&gt;https://github.com/docker-library/docs/issues/904&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:aw" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:gh"&gt;
-&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/library-docker"&gt;https://github.com/ChillarAnand/library-docker&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:gh" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/library-docker"&gt;https://github.com/ChillarAnand/library-docker&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:gh" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:dpy"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/_/python"&gt;https://hub.docker.com/_/python&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:dpy" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://hub.docker.com/_/python"&gt;https://hub.docker.com/_/python&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:dpy" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>featured</category><category>python</category><guid>http://avilpage.com/2020/10/python-docker-build-slim-fast.html</guid><pubDate>Sat, 31 Oct 2020 12:53:13 GMT</pubDate></item><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>devops</category><category>featured</category><category>python</category><guid>https://avilpage.com/2020/10/python-docker-build-slim-fast.html</guid><pubDate>Sat, 31 Oct 2020 12:53:13 GMT</pubDate></item><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
 &lt;h4&gt;Deployment To k8s&lt;/h4&gt;
-&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
+&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -209,10 +299,10 @@ CMD [ "-m" "flask" "run" ]
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:nc"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><category>mirth-connect</category><guid>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Tips On Improving kubectl Productivity</title><link>http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;kubectl&lt;/code&gt; is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.&lt;/p&gt;
+&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><category>mirth-connect</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Tips On Improving kubectl Productivity</title><link>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;kubectl&lt;/code&gt; is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.&lt;/p&gt;
 &lt;p&gt;In this article, lets learn few tips to improve our productivity when using kubectl.&lt;/p&gt;
 &lt;h4&gt;Aliases&lt;/h4&gt;
 &lt;p&gt;Aliases in general improve the productivity when using a shell.&lt;/p&gt;
@@ -301,7 +391,7 @@ $ kubectl logs -f -l&lt;span class="o"&gt;=&lt;/span&gt;pod/hello-world
 &lt;p&gt;&lt;a href="https://github.com/databricks/click"&gt;click&lt;/a&gt; - Interactive controller for k8s.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/lensapp/lens"&gt;lens&lt;/a&gt; - Stand alone corss platform k8s IDE.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
+&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
 &lt;h4&gt;Prerequisites&lt;/h4&gt;
 &lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
@@ -397,7 +487,83 @@ commands:
 &lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
 &lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>How To Install Private Python Packages With Pip</title><link>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>Versioning &amp; Retrieving All Files From AWS S3 With Boto</title><link>https://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://aws.amazon.com/s3/"&gt;Amazon S3&lt;/a&gt; (Amazon Simple Storage Service) is an object storage service offered by Amazon Web Services. For S3 buckets, if versioning is enabled, users can preserve, retrieve, and restore every version of the object stored in the bucket.&lt;/p&gt;
+&lt;p&gt;In this article, we will understand how to enable versioning for a bucket and retrieve all versions of an object from AWS web interface as well as &lt;a href="https://pypi.org/project/boto3/"&gt;Python boto&lt;/a&gt; library.&lt;/p&gt;
+&lt;h4&gt;Versioning of Bucket&lt;/h4&gt;
+&lt;p&gt;Bucket versioning can be changed with a toggle button from the AWS web console in the bucket properties.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/aws-s3-bucket-version1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We can do the same with Python boto3 library.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
+
+
+&lt;span class="n"&gt;bucket_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'avilpage'&lt;/span&gt;
+
+&lt;span class="n"&gt;s3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boto3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;resource&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'s3'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;versioning&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;BucketVersioning&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bucket_name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# check status&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;versioning&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;status&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# enable versioning&lt;/span&gt;
+&lt;span class="n"&gt;versioning&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;enable&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c1"&gt;# disable versioning&lt;/span&gt;
+&lt;span class="n"&gt;versioning&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;suspend&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Retrieving Objects&lt;/h4&gt;
+&lt;p&gt;Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.&lt;/p&gt;
+&lt;p&gt;We can write a simple script to generate a text file with a random text and upload it to S3.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;string&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
+
+&lt;span class="n"&gt;file_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'test.txt'&lt;/span&gt;
+&lt;span class="n"&gt;key&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;file_name&lt;/span&gt;
+&lt;span class="n"&gt;s3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boto3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'s3'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;file_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'w'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;''&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;choice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ascii_letters&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;s3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upload_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bucket_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;file_name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.&lt;/p&gt;
+&lt;p&gt;We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at &lt;code&gt;Latest version&lt;/code&gt;.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/aws-s3-bucket-version2.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
+
+
+&lt;span class="n"&gt;bucket_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'avilpage'&lt;/span&gt;
+&lt;span class="n"&gt;s3_client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boto3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'s3'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;versions&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s3_client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;list_object_versions&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Bucket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;bucket_name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;version&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;versions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;version_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;versions&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Versions'&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s1"&gt;'VersionId'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;file_key&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;versions&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Versions'&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s1"&gt;'Key'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_object&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;Bucket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;bucket_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;Key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;file_key&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;VersionId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;version_id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Body'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>https://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</guid><pubDate>Wed, 24 Jul 2019 15:51:21 GMT</pubDate></item><item><title>How To Install Private Python Packages With Pip</title><link>https://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to &lt;a href="https://pypi.org"&gt;PyPi&lt;/a&gt; or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to use &lt;a href="https://packaging.python.org/key_projects/#pip"&gt;pip&lt;/a&gt; to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.&lt;/p&gt;
 &lt;h4&gt;Packaging&lt;/h4&gt;
@@ -442,14 +608,14 @@ $ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@gith
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;</description><category>devops</category><category>python</category><guid>http://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item><item><title>Setup Continous Deployment For Python Chalice</title><link>http://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Outline&lt;/h4&gt;
+&lt;p&gt;In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.&lt;/p&gt;</description><category>devops</category><category>python</category><guid>https://avilpage.com/2018/11/how-to-install-private-python-packages-with-pip.html</guid><pubDate>Thu, 31 Jan 2019 06:42:12 GMT</pubDate></item><item><title>Setup Continous Deployment For Python Chalice</title><link>https://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Outline&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://pypi.org/project/chalice/"&gt;Chalice&lt;/a&gt; is a microframework developed by Amazon for quickly creating and deploying serverless applications in Python.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to setup continous deployment with &lt;a href="https://github.com"&gt;GitHub&lt;/a&gt; and &lt;a href="https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html"&gt;AWS CodePipeline&lt;/a&gt;.&lt;/p&gt;
 &lt;h4&gt;CD Setup&lt;/h4&gt;
 &lt;p&gt;Chalice provides cli command &lt;code&gt;deploy&lt;/code&gt; to deploy from local system.&lt;/p&gt;
 &lt;p&gt;Chalice also provides cli command &lt;code&gt;generate-pipeline&lt;/code&gt; command to generate CloudFormation template. This template is useful to automatically generate several resources required for AWS pipeline.&lt;/p&gt;
 &lt;p align="center"&gt;
-&lt;img src="http://avilpage.com/images/aws-python-pipeline.png" height="300px" width="600"&gt;
+&lt;img src="https://avilpage.com/images/aws-python-pipeline.png" height="300px" width="600"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.&lt;/p&gt;
@@ -476,7 +642,7 @@ $ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@gith
 
 &lt;p&gt;This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>http://avilpage.com/2018/10/cd-python-chalice-aws.html</guid><pubDate>Tue, 30 Oct 2018 15:51:21 GMT</pubDate></item><item><title>How To Deploy Django Channels To Production</title><link>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
+&lt;p&gt;We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>https://avilpage.com/2018/10/cd-python-chalice-aws.html</guid><pubDate>Tue, 30 Oct 2018 15:51:21 GMT</pubDate></item><item><title>How To Deploy Django Channels To Production</title><link>https://avilpage.com/2018/05/deploying-scaling-django-channels.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, we will see how to deploy &lt;a href="https://pypi.org/project/channels/"&gt;django channels&lt;/a&gt; to production and how we can scale it to handle more load. We will be using nginx as proxy server, &lt;a href="https://pypi.org/project/daphne/"&gt;daphne&lt;/a&gt; as ASGI server, gunicorn as WSGI server and redis for channel back-end.&lt;/p&gt;
 &lt;p&gt;Daphne can serve HTTP requests as well as WebSocket requests. For stability and performance, we will use uwsgi/gunicorn to serve HTTP requests and daphne to serve websocket requests.&lt;/p&gt;
 &lt;p&gt;We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.&lt;/p&gt;
 &lt;h4&gt;Nginx Setup&lt;/h4&gt;
@@ -611,7 +777,7 @@ $ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@gith
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Our server is able to handle &lt;code&gt;100 requests per second&lt;/code&gt; with a &lt;code&gt;latency of 800ms&lt;/code&gt;. This is good enough for low traffic website.&lt;/p&gt;
-&lt;p&gt;To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using &lt;a href="http://avilpage.com/2018/05/deploying-scaling-django-channels.html"&gt;shared file descriptors&lt;/a&gt;. Unfortunately, it doesn't work as expected. As &lt;a href="https://github.com/django/daphne/issues/182#issuecomment-387507887"&gt;mentioned here&lt;/a&gt;, we can use systemd templates and spawn multiple daphne process.&lt;/p&gt;
+&lt;p&gt;To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using &lt;a href="https://avilpage.com/2018/05/deploying-scaling-django-channels.html"&gt;shared file descriptors&lt;/a&gt;. Unfortunately, it doesn't work as expected. As &lt;a href="https://github.com/django/daphne/issues/182#issuecomment-387507887"&gt;mentioned here&lt;/a&gt;, we can use systemd templates and spawn multiple daphne process.&lt;/p&gt;
 &lt;p&gt;An alternate way is to use &lt;a href="https://pypi.org/project/uvicorn/"&gt;uvicorn&lt;/a&gt; to start multiple workers. Install uvicorn using pip&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ pip install uvicorn
 &lt;/pre&gt;&lt;/div&gt;
@@ -620,4 +786,4 @@ $ pip install git+https://&lt;span class="nv"&gt;$GITHUB_TOKEN&lt;/span&gt;@gith
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ uvicorn avilpage.asgi --log-level critical --workers &lt;span class="m"&gt;4&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).&lt;/p&gt;</description><category>devops</category><category>django</category><category>featured</category><category>python</category><guid>http://avilpage.com/2018/05/deploying-scaling-django-channels.html</guid><pubDate>Fri, 18 May 2018 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).&lt;/p&gt;</description><category>devops</category><category>django</category><category>featured</category><category>python</category><guid>https://avilpage.com/2018/05/deploying-scaling-django-channels.html</guid><pubDate>Fri, 18 May 2018 15:51:21 GMT</pubDate></item></channel></rss>
