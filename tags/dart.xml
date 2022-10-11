@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about dart)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/dart.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 Sep 2022 08:00:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How Dart, Flutter Stateful Hot Reload Work? - Part 1</title><link>http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This will be a series of articles on exploring the internals of Dart &amp;amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about dart)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/dart.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 01 Oct 2022 03:11:36 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How Dart, Flutter Stateful Hot Reload Work? - Part 1</title><link>https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This will be a series of articles on exploring the internals of Dart &amp;amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.&lt;/p&gt;
 &lt;h4&gt;Stateful Hot Reload&lt;/h4&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'dart:async'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
@@ -17,7 +17,7 @@
 &lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;In the above program&lt;sup id="fnref:program"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:program"&gt;1&lt;/a&gt;&lt;/sup&gt;, we are using a &lt;code&gt;Timer.periodic&lt;/code&gt;&lt;sup id="fnref:periodic"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:periodic"&gt;2&lt;/a&gt;&lt;/sup&gt; to create a timer which calls &lt;code&gt;adder&lt;/code&gt; function every 2 seconds.&lt;/p&gt;
+&lt;p&gt;In the above program&lt;sup id="fnref:program"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:program"&gt;1&lt;/a&gt;&lt;/sup&gt;, we are using a &lt;code&gt;Timer.periodic&lt;/code&gt;&lt;sup id="fnref:periodic"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:periodic"&gt;2&lt;/a&gt;&lt;/sup&gt; to create a timer which calls &lt;code&gt;adder&lt;/code&gt; function every 2 seconds.&lt;/p&gt;
 &lt;p&gt;We can run this program from command line using&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;Observatory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listening&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;d42KmW4LknU&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -28,7 +28,7 @@
 &lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;This will start executing the program and will provide a link to observatory&lt;sup id="fnref:observatory"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:observatory"&gt;3&lt;/a&gt;&lt;/sup&gt;, a tool to profile/debug Dart applications.&lt;/p&gt;
+&lt;p&gt;This will start executing the program and will provide a link to observatory&lt;sup id="fnref:observatory"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:observatory"&gt;3&lt;/a&gt;&lt;/sup&gt;, a tool to profile/debug Dart applications.&lt;/p&gt;
 &lt;p&gt;As the program is executing, lets open the program in an editor, change delta from 2 to 3.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;change&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -46,7 +46,7 @@
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Instead of restart, we can open the observatory link in browser, open main isolate and click on &lt;code&gt;Reload Source&lt;/code&gt; button.&lt;/p&gt;
-&lt;p&gt;&lt;img src="http://avilpage.com/images/dart-vm.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/dart-vm.png"&gt;&lt;/p&gt;
 &lt;p&gt;As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;Observatory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listening&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;n_GSAKsyr5s&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -60,23 +60,23 @@
 &lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;20.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;During a hot reload, Dart VM will apply changes to a live program&lt;sup id="fnref:hot"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:hot"&gt;4&lt;/a&gt;&lt;/sup&gt;. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.&lt;/p&gt;
+&lt;p&gt;During a hot reload, Dart VM will apply changes to a live program&lt;sup id="fnref:hot"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:hot"&gt;4&lt;/a&gt;&lt;/sup&gt;. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:program"&gt;
-&lt;p&gt;https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ &lt;a class="footnote-backref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:program" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/ &lt;a class="footnote-backref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:program" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:periodic"&gt;
-&lt;p&gt;https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html &lt;a class="footnote-backref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:periodic" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html &lt;a class="footnote-backref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:periodic" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:observatory"&gt;
-&lt;p&gt;https://dart-lang.github.io/observatory/ &lt;a class="footnote-backref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:observatory" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;https://dart-lang.github.io/observatory/ &lt;a class="footnote-backref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:observatory" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li id="fn:hot"&gt;
-&lt;p&gt;https://github.com/dart-lang/sdk/wiki/Hot-reload &lt;a class="footnote-backref" href="http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:hot" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;https://github.com/dart-lang/sdk/wiki/Hot-reload &lt;a class="footnote-backref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fnref:hot" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>dart</category><category>featured</category><guid>http://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</guid><pubDate>Tue, 30 Jun 2020 13:47:20 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>dart</category><category>featured</category><guid>https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</guid><pubDate>Tue, 30 Jun 2020 13:47:20 GMT</pubDate></item></channel></rss>

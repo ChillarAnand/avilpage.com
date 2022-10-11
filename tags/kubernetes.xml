@@ -1,8 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about kubernetes)</title><link>http://avilpage.com/</link><description></description><atom:link href="http://avilpage.com/tags/kubernetes.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 Sep 2022 08:00:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about kubernetes)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/kubernetes.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 11 Oct 2022 04:28:00 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Local Kubernetes Cluster with K3s on Mac M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC. To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac.&lt;/p&gt;
+&lt;p&gt;An easy way to spin up Linux VMs on Mac M1 is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
+&lt;h4&gt;K3s Setup&lt;/h4&gt;
+&lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass info k3s
+Name:           k3s
+State:          Running
+IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
+Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
+Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
+Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
+Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
+Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
+Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
+                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
+                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
+&lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass shell k3s
+
+ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
+&lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/k8s-mac-m1.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
+
+$ multipass shell k3s-worker
+
+ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
+$ multipass purge
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
+&lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:k8s"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Kubernetes"&gt;https://en.wikipedia.org/wiki/Kubernetes&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k8s" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:k3s"&gt;
+&lt;p&gt;&lt;a href="https://k3s.io/"&gt;https://k3s.io/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k3s" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:multipass"&gt;
+&lt;p&gt;&lt;a href="https://github.com/canonical/multipass"&gt;https://github.com/canonical/multipass&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:multipass" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:lens"&gt;
+&lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
 &lt;h4&gt;Deployment To k8s&lt;/h4&gt;
-&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
+&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -74,10 +164,10 @@
 &lt;hr&gt;
 &lt;ol&gt;
 &lt;li id="fn:nc"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><category>mirth-connect</category><guid>http://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Tips On Improving kubectl Productivity</title><link>http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;kubectl&lt;/code&gt; is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.&lt;/p&gt;
+&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><category>mirth-connect</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Tips On Improving kubectl Productivity</title><link>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;kubectl&lt;/code&gt; is CLI tool to control Kubernetes clusters. As we start using kubectl to interact with mutliple clusters, we end up running lengthy commands and even running multiple commands for simple tasks like running a shell in a container.&lt;/p&gt;
 &lt;p&gt;In this article, lets learn few tips to improve our productivity when using kubectl.&lt;/p&gt;
 &lt;h4&gt;Aliases&lt;/h4&gt;
 &lt;p&gt;Aliases in general improve the productivity when using a shell.&lt;/p&gt;
@@ -166,7 +256,7 @@ $ kubectl logs -f -l&lt;span class="o"&gt;=&lt;/span&gt;pod/hello-world
 &lt;p&gt;&lt;a href="https://github.com/databricks/click"&gt;click&lt;/a&gt; - Interactive controller for k8s.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/lensapp/lens"&gt;lens&lt;/a&gt; - Stand alone corss platform k8s IDE.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
+&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
 &lt;h4&gt;Prerequisites&lt;/h4&gt;
 &lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
@@ -262,4 +352,4 @@ commands:
 &lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
 &lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>http://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item></channel></rss>
