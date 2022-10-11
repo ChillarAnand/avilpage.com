@@ -12,9 +12,15 @@
 
 ### Introduction
 
-Kubernetes(k8s)[^k8s] is an open-source system for managing large scale containerized applications. K3s[^k3s] is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC. To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac.
+Kubernetes(k8s)[^k8s] is an open-source system for managing large scale containerized applications. K3s[^k3s] is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC.
 
-An easy way to spin up Linux VMs on Mac M1 is to use multipass[^multipass]. In this article, lets see how to setup K3s on Mac using multipass
+```
+$ curl -sfL https://get.k3s.io | sh -
+
+[ERROR]  Can not find systemd or openrc to use as a process supervisor for k3s
+```
+
+To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Mac M1 is to use multipass[^multipass]. In this article, lets see how to setup K3s on Mac using multipass
 
 
 ### K3s Setup
