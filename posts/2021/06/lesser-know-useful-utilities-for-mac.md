@@ -86,7 +86,7 @@ Ever wondered what are the keybindings when using any application? With [CheatSh
 ### Grand Perspective
 
 <p align="center">
-<img src="/images/grand_perspective.png" />
+<img src="/images/grand_perspective.jpg" />
 </p>
 
 If Mac is running low on disk space, [Grand Perspective](https://apps.apple.com/us/app/grandperspective/id1111570163?mt=12) shows a graphical view of the disk usage. It will be much easier to pinpoint large files that are consuming the disk and then clean them up.
