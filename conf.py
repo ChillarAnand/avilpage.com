@@ -77,11 +77,12 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 
 NAVIGATION_LINKS = {
         DEFAULT_LANG: (
-                ("/archive.html", "Archive"),
-                ("/tags", "Tags"),
-                ("/p/talks.html", "Talks"),
+                ("/top-10.html", "Top 10"),
+                ("/archive.html", "Articles"),
                 ("/p/projects.html", "Projects"),
-                ("/p/pages.html", "Pages"),
+                # ("/tags", "Topics"),
+                # ("/p/talks.html", "Talks"),
+                # ("/p/pages.html", "Pages"),
                 # ("/p/about.html", "About"),
                 # ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
                 # ("/archive.html", "Archives"),
@@ -1390,52 +1391,6 @@ REDIRECTIONS = LABEL_REDIRECTIONS
 NEW_POST_DATE_PATH_FORMAT = '%Y/%m'
 
 
-# RENDER_STATIC_TAG_CLOUDS = {
-#     'tag-small': {
-#         'name': 'tcs-{0}',
-#         'filename': 'tagcloud.html',
-#         'taxonomy_type': 'tag',
-#         'style_filename': 'assets/css/tagcloud-small.css',
-#         'max_number_of_levels': 15,
-#         'max_tags': 20,
-#         'minimal_number_of_appearances': 2,
-#         'colors': ((1.0,1.0,1.0), ),
-#         'background_colors': ((0.5, 0.5, 0.5), ),
-#         'border_colors': ((0.4, 0.4, 0.4), ),
-#         'font_sizes': (8, 32),
-#         'round_factor': 0.6,
-#     },
-#     'tag-large': {
-#         'name': 'tcl-{0}',
-#         'filename': 'tagcloud-large.html',
-#         'taxonomy_type': 'tag',
-#         'style_filename': 'assets/css/tagcloud-large.css',
-#         'max_number_of_levels': 100,
-#         'minimal_number_of_appearances': 1,
-
-#         'colors': ((1.0,1.0,1.0), ),
-#         'background_colors': ((0.5, 0.5, 0.5), ),
-#         'border_colors': ((0.4, 0.4, 0.4), ),
-#         'font_sizes': (8, 32),
-
-#         'round_factor': 0.3,
-#     },
-#     'category-large': {
-#         'name': 'ccl-{0}',
-#         'filename': 'catcloud-{0}-large.html',
-#         'taxonomy_type': 'category',
-#         'style_filename': 'assets/css/catcloud-large.css',
-#         'max_number_of_levels': 100,
-#         'minimal_number_of_appearances': 1,
-#         'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
-#         'background_colors': ((0.1, 0.1, 0.1), ),
-#         'border_colors': ((0.4, 0.4, 0.4), ),
-#         'font_sizes': (8, 35),
-#         'round_factor': 0.3,
-#     },
-# }
-
-
 
 RENDER_STATIC_TAG_CLOUDS = {
         'tag-small': {
@@ -1488,7 +1443,7 @@ RENDER_STATIC_TAG_CLOUDS = {
         },
         'tag-large': {
                 'name': 'tcl-{0}',
-                'filename': 'tagcloud-{0}-large.inc',
+                'filename': 'tagcloud-{0}-large.inc.html',
                 'taxonomy_type': 'tag',
                 'style_filename': 'assets/css/tagcloud-{0}-large.css',
                 'max_number_of_levels': 100,
