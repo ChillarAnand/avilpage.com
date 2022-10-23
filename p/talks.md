@@ -17,7 +17,7 @@ Here are some of the talks I have given at various conferences and events.
 <br />
 
 
-#### [Supercharge Your Shell For Python Development](https://www.youtube.com/watch?v=nQVMljKldvo) @BangPypers
+#### [Supercharge Your Shell For Python Development](https://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html) @BangPypers
 <br />
 
 

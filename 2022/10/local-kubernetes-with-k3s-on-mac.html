@@ -18,6 +18,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="canonical" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
 <link rel="prev" href="../09/how-to-root-redmi-9-prime-lancelot.html" title="How To Root Xiamo Redmi 9 Prime Without TWRP" type="text/html">
+<link rel="next" href="speedup-amd64-containers-on-arm.html" title="Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host" type="text/html">
 <meta property="og:site_name" content="Avil Page">
 <meta property="og:title" content="Local Kubernetes Cluster with K3s on Mac M1">
 <meta property="og:url" content="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html">
@@ -27,11 +28,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="article:tag" content="devops">
 <meta property="article:tag" content="kubernetes">
 <style>
-
- navbar, .body-content {
-     margin-right: 20%;
-     margin-left: 20%;
- }
 
  h1 {
      font-weight: bold;
@@ -44,7 +40,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
 
     <!-- Menubar -->
-
     <nav class="navbar navbar-expand-md static-top mb-4
                 navbar-dark
                 bg-dark
@@ -61,19 +56,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <div class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="navbar-nav mr-auto">
 <li class="nav-item">
-<a href="../../archive.html" class="nav-link">Archive</a>
+<a href="../../top-10.html" class="nav-link">Top 10</a>
                 </li>
 <li class="nav-item">
-<a href="../../tags" class="nav-link">Tags</a>
-                </li>
-<li class="nav-item">
-<a href="../../p/talks.html" class="nav-link">Talks</a>
+<a href="../../archive.html" class="nav-link">Articles</a>
                 </li>
 <li class="nav-item">
 <a href="../../p/projects.html" class="nav-link">Projects</a>
-                </li>
-<li class="nav-item">
-<a href="../../p/pages.html" class="nav-link">Pages</a>
                 </li>
 <li class="nav-item">
 <a href="../../rss.xml" class="nav-link">RSS</a>
@@ -81,19 +70,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
                     
                 </li>
 </ul>
-<ul class="navbar-nav navbar-right">
-<li class="nav-item">
-    <a href="local-kubernetes-with-k3s-on-mac.md" id="sourcelink" class="nav-link">Source</a>
-    </li>
-
-                    
-                </ul>
+<ul class="navbar-nav navbar-right"></ul>
 </div>
 <!-- /.navbar-collapse -->
         </div>
 <!-- /.container -->
     </nav><!-- End of Menubar --><div class="container" id="content" role="main">
-        <div class="body-content">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
             <!--Body content-->
             
 <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Local Kubernetes Cluster with K3s on Mac M1</a></h1>
@@ -110,15 +94,29 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
         </div>
         
-    </header><div class="e-content entry-content" itemprop="articleBody text">
-    <h4>Introduction</h4>
-<p>Kubernetes(k8s)<sup id="fnref:k8s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k8s">1</a></sup> is an open-source system for managing large scale containerized applications. K3s<sup id="fnref:k3s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k3s">2</a></sup> is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC.</p>
+    </header>
+
+
+    
+
+        9 min read
+
+
+
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=vi5eRgBMs90" allowfullscreen>
+</iframe>
+</div>
+
+<h4>Introduction</h4>
+<p>Kubernetes(k8s)<sup id="fnref:k8s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k8s">1</a></sup> is an open-source system for managing large scale containerized applications. K3s<sup id="fnref:k3s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k3s">2</a></sup> is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.</p>
 <div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">sfL</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="k">get</span><span class="p">.</span><span class="n">k3s</span><span class="p">.</span><span class="n">io</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sh</span><span class="w"> </span><span class="o">-</span><span class="w"></span>
 
 <span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w">  </span><span class="n">Can</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">systemd</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">openrc</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">supervisor</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k3s</span><span class="w"></span>
 </pre></div>
 
-<p>To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Mac M1 is to use multipass<sup id="fnref:multipass"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:multipass">3</a></sup>. In this article, lets see how to setup K3s on Mac using multipass</p>
+<p>To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass<sup id="fnref:multipass"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:multipass">3</a></sup>. In this article, lets see how to setup K3s on Mac using multipass</p>
 <h4>K3s Setup</h4>
 <p>Install multipass with brew by running the following command.</p>
 <div class="code"><pre class="code literal-block">$ brew install --cask multipass
@@ -159,7 +157,7 @@ ubuntu@k3s:~$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
 <p>This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.</p>
 <p>By default, k3s config file will be located at <code>/etc/rancher/k3s/k3s.yaml</code>. With this config file, we can use Lens<sup id="fnref:lens"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:lens">4</a></sup> to manage k8s cluster.</p>
 <p align="center">
-<img src="../../images/k8s-mac-m1.png"></p>
+<img src="../../images/k8s-mac-m1.jpg"></p>
 
 <p>Lets find out IP of the VM &amp; k8s token so that we can spin up a new VM and add it to this cluster.</p>
 <div class="code"><pre class="code literal-block"><span class="c1"># get token &amp; ip of k3s</span><span class="w"></span>
@@ -215,11 +213,15 @@ $ multipass purge
 <li class="previous">
                 <a href="../09/how-to-root-redmi-9-prime-lancelot.html" rel="prev" title="How To Root Xiamo Redmi 9 Prime Without TWRP">Previous post</a>
             </li>
+            <li class="next">
+                <a href="speedup-amd64-containers-on-arm.html" rel="next" title="Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host">Next post</a>
+            </li>
         </ul></nav></aside></article><!--End of body content--><footer id="footer">
                 Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
                 
             </footer>
 </div>
+    </div>
     </div>
 
                 <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>

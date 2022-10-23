@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to speed up intel/x86-84/amd64 docker images/containers on apple silicon M1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="local-kubernetes-with-k3s-on-mac.html" title="Local Kubernetes Cluster with K3s on Mac M1" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host">
+<meta property="og:url" content="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html">
+<meta property="og:description" content="How to speed up intel/x86-84/amd64 docker images/containers on apple silicon M1">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-10-20T22:38:56+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="macbook">
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Articles</a>
+                </li>
+<li class="nav-item">
+<a href="../../p/projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="#" rel="bookmark">
+            <time class="published dt-published" datetime="2022-10-20T22:38:56+05:30" itemprop="datePublished" title="2022-10-20">2022-10-20</time></a>
+            </p>
+                    <p class="sourceline"><a href="speedup-amd64-containers-on-arm.md" class="sourcelink">Source</a></p>
+
+        </div>
+        
+    </header>
+
+
+    
+
+        4 min read
+
+
+
+    <div class="e-content entry-content" itemprop="articleBody text">
+    <h4>Introduction</h4>
+<p>From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run <code>uname -mp</code> on these devices, we can see the CPU architecture details.</p>
+<div class="code"><pre class="code literal-block">$ uname -mp
+arm64 arm
+</pre></div>
+
+<p>Let's run the same command on a device using Intel x86 processor.</p>
+<div class="code"><pre class="code literal-block">$ uname -mp
+x86_64 x86_64
+</pre></div>
+
+<p>Many popular docker images<sup id="fnref:dhub"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:dhub">1</a></sup> doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.</p>
+<p>In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.</p>
+<h4>Setup</h4>
+<p>Lima<sup id="fnref:lima"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:lima">2</a></sup> can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp; ARM64 VM and install k3s<sup id="fnref:k3s"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:k3s">3</a></sup> in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.</p>
+<div class="code"><pre class="code literal-block">$ brew install lima
+
+$ limactl start linux_arm64
+$ limactl start linux_amd64
+</pre></div>
+
+<p>When starting a VM, we can edit <code>arch</code> parameter in the configuration. Once VM starts, we can see the details by running <code>limactl list</code>.</p>
+<div class="code"><pre class="code literal-block">$ limactl list
+NAME                ARCH
+linux_amd64         x86_64
+linux_arm64         aarch64
+</pre></div>
+
+<p>Lets login to each VM &amp; install k3s.</p>
+<div class="code"><pre class="code literal-block">$ limactl shell linux_arm64
+
+$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$ limactl shell linux_amd64
+
+$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
+</pre></div>
+
+<p>If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.</p>
+<p align="center">
+<img src="../../images/arch-arm-docker.png"></p>
+
+<p>We can login to individual VMs, run <code>top</code> to see the load average as well.</p>
+<h4>Fast Mode</h4>
+<p><code>lima</code> provides <code>fast-mode</code> option for cross architecture VMs which will speed up the performance.</p>
+<p>For that, we need to log in to VMs and install emulators.</p>
+<div class="code"><pre class="code literal-block">$ sudo systemctl start containerd
+$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
+</pre></div>
+
+<p>After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.</p>
+<h4>Conclusion</h4>
+<p>In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:dhub">
+<p><a href="https://hub.docker.com/search?q=&amp;page=10">https://hub.docker.com/search?q=&amp;page=10</a> <a class="footnote-backref" href="speedup-amd64-containers-on-arm.html#fnref:dhub" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:lima">
+<p><a href="https://github.com/lima-vm/lima">https://github.com/lima-vm/lima</a> <a class="footnote-backref" href="speedup-amd64-containers-on-arm.html#fnref:lima" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:k3s">
+<p><a href="local-kubernetes-with-k3s-on-mac.html">Install k3s on Mac M1</a> <a class="footnote-backref" href="speedup-amd64-containers-on-arm.html#fnref:k3s" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/linux.html" rel="tag">linux</a></li>
+            <li><a class="tag p-category" href="../../tags/macbook.html" rel="tag">macbook</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="local-kubernetes-with-k3s-on-mac.html" rel="prev" title="Local Kubernetes Cluster with K3s on Mac M1">Previous post</a>
+            </li>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer">
+                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+                
+            </footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

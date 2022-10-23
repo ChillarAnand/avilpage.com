@@ -1,15 +1,15 @@
 <!--
-.. title: Bluetooth Serial Communication Between Ubuntu & Android
+.. title: Bluetooth Serial Communication Between Linux & Android
 .. slug: bluetooth-communication-between-ubuntu-android
 .. date: 2017-10-03 14:53:04 UTC
-.. tags: android, bluetooth, ubuntu
+.. tags: android, bluetooth, linux, command-line
 .. category: tech
 .. link:
-.. description: How to do bluetooth serial communication from ubuntu laptop to android smart phone or bluetooth device like HC-05
+.. description: How to do bluetooth serial communication from linux/ubuntu terminal(command line) to android/iphone or bluetooth modules like HC-05.
 .. type: text
 -->
 
-Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with each other or with other bluetooth modules like HC-05 or HM-10.
+Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with other devices or with other bluetooth modules like HC-05 or HM-10.
 
 In this article, we will learn how to send data between laptop and android bluetooth.
 

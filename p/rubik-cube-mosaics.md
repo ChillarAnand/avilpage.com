@@ -30,13 +30,15 @@ Jr. NTR - 2021
 </b>
 
 <p align="center">
-<img src="/images/rubik-cube-mosaic-ntr.png" />
+<img src="/images/rubik-cube-mosaic-ntr.jpg" />
 </p>
 
 
 Making Video
-
-<embed width="600" height="400" src="https://www.youtube.com/watch?v=BlAc0Kt60SM" type="application/x-shockwave-flash" allowfullscreen="true">
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=BlAc0Kt60SM" allowfullscreen>
+</iframe>
+</div>
 
 
 <b>
@@ -47,7 +49,10 @@ Frappe Cloud - 2022
 <img src="/images/fc-rubik-cube-mosaic.png" />
 </p>
 
-<embed width="600" height="400" src="https://www.youtube.com/watch?v=kRFZ7AJ81BU" type="application/x-shockwave-flash" allowfullscreen="true">
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=kRFZ7AJ81BU" allowfullscreen>
+</iframe>
+</div>
 
 
 ### About the collection
