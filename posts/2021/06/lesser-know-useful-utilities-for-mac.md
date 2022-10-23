@@ -1,17 +1,17 @@
 <!--
-.. title: Lesser Know Useful Utilities For Mac
+.. title: Lesser Know Useful Utilities For MacBook
 .. slug: lesser-know-useful-utilities-for-mac
 .. date: 2021-06-11 08:00:00 UTC+06:30
-.. tags:
-.. category:
+.. tags: macbook
+.. category: tech
 .. link:
-.. description:
+.. description: Most productive but lesser known useful utilities for Macbook
 .. type: text
 -->
 
 ### Introduction
 
-When using Mac, there are few utilities which come in handy for day to day operations and also aid in productivity. 
+When using Mac, there are few utilities which come in handy for day to day operations and also aid in productivity.
 
 Here are some of the useful but lesser know utilities for mac.
 
@@ -50,7 +50,7 @@ Wondering which network your Mac connected to? If you use multiple wireless netw
 
 ### Karabiner-Elements
 
-[Karabiner Elements](https://karabiner-elements.pqrs.org/) allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc. 
+[Karabiner Elements](https://karabiner-elements.pqrs.org/) allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc.
 
 <br />
 
