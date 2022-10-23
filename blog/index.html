@@ -19,11 +19,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="next" href="index-15.html" type="text/html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><style>
 
- navbar, .body-content {
-     margin-right: 20%;
-     margin-left: 20%;
- }
-
  h1 {
      font-weight: bold;
      font-size: 25px;
@@ -35,7 +30,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
 
     <!-- Menubar -->
-
     <nav class="navbar navbar-expand-md static-top mb-4
                 navbar-dark
                 bg-dark
@@ -52,19 +46,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <div class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="navbar-nav mr-auto">
 <li class="nav-item">
-<a href="../archive.html" class="nav-link">Archive</a>
+<a href="../top-10.html" class="nav-link">Top 10</a>
                 </li>
 <li class="nav-item">
-<a href="../tags" class="nav-link">Tags</a>
-                </li>
-<li class="nav-item">
-<a href="../p/talks.html" class="nav-link">Talks</a>
+<a href="../archive.html" class="nav-link">Articles</a>
                 </li>
 <li class="nav-item">
 <a href="../p/projects.html" class="nav-link">Projects</a>
-                </li>
-<li class="nav-item">
-<a href="../p/pages.html" class="nav-link">Pages</a>
                 </li>
 <li class="nav-item">
 <a href="../rss.xml" class="nav-link">RSS</a>
@@ -78,13 +66,94 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         </div>
 <!-- /.container -->
     </nav><!-- End of Menubar --><div class="container" id="content" role="main">
-        <div class="body-content">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
             <!--Body content-->
             
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/10/local-kubernetes-with-k3s-on-mac.html" class="u-url">Local Kubernetes Cluster with K3s on Mac M1</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/10/speedup-amd64-containers-on-arm.html" class="u-url">Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/10/speedup-amd64-containers-on-arm.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-10-20T22:38:56+05:30" itemprop="datePublished" title="2022-10-20">2022-10-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run <code>uname -mp</code> on these devices, we can see the CPU architecture details.</p>
+<div class="code"><pre class="code literal-block">$ uname -mp
+arm64 arm
+</pre></div>
+
+<p>Let's run the same command on a device using Intel x86 processor.</p>
+<div class="code"><pre class="code literal-block">$ uname -mp
+x86_64 x86_64
+</pre></div>
+
+<p>Many popular docker images<sup id="fnref:dhub"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:dhub">1</a></sup> doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.</p>
+<p>In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.</p>
+<h4>Setup</h4>
+<p>Lima<sup id="fnref:lima"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:lima">2</a></sup> can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp; ARM64 VM and install k3s<sup id="fnref:k3s"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:k3s">3</a></sup> in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.</p>
+<div class="code"><pre class="code literal-block">$ brew install lima
+
+$ limactl start linux_arm64
+$ limactl start linux_amd64
+</pre></div>
+
+<p>When starting a VM, we can edit <code>arch</code> parameter in the configuration. Once VM starts, we can see the details by running <code>limactl list</code>.</p>
+<div class="code"><pre class="code literal-block">$ limactl list
+NAME                ARCH
+linux_amd64         x86_64
+linux_arm64         aarch64
+</pre></div>
+
+<p>Lets login to each VM &amp; install k3s.</p>
+<div class="code"><pre class="code literal-block">$ limactl shell linux_arm64
+
+$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$ limactl shell linux_amd64
+
+$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
+</pre></div>
+
+<p>If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.</p>
+<p align="center">
+<img src="../images/arch-arm-docker.png"></p>
+
+<p>We can login to individual VMs, run <code>top</code> to see the load average as well.</p>
+<h4>Fast Mode</h4>
+<p><code>lima</code> provides <code>fast-mode</code> option for cross architecture VMs which will speed up the performance.</p>
+<p>For that, we need to log in to VMs and install emulators.</p>
+<div class="code"><pre class="code literal-block">$ sudo systemctl start containerd
+$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
+</pre></div>
+
+<p>After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.</p>
+<h4>Conclusion</h4>
+<p>In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:dhub">
+<p><a href="https://hub.docker.com/search?q=&amp;page=10">https://hub.docker.com/search?q=&amp;page=10</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:dhub" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:lima">
+<p><a href="https://github.com/lima-vm/lima">https://github.com/lima-vm/lima</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:lima" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:k3s">
+<p><a href="../2022/10/local-kubernetes-with-k3s-on-mac.html">Install k3s on Mac M1</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:k3s" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/10/local-kubernetes-with-k3s-on-mac.html" class="u-url">Local Kubernetes Cluster with K3s on Mac M1</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -95,14 +164,19 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
         </div>
     </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>Kubernetes(k8s)<sup id="fnref:k8s"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s">1</a></sup> is an open-source system for managing large scale containerized applications. K3s<sup id="fnref:k3s"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s">2</a></sup> is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC.</p>
+    <div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=vi5eRgBMs90" allowfullscreen>
+</iframe>
+</div>
+
+<h4>Introduction</h4>
+<p>Kubernetes(k8s)<sup id="fnref:k8s"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s">1</a></sup> is an open-source system for managing large scale containerized applications. K3s<sup id="fnref:k3s"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s">2</a></sup> is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.</p>
 <div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">sfL</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="k">get</span><span class="p">.</span><span class="n">k3s</span><span class="p">.</span><span class="n">io</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sh</span><span class="w"> </span><span class="o">-</span><span class="w"></span>
 
 <span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w">  </span><span class="n">Can</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">systemd</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">openrc</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">supervisor</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k3s</span><span class="w"></span>
 </pre></div>
 
-<p>To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Mac M1 is to use multipass<sup id="fnref:multipass"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass">3</a></sup>. In this article, lets see how to setup K3s on Mac using multipass</p>
+<p>To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass<sup id="fnref:multipass"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass">3</a></sup>. In this article, lets see how to setup K3s on Mac using multipass</p>
 <h4>K3s Setup</h4>
 <p>Install multipass with brew by running the following command.</p>
 <div class="code"><pre class="code literal-block">$ brew install --cask multipass
@@ -143,7 +217,7 @@ ubuntu@k3s:~$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
 <p>This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.</p>
 <p>By default, k3s config file will be located at <code>/etc/rancher/k3s/k3s.yaml</code>. With this config file, we can use Lens<sup id="fnref:lens"><a class="footnote-ref" href="../2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens">4</a></sup> to manage k8s cluster.</p>
 <p align="center">
-<img src="../images/k8s-mac-m1.png"></p>
+<img src="../images/k8s-mac-m1.jpg"></p>
 
 <p>Lets find out IP of the VM &amp; k8s token so that we can spin up a new VM and add it to this cluster.</p>
 <div class="code"><pre class="code literal-block"><span class="c1"># get token &amp; ip of k3s</span><span class="w"></span>
@@ -643,35 +717,6 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 <h4>Conclusion</h4>
 <p>In healthcare, integration engines are used extensively to tackle data exchange between systems. Due to its low-code development and batteries included approach, even though Frappe is a web application framework, it can be used as an integration engine as well.</p>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/01/resuming-writing-challenge.html" class="u-url">On Resuming Writing Challenge</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/01/resuming-writing-challenge.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-01-19T06:06:06+05:30" itemprop="datePublished" title="2022-01-19">2022-01-19</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p align="center">
-<img height="300" width="800" src="../images/writing_challenge.jpg"></p>
-
-<p align="center">
-Photo by Kaboompics on Pexels
-</p>
-
-<p>In 2018, I decided to write at least one blog post per month throughout the year. Even though I tried to write posts every month, I couldn't publish anything in few months.</p>
-<p>In 2019, I went a step ahead and made a legal(?) agreement with a friend. I paid him 1,00,000 rupees and told him that he could keep the money as a reward if I failed to write a blog post every month.</p>
-<p>This agreement kept me on my toes. I didn't miss writing a single month in 2019. I stayed awake on the last days of the month to finish and publish the post before midnight.</p>
-<p>In 2020, I took up the challenge again and I was able to write at least one post every month.</p>
-<p>In 2021, I didn't take up the challenge. I wrote just three posts in the entire year.</p>
-<p>In the two years when I took the challenge, even though I wrote a few mediocre articles, I wrote a few good articles. In the other two years when I didn't take the challenge, my writing quality and quantity declined.</p>
-<p>Due to this, I decided to take up the writing challenge again this year.</p>
-<p>Instead of limiting the 1,00,000 reward to my friend, I decided to extend it to all the readers.</p>
-<p>The first person who calls out that there is no new blog post in a month will get the 1,00,000 reward. The next three people will get a small gift as a token of appreciation.</p>
-<p>I will try my best to write at least one post every month. Let's wait till the end of the year and see how it goes.</p>
-    </div>
     </article>
 </div>
         <ul class="pager postindexpager clearfix">
@@ -682,6 +727,7 @@ Photo by Kaboompics on Pexels
                 
             </footer>
 </div>
+    </div>
     </div>
 
                 <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/popper.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script>

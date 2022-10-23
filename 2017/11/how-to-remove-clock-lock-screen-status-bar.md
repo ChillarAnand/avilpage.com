@@ -47,5 +47,5 @@ To remove clock from status bar, go to **Settings** -> **Configurations** -> **S
 Once you do this, you will have a clean lockscreen and statusbar without any date or time them.
 
 <p align="center">
-<img src="/images/remove_clock_android_16.png" height="400px" width="220" />
+<img src="/images/remove_clock_android_16.jpg" height="400px" width="220" />
 </p>

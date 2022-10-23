@@ -9,10 +9,16 @@
 .. type: text
 -->
 
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=vi5eRgBMs90" allowfullscreen>
+</iframe>
+</div>
+
+
 
 ### Introduction
 
-Kubernetes(k8s)[^k8s] is an open-source system for managing large scale containerized applications. K3s[^k3s] is lightweight K8s in a single binary file. However, K3s won't work directly on Mac as it needs systemd/OpenRC.
+Kubernetes(k8s)[^k8s] is an open-source system for managing large scale containerized applications. K3s[^k3s] is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.
 
 ```
 $ curl -sfL https://get.k3s.io | sh -
@@ -20,7 +26,7 @@ $ curl -sfL https://get.k3s.io | sh -
 [ERROR]  Can not find systemd or openrc to use as a process supervisor for k3s
 ```
 
-To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Mac M1 is to use multipass[^multipass]. In this article, lets see how to setup K3s on Mac using multipass
+To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass[^multipass]. In this article, lets see how to setup K3s on Mac using multipass
 
 
 ### K3s Setup
@@ -79,7 +85,7 @@ This will setup a k3s cluster on the VM. We can use kubectl and deploy applicati
 By default, k3s config file will be located at `/etc/rancher/k3s/k3s.yaml`. With this config file, we can use Lens[^lens] to manage k8s cluster.
 
 <p align="center">
-<img src="/images/k8s-mac-m1.png" />
+<img src="/images/k8s-mac-m1.jpg" />
 </p>
 
 Lets find out IP of the VM & k8s token so that we can spin up a new VM and add it to this cluster.
