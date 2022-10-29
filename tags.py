@@ -30,20 +30,6 @@ for tag, count in counter.most_common():
 
 html += '</ul></div> \n\n<hr>'
 
-# print(html)
-
-# index_file = 'articles/index.md'
-#
-# lines = open(index_file).readlines()
-# with open(index_file, 'w') as fh:
-#     for line in lines:
-#         if '<hr>' in line:
-#             continue
-#         if '<div>' in line:
-#             line = html
-#         fh.write(line)
-
-
 index_file = 'templates/list_post.tmpl'
 
 lines = open(index_file).readlines()

@@ -11,7 +11,7 @@
 
 ### Introduction
 
-Django has inbuilt [CSRF protection][csrfp] mechanism for requests via unsafe methods to prevent [Cross Site Request Forgeries][csrf]. When CSRF protection is enabled on AJAX POST methods, `X-CSRFToken` header should be sent in the request.
+Django has inbuilt [CSRF protection][csrf] mechanism for requests via unsafe methods to prevent [Cross Site Request Forgeries][csrf]. When CSRF protection is enabled on AJAX POST methods, `X-CSRFToken` header should be sent in the request.
 
 [Postman][postman] is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.
 
@@ -40,7 +40,7 @@ var xsrfCookie = postman.getResponseCookie("csrftoken");
 postman.setEnvironmentVariable('csrftoken', xsrfCookie.value);
 ```
 
-This extracts csrf token and sets it to an evironment variable called `csrftoken` in the current environment.
+This extracts csrf token and sets it to an environment variable called `csrftoken` in the current environment.
 
 <p align="center">
 <img src="/images/django-csrf-postman3.png" />

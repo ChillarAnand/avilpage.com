@@ -2,7 +2,7 @@
 .. title: How To Root Xiamo Redmi 9 Prime Without TWRP
 .. slug: how-to-root-redmi-9-prime-lancelot
 .. date: 2022-09-28 06:14:45 UTC+05:30
-.. tags: android
+.. tags: android, root
 .. category: tech
 .. link:
 .. description: A guide on how to root xiamo redmi 9 prime(lancelot) without twrp recovery.

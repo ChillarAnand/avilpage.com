@@ -44,27 +44,41 @@
 
 <h4>Tags</h4>
 
-<div id="top-tags"><ul itemprop="keywords" class="tags"><li><a class="tag p-category" href="/tags/python.html" rel="tag">python<span class="badge badge-light">61</span></a></li><li><a class="tag p-category" href="/tags/django.html" rel="tag">django<span class="badge badge-light">24</span></a></li><li><a class="tag p-category" href="/tags/command-line.html" rel="tag">command-line<span class="badge badge-light">15</span></a></li><li><a class="tag p-category" href="/tags/emacs.html" rel="tag">emacs<span class="badge badge-light">10</span></a></li><li><a class="tag p-category" href="/tags/devops.html" rel="tag">devops<span class="badge badge-light">10</span></a></li><li><a class="tag p-category" href="/tags/telugu.html" rel="tag">telugu<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/linux.html" rel="tag">linux<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/bangalore.html" rel="tag">bangalore<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/android.html" rel="tag">android<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/ubuntu.html" rel="tag">ubuntu<span class="badge badge-light">5</span></a></li><li><a class="tag p-category" href="/tags/HealthIT.html" rel="tag">HealthIT<span class="badge badge-light">5</span></a></li><li><a class="tag p-category" href="/tags/frappe-framework.html" rel="tag">frappe-framework<span class="badge badge-light">5</span></a></li><li><a class="tag p-category" href="/tags/musings.html" rel="tag">musings<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/kubernetes.html" rel="tag">kubernetes<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/gaming.html" rel="tag">gaming<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/chalam.html" rel="tag">chalam<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/browser.html" rel="tag">browser<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/automation.html" rel="tag">automation<span class="badge badge-light">4</span></a></li></ul></div> 
+<div id="top-tags"><ul itemprop="keywords" class="tags"><li><a class="tag p-category" href="/tags/python.html" rel="tag">python<span class="badge badge-light">64</span></a></li><li><a class="tag p-category" href="/tags/django.html" rel="tag">django<span class="badge badge-light">24</span></a></li><li><a class="tag p-category" href="/tags/command-line.html" rel="tag">command-line<span class="badge badge-light">15</span></a></li><li><a class="tag p-category" href="/tags/emacs.html" rel="tag">emacs<span class="badge badge-light">10</span></a></li><li><a class="tag p-category" href="/tags/devops.html" rel="tag">devops<span class="badge badge-light">10</span></a></li><li><a class="tag p-category" href="/tags/linux.html" rel="tag">linux<span class="badge badge-light">9</span></a></li><li><a class="tag p-category" href="/tags/telugu.html" rel="tag">telugu<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/bangalore.html" rel="tag">bangalore<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/android.html" rel="tag">android<span class="badge badge-light">8</span></a></li><li><a class="tag p-category" href="/tags/HealthIT.html" rel="tag">HealthIT<span class="badge badge-light">6</span></a></li><li><a class="tag p-category" href="/tags/ubuntu.html" rel="tag">ubuntu<span class="badge badge-light">5</span></a></li><li><a class="tag p-category" href="/tags/frappe-framework.html" rel="tag">frappe-framework<span class="badge badge-light">5</span></a></li><li><a class="tag p-category" href="/tags/musings.html" rel="tag">musings<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/kubernetes.html" rel="tag">kubernetes<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/gaming.html" rel="tag">gaming<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/chalam.html" rel="tag">chalam<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/browser.html" rel="tag">browser<span class="badge badge-light">4</span></a></li><li><a class="tag p-category" href="/tags/automation.html" rel="tag">automation<span class="badge badge-light">4</span></a></li></ul></div> 
 
 <hr>
         {{ archive_nav.archive_navigation() }}
         {{ feeds_translations.translation_link() }}
         <div class="postlist">
             {% for group in posts|groupby('date.year')|reverse %}
-                <h4>{{ group.grouper }}</h4>
+                <div>
+                    <h4>{{ group.grouper }}</h4>
+                </div>
+
                 {% for post in group.list %}
+                    <div>
                     <a href="{{ post.permalink() }}" class="listtitle">{{ post.title()|e }}</a>
-                    <br />
+                    </div>
+
+                    <div>
                     <time class="listdate" datetime="{{ post.formatted_date('webiso') }}" title="{{ post.formatted_date(date_format)|e }}">
                         {{ post.formatted_date(date_format) }}
                     </time>
-                    {{ helper.duration(post) }}
-                    <br />
+                    {{ helper.duration(post) }} &nbsp;
+
+                    {% if post.tags %}
+                        <ul class="tags" style="display: inline-block;">
+                        {% for tag in post.tags %}
+                            <li><a class="tag p-category" href="{{ SITEURL }}/{{ TAG_PATH }}/{{ tag|slugify }}.html" rel="tag">{{ tag }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    </div>
+
                     <br />
                 {% endfor %}
             {% endfor %}
         </div>
     </article>
-
-
 {% endblock %}

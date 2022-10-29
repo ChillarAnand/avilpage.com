@@ -2,7 +2,7 @@
 .. title: Local Kubernetes Cluster with K3s on Mac M1
 .. slug: local-kubernetes-with-k3s-on-mac
 .. date: 2022-10-11 08:08:36 UTC+05:30
-.. tags: devops, kubernetes
+.. tags: devops, kubernetes, macbook
 .. category: tech
 .. link:
 .. description: How to setup a local kubernetes cluster on Macbook M1(apple silicon) with k3s and multipass.

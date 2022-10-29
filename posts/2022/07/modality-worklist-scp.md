@@ -2,7 +2,7 @@
 .. title: Mastering DICOM - #3 Setup Modality Worklist SCP
 .. slug: dicom-modality-worklist-scp
 .. date: 2022-07-31 18:19:29 UTC+05:30
-.. tags: dicom
+.. tags: dicom, HealthIT
 .. category:
 .. link:
 .. description:
