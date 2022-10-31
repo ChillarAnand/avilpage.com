@@ -107,18 +107,17 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <div class="e-content entry-content" itemprop="articleBody text">
     <p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
 <p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
 
 
 <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
     <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
 <p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 
@@ -132,14 +131,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre></div>
-
+</pre>
 <p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
 <p align="center">
 <img src="../../images/django-admin-auto.png" width="600px"></p>
 
 <p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 
@@ -160,8 +158,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre></div>
-
+</pre>
 <p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
 <p align="center">
 <img src="../../images/django-admin-auto-2.png" width="600px"></p>
@@ -178,10 +175,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <li class="next">
                 <a href="../12/automatic-magnetometer-calibration-with-arduino.html" rel="next" title="Automatic Magnetometer Calibration With Arduino">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

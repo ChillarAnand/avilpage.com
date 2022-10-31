@@ -5,7 +5,7 @@
 .. tags: javascript, browser
 .. category: programming
 .. link:
-.. description: How to change enviroments (local, dev, qa, staging, production) on browser with bookmarklets.
+.. description: How to change environments (local, dev, qa, staging, production) on browser with bookmarklets.
 .. type: text
 -->
 
@@ -31,7 +31,7 @@ We can create one more bookmarklet to switch to production. Create a bookmarklet
 javascript:(function() { window.location.replace("http://avilpage.com" + window.location.pathname + window.location.search); }())
 ```
 
-We can create similar bookmarklets to switch to other enviroments. Now, switching between enviroments on any page is as easy as clicking a button.
+We can create similar bookmarklets to switch to other environments. Now, switching between environments on any page is as easy as clicking a button.
 
 
 

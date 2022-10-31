@@ -18,7 +18,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="canonical" href="https://avilpage.com/2021/03/setup-orthanc-demo-server.html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
 <link rel="prev" href="../../2020/12/minimum-viable-testing-risk-based.html" title="Minimum Viable Testing - Get Maximum Stability With Minimum Effort" type="text/html">
-<link rel="next" href="../06/lesser-know-useful-utilities-for-mac.html" title="Lesser Know Useful Utilities For Mac" type="text/html">
+<link rel="next" href="../06/lesser-know-useful-utilities-for-mac.html" title="Lesser Know Useful Utilities For MacBook" type="text/html">
 <meta property="og:site_name" content="Avil Page">
 <meta property="og:title" content="Mastering DICOM - #2 Setup Orthanc DICOM Server">
 <meta property="og:url" content="https://avilpage.com/2021/03/setup-orthanc-demo-server.html">
@@ -110,16 +110,15 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
 <p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
 <p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
-<div class="code"><pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
+<pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
     jodogne/orthanc-python
-</pre></div>
-
+</pre>
 <p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
 <h4>Heroku Deployment</h4>
 <p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
 <p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
 <p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+<pre class="code literal-block"><span class="ch">#! /bin/sh</span>
 
 <span class="nb">set</span> -x
 
@@ -128,10 +127,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
 
 Orthanc /etc/orthanc/
-</pre></div>
-
+</pre>
 <p>We can use this shell script as entry point in docker as follows.</p>
-<div class="code"><pre class="code literal-block">FROM jodogne/orthanc-python
+<pre class="code literal-block">FROM jodogne/orthanc-python
 
 EXPOSE $PORT
 
@@ -139,15 +137,13 @@ WORKDIR /app
 ADD . /app
 
 ENTRYPOINT [ "./run.sh" ]
-</pre></div>
-
+</pre>
 <p>We can create a new app in heroku and we can deploy this container.</p>
-<div class="code"><pre class="code literal-block">$ heroku apps:create orthanc-demo
+<pre class="code literal-block">$ heroku apps:create orthanc-demo
 
 $ heroku container:push web
 $ heroku container:release web
-</pre></div>
-
+</pre>
 <p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
@@ -161,12 +157,37 @@ $ heroku container:release web
                 <a href="../../2020/12/minimum-viable-testing-risk-based.html" rel="prev" title="Minimum Viable Testing - Get Maximum Stability With Minimum Effort">Previous post</a>
             </li>
             <li class="next">
-                <a href="../06/lesser-know-useful-utilities-for-mac.html" rel="next" title="Lesser Know Useful Utilities For Mac">Next post</a>
+                <a href="../06/lesser-know-useful-utilities-for-mac.html" rel="next" title="Lesser Know Useful Utilities For MacBook">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

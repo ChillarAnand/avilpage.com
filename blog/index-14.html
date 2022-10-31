@@ -89,11 +89,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
 <h4>Deployment To k8s</h4>
 <p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref:nc"><a class="footnote-ref" href="../2020/07/deploy-mirth-to-kubernetes.html#fn:nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
-<div class="code"><pre class="code literal-block"><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
-</pre></div>
-
+<pre class="code literal-block"><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
+</pre>
 <p>We can use this docker image and create a k8s deployment to start a container.</p>
-<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<pre class="code literal-block"><span class="o">---</span>
 <span class="nv">apiVersion</span>: <span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
 <span class="nv">kind</span>: <span class="nv">Deployment</span>
 <span class="nv">metadata</span>:
@@ -117,41 +116,38 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <span class="nv">value</span>: <span class="nv">postgres</span>
           <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE_URL</span>
             <span class="nv">value</span>: <span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
-</pre></div>
-
+</pre>
 <p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
-<div class="code"><pre class="code literal-block">$ kubectl apply -f connect-deployment.yaml
-</pre></div>
-
+<pre class="code literal-block">$ kubectl apply -f connect-deployment.yaml
+</pre>
 <p>To access this container, we can create a service to expose this deployment to public.</p>
-<div class="code"><pre class="code literal-block"><span class="o">---</span><span class="w"></span>
-<span class="n">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span><span class="w"></span>
-<span class="n">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Service</span><span class="w"></span>
-<span class="n">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span><span class="w"></span>
-<span class="w">  </span><span class="n">annotations</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span><span class="w"> </span><span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span><span class="w"></span>
-<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span><span class="w"> </span><span class="s2">"443"</span><span class="w"></span>
-<span class="w">    </span><span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span><span class="w"> </span><span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="w"></span>
-<span class="n">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="n">type</span><span class="p">:</span><span class="w"> </span><span class="n">LoadBalancer</span><span class="w"></span>
-<span class="w">  </span><span class="n">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">app</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span><span class="w"></span>
-<span class="w">  </span><span class="n">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">http</span><span class="w"></span>
-<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="w"></span>
-<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8080</span><span class="w"></span>
-<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">https</span><span class="w"></span>
-<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">443</span><span class="w"></span>
-<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8443</span><span class="w"></span>
-<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">hl7</span><span class="o">-</span><span class="n">test</span><span class="w"></span>
-<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span><span class="w"></span>
-<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span><span class="w"></span>
-<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span><span class="w"></span>
-</pre></div>
-
+<pre class="code literal-block"><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<span class="n">metadata</span><span class="p">:</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+  <span class="n">annotations</span><span class="p">:</span>
+    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span> <span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span>
+    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span> <span class="s2">"443"</span>
+    <span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span> <span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span>
+<span class="n">spec</span><span class="p">:</span>
+  <span class="n">type</span><span class="p">:</span> <span class="n">LoadBalancer</span>
+  <span class="n">selector</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+  <span class="n">ports</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8080</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">https</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8443</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">hl7</span><span class="o">-</span><span class="n">test</span>
+      <span class="n">port</span><span class="p">:</span> <span class="mi">9001</span>
+      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9001</span>
+      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
+</pre>
 <p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
 <p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
 <h4>Conclusion</h4>
@@ -182,7 +178,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this article, lets write a simple terminal to address the above issues.</p>
 <h4>Bluetooth Receiver</h4>
 <p>pyserial-asyncio<sup id="fnref:pyserial-asyncio"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:pyserial-asyncio">2</a></sup> package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 
@@ -208,21 +204,19 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal<sup id="fnref:asbt"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:asbt">4</a></sup>.</p>
 <p>Here a screenshot of messages being send from an Android device.</p>
 <p><img src="../images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"></p>
 <p>We can listen to these messages on laptop via serial port by running the following command.</p>
-<div class="code"><pre class="code literal-block">$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+<pre class="code literal-block">$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
 <span class="m">2020</span>-08-31 <span class="m">10</span>:44:50.995281 Rx &lt;<span class="o">==</span> ping from android
 <span class="m">2020</span>-08-31 <span class="m">10</span>:44:57.702866 Rx &lt;<span class="o">==</span> <span class="nb">test</span> message
-</pre></div>
-
+</pre>
 <h4>Bluetooth Sender</h4>
 <p>Now lets write a sender to send messages typed on the terminal to the bluetooth.</p>
 <p>To read input from terminal, we need to use aioconsole <sup id="fnref:aioc"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:aioc">3</a></sup>. It provides async input equivalent function to read input typed on the terminal.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 
@@ -253,16 +247,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>We can run the program with the following command and send messages to phone's bluetooth.</p>
-<div class="code"><pre class="code literal-block">$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+<pre class="code literal-block">$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
 
 ping from mac
 <span class="m">2020</span>-08-31 <span class="m">10</span>:46:52.222676 <span class="nv">Tx</span> <span class="o">==</span>&gt; ping from mac
 <span class="m">2020</span>-08-31 <span class="m">10</span>:46:58.423492 <span class="nv">Tx</span> <span class="o">==</span>&gt; <span class="nb">test</span> message
-</pre></div>
-
+</pre>
 <p>Here a screenshot of messages received on Android device.</p>
 <p><img src="../images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"></p>
 <h4>Conclusion</h4>
@@ -305,29 +297,27 @@ ping from mac
 <p>One problem with this drill down navigation is, we have to navigate to todays date every time we open a model in admin. Since we are interested in todays events most of the time, setting todays date as default filtered date will solve the problem.</p>
 <h4>Set Default Date For Date Hierarchy</h4>
 <p>Let us create an admin page to show all the users who logged in today. Since User model is already registered in admin by default, let us create a proxy model to register it again.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
 
 
 <span class="k">class</span> <span class="nc">DjangoUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
-</pre></div>
-
+</pre>
 <p>Lets register this model in admin to show logged in users details along with date hierarchy.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 
 <span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MetaUserAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'username'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">,</span> <span class="s1">'last_login'</span><span class="p">)</span>
     <span class="n">date_hierarchy</span> <span class="o">=</span> <span class="s1">'last_login'</span>
-</pre></div>
-
+</pre>
 <p>If we open <code>DjangoUser</code> model in admin page, it will show drill down navigation bar like this.</p>
 <p><img src="../images/django-admin-date.png"></p>
 <p>Now, if we drill down to a particular date, django adds additional query params to the admin url. For example, if we visit 2020-06-26 date, corresponding query params are <code>/?last_login__day=26&amp;last_login__month=6&amp;last_login__year=2020</code>.</p>
 <p>We can override changelist view and set default params to todays date if there are no query params. If there are query params then render the original response.</p>
-<div class="code"><pre class="code literal-block"><span class="nv">@admin</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span><span class="w"></span>
+<pre class="code literal-block"><span class="nv">@admin</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span><span class="w"></span>
 <span class="k">class</span><span class="w"> </span><span class="n">MetaUserAdmin</span><span class="p">(</span><span class="k">admin</span><span class="p">.</span><span class="n">ModelAdmin</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
 <span class="w">    </span><span class="n">list_display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s1">'username'</span><span class="p">,</span><span class="w"> </span><span class="s1">'is_active'</span><span class="p">,</span><span class="w"> </span><span class="s1">'last_login'</span><span class="p">)</span><span class="w"></span>
 <span class="w">    </span><span class="n">date_hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'last_login'</span><span class="w"></span>
@@ -343,8 +333,7 @@ ping from mac
 <span class="w">        </span><span class="n">query_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">field_keys</span><span class="p">,</span><span class="w"> </span><span class="n">field_values</span><span class="p">))</span><span class="w"></span>
 <span class="w">        </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'{}?{}'</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="k">path</span><span class="p">,</span><span class="w"> </span><span class="n">urlencode</span><span class="p">(</span><span class="n">query_params</span><span class="p">))</span><span class="w"></span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redirect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="w"></span>
-</pre></div>
-
+</pre>
 <p>Now if we open the same admin page, it will redirect to todays date by default.</p>
 <p><img src="../images/django-admin-date2.png"></p>
 <h4>Conclusion</h4>
@@ -371,65 +360,60 @@ ping from mac
     </header><div class="e-content entry-content">
     <p>This will be a series of articles on exploring the internals of Dart &amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.</p>
 <h4>Stateful Hot Reload</h4>
-<div class="code"><pre class="code literal-block"><span class="k">import</span><span class="w"> </span><span class="s1">'dart:async'</span><span class="p">;</span><span class="w"></span>
+<pre class="code literal-block"><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
 
-<span class="kt">int</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"></span>
+<span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="n">total</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">delta</span><span class="p">;</span><span class="w"></span>
+<span class="kt">void</span> <span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+  <span class="n">total</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+  <span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">adder</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">2</span><span class="p">),</span> <span class="n">adder</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
 <p>In the above program<sup id="fnref:program"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref:periodic"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
 <p>We can run this program from command line using</p>
-<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span><span class="w"></span>
-<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">d42KmW4LknU</span><span class="o">=/</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">4.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">8.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="o">...</span><span class="w"></span>
-</pre></div>
-
+<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">d42KmW4LknU</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="o">...</span>
+</pre>
 <p>This will start executing the program and will provide a link to observatory<sup id="fnref:observatory"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
 <p>As the program is executing, lets open the program in an editor, change delta from 2 to 3.</p>
-<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">this</span><span class="w"></span>
-<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">;</span><span class="w"></span>
+<pre class="code literal-block">  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
+  <span class="err">#</span> <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
 
-<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="n">to</span><span class="w"></span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
+  <span class="err">#</span> <span class="n">change</span> <span class="n">to</span>
+  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
+</pre>
 <p>If we restart the program, it will start executing from the beginning and it will lose the state of the program.</p>
-<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span><span class="w"></span>
-<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">eoP2lpC2ZWw</span><span class="o">=/</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">3.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">9.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-</pre></div>
-
+<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">eoP2lpC2ZWw</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">3.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">9.</span> <span class="n">Adding</span> <span class="mi">3</span>
+</pre>
 <p>Instead of restart, we can open the observatory link in browser, open main isolate and click on <code>Reload Source</code> button.</p>
 <p><img src="../images/dart-vm.png"></p>
 <p>As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.</p>
-<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span><span class="w"></span>
-<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">n_GSAKsyr5s</span><span class="o">=/</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">4.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">8.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">11.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c1"># after hot reload</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">14.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">17.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">20.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
-</pre></div>
-
+<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">n_GSAKsyr5s</span><span class="o">=/</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">11.</span> <span class="n">Adding</span> <span class="mi">3</span> <span class="c1"># after hot reload</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">14.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">17.</span> <span class="n">Adding</span> <span class="mi">3</span>
+<span class="n">Total</span> <span class="k">is</span> <span class="mf">20.</span> <span class="n">Adding</span> <span class="mi">3</span>
+</pre>
 <p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref:hot"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.</p>
@@ -467,15 +451,14 @@ ping from mac
 <h4>Aliases</h4>
 <p>Aliases in general improve the productivity when using a shell.</p>
 <p>kubectl provides shortcuts for commands. For example,</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># instead of running full command</span>
+<pre class="code literal-block"><span class="c1"># instead of running full command</span>
 $ kubectl get services
 
 <span class="c1"># we can use short hand version</span>
 $ kubectl get svc
-</pre></div>
-
+</pre>
 <p>It also provides completion for commands.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># enable completion for zsh</span>
+<pre class="code literal-block"><span class="c1"># enable completion for zsh</span>
 $ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
 
 <span class="c1"># type `kubectl ` and hit `&lt;TAB&gt;` will show possible options</span>
@@ -487,10 +470,9 @@ apply          certificate    convert
 
 <span class="c1"># type `kubectl g`, and hit `&lt;TAB&gt;` will show possible options</span>
 $ kubectl get
-</pre></div>
-
+</pre>
 <p>Even though completions are helpful, setting up up aliases for most commanly used commands will save a lot of time.</p>
-<div class="code"><pre class="code literal-block"><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
+<pre class="code literal-block"><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
 
 <span class="nb">alias</span> <span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
 <span class="nb">alias</span> <span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
@@ -505,23 +487,21 @@ $ kubectl get
 
 <span class="nb">alias</span> <span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
 <span class="nb">alias</span> <span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
-</pre></div>
-
+</pre>
 <p>If you don't write your own aliases, there is <a href="https://github.com/ahmetb/kubectl-aliases">kubectl-aliases</a> which provides exhuastive list of aliases. We can source this file in rc file and start using them.</p>
 <h4>Use Functions</h4>
 <p>Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.</p>
 <p>For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.</p>
-<div class="code"><pre class="code literal-block">kp<span class="o">()</span> <span class="o">{</span>
+<pre class="code literal-block">kp<span class="o">()</span> <span class="o">{</span>
     kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">'{print $1}'</span><span class="k">)</span> <span class="p">|</span> grep <span class="s1">'token:'</span> <span class="p">|</span> awk <span class="s1">'{print $2}'</span> <span class="p">|</span> pbcopy
     open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
     kubectl proxy
 <span class="o">}</span>
-</pre></div>
-
+</pre>
 <p>Now from the shell, when we run <code>kp</code>, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.</p>
 <h4>Use Labels</h4>
 <p>To describe a pod or tail logs from a pod, we can use pod names.</p>
-<div class="code"><pre class="code literal-block">$ kubectl get pods
+<pre class="code literal-block">$ kubectl get pods
 NAME                             READY   STATUS
 hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
 
@@ -529,15 +509,13 @@ hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
 $ kubectl describe pod hello-world-79d794c659-tpfv2
 
 $ kubectl logs -f pod/hello-world-79d794c659-tpfv2
-</pre></div>
-
+</pre>
 <p>When the app gets updated, the name of pod also updates. If your shell has auto completion feature, it will autocomplete to previous name.</p>
 <p>So, instead of using pod name, we can use pod labels as mentioned below.</p>
-<div class="code"><pre class="code literal-block">$ kubectl describe pod -l<span class="o">=</span>hello-world
+<pre class="code literal-block">$ kubectl describe pod -l<span class="o">=</span>hello-world
 
 $ kubectl logs -f -l<span class="o">=</span>pod/hello-world
-</pre></div>
-
+</pre>
 <p>We run the command once and next time shell will show autocomplete and we can use that directly.</p>
 <h4>Kubectl Tools</h4>
 <p>k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.</p>
@@ -567,29 +545,26 @@ $ kubectl logs -f -l<span class="o">=</span>pod/hello-world
     <p>In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
 <h4>Prerequisites</h4>
 <p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
-<div class="code"><pre class="code literal-block">$ kubectl cluster-info
+<pre class="code literal-block">$ kubectl cluster-info
 $ kubectl config get-contexts
-</pre></div>
-
+</pre>
 <p>You should know how to manually deploy your application to kubernetes.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
+<pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
 $ docker push chillaranand/library
 
 <span class="c1"># deploy latest image to k8s</span>
 $ kubectl apply -f app/deployment.yaml
 $ kubectl apply -f app/service.yaml
-</pre></div>
-
+</pre>
 <h4>Skaffold</h4>
 <p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
 <p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
-<div class="code"><pre class="code literal-block">$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+<pre class="code literal-block">$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
 $ chmod +x skaffold
 $ sudo mv skaffold /usr/local/bin
-</pre></div>
-
+</pre>
 <p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
-<div class="code"><pre class="code literal-block">$ skaffold init
+<pre class="code literal-block">$ skaffold init
 Configuration skaffold.yaml was written
 
 $ cat skaffold.yaml
@@ -605,15 +580,13 @@ deploy:
     manifests:
     - kubernetes/deployment.yaml
     - kubernetes/service.yaml
-</pre></div>
-
+</pre>
 <p>To deploy latest changes to your cluster, run</p>
-<div class="code"><pre class="code literal-block">$ skaffold run
-</pre></div>
-
+<pre class="code literal-block">$ skaffold run
+</pre>
 <p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
 <h4>CircleCI Workflow</h4>
-<div class="code"><pre class="code literal-block">version: <span class="m">2</span>.1
+<pre class="code literal-block">version: <span class="m">2</span>.1
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.19
@@ -654,8 +627,7 @@ commands:
           name: deploy to k8s
           command: <span class="p">|</span>
             skaffold run
-</pre></div>
-
+</pre>
 <p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
 <p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a seperate environment is created for it.</p>
 <p>Remaining steps are self explainatory.</p>
@@ -723,26 +695,24 @@ Image Credit:
     <p>PyPi<sup id="fnref:1"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:1">1</a></sup> hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries<sup id="fnref:2"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:2">2</a></sup> along with the package.</p>
 <h4>Build From Source</h4>
 <p>If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB<sup id="fnref:3"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:3">3</a></sup>.</p>
-<div class="code"><pre class="code literal-block">$ pip install numpy
+<pre class="code literal-block">$ pip install numpy
 
 $ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
  85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre></div>
-
+</pre>
 <p>Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp; pandas, overall size of the package crosses 250MB.</p>
 <p>An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.</p>
-<div class="code"><pre class="code literal-block">$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
+<pre class="code literal-block">$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
 
 $ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
  23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre></div>
-
+</pre>
 <p>We can see the footprint has reduced by ~70% when using sdist instead of wheel. This<sup id="fnref:4"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:4">4</a></sup> article provides more details about these CFLAG optimization when installing a package from source.</p>
 <h4>Shared Packages</h4>
 <p>When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.</p>
 <p>To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.</p>
 <p>For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.</p>
-<div class="code"><pre class="code literal-block">$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
+<pre class="code literal-block">$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.1
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
@@ -756,17 +726,14 @@ $ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.17
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
-</pre></div>
-
+</pre>
 <p>After creating a virtual enviroment for a project, we can create a <code>.pth</code> file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.</p>
-<div class="code"><pre class="code literal-block">$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
+<pre class="code literal-block">$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
  ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-</pre></div>
-
+</pre>
 <p>Then we can install the project requirements which will install only missing packages.</p>
-<div class="code"><pre class="code literal-block">$ pip install -r project1-requirements.txt
-</pre></div>
-
+<pre class="code literal-block">$ pip install -r project1-requirements.txt
+</pre>
 <h4>Global Store</h4>
 <p>The above shared packages solution has couple issues.</p>
 <ol>
@@ -775,14 +742,13 @@ $ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
 </ol>
 <p>To solve this<sup id="fnref:5"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:5">5</a></sup>, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.</p>
 <p>For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.</p>
-<div class="code"><pre class="code literal-block">$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
+<pre class="code literal-block">$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
 
 $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
 <span class="c1"># in project venv</span>
 <span class="nb">echo</span> <span class="s1">'~/.mpip/numpy/3.7_1.17'</span> &gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-</pre></div>
-
+</pre>
 <p>With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip<sup id="fnref:6"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:6">6</a></sup> as a POC to test this and it seems to work as expected.</p>
 <p>These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.</p>
 <div class="footnote">
@@ -824,17 +790,16 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
 <h4>Select for update</h4>
 <p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
         <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
         <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
 <h4>Threads</h4>
 <p>Let us take a view which uses threads to get data from database.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
@@ -847,10 +812,9 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
             <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
 
@@ -858,21 +822,19 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
         <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
 <h4>Transaction Test Case</h4>
 <p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
 
 <span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
-</pre></div>
-
+</pre>
 <p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
 <p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="o">...</span>
 
 <span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
@@ -880,12 +842,11 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
 <span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="o">...</span>
-</pre></div>
-
+</pre>
 <p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
 <p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
 <p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
@@ -899,8 +860,7 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
     <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
 <h4>Conclusion</h4>
 <p>Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.</p>
@@ -955,10 +915,35 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <li class="previous"><a href="index-15.html" rel="prev">Newer posts</a></li>
             <li class="next"><a href="index-13.html" rel="next">Older posts</a></li>
         </ul>
-<!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+<!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

@@ -2,10 +2,10 @@
 .. title: Detecting USB Events In Ubuntu With Python
 .. slug: detecting-device-events-in-ubuntu-with-python
 .. date: 2016-09-02 13:24:38 UTC
-.. tags:
-.. category:
+.. tags: python, linux, usb
+.. category: programming
 .. link:
-.. description:
+.. description: how to detect device events(like USB events) in ubuntu with python
 .. type: text
 -->
 

@@ -91,7 +91,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Chain of Trust</h4>
 <p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
 <p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
-<div class="code"><pre class="code literal-block">$ openssl s_client -showcerts -connect avilpage.com:443
+<pre class="code literal-block">$ openssl s_client -showcerts -connect avilpage.com:443
 
 CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
 <span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
@@ -120,21 +120,19 @@ MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
 -----END CERTIFICATE-----
 
     Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
-</pre></div>
-
+</pre>
 <p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
 <p>We can decode these pem files and see the information in these certificates using</p>
-<div class="code"><pre class="code literal-block">$ openssl x509 -noout -text -in server.crt
+<pre class="code literal-block">$ openssl x509 -noout -text -in server.crt
 
 Certificate:
     Data:
         Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
     Signature Algorithm: sha256WithRSAEncryption
     ----
-</pre></div>
-
+</pre>
 <p>We can also get only the subject and issuer of the certificate with</p>
-<div class="code"><pre class="code literal-block">$ openssl x509 -noout -subject -noout -issuer -in server.pem
+<pre class="code literal-block">$ openssl x509 -noout -subject -noout -issuer -in server.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
@@ -143,8 +141,7 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 
 <span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
 <span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
-</pre></div>
-
+</pre>
 <p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
 <p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
 <p>If you are using a Mac, open <code>Keychain Access</code>, search and export the relevant root certificate in <code>.pem</code> format.</p>
@@ -152,10 +149,9 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 <img src="../images/tls-openssl1.png"></p>
 
 <p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
-<div class="code"><pre class="code literal-block">$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
+<pre class="code literal-block">$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
 server.pem: OK
-</pre></div>
-
+</pre>
 <p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
 <h4>Conclusion</h4>
 <p>In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.</p>
@@ -174,16 +170,15 @@ server.pem: OK
     <p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
 <h4>Metaprogramming</h4>
 <p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
-<div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<pre class="code literal-block"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre></div>
-
+</pre>
 <p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
 <p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
 <h4>Metaprogramming In Django</h4>
 <p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
-<div class="code"><pre class="code literal-block">$ ./manage.py inspectdb
+<pre class="code literal-block">$ ./manage.py inspectdb
 
 from django.db import models
 
@@ -191,20 +186,18 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
     <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
     ...
-</pre></div>
-
+</pre>
 <p>In django admin, models can be registered like this.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 <span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
 
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
 <p>Django ORM generates SQL statements for given ORM statements in Python.</p>
-<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
 <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -224,8 +217,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
 
 <span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
-</pre></div>
-
+</pre>
 <p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
 <p>We can also use these techniques in everyday programming. Here are some use cases.</p>
 <ol>
@@ -252,7 +244,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <h4>Use Management Commands</h4>
 <p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
 <p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
 <span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
@@ -267,12 +259,11 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
         <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
             <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
 <h4>Link Data Migrations &amp; Schema Migrations</h4>
 <p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
@@ -286,19 +277,17 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
     <span class="p">]</span>
-</pre></div>
-
+</pre>
 <h4>Watch Out For DB Queries</h4>
 <p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
 <p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
 <p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># instead of</span>
+<pre class="code literal-block"><span class="c1"># instead of</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># use</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
@@ -317,21 +306,19 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <p>In the previous article, we have learnt where to start with <a href="../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
 <h4>Profling APIs With django-silk</h4>
 <p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
 
 
 <span class="nd">@silk_profile</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
-</pre></div>
-
+</pre>
 <p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
-<div class="code"><pre class="code literal-block"><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
+<pre class="code literal-block"><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
-</pre></div>
-
+</pre>
 <p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
 <p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
 <p align="center">
@@ -344,19 +331,16 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
 <h4>Profling APIs With django-extensions</h4>
 <p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
-<div class="code"><pre class="code literal-block">$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
-</pre></div>
-
+<pre class="code literal-block">$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
+</pre>
 <p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
 <p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
 <p>Install snakeviz using pip</p>
-<div class="code"><pre class="code literal-block">$ pip install snakeviz
-</pre></div>
-
+<pre class="code literal-block">$ pip install snakeviz
+</pre>
 <p>Open the profile data file using snakeviz.</p>
-<div class="code"><pre class="code literal-block">$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
-</pre></div>
-
+<pre class="code literal-block">$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
+</pre>
 <p>It shows icicles graph view and  table view of profile data of that view.</p>
 <p align="center">
 <img src="../images/django-profiling3.png"></p>
@@ -383,7 +367,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <img src="../images/aws-s3-bucket-version1.png"></p>
 
 <p>We can do the same with Python boto3 library.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -399,12 +383,11 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 
 <span class="c1"># disable versioning</span>
 <span class="n">versioning</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <h4>Retrieving Objects</h4>
 <p>Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.</p>
 <p>We can write a simple script to generate a text file with a random text and upload it to S3.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">string</span>
 
 <span class="kn">import</span> <span class="nn">boto3</span>
@@ -418,15 +401,14 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="n">s3</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.</p>
 <p>We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at <code>Latest version</code>.</p>
 <p align="center">
 <img src="../images/aws-s3-bucket-version2.png"></p>
 
 <p>We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -445,8 +427,7 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">'Body'</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <h4>Conclusion</h4>
 <p>Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.</p>
     </div>
@@ -487,15 +468,13 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <p>When debugging an issue on some other page like <a href="../2019/05/environment-bookmarklet-web-development-tips.html">https://avilpage.com/validate/books/?name=darwin&amp;year=2019</a>, which has URL path and query param, switching between enviroment becomes tedious. To switch to local environment, we have to manually replace the hostname with localhost.</p>
 <p>To avoid this, we can use a bookmarklet to switch the hosts. A <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> is a bookmark which contains a JavaScript code snippet in its URL. This code snippet will be executed when the bookmarklet is clicked.</p>
 <p>Lets create a bookmarklet to replace host in the URL with <a href="http://localhost:8000">http://localhost:8000</a>. Create new bookmark called <code>To Local</code> and in the URL add the following snippet.</p>
-<div class="code"><pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span><span class="w"> </span><span class="p">}())</span><span class="w"></span>
-</pre></div>
-
+<pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</pre>
 <p>If we click on <code>To Local</code> bookmarklet, it will redirect the current active page to localhost URL.</p>
 <p>We can create one more bookmarklet to switch to production. Create a bookmarklet called <code>To Production</code> and add the following snippet in the URL.</p>
-<div class="code"><pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span><span class="w"> </span><span class="p">}())</span><span class="w"></span>
-</pre></div>
-
-<p>We can create similar bookmarklets to switch to other enviroments. Now, switching between enviroments on any page is as easy as clicking a button.</p>
+<pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
+</pre>
+<p>We can create similar bookmarklets to switch to other environments. Now, switching between environments on any page is as easy as clicking a button.</p>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2019/04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
         <div class="metadata">
@@ -509,49 +488,45 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
         </div>
     </header><div class="e-content entry-content">
     <h4>Introduction</h4>
-<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.</p>
-<p>In this article we will see how to debug PostgreSQL triggers.</p>
+<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will be executed in alphabetical order by name.</p>
+<p>In this article, we will see how to debug PostgreSQL triggers.</p>
 <h4>Triggers</h4>
-<p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
-<div class="code"><pre class="code literal-block"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
-<p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
+<p>First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
+<pre class="code literal-block"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
+<p>We can also use <code>EXPLAIN</code> to show triggers that are executed for an event by running relevant queries.</p>
 <h4>PostgreSQL Logging</h4>
-<p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
-<div class="code"><pre class="code literal-block"><span class="o">#</span><span class="w"> </span><span class="n">let</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">queries</span><span class="w"></span>
-<span class="n">log_statement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'all'</span><span class="w"></span>
+<p>After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.</p>
+<pre class="code literal-block"><span class="o">#</span> <span class="n">let</span> <span class="n">the</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
 
-<span class="o">#</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">level</span><span class="w"></span>
-<span class="n">client_min_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">log</span><span class="w"></span>
-</pre></div>
-
-<p>Restart postgresql to reflect configuration changes.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># Linux</span>
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
+<p>Restart PostgreSQL to reflect configuration changes.</p>
+<pre class="code literal-block"><span class="c1"># Linux</span>
 sudo service postgres restart
 
 <span class="c1"># Mac</span>
 brew services restart postgres
-</pre></div>
-
+</pre>
 <p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
 <h4>Triggers Logging</h4>
 <p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
-<div class="code"><pre class="code literal-block"><span class="n">RAISE</span><span class="w"> </span><span class="s1">'Updating row with ID: %'</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w"></span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">division_by_zero</span><span class="p">;</span><span class="w"></span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">WARNING</span><span class="w"> </span><span class="s1">'Unable to deleted record'</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
-<p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
+<pre class="code literal-block"><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to delete record'</span><span class="p">;</span>
+</pre>
+<p>This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
 <h4>SQL/PostgreSQL Gotchas</h4>
-<p>Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.</p>
+<p>Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.</p>
 <ol>
-<li>Unquoted object names will be treated as lower case. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
+<li>Unquoted object names will be treated as lowercase. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
 <li>Comparing nullable fields. This might yield strange results as <code>NULL != NULL</code>.</li>
 <li>PostgreSQL uses POSIX offsets. For <code>04:21:42 UTC+01</code>, +1  means the timezone is west of Greenwich.</li>
 </ol>
 <h4>Conclusion</h4>
-<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
+<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL clients, servers &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
 <!-- links -->
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2019/03/intellij-pycharm-plugins-productivity.html" class="u-url">Essential PyCharm (Intellij) Plugins To Improve Productivity</a></h1>
@@ -565,15 +540,15 @@ brew services restart postgres
             </p>
         </div>
     </header><div class="e-content entry-content">
-    <p>As per 2019 <a href="https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools">JetBrains survery</a>, PyCharm is the most widely used(36%) IDE for Python development. Eventhough PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.</p>
+    <p>As per 2019 <a href="https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools">JetBrains survery</a>, PyCharm is the most widely used(36%) IDE for Python development. Even though PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.</p>
 <h4>Highlight Bracket Pair</h4>
-<p>Instead of manually scanning where a bracket starts/ends, <a href="https://plugins.jetbrains.com/plugin/10465-highlightbracketpair">Highlight Bracket Pair</a> will automatically hightlight the bracket pairs based on cursor position.</p>
+<p>Instead of manually scanning where a bracket starts/ends, <a href="https://plugins.jetbrains.com/plugin/10465-highlightbracketpair">Highlight Bracket Pair</a> will automatically highlight the bracket pairs based on cursor position.</p>
 <h4>Rainbow Brackets</h4>
 <p>Highlight Bracket Pair will hightlight the bracket pair around the cursor. When there are multiple bracket pairs deeply nested, <a href="https://plugins.jetbrains.com/plugin/10080-rainbow-brackets">Rainbow Brackets</a> will highlight matching bracket pairs with matching rainbow colors.</p>
 <h4>Grep Console</h4>
 <p>When running a django/flask server or any Python script which generates lot of output, it is hard to filter out required output on console. <a href="https://plugins.jetbrains.com/plugin/7125-grep-console">Grep Console</a> can filter or highlight output based on specific conditions which makes it easier to debug the code.</p>
 <h4>Save Actions</h4>
-<p>Instead of manually optimizing imports or reformating code when changes are made, we can use <a href="https://plugins.jetbrains.com/plugin/7642-save-actions">Save Actions</a> which will automatically run a set of actions on every file save.</p>
+<p>Instead of manually optimizing imports or reformatting code when changes are made, we can use <a href="https://plugins.jetbrains.com/plugin/7642-save-actions">Save Actions</a> which will automatically run a set of actions on every file save.</p>
 <h4>Key Promoter</h4>
 <p>If you are new to PyCharm or an experienced user who is using mouse instead of key board shortcuts, <a href="https://plugins.jetbrains.com/plugin/9792-key-promoter-x">Key Promoter</a> will show relevant key board shortcut when mouse is used inside IDE. This provides an easy way to learn keyboard shortcuts faster.</p>
 <h4>String Manipulation</h4>
@@ -595,7 +570,7 @@ brew services restart postgres
         </div>
     </header><div class="e-content entry-content">
     <h4>Introduction</h4>
-<p>Django has inbuilt <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
+<p>Django has inbuilt <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF protection</a> mechanism for requests via unsafe methods to prevent <a href="https://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross Site Request Forgeries</a>. When CSRF protection is enabled on AJAX POST methods, <code>X-CSRFToken</code> header should be sent in the request.</p>
 <p><a href="https://www.getpostman.com">Postman</a> is one of the widely used tool for testing APIs. In this article, we will see how to set csrf token and update it automatically in Postman.</p>
 <h4>CSRF Token In Postman</h4>
 <p>Django sets <code>csrftoken</code> cookie on login. After logging in, we can see the csrf token from cookies in the Postman.</p>
@@ -608,11 +583,10 @@ brew services restart postgres
 
 <p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
 <p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
-<div class="code"><pre class="code literal-block"><span class="kd">var</span><span class="w"> </span><span class="nx">xsrfCookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span><span class="w"></span>
-<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span><span class="w"> </span><span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span><span class="w"></span>
-</pre></div>
-
-<p>This extracts csrf token and sets it to an evironment variable called <code>csrftoken</code> in the current environment.</p>
+<pre class="code literal-block"><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</pre>
+<p>This extracts csrf token and sets it to an environment variable called <code>csrftoken</code> in the current environment.</p>
 <p align="center">
 <img src="../images/django-csrf-postman3.png"></p>
 
@@ -630,10 +604,35 @@ brew services restart postgres
 <li class="previous"><a href="index-14.html" rel="prev">Newer posts</a></li>
             <li class="next"><a href="index-12.html" rel="next">Older posts</a></li>
         </ul>
-<!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+<!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

@@ -100,7 +100,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
     
 
-        4 min read
+        3 min read
 
 
 
@@ -117,25 +117,24 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.</p>
 <p>Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.</p>
 <p>We can use a custom buildpsec file to directly deploy the code from build step.</p>
-<div class="code"><pre class="code literal-block"><span class="n">version</span><span class="o">:</span><span class="w"> </span><span class="mf">0.1</span><span class="w"></span>
+<pre class="code literal-block"><span class="n">version</span><span class="o">:</span> <span class="mf">0.1</span>
 
-<span class="n">phases</span><span class="o">:</span><span class="w"></span>
-<span class="w">  </span><span class="k">install</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">commands</span><span class="o">:</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">Entering</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">install</span><span class="w"> </span><span class="k">phase</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">Installing</span><span class="w"> </span><span class="n">dependencies</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="k">install</span><span class="w"> </span><span class="o">--</span><span class="k">upgrade</span><span class="w"> </span><span class="n">awscli</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="o">--</span><span class="n">version</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="k">install</span><span class="w"> </span><span class="n">chalice</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="k">install</span><span class="w"> </span><span class="o">-</span><span class="n">r</span><span class="w"> </span><span class="n">requirements</span><span class="p">.</span><span class="n">txt</span><span class="w"></span>
+<span class="n">phases</span><span class="o">:</span>
+  <span class="k">install</span><span class="o">:</span>
+    <span class="n">commands</span><span class="o">:</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Entering</span> <span class="n">the</span> <span class="k">install</span> <span class="k">phase</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Installing</span> <span class="n">dependencies</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="o">--</span><span class="k">upgrade</span> <span class="n">awscli</span>
+      <span class="o">-</span> <span class="n">aws</span> <span class="o">--</span><span class="n">version</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="n">chalice</span>
+      <span class="o">-</span> <span class="n">sudo</span> <span class="n">pip</span> <span class="k">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
 
-<span class="w">  </span><span class="n">build</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">commands</span><span class="o">:</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">entered</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="k">phase</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">echo</span><span class="w"> </span><span class="n">Build</span><span class="w"> </span><span class="n">started</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n n-Quoted">`date`</span><span class="w"></span>
-<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="n">chalice</span><span class="w"> </span><span class="n">deploy</span><span class="w"> </span><span class="o">--</span><span class="n">stage</span><span class="w"> </span><span class="n">staging</span><span class="w"></span>
-</pre></div>
-
+  <span class="n">build</span><span class="o">:</span>
+    <span class="n">commands</span><span class="o">:</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">entered</span> <span class="n">the</span> <span class="n">build</span> <span class="k">phase</span>
+      <span class="o">-</span> <span class="n">echo</span> <span class="n">Build</span> <span class="n">started</span> <span class="k">on</span> <span class="n n-Quoted">`date`</span>
+      <span class="o">-</span> <span class="n">chalice</span> <span class="n">deploy</span> <span class="o">--</span><span class="n">stage</span> <span class="n">staging</span>
+</pre>
 <p>This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.</p>
 <h4>Conclusion</h4>
 <p>We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.</p>
@@ -152,10 +151,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <li class="next">
                 <a href="../11/comparision-alexa-majestic-domcorp-top-million-sites.html" rel="next" title="Comparision Of Alexa, Majestic &amp; Domcop Top Million Sites">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

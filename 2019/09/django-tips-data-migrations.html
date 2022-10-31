@@ -110,7 +110,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Use Management Commands</h4>
 <p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
 <p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
 <span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
@@ -125,12 +125,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
             <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
 <h4>Link Data Migrations &amp; Schema Migrations</h4>
 <p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
@@ -144,19 +143,17 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
     <span class="p">]</span>
-</pre></div>
-
+</pre>
 <h4>Watch Out For DB Queries</h4>
 <p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
 <p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
 <p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># instead of</span>
+<pre class="code literal-block"><span class="c1"># instead of</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># use</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
@@ -172,10 +169,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <li class="next">
                 <a href="../10/writing-editing-code-with-code.html" rel="next" title="Writing &amp; Editing Code With Code - Part 1">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

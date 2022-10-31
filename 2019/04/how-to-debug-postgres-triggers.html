@@ -26,6 +26,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2019-04-30T21:21:21+05:30">
 <meta property="article:tag" content="database">
+<meta property="article:tag" content="debugging">
+<meta property="article:tag" content="postgresql">
 <style>
 
  h1 {
@@ -98,59 +100,57 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
     
 
-        4 min read
+        3 min read
 
 
 
     <div class="e-content entry-content" itemprop="articleBody text">
     <h4>Introduction</h4>
-<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will executed in alphabetical order by name.</p>
-<p>In this article we will see how to debug PostgreSQL triggers.</p>
+<p><a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html">PostgreSQL triggers</a> will associate a <code>function</code> to a table for an event. If multiple triggers of the same kind are defined for the same event, they will be executed in alphabetical order by name.</p>
+<p>In this article, we will see how to debug PostgreSQL triggers.</p>
 <h4>Triggers</h4>
-<p>First ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
-<div class="code"><pre class="code literal-block"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
-<p>We can also use <code>EXPLAIN</code> to show triggers which are executed for an event by running relevant queries.</p>
+<p>First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
+<pre class="code literal-block"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
+<p>We can also use <code>EXPLAIN</code> to show triggers that are executed for an event by running relevant queries.</p>
 <h4>PostgreSQL Logging</h4>
-<p>After ensuring triggers are applied correctly, set logging level for postgresql server and client in postgres.conf file.</p>
-<div class="code"><pre class="code literal-block"><span class="o">#</span><span class="w"> </span><span class="n">let</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">queries</span><span class="w"></span>
-<span class="n">log_statement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'all'</span><span class="w"></span>
+<p>After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.</p>
+<pre class="code literal-block"><span class="o">#</span> <span class="n">let</span> <span class="n">the</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
 
-<span class="o">#</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">level</span><span class="w"></span>
-<span class="n">client_min_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">log</span><span class="w"></span>
-</pre></div>
-
-<p>Restart postgresql to reflect configuration changes.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># Linux</span>
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
+<p>Restart PostgreSQL to reflect configuration changes.</p>
+<pre class="code literal-block"><span class="c1"># Linux</span>
 sudo service postgres restart
 
 <span class="c1"># Mac</span>
 brew services restart postgres
-</pre></div>
-
+</pre>
 <p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
 <h4>Triggers Logging</h4>
 <p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
-<div class="code"><pre class="code literal-block"><span class="n">RAISE</span><span class="w"> </span><span class="s1">'Updating row with ID: %'</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w"></span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">division_by_zero</span><span class="p">;</span><span class="w"></span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">WARNING</span><span class="w"> </span><span class="s1">'Unable to deleted record'</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-
-<p>This makes sure triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
+<pre class="code literal-block"><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to delete record'</span><span class="p">;</span>
+</pre>
+<p>This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
 <h4>SQL/PostgreSQL Gotchas</h4>
-<p>Even though queries and triggers are executing correctly, we might not see the desired result because of potentially suprising behaviour of PostgreSQL. There are a some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behaviour.</p>
+<p>Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.</p>
 <ol>
-<li>Unquoted object names will be treated as lower case. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
+<li>Unquoted object names will be treated as lowercase. <code>SELECT FOO FROM bar</code> will become <code>SELECT foo FROM bar</code>.</li>
 <li>Comparing nullable fields. This might yield strange results as <code>NULL != NULL</code>.</li>
 <li>PostgreSQL uses POSIX offsets. For <code>04:21:42 UTC+01</code>, +1  means the timezone is west of Greenwich.</li>
 </ol>
 <h4>Conclusion</h4>
-<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL client, server &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
+<p>By being aware of common PostgreSQL gotchas and enabling logging for PostgreSQL clients, servers &amp; triggers, pinpointing the bug in triggers becomes easy. Once the bug is identified, appropriate action can be taken to fix the issue.</p>
 <!-- links -->
     </div>
     <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
 <li><a class="tag p-category" href="../../tags/database.html" rel="tag">database</a></li>
+            <li><a class="tag p-category" href="../../tags/debugging.html" rel="tag">debugging</a></li>
+            <li><a class="tag p-category" href="../../tags/postgresql.html" rel="tag">postgresql</a></li>
         </ul>
 <ul class="pager hidden-print">
 <li class="previous">
@@ -159,10 +159,35 @@ brew services restart postgres
             <li class="next">
                 <a href="../05/environment-bookmarklet-web-development-tips.html" rel="next" title="Switching Hosts With Bookmarklets - Web Development Tips">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>
