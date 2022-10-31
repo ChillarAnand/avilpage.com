@@ -1,43 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 23 Oct 2022 08:12:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 30 Oct 2022 14:58:28 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Build &amp; Distribute a Python C Extension Module</title><link>https://avilpage.com/2022/10/build-distribute-a-python-c-extension-module.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Python is a great language for prototyping and building applications. However, when it comes to performance, it is not the best choice. Python is an interpreted language and it is not compiled. This means that the code is not optimized for the machine it is running on. This is where C comes in. C is a compiled language and it is much faster than Python. So, if you want to write a Python module that is fast, you can write it in C and compile it. This is called a C extension module. In this article, we will see how to build and distribute a Python C extension module using wheels.&lt;/p&gt;
+&lt;h4&gt;Building a C extension module&lt;/h4&gt;
+&lt;p&gt;Let's start by creating a simple C extension module called &lt;code&gt;maths&lt;/code&gt;. In this, we will create a &lt;code&gt;square&lt;/code&gt; function that takes a number and returns its square.&lt;/p&gt;
+&lt;p&gt;First, create a directory called &lt;code&gt;maths&lt;/code&gt; and create a file called &lt;code&gt;maths.c&lt;/code&gt; inside it. This is where we will write our C code.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;Python.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;py_square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;PyArg_ParseTuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"i"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Py_BuildValue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"i"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;PyMethodDef&lt;/span&gt; &lt;span class="n"&gt;mathsMethods&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"square"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;py_square&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;METH_VARARGS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"Function for calculating square in C"&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;PyModuleDef&lt;/span&gt; &lt;span class="n"&gt;maths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;PyModuleDef_HEAD_INIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s"&gt;"Custom maths module"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="mi"&gt;-1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="n"&gt;mathsMethods&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+
+&lt;span class="n"&gt;PyMODINIT_FUNC&lt;/span&gt; &lt;span class="nf"&gt;PyInit_maths&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;PyModule_Create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;We need to create a &lt;code&gt;setup.py&lt;/code&gt; file to build our module. This file tells Python how to build our module.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Extension&lt;/span&gt;
+
+&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;ext_modules&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Extension&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"maths.c"&lt;/span&gt;&lt;span class="p"&gt;])]&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Now, we can build our module by running &lt;code&gt;python setup.py build&lt;/code&gt;. This will create a &lt;code&gt;build&lt;/code&gt; directory with a &lt;code&gt;lib&lt;/code&gt; directory inside it.
+This &lt;code&gt;lib&lt;/code&gt; directory contains our compiled module. We can import this module in Python and use it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;maths&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;25&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Instead of testing our module by importing it in Python, we can also test it by running &lt;code&gt;python setup.py test&lt;/code&gt;. This will run the tests in the &lt;code&gt;test&lt;/code&gt; directory. We can create a &lt;code&gt;test&lt;/code&gt; directory and create a file called &lt;code&gt;test_maths.py&lt;/code&gt; inside it. This is where we will write our tests.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;unittest&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;maths&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TestMaths&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;unittest&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TestCase&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;assertEqual&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Distributing a C extension module&lt;/h4&gt;
+&lt;p&gt;Now that we have built our module, we can distribute it. We can distribute it as a source distribution or a binary distribution. A source distribution is a zip file that contains the source code of our module. We can distribute our module as a source distribution by running &lt;code&gt;python setup.py sdist&lt;/code&gt;. This will create a &lt;code&gt;dist&lt;/code&gt; directory with a zip file inside it. This zip file contains our source code.&lt;/p&gt;
+&lt;p&gt;However, source distribution of C extension modules is not recommended. This is because the user needs to have a C compiler installed on their machine to build the module. Most users just want to &lt;code&gt;pip install&lt;/code&gt; the module and use it. So, we need to distribute our module as a binary distribution.&lt;/p&gt;
+&lt;p&gt;We can use &lt;code&gt;cibuildwheel&lt;/code&gt; package to build wheels across all platforms. We can install it by running &lt;code&gt;pip install cibuildwheel&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To build a wheel for a specific platform and a specific architecture, we can run &lt;code&gt;cibuildwheel --platform &amp;lt;platform&amp;gt; --architecture &amp;lt;architecture&amp;gt;&lt;/code&gt;. For example, to build a wheel for Linux x86_64, we can run &lt;code&gt;cibuildwheel --platform linux --architecture x86_64&lt;/code&gt;. This will create a &lt;code&gt;wheelhouse&lt;/code&gt; directory with a wheel file inside it. This wheel file contains our compiled module.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cibuildwheel&lt;/code&gt; runs on most CI servers. With proper workflows, we can easily get wheels for all platforms and architectures. We can then upload these wheels to PyPI and users can easily install these wheels.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we saw how to build and distribute a Python C extension module using wheels. We saw how to build a C extension module and how to distribute it as a binary distribution. We also saw how to use &lt;code&gt;cibuildwheel&lt;/code&gt; to build wheels across all platforms and architectures.&lt;/p&gt;</description><category>c</category><category>python</category><guid>https://avilpage.com/2022/10/build-distribute-a-python-c-extension-module.html</guid><pubDate>Sun, 30 Oct 2022 02:01:29 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ uname -mp
+&lt;pre class="code literal-block"&gt;$ uname -mp
 arm64 arm
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Let's run the same command on a device using Intel x86 processor.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ uname -mp
+&lt;pre class="code literal-block"&gt;$ uname -mp
 x86_64 x86_64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Many popular docker images&lt;sup id="fnref:dhub"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:dhub"&gt;1&lt;/a&gt;&lt;/sup&gt; doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Lima&lt;sup id="fnref:lima"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:lima"&gt;2&lt;/a&gt;&lt;/sup&gt; can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp;amp; ARM64 VM and install k3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:k3s"&gt;3&lt;/a&gt;&lt;/sup&gt; in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install lima
+&lt;pre class="code literal-block"&gt;$ brew install lima
 
 $ limactl start linux_arm64
 $ limactl start linux_amd64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;When starting a VM, we can edit &lt;code&gt;arch&lt;/code&gt; parameter in the configuration. Once VM starts, we can see the details by running &lt;code&gt;limactl list&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl list
+&lt;pre class="code literal-block"&gt;$ limactl list
 NAME                ARCH
 linux_amd64         x86_64
 linux_arm64         aarch64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Lets login to each VM &amp;amp; install k3s.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
+&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
 
 $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
 
 $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arch-arm-docker.png"&gt;
@@ -47,10 +116,9 @@ $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
 &lt;h4&gt;Fast Mode&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;lima&lt;/code&gt; provides &lt;code&gt;fast-mode&lt;/code&gt; option for cross architecture VMs which will speed up the performance.&lt;/p&gt;
 &lt;p&gt;For that, we need to log in to VMs and install emulators.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
+&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
 $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.&lt;/p&gt;
@@ -124,16 +192,15 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 &lt;p&gt;There are several Dicom servers like Orthanc, Dicoogle etc. &lt;a href="https://en.wikipedia.org/wiki/Orthanc_(server)"&gt;Orthanc&lt;/a&gt; is a lightweight open source dicom server and is widely used by many Health care organisations.&lt;/p&gt;
 &lt;p&gt;Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.&lt;/p&gt;
 &lt;p&gt;Ensure docker is installed on the machine and then run the following command to start Orthanc server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ docker run -p &lt;span class="m"&gt;4242&lt;/span&gt;:4242 -p &lt;span class="m"&gt;8042&lt;/span&gt;:8042 --rm &lt;span class="se"&gt;\&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ docker run -p &lt;span class="m"&gt;4242&lt;/span&gt;:4242 -p &lt;span class="m"&gt;8042&lt;/span&gt;:8042 --rm &lt;span class="se"&gt;\&lt;/span&gt;
     jodogne/orthanc-python
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the server is started, we can visit &lt;a href="http://localhost:8042"&gt;http://localhost:8042&lt;/a&gt; and explore Orthanc server.&lt;/p&gt;
 &lt;h4&gt;Heroku Deployment&lt;/h4&gt;
 &lt;p&gt;Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.&lt;/p&gt;
 &lt;p&gt;By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.&lt;/p&gt;
 &lt;p&gt;We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /bin/sh&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /bin/sh&lt;/span&gt;
 
 &lt;span class="nb"&gt;set&lt;/span&gt; -x
 
@@ -142,10 +209,9 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 sed &lt;span class="s1"&gt;'s/ : 8042/ : '&lt;/span&gt;&lt;span class="nv"&gt;$PORT&lt;/span&gt;&lt;span class="s1"&gt;'/g'&lt;/span&gt; -i /etc/orthanc/orthanc.json
 
 Orthanc /etc/orthanc/
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;We can use this shell script as entry point in docker as follows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM jodogne/orthanc-python
+&lt;pre class="code literal-block"&gt;FROM jodogne/orthanc-python
 
 EXPOSE $PORT
 
@@ -153,15 +219,13 @@ WORKDIR /app
 ADD . /app
 
 ENTRYPOINT [ "./run.sh" ]
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;We can create a new app in heroku and we can deploy this container.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ heroku apps:create orthanc-demo
+&lt;pre class="code literal-block"&gt;$ heroku apps:create orthanc-demo
 
 $ heroku container:push web
 $ heroku container:release web
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a &lt;a href="https://orthanc-demo.herokuapp.com"&gt;orthanc demo server&lt;/a&gt; running on heroku.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.&lt;/p&gt;</description><category>dicom</category><category>HealthIT</category><guid>https://avilpage.com/2021/03/setup-orthanc-demo-server.html</guid><pubDate>Fri, 26 Mar 2021 00:30:00 GMT</pubDate></item><item><title>Find Performance Issues In Web Apps with Sentry</title><link>https://avilpage.com/2020/11/python-web-applications-performance-sentry.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
@@ -172,7 +236,7 @@ $ heroku container:release web
 &lt;p&gt;Replicating production performance on development machine will be costly. To avoid these, we can use APM tool to monitor performance in production.&lt;/p&gt;
 &lt;h4&gt;Sentry Performance&lt;/h4&gt;
 &lt;p&gt;Sentry is widely used Open source error tracking tool. Recently, it has introduced Performance to track performance also. Sentry doesn't need any agent running on the host machine to track performance. Enabling performance monitoring is just a single line change in Sentry&lt;sup id="fnref:sentry"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/11/python-web-applications-performance-sentry.html#fn:sentry"&gt;3&lt;/a&gt;&lt;/sup&gt; setup.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sentry_sdk&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sentry_sdk&lt;/span&gt;
 
 
 &lt;span class="n"&gt;sentry_sdk&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
@@ -180,8 +244,7 @@ $ heroku container:release web
     &lt;span class="c1"&gt;# Trace half the requests&lt;/span&gt;
     &lt;span class="n"&gt;traces_sample_rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
 &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Tracing performance will have additional overhead&lt;sup id="fnref:oh"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/11/python-web-applications-performance-sentry.html#fn:oh"&gt;4&lt;/a&gt;&lt;/sup&gt; on the web application response time. Depending on the traffic, server capacity, acceptable overhead, we can decide what percentage of the requests we need to trace.&lt;/p&gt;
 &lt;p&gt;Once performance is enabled, we can head over to Sentry web application and see traces for the transactions along with operation breakdown as shown below.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/sentry0.png" style="vertical-align:middle"&gt;&lt;/p&gt;
@@ -214,11 +277,10 @@ $ heroku container:release web
 &lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
 &lt;h4&gt;Deployment To k8s&lt;/h4&gt;
 &lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
+&lt;/pre&gt;
 &lt;p&gt;We can use this docker image and create a k8s deployment to start a container.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
 &lt;span class="nv"&gt;apiVersion&lt;/span&gt;: &lt;span class="nv"&gt;apps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;v1beta1&lt;/span&gt;
 &lt;span class="nv"&gt;kind&lt;/span&gt;: &lt;span class="nv"&gt;Deployment&lt;/span&gt;
 &lt;span class="nv"&gt;metadata&lt;/span&gt;:
@@ -242,41 +304,38 @@ $ heroku container:release web
             &lt;span class="nv"&gt;value&lt;/span&gt;: &lt;span class="nv"&gt;postgres&lt;/span&gt;
           &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;DATABASE_URL&lt;/span&gt;
             &lt;span class="nv"&gt;value&lt;/span&gt;: &lt;span class="nv"&gt;jdbc&lt;/span&gt;:&lt;span class="nv"&gt;postgresql&lt;/span&gt;:&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;avilpage&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;:&lt;span class="mi"&gt;5432&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;mirth_db&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;This deployment file can be applied on a cluster using &lt;code&gt;kubectl&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ kubectl apply -f connect-deployment.yaml
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ kubectl apply -f connect-deployment.yaml
+&lt;/pre&gt;
 &lt;p&gt;To access this container, we can create a service to expose this deployment to public.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Service&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;metadata&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;annotations&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;arn&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;acm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ap&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;south&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"443"&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;spec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;LoadBalancer&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;selector&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;443&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8443&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="n"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;v1&lt;/span&gt;
+&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Service&lt;/span&gt;
+&lt;span class="n"&gt;metadata&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
+  &lt;span class="n"&gt;annotations&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;arn&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;acm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ap&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;south&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;
+    &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"443"&lt;/span&gt;
+    &lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;
+&lt;span class="n"&gt;spec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+  &lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;LoadBalancer&lt;/span&gt;
+  &lt;span class="n"&gt;selector&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
+  &lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;
+      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;80&lt;/span&gt;
+      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8080&lt;/span&gt;
+      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;
+      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;443&lt;/span&gt;
+      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8443&lt;/span&gt;
+      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
+    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;
+      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;9001&lt;/span&gt;
+      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;9001&lt;/span&gt;
+      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.&lt;/p&gt;
 &lt;p&gt;Once Mirth Connect is up &amp;amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -288,34 +347,32 @@ $ heroku container:release web
 &lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><category>mirth-connect</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Set Default Date For Date Hierarchy In Django Admin</title><link>https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>devops</category><category>HealthIT</category><category>kubernetes</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Set Default Date For Date Hierarchy In Django Admin</title><link>https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When we monitor daily events from django admin, most of the time we are interested in events related to today. Django admin provides date based drill down navigation page via ModelAdmin.date_hierarchy&lt;sup id="fnref:dh"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html#fn:dh"&gt;1&lt;/a&gt;&lt;/sup&gt; option. With this, we can navigate to any date to filter out events related to that date.&lt;/p&gt;
 &lt;p&gt;One problem with this drill down navigation is, we have to navigate to todays date every time we open a model in admin. Since we are interested in todays events most of the time, setting todays date as default filtered date will solve the problem.&lt;/p&gt;
 &lt;h4&gt;Set Default Date For Date Hierarchy&lt;/h4&gt;
 &lt;p&gt;Let us create an admin page to show all the users who logged in today. Since User model is already registered in admin by default, let us create a proxy model to register it again.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib.auth.models&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib.auth.models&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;
 
 
 &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="n"&gt;proxy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Lets register this model in admin to show logged in users details along with date hierarchy.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;admin&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;admin&lt;/span&gt;
 
 
 &lt;span class="nd"&gt;@admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MetaUserAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ModelAdmin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="n"&gt;list_display&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'is_active'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;date_hierarchy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'last_login'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;If we open &lt;code&gt;DjangoUser&lt;/code&gt; model in admin page, it will show drill down navigation bar like this.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/django-admin-date.png"&gt;&lt;/p&gt;
 &lt;p&gt;Now, if we drill down to a particular date, django adds additional query params to the admin url. For example, if we visit 2020-06-26 date, corresponding query params are &lt;code&gt;/?last_login__day=26&amp;amp;last_login__month=6&amp;amp;last_login__year=2020&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;We can override changelist view and set default params to todays date if there are no query params. If there are query params then render the original response.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;@admin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;@admin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;MetaUserAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;admin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ModelAdmin&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;list_display&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'is_active'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;date_hierarchy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
@@ -331,8 +388,7 @@ $ heroku container:release web
 &lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;query_params&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;field_keys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;field_values&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{}?{}'&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;path&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;urlencode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;query_params&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Now if we open the same admin page, it will redirect to todays date by default.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/django-admin-date2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -346,65 +402,60 @@ $ heroku container:release web
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>django</category><guid>https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html</guid><pubDate>Fri, 31 Jul 2020 14:36:49 GMT</pubDate></item><item><title>How Dart, Flutter Stateful Hot Reload Work? - Part 1</title><link>https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This will be a series of articles on exploring the internals of Dart &amp;amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.&lt;/p&gt;
 &lt;h4&gt;Stateful Hot Reload&lt;/h4&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'dart:async'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="s1"&gt;'dart:async'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;adder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;adder&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="n"&gt;total&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Total is &lt;/span&gt;&lt;span class="si"&gt;$&lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="s2"&gt;. Adding &lt;/span&gt;&lt;span class="si"&gt;$&lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+  &lt;span class="n"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Total is &lt;/span&gt;&lt;span class="si"&gt;$&lt;/span&gt;&lt;span class="n"&gt;total&lt;/span&gt;&lt;span class="s2"&gt;. Adding &lt;/span&gt;&lt;span class="si"&gt;$&lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
 
-&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Timer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;periodic&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Duration&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nl"&gt;seconds:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;adder&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;Timer&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;periodic&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Duration&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nl"&gt;seconds:&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;adder&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;In the above program&lt;sup id="fnref:program"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:program"&gt;1&lt;/a&gt;&lt;/sup&gt;, we are using a &lt;code&gt;Timer.periodic&lt;/code&gt;&lt;sup id="fnref:periodic"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:periodic"&gt;2&lt;/a&gt;&lt;/sup&gt; to create a timer which calls &lt;code&gt;adder&lt;/code&gt; function every 2 seconds.&lt;/p&gt;
 &lt;p&gt;We can run this program from command line using&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Observatory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listening&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;d42KmW4LknU&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;2.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;4.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;6.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;dart&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt; &lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;
+&lt;span class="n"&gt;Observatory&lt;/span&gt; &lt;span class="n"&gt;listening&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;d42KmW4LknU&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;2.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;4.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;6.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;8.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will start executing the program and will provide a link to observatory&lt;sup id="fnref:observatory"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:observatory"&gt;3&lt;/a&gt;&lt;/sup&gt;, a tool to profile/debug Dart applications.&lt;/p&gt;
 &lt;p&gt;As the program is executing, lets open the program in an editor, change delta from 2 to 3.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;change&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;  &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;change&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;
+  &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;change&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;to&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+  &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;change&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt;
+  &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;If we restart the program, it will start executing from the beginning and it will lose the state of the program.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Observatory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listening&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;eoP2lpC2ZWw&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;3.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;6.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;9.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;dart&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt; &lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;
+&lt;span class="n"&gt;Observatory&lt;/span&gt; &lt;span class="n"&gt;listening&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;eoP2lpC2ZWw&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;3.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;6.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;9.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Instead of restart, we can open the observatory link in browser, open main isolate and click on &lt;code&gt;Reload Source&lt;/code&gt; button.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/dart-vm.png"&gt;&lt;/p&gt;
 &lt;p&gt;As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Observatory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;listening&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;n_GSAKsyr5s&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;2.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;4.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;6.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;11.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# after hot reload&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;14.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;17.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;20.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Adding&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;dart&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;observe&lt;/span&gt; &lt;span class="n"&gt;hot_reload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dart&lt;/span&gt;
+&lt;span class="n"&gt;Observatory&lt;/span&gt; &lt;span class="n"&gt;listening&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="mf"&gt;127.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8181&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;n_GSAKsyr5s&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;2.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;4.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;6.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;8.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;11.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="c1"&gt;# after hot reload&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;14.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;17.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;Total&lt;/span&gt; &lt;span class="k"&gt;is&lt;/span&gt; &lt;span class="mf"&gt;20.&lt;/span&gt; &lt;span class="n"&gt;Adding&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;During a hot reload, Dart VM will apply changes to a live program&lt;sup id="fnref:hot"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:hot"&gt;4&lt;/a&gt;&lt;/sup&gt;. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.&lt;/p&gt;
@@ -427,29 +478,26 @@ $ heroku container:release web
 &lt;/div&gt;</description><category>dart</category><category>featured</category><guid>https://avilpage.com/2020/06/how-dart-flutter-hot-reload-work-part-1.html</guid><pubDate>Tue, 30 Jun 2020 13:47:20 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
 &lt;h4&gt;Prerequisites&lt;/h4&gt;
 &lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
+&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
 $ kubectl config get-contexts
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;You should know how to manually deploy your application to kubernetes.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
 $ docker push chillaranand/library
 
 &lt;span class="c1"&gt;# deploy latest image to k8s&lt;/span&gt;
 $ kubectl apply -f app/deployment.yaml
 $ kubectl apply -f app/service.yaml
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;h4&gt;Skaffold&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://github.com/GoogleContainerTools/skaffold"&gt;Skaffold&lt;/a&gt; is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.&lt;/p&gt;
 &lt;p&gt;Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+&lt;pre class="code literal-block"&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
 $ chmod +x skaffold
 $ sudo mv skaffold /usr/local/bin
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ skaffold init
+&lt;pre class="code literal-block"&gt;$ skaffold init
 Configuration skaffold.yaml was written
 
 $ cat skaffold.yaml
@@ -465,15 +513,13 @@ deploy:
     manifests:
     - kubernetes/deployment.yaml
     - kubernetes/service.yaml
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;To deploy latest changes to your cluster, run&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ skaffold run
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ skaffold run
+&lt;/pre&gt;
 &lt;p&gt;This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.&lt;/p&gt;
 &lt;h4&gt;CircleCI Workflow&lt;/h4&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
+&lt;pre class="code literal-block"&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.19
@@ -514,97 +560,9 @@ commands:
           name: deploy to k8s
           command: &lt;span class="p"&gt;|&lt;/span&gt;
             skaffold run
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.&lt;/p&gt;
 &lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a seperate environment is created for it.&lt;/p&gt;
 &lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>How To Reduce Python Package Footprint?</title><link>https://avilpage.com/2020/02/reduce-python-package-footprint.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;PyPi&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt; hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt; along with the package.&lt;/p&gt;
-&lt;h4&gt;Build From Source&lt;/h4&gt;
-&lt;p&gt;If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ pip install numpy
-
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp;amp; pandas, overall size of the package crosses 250MB.&lt;/p&gt;
-&lt;p&gt;An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ &lt;span class="nv"&gt;CLFAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'&lt;/span&gt; pip install numpy --global-option&lt;span class="o"&gt;=&lt;/span&gt;build_ext
-
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can see the footprint has reduced by ~70% when using sdist instead of wheel. This&lt;sup id="fnref:4"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:4"&gt;4&lt;/a&gt;&lt;/sup&gt; article provides more details about these CFLAG optimization when installing a package from source.&lt;/p&gt;
-&lt;h4&gt;Shared Packages&lt;/h4&gt;
-&lt;p&gt;When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.&lt;/p&gt;
-&lt;p&gt;To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.&lt;/p&gt;
-&lt;p&gt;For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ cat common-requirements.txt  &lt;span class="c1"&gt;# shared across all enviroments&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.1
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-
-$ cat project1-requirements.txt  &lt;span class="c1"&gt;# project1 requirements&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-
-$ cat project2-requirements.txt  &lt;span class="c1"&gt;# project2 enviroments&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.17
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;After creating a virtual enviroment for a project, we can create a &lt;code&gt;.pth&lt;/code&gt; file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'&lt;/span&gt; &amp;gt;
- ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then we can install the project requirements which will install only missing packages.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ pip install -r project1-requirements.txt
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Global Store&lt;/h4&gt;
-&lt;p&gt;The above shared packages solution has couple issues.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;User has to manually create and track shared packages for each Python version and needs to bootstrap it in every project.&lt;/li&gt;
-&lt;li&gt;When there is an incompatible version of package in multiple projects, user will end up with duplicate installations of the same version.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;To solve this&lt;sup id="fnref:5"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:5"&gt;5&lt;/a&gt;&lt;/sup&gt;, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.&lt;/p&gt;
-&lt;p&gt;For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
-
-$ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
-
-&lt;span class="c1"&gt;# in project venv&lt;/span&gt;
-&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'~/.mpip/numpy/3.7_1.17'&lt;/span&gt; &amp;gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip&lt;sup id="fnref:6"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:6"&gt;6&lt;/a&gt;&lt;/sup&gt; as a POC to test this and it seems to work as expected.&lt;/p&gt;
-&lt;p&gt;These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:1"&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/"&gt;https://pypi.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:1" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:2"&gt;
-&lt;p&gt;&lt;a href="https://github.com/numpy/numpy/issues/10920"&gt;https://github.com/numpy/numpy/issues/10920&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:2" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:3"&gt;
-&lt;p&gt;&lt;a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"&gt;https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:3" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:4"&gt;
-&lt;p&gt;&lt;a href="https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4"&gt;https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:4" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:5"&gt;
-&lt;p&gt;&lt;a href="https://github.com/pypa/packaging-problems/issues/328"&gt;https://github.com/pypa/packaging-problems/issues/328&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:5" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:6"&gt;
-&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/mpip"&gt;https://github.com/ChillarAnand/mpip&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:6" title="Jump back to footnote 6 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>featured</category><category>python</category><guid>https://avilpage.com/2020/02/reduce-python-package-footprint.html</guid><pubDate>Sat, 29 Feb 2020 14:50:38 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item></channel></rss>

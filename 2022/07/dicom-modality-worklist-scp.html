@@ -26,6 +26,7 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2022-07-31T18:19:29+05:30">
 <meta property="article:tag" content="dicom">
+<meta property="article:tag" content="HealthIT">
 <style>
 
  h1 {
@@ -98,7 +99,7 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
 
     
 
-        3 min read
+        2 min read
 
 
 
@@ -108,11 +109,10 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
 <h4>Using Orthanc Worklist Plugin</h4>
 <p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
 <p>Generate default configuration by running the following command.</p>
-<div class="code"><pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
-</pre></div>
-
+<pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
+</pre>
 <p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
-<div class="code"><pre class="code literal-block">  "Plugins" : [
+<pre class="code literal-block">  "Plugins" : [
     "libModalityWorklists.dylib"
   ],
 
@@ -127,18 +127,15 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
       "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
       "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
   }
-</pre></div>
-
+</pre>
 <p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
-<div class="code"><pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
-</pre></div>
-
+<pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
+</pre>
 <p>This will retrieve all worklist files from the server.</p>
 <h4>Using wlmscpfs</h4>
 <p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
-<div class="code"><pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
-</pre></div>
-
+<pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+</pre>
 <p>Once the service is started modalities can send C-FIND query to this service.</p>
 <h4>Conclusion</h4>
 <p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>
@@ -156,6 +153,7 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
     </div>
     <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
 <li><a class="tag p-category" href="../../tags/dicom.html" rel="tag">dicom</a></li>
+            <li><a class="tag p-category" href="../../tags/healthit.html" rel="tag">HealthIT</a></li>
         </ul>
 <ul class="pager hidden-print">
 <li class="previous">
@@ -164,10 +162,35 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
             <li class="next">
                 <a href="../08/frappe-health-snomed-ct.html" rel="next" title="Integrating Frappe Health with SNOMED CT">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer">
-                Contents © 2022         <a href="mailto:">Chillar Anand</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
-                
-            </footer>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://www.youtube.com/channel/UC6kIM3av9m_ljSKrMgd8Z_A">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
 </div>
     </div>
     </div>

@@ -1,43 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 23 Oct 2022 08:12:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 30 Oct 2022 14:58:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Build &amp; Distribute a Python C Extension Module</title><link>https://avilpage.com/2022/10/build-distribute-a-python-c-extension-module.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Python is a great language for prototyping and building applications. However, when it comes to performance, it is not the best choice. Python is an interpreted language and it is not compiled. This means that the code is not optimized for the machine it is running on. This is where C comes in. C is a compiled language and it is much faster than Python. So, if you want to write a Python module that is fast, you can write it in C and compile it. This is called a C extension module. In this article, we will see how to build and distribute a Python C extension module using wheels.&lt;/p&gt;
+&lt;h4&gt;Building a C extension module&lt;/h4&gt;
+&lt;p&gt;Let's start by creating a simple C extension module called &lt;code&gt;maths&lt;/code&gt;. In this, we will create a &lt;code&gt;square&lt;/code&gt; function that takes a number and returns its square.&lt;/p&gt;
+&lt;p&gt;First, create a directory called &lt;code&gt;maths&lt;/code&gt; and create a file called &lt;code&gt;maths.c&lt;/code&gt; inside it. This is where we will write our C code.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;Python.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;num&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;py_square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;PyArg_ParseTuple&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"i"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+  &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n_num&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+  &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Py_BuildValue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"i"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;PyMethodDef&lt;/span&gt; &lt;span class="n"&gt;mathsMethods&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"square"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;py_square&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;METH_VARARGS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"Function for calculating square in C"&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="nc"&gt;PyModuleDef&lt;/span&gt; &lt;span class="n"&gt;maths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="n"&gt;PyModuleDef_HEAD_INIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s"&gt;"Custom maths module"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="mi"&gt;-1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="n"&gt;mathsMethods&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+
+
+&lt;span class="n"&gt;PyMODINIT_FUNC&lt;/span&gt; &lt;span class="nf"&gt;PyInit_maths&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;PyModule_Create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;We need to create a &lt;code&gt;setup.py&lt;/code&gt; file to build our module. This file tells Python how to build our module.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;setuptools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Extension&lt;/span&gt;
+
+&lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;ext_modules&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Extension&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"maths"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"maths.c"&lt;/span&gt;&lt;span class="p"&gt;])]&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Now, we can build our module by running &lt;code&gt;python setup.py build&lt;/code&gt;. This will create a &lt;code&gt;build&lt;/code&gt; directory with a &lt;code&gt;lib&lt;/code&gt; directory inside it.
+This &lt;code&gt;lib&lt;/code&gt; directory contains our compiled module. We can import this module in Python and use it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;maths&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;25&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Instead of testing our module by importing it in Python, we can also test it by running &lt;code&gt;python setup.py test&lt;/code&gt;. This will run the tests in the &lt;code&gt;test&lt;/code&gt; directory. We can create a &lt;code&gt;test&lt;/code&gt; directory and create a file called &lt;code&gt;test_maths.py&lt;/code&gt; inside it. This is where we will write our tests.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;unittest&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;maths&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;TestMaths&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;unittest&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TestCase&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;assertEqual&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;maths&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;square&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Distributing a C extension module&lt;/h4&gt;
+&lt;p&gt;Now that we have built our module, we can distribute it. We can distribute it as a source distribution or a binary distribution. A source distribution is a zip file that contains the source code of our module. We can distribute our module as a source distribution by running &lt;code&gt;python setup.py sdist&lt;/code&gt;. This will create a &lt;code&gt;dist&lt;/code&gt; directory with a zip file inside it. This zip file contains our source code.&lt;/p&gt;
+&lt;p&gt;However, source distribution of C extension modules is not recommended. This is because the user needs to have a C compiler installed on their machine to build the module. Most users just want to &lt;code&gt;pip install&lt;/code&gt; the module and use it. So, we need to distribute our module as a binary distribution.&lt;/p&gt;
+&lt;p&gt;We can use &lt;code&gt;cibuildwheel&lt;/code&gt; package to build wheels across all platforms. We can install it by running &lt;code&gt;pip install cibuildwheel&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To build a wheel for a specific platform and a specific architecture, we can run &lt;code&gt;cibuildwheel --platform &amp;lt;platform&amp;gt; --architecture &amp;lt;architecture&amp;gt;&lt;/code&gt;. For example, to build a wheel for Linux x86_64, we can run &lt;code&gt;cibuildwheel --platform linux --architecture x86_64&lt;/code&gt;. This will create a &lt;code&gt;wheelhouse&lt;/code&gt; directory with a wheel file inside it. This wheel file contains our compiled module.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cibuildwheel&lt;/code&gt; runs on most CI servers. With proper workflows, we can easily get wheels for all platforms and architectures. We can then upload these wheels to PyPI and users can easily install these wheels.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we saw how to build and distribute a Python C extension module using wheels. We saw how to build a C extension module and how to distribute it as a binary distribution. We also saw how to use &lt;code&gt;cibuildwheel&lt;/code&gt; to build wheels across all platforms and architectures.&lt;/p&gt;</description><category>c</category><category>python</category><guid>https://avilpage.com/2022/10/build-distribute-a-python-c-extension-module.html</guid><pubDate>Sun, 30 Oct 2022 02:01:29 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ uname -mp
+&lt;pre class="code literal-block"&gt;$ uname -mp
 arm64 arm
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Let's run the same command on a device using Intel x86 processor.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ uname -mp
+&lt;pre class="code literal-block"&gt;$ uname -mp
 x86_64 x86_64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Many popular docker images&lt;sup id="fnref:dhub"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:dhub"&gt;1&lt;/a&gt;&lt;/sup&gt; doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Lima&lt;sup id="fnref:lima"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:lima"&gt;2&lt;/a&gt;&lt;/sup&gt; can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp;amp; ARM64 VM and install k3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:k3s"&gt;3&lt;/a&gt;&lt;/sup&gt; in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install lima
+&lt;pre class="code literal-block"&gt;$ brew install lima
 
 $ limactl start linux_arm64
 $ limactl start linux_amd64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;When starting a VM, we can edit &lt;code&gt;arch&lt;/code&gt; parameter in the configuration. Once VM starts, we can see the details by running &lt;code&gt;limactl list&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl list
+&lt;pre class="code literal-block"&gt;$ limactl list
 NAME                ARCH
 linux_amd64         x86_64
 linux_arm64         aarch64
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Lets login to each VM &amp;amp; install k3s.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
+&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
 
 $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
 
 $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arch-arm-docker.png"&gt;
@@ -47,10 +116,9 @@ $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
 &lt;h4&gt;Fast Mode&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;lima&lt;/code&gt; provides &lt;code&gt;fast-mode&lt;/code&gt; option for cross architecture VMs which will speed up the performance.&lt;/p&gt;
 &lt;p&gt;For that, we need to log in to VMs and install emulators.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
+&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
 $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.&lt;/p&gt;
@@ -74,23 +142,20 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
 &lt;h4&gt;K3s Setup&lt;/h4&gt;
 &lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
+&lt;/pre&gt;
 &lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
+&lt;/pre&gt;
 &lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass info k3s
+&lt;pre class="code literal-block"&gt;$ multipass info k3s
 Name:           k3s
 State:          Running
 IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
@@ -104,19 +169,16 @@ Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m
 Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
                     UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
                     GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
+&lt;/pre&gt;
 &lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
 &lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass shell k3s
+&lt;pre class="code literal-block"&gt;$ multipass shell k3s
 
 ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
 &lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -124,30 +186,26 @@ ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; 
 &lt;/p&gt;
 
 &lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;grep&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
 
 $ multipass shell k3s-worker
 
 ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
+&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
 $ multipass purge
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
 &lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
@@ -167,7 +225,7 @@ $ multipass purge
 &lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>How To Root Xiamo Redmi 9 Prime Without TWRP</title><link>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><category>macbook</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>How To Root Xiamo Redmi 9 Prime Without TWRP</title><link>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Rooting&lt;sup id="fnref:root"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:root"&gt;1&lt;/a&gt;&lt;/sup&gt; an android device voids warranty but gives a great control over the device. For most of the popular devices, TWRP&lt;sup id="fnref:twrp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:twrp"&gt;2&lt;/a&gt;&lt;/sup&gt; recovery is available. Once a device bootloader is unlocked, we can install TWRP recovery. After that we can flash Magisk to gain root access.&lt;/p&gt;
 &lt;p&gt;For some devices like Redmi 9 Prime(codename: lancelot), TWRP recovery is not available officially. There are couple of unofficial images but they are not working as expected and are causing bootloop.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how to root lancelot device.&lt;/p&gt;
@@ -184,24 +242,21 @@ $ multipass purge
 &lt;/p&gt;
 
 &lt;p&gt;We can download this file to system by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ adb pull -p /storage/emulated/0/Download/magisk_patched-25200_cU1ws.img .
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ adb pull -p /storage/emulated/0/Download/magisk_patched-25200_cU1ws.img .
+&lt;/pre&gt;
 &lt;p&gt;Now we need to download patched vbmeta file. This is available in XDA&lt;sup id="fnref:xda"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:xda"&gt;4&lt;/a&gt;&lt;/sup&gt; forum. Click &lt;a href="https://forum.xda-developers.com/attachments/vbmeta_redmi9-img.5082027/"&gt;this link&lt;/a&gt; to download it.&lt;/p&gt;
 &lt;p&gt;Once we have both patched files, we can reboot the device in fastboot mode by using the following commands.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ adb devices
+&lt;pre class="code literal-block"&gt;$ adb devices
 
 $ adb reboot bootloader
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;When the device is in fastboot mode, run the following commands to root it.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ fastboot --disable-verity --disable-verification flash vbmeta vbmeta_redmi9.img
+&lt;pre class="code literal-block"&gt;$ fastboot --disable-verity --disable-verification flash vbmeta vbmeta_redmi9.img
 
 $ fastboot flash boot magisk_patched-25200_cU1ws.img
 
 $ fastboot reboot
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the deivce is rebooted, we can install root checker app and verify that the device is rooted successfully.&lt;/p&gt;
 &lt;h4&gt;Final Thoughts&lt;/h4&gt;
 &lt;p&gt;When we buy a Mac or PC(Linux/Windows), it is rooted by default. For Linux/Mac, we can run programs as sudo. For windows, we can just run a program as an administrator. There are no extra steps to root/jailbreak these devices.&lt;/p&gt;
@@ -222,7 +277,7 @@ $ fastboot reboot
 &lt;p&gt;&lt;a href="https://forum.xda-developers.com/t/guide-magisk-root-access-for-redmi-9-mediatek-helio-g80-without-twrp.4149531/"&gt;Guide @ XDA&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:xda" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>android</category><guid>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</guid><pubDate>Wed, 28 Sep 2022 00:44:45 GMT</pubDate></item><item><title>Integrating Frappe Health with SNOMED CT</title><link>https://avilpage.com/2022/08/frappe-health-snomed-ct.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>android</category><category>root</category><guid>https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html</guid><pubDate>Wed, 28 Sep 2022 00:44:45 GMT</pubDate></item><item><title>Integrating Frappe Health with SNOMED CT</title><link>https://avilpage.com/2022/08/frappe-health-snomed-ct.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Frappe Health&lt;sup id="fnref:FH"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:FH"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework&lt;sup id="fnref:ff"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ff"&gt;2&lt;/a&gt;&lt;/sup&gt;, a low code highly customizable framework.&lt;/p&gt;
 &lt;p&gt;Frappe Health provides support for integrating various medical coding standards&lt;sup id="fnref:mcs"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:mcs"&gt;3&lt;/a&gt;&lt;/sup&gt;. In the patient encounter doctype, doctors can search and add pre-configured medical codes.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health1.png"&gt;&lt;/p&gt;
@@ -236,7 +291,7 @@ $ fastboot reboot
 &lt;p&gt;Frappe framework provides server script&lt;sup id="fnref:ss"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/08/frappe-health-snomed-ct.html#fn:ss"&gt;5&lt;/a&gt;&lt;/sup&gt; to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health3.png"&gt;&lt;/p&gt;
 &lt;p&gt;Here is a simple python server script that adds relevant snomed codes to diagnosis.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;diagnosis&lt;/span&gt;
 
 &lt;span class="n"&gt;url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&amp;amp;limit=50&amp;amp;term="&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;diagnosis&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;"&amp;amp;conceptActive=true&amp;amp;lang=english&amp;amp;skipTo=0&amp;amp;returnLimit=100"&lt;/span&gt;
 &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;frappe&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;make_get_request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -255,8 +310,7 @@ $ fastboot reboot
     &lt;span class="k"&gt;pass&lt;/span&gt;
 
 &lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;medical_code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;medical_code&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/snomed-frappe-health4.png"&gt;&lt;/p&gt;
 &lt;p&gt;The server script makes sure all the diagnosis objects are codified automatically without any manual effort.&lt;/p&gt;
@@ -285,11 +339,10 @@ $ fastboot reboot
 &lt;h4&gt;Using Orthanc Worklist Plugin&lt;/h4&gt;
 &lt;p&gt;Orthanc server has worklist plugin&lt;sup id="fnref:owp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:owp"&gt;1&lt;/a&gt;&lt;/sup&gt; which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.&lt;/p&gt;
 &lt;p&gt;Generate default configuration by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ ./Orthanc --config&lt;span class="o"&gt;=&lt;/span&gt;config.json
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ ./Orthanc --config&lt;span class="o"&gt;=&lt;/span&gt;config.json
+&lt;/pre&gt;
 &lt;p&gt;In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;  "Plugins" : [
+&lt;pre class="code literal-block"&gt;  "Plugins" : [
     "libModalityWorklists.dylib"
   ],
 
@@ -304,18 +357,15 @@ $ fastboot reboot
       "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
       "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
   }
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the plugin is enabled, we can use findscu to send C-FIND query.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$ findscu -W -k &lt;span class="s2"&gt;"ScheduledProcedureStepSequence"&lt;/span&gt; &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1 &lt;span class="m"&gt;4242&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ findscu -W -k &lt;span class="s2"&gt;"ScheduledProcedureStepSequence"&lt;/span&gt; &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1 &lt;span class="m"&gt;4242&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will retrieve all worklist files from the server.&lt;/p&gt;
 &lt;h4&gt;Using wlmscpfs&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;dcmtk&lt;/code&gt; &lt;sup id="fnref:dcmtk"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:dcmtk"&gt;2&lt;/a&gt;&lt;/sup&gt; is a collection of utilities for DICOM standard. It has &lt;code&gt;wlmscpfs&lt;/code&gt; application which implements basic Service Class Provider(SCP). We can start the service by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+&lt;/pre&gt;
 &lt;p&gt;Once the service is started modalities can send C-FIND query to this service.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have seen how to setup MWL SCP using Orthanc &amp;amp; wmlscpfs. Now that we have PACS &amp;amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.&lt;/p&gt;
@@ -329,7 +379,7 @@ $ fastboot reboot
 &lt;p&gt;&lt;a href="https://github.com/DCMTK/dcmtk"&gt;https://github.com/DCMTK/dcmtk&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>dicom</category><guid>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</guid><pubDate>Sun, 31 Jul 2022 12:49:29 GMT</pubDate></item><item><title>Twilio Integration With Frappe Framework</title><link>https://avilpage.com/2022/06/twilio-frappe.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Frappe&lt;sup id="fnref:frappe"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:frappe"&gt;1&lt;/a&gt;&lt;/sup&gt; is a low code framework for rapidly developing web applications. Twilio&lt;sup id="fnref:twilio"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:twilio"&gt;2&lt;/a&gt;&lt;/sup&gt; is a SAAS platform for SMS, Video etc with APIs.&lt;/p&gt;
+&lt;/div&gt;</description><category>dicom</category><category>HealthIT</category><guid>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</guid><pubDate>Sun, 31 Jul 2022 12:49:29 GMT</pubDate></item><item><title>Twilio Integration With Frappe Framework</title><link>https://avilpage.com/2022/06/twilio-frappe.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Frappe&lt;sup id="fnref:frappe"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:frappe"&gt;1&lt;/a&gt;&lt;/sup&gt; is a low code framework for rapidly developing web applications. Twilio&lt;sup id="fnref:twilio"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:twilio"&gt;2&lt;/a&gt;&lt;/sup&gt; is a SAAS platform for SMS, Video etc with APIs.&lt;/p&gt;
 &lt;p&gt;In this post, lets see how to setup Twilio Integration with Frappe.&lt;/p&gt;
 &lt;h4&gt;Sending SMS&lt;/h4&gt;
 &lt;p&gt;Frappe has inbuilt SMS manager&lt;sup id="fnref:sms"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:sms"&gt;3&lt;/a&gt;&lt;/sup&gt; where users can confgiure SMS gateway and send SMS to mobiles directly.&lt;/p&gt;
@@ -355,10 +405,9 @@ $ fastboot reboot
 &lt;p&gt;Once these values are set, we can go to SMS Center and send out dummy messages to ensure all settings are configured properly.&lt;/p&gt;
 &lt;h4&gt;Twilio App&lt;/h4&gt;
 &lt;p&gt;If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install &lt;code&gt;twilio-integration&lt;/code&gt;&lt;sup id="fnref:tl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/06/twilio-frappe.html#fn:tl"&gt;4&lt;/a&gt;&lt;/sup&gt; app. We can install the app on our site by running the following commands.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;bench get-app https://github.com/frappe/twilio-integration.git
+&lt;pre class="code literal-block"&gt;bench get-app https://github.com/frappe/twilio-integration.git
 bench --site example.com install-app twilio_integration
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the app is installed, we can go to &lt;code&gt;Twilio Settings&lt;/code&gt; and configure the keys as shown below.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/twilio-settings.png"&gt;&lt;/p&gt;
 &lt;p&gt;After that we can setup &lt;code&gt;Voice Call Settings&lt;/code&gt; to manage incoming/outgoing calls.&lt;/p&gt;
@@ -499,22 +548,4 @@ In such scenarios, developers end up using an alternate framework/tool to manage
 &lt;p&gt;After that, we can search for anything in just few key strokes. For example to open patient history, we can just type &lt;code&gt;pah&lt;/code&gt; and it will show results like this.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-fuzzy-search-4.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.&lt;/p&gt;</description><category>frappe-framework</category><category>javascript</category><guid>https://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</guid><pubDate>Thu, 31 Mar 2022 16:00:33 GMT</pubDate></item><item><title>Using Frappe Framework As An Integration Engine</title><link>https://avilpage.com/2022/02/frappe-framework-mirth.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;In healthcare orgainsations, data exchange between systems is complicated and has interopolabilty issues. Integration engines are widely used in healthcare industry for bi-directional data transfer.&lt;/p&gt;
-&lt;p&gt;In this article, let us look at the advantages of using interface engines and how Frappe Framework can be used as an interface engine.&lt;/p&gt;
-&lt;h4&gt;Integration Engines&lt;/h4&gt;
-&lt;p&gt;In a traditional agile development approach, building a new interface might take weeks/months. With an integration engine, a new interface can be replicated in a matter of hours with little or no scripting at all.&lt;/p&gt;
-&lt;p&gt;Creating a REST API, listening to a webhook, transforming a data between channels, broadcasting a message, sending/receiving HL7 messages or any other commonly performed task can be implemented in integration engine without much effort.&lt;/p&gt;
-&lt;p&gt;Due to this integration engines like &lt;a href="https://en.wikipedia.org/wiki/Mirth_Connect"&gt;Mirth Connect&lt;/a&gt; are widely used in healthcare.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/mirth-integration-engine.png"&gt;&lt;/p&gt;
-&lt;p&gt;The above diagram shows usage of integration engine in a healthcare orgainsation.&lt;/p&gt;
-&lt;h4&gt;Frappe Framework&lt;/h4&gt;
-&lt;p&gt;Frappe Framework is a low code web application framework with batteries included. Even though Frappe is lablled as a framework, it can be used as an integration engine as well.&lt;/p&gt;
-&lt;p&gt;It provides REST APIs out of the box for all the models(called doctypes in Frappe). Users can create custom APIs using &lt;a href="https://frappeframework.com/docs/v13/user/en/api/rest"&gt;server scripts&lt;/a&gt; and it has support for webhooks as well.&lt;/p&gt;
-&lt;p&gt;Users can schedule custom cron jobs, setup emails, enable data transformations and other tasks without much coding.&lt;/p&gt;
-&lt;p&gt;One feature Frappe Framework lacks when compared to integration engines is sending/receiving HL7 messages on ad-hoc ports. This feature is not available out of the box. Users need to develop a custom app or use any 3rd party app for it.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://github.com/frappe/healthcare"&gt;Frappe Healthcare&lt;/a&gt; is an HIS(Healthcare Information System) built on top of Frappe/ERPNext. If a hospital is using Frappe Healthcare, then there won't be a need to use integration engine as Frappe framework can take care of most of these things.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/frappe-his.png"&gt;&lt;/p&gt;
-&lt;p&gt;The above diagram shows usage of Frappe Healthcare as HIS in a healthcare orgainsation.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In healthcare, integration engines are used extensively to tackle data exchange between systems. Due to its low-code development and batteries included approach, even though Frappe is a web application framework, it can be used as an integration engine as well.&lt;/p&gt;</description><category>frappe-framework</category><category>HealthIT</category><guid>https://avilpage.com/2022/02/frappe-framework-mirth.html</guid><pubDate>Mon, 28 Feb 2022 16:01:40 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Fuzzy search in editors/IDEs is quite handy and when we bring to other places like FF or any other search bar, it improves search experience a lot.&lt;/p&gt;</description><category>frappe-framework</category><category>javascript</category><guid>https://avilpage.com/2022/03/fuzzy-search-frappe-framework.html</guid><pubDate>Thu, 31 Mar 2022 16:00:33 GMT</pubDate></item></channel></rss>

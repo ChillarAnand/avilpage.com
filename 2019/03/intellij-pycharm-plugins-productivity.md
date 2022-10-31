@@ -10,12 +10,12 @@
 -->
 
 
-As per 2019 [JetBrains survery], PyCharm is the most widely used(36%) IDE for Python development. Eventhough PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.
+As per 2019 [JetBrains survery], PyCharm is the most widely used(36%) IDE for Python development. Even though PyCharm comes with lot of built in features, there are a lot of plugins available for PyCharm and other Intellij IDEs. In this article, we will see some plugins which will boost our productivity during development.
 
 
 ### Highlight Bracket Pair
 
-Instead of manually scanning where a bracket starts/ends, [Highlight Bracket Pair][] will automatically hightlight the bracket pairs based on cursor position.
+Instead of manually scanning where a bracket starts/ends, [Highlight Bracket Pair][] will automatically highlight the bracket pairs based on cursor position.
 
 
 ### Rainbow Brackets
@@ -31,7 +31,7 @@ When running a django/flask server or any Python script which generates lot of o
 
 ### Save Actions
 
-Instead of manually optimizing imports or reformating code when changes are made, we can use [Save Actions][] which will automatically run a set of actions on every file save.
+Instead of manually optimizing imports or reformatting code when changes are made, we can use [Save Actions][] which will automatically run a set of actions on every file save.
 
 
 
