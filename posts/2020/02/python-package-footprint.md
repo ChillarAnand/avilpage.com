@@ -2,7 +2,7 @@
 .. title: How To Reduce Python Package Footprint?
 .. slug: reduce-python-package-footprint
 .. date: 2020-02-29 20:20:38 UTC+05:30
-.. tags: python, featured
+.. tags: python, featured, aws
 .. category: programming
 .. link:
 .. description: How to reduce disk space usage of python package
