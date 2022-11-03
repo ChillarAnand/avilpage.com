@@ -1,7 +1,7 @@
 <!--
 .. title: Build & Distribute a Python C Extension Module
 .. slug: build-distribute-a-python-c-extension-module
-.. date: 2022-10-30 07:31:29 UTC+05:30
+.. date: 2022-11-01 21:31:29 UTC+05:30
 .. tags: python, c
 .. category: programming
 .. link: 
@@ -11,7 +11,9 @@
 
 ### Introduction
 
-Python is a great language for prototyping and building applications. However, when it comes to performance, it is not the best choice. Python is an interpreted language and it is not compiled. This means that the code is not optimized for the machine it is running on. This is where C comes in. C is a compiled language and it is much faster than Python. So, if you want to write a Python module that is fast, you can write it in C and compile it. This is called a C extension module. In this article, we will see how to build and distribute a Python C extension module using wheels.
+Python is a great language for prototyping and building applications. Python is an interpreted language, and it is not compiled. This means that the code is not optimized for the machine it is running on. This is where C comes in. 
+
+C is a compiled language, and it is much faster than Python. So, if you want to write a Python module that is fast, you can write it in C and compile it. This is called a C extension module. In this article, we will see how to build and distribute a Python C extension module using wheels.
 
 
 ### Building a C extension module

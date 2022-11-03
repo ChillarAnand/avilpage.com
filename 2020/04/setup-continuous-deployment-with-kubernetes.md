@@ -2,15 +2,14 @@
 .. title: Continuous Deployment To Kubernetes With Skaffold
 .. slug: setup-continuous-deployment-with-kubernetes
 .. date: 2020-04-30 16:45:36 UTC+05:30
-.. tags: kubernetes, devops
+.. tags: kubernetes, devops, aws
 .. category: programming
 .. link:
 .. description: How to setup continuous deployment to kubernetes in a continuous integration environment?
 .. type: text
 -->
 
-
-In this article, let us see how to setup a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.
+In this article, let us see how to set up a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.
 
 
 ### Prerequisites
@@ -125,11 +124,11 @@ commands:
 
 CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.
 
-Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify `setup_remote_docker` key so that a seperate environment is created for it.
+Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify `setup_remote_docker` key so that a separate environment is created for it.
 
 Remaining steps are self explainatory.
 
 
 ### Conclusion
 
-Here we have seen how to setup CD to kubernetes in CircleCI. If we want to setup this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.
+Here we have seen how to set up CD to kubernetes in CircleCI. If we want to set up this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.
