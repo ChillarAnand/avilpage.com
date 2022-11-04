@@ -512,36 +512,40 @@ to make it work as expected.</p>
             </span></p>
             <p class="dateline">
             <a href="../2015/03/wd-my-cloud-nas-setup-on-ubuntu.html" rel="bookmark">
-            <time class="published dt-published" datetime="2015-03-17T14:20:00+05:30" itemprop="datePublished" title="2015-03-17">2015-03-17</time></a>
+            <time class="published dt-published" datetime="2015-03-17T14:20:00+05:30" itemprop="datePublished" title="2015-03-17">2015-03-17</time><span class="updated"> (updated
+                    <time class="dt-updated" datetime="2022-11-04T14:20:00+05:30" itemprop="dateUpdated" title="2022-11-04">2022-11-04</time>)</span>
+            </a>
             </p>
         </div>
     </header><div class="e-content entry-content">
-    <div dir="ltr" style="text-align: left;" trbidi="on">
-    For WD My Cloud, there is no official support for  Ubuntu or any other Linux distros. But setting up it quite easy.<br><br>
-    Make sure You have connected power adapter &amp; LAN cables to it. If You open Your router config, You will see WD My cloud in client list. Make note of
-    its IP address. If You want You can assign a static IP also.<br><br>
-    Next step is to install NFS client package. NFS(Network File System) allows a system to share directories and files with others over a network. By
-    using NFS, users and programs can access files on remote systems almost as if they were local files. So, update your packages &amp; install nfs-common
-    package.<br><pre style="background-color: #eeeeee; border: 0px; margin-bottom: 10px; max-height: 600px; overflow: auto; padding: 5px; vertical-align: baseline; width: auto; word-wrap: normal;">
-
-<code style="border-image-outset: initial; border-image-repeat: initial; border-image-slice: initial; border-image-source: initial; border-image-width: initial; border: 0px; margin: 0px; padding: 0px; vertical-align: baseline;"><span style="color: #222222; font-family: Ubuntu Mono, Ubuntu Beta Mono A, Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;"><span style="font-size: 14px; line-height: 18.2000007629395px;">sudo apt-get update<br></span><span style="font-size: 14px; line-height: 18.2000007629395px; white-space: inherit;">sudo apt-get install nfs-common</span></span></code>
+    <h4>Introduction</h4>
+<p>I recently bought a WD My Cloud NAS<sup id="fnref:nas"><a class="footnote-ref" href="../2015/03/wd-my-cloud-nas-setup-on-ubuntu.html#fn:nas">1</a></sup> device to store my personal data. I wanted to set it up on my Ubuntu machine. For WD My Cloud, there is no official support for Ubuntu or any other Linux distros. But setting up it is quite easy.</p>
+<h4>NAS Setup</h4>
+<p>Make sure You have connected power adapter &amp; LAN cables to it. If You open Your router config, You will see WD My cloud in client list. Make note of its IP address. If You want, You can assign a static IP also in the router settings.</p>
+<p>Next step is to install NFS client package. NFS(Network File System) allows a system to share directories and files with others over a network. By using NFS, users and programs can access files on remote systems almost as if they were local files. So, update your packages &amp; install <code>nfs-common</code> package.</p>
+<pre class="code literal-block">$ sudo apt-get update
+$ sudo apt-get install nfs-common
 </pre>
-<br>
-    Now can list folders which are available to mount using showmount command.<br><pre style="background-color: #eeeeee; border: 0px; margin-bottom: 10px; max-height: 600px; overflow: auto; padding: 5px; vertical-align: baseline; width: auto; word-wrap: normal;">
-
-<span style="background-color: transparent; font-size: 14px; line-height: 18.2000007629395px;"><span style="color: #222222; font-family: Ubuntu Mono, Ubuntu Beta Mono A, Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">showmount -e &lt;ip-address&gt;</span></span>
+<p>Now we can list folders which are available to mount using <code>showmount</code> command.</p>
+<pre class="code literal-block">$ showmount -e &lt;ip-address&gt;
 </pre>
-
-    <div>
-      <br>
-      Create an empty folder to mount any of the folder you wanted and mount it.<br><pre style="background-color: #eeeeee; border: 0px; margin-bottom: 10px; max-height: 600px; overflow: auto; padding: 5px; vertical-align: baseline; width: auto; word-wrap: normal;">
-
-<span style="background-color: transparent; font-size: 14px; line-height: 18.2000007629395px;"><span style="color: #222222; font-family: Ubuntu Mono, Ubuntu Beta Mono A, Consolas, Bitstream Vera Sans Mono, Courier New, Courier, monospace;">sudo mount -o rw,soft,intr,nfsvers=3 &lt;ip&gt;:&lt;folder-to-mount&gt; &lt;path-to-mount&gt;</span></span>
+<p>Create an empty folder to mount any of the folder you wanted and mount it.</p>
+<pre class="code literal-block">$ sudo mount -o rw,soft,intr,nfsvers<span class="o">=</span><span class="m">3</span> &lt;ip&gt;:&lt;folder-to-mount&gt; &lt;path-to-mount&gt;
 </pre>
-<br>
-      Now You can start moving data into/outof WD My Cloud.<br><br>
+<p>Now You can start moving data into/out of WD My Cloud.</p>
+<p>If You want to mount it automatically on boot, add following line to <code>/etc/fstab</code> file.</p>
+<pre class="code literal-block">&lt;ip&gt;:&lt;folder-to-mount&gt; &lt;path-to-mount&gt; nfs rw,soft,intr,nfsvers<span class="o">=</span><span class="m">3</span> <span class="m">0</span> <span class="m">0</span>
+</pre>
+<h4>Conclusion</h4>
+<p>Even though there is no official support for Ubuntu, WD My Cloud works pretty well with Ubuntu and other Linux distros. </p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:nas">
+<p><a href="https://en.wikipedia.org/wiki/Network-attached_storage">https://en.wikipedia.org/wiki/Network-attached_storage</a> <a class="footnote-backref" href="../2015/03/wd-my-cloud-nas-setup-on-ubuntu.html#fnref:nas" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
 </div>
-  </div>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2015/03/install-oh-my-zsh-on-ubuntu.html" class="u-url">Install Oh-My-Zsh On Ubuntu!</a></h1>
         <div class="metadata">
