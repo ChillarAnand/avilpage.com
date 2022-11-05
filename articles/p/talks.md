@@ -13,7 +13,7 @@
 Here are some of the talks I have given at various conferences and events.
 
 
-#### [Python Traceback For Humans](https://www.youtube.com/watch?v=EGhG8VEatBE) @PythonIndia
+#### [Python Traceback For Humans](https://www.youtube.com/embed/EGhG8VEatBE) @PythonIndia
 <br />
 
 

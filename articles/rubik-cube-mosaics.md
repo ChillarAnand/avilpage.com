@@ -36,7 +36,7 @@ Jr. NTR - 2021
 
 Making Video
 <div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=BlAc0Kt60SM" allowfullscreen>
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/BlAc0Kt60SM" allowfullscreen>
 </iframe>
 </div>
 
@@ -50,7 +50,7 @@ Frappe Cloud - 2022
 </p>
 
 <div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=kRFZ7AJ81BU" allowfullscreen>
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/kRFZ7AJ81BU" allowfullscreen>
 </iframe>
 </div>
 
