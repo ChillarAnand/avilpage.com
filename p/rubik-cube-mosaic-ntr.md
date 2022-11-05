@@ -45,6 +45,6 @@ The mosaic is completed.
 Here is the making Video.
 
 <div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/watch?v=BlAc0Kt60SM" allowfullscreen>
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/BlAc0Kt60SM" allowfullscreen>
 </iframe>
 </div>

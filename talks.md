@@ -12,12 +12,25 @@
 
 Here are some of the talks I have given at various conferences and events.
 
+### Python Traceback For Humans @ PyCon India
 
-#### [Python Traceback For Humans](https://www.youtube.com/watch?v=EGhG8VEatBE) @PythonIndia
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/EGhG8VEatBE" allowfullscreen>
+</iframe>
+</div>
+
+<br />
 <br />
 
 
-#### [Supercharge Your Shell For Python Development](https://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html) @BangPypers
+### Supercharge Your Shell For Python Development @BangPypers
+
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/lvmJ0tWCjFA" allowfullscreen>
+</iframe>
+</div>
+
+<br />
 <br />
 
 
