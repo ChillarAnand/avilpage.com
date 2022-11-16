@@ -1,22 +1,25 @@
 <!--
-.. title: Comparision Of Alexa, Majestic & Domcop Top Million Sites
+.. title: Alexa vs Domcop vs Majestic - Top Million Sites
 .. slug: comparision-alexa-majestic-domcorp-top-million-sites
 .. date: 2018-11-02 12:04:58 UTC+05:30
+.. udpated: 2022-11-16 02:04:58 UTC+05:30
 .. tags: command-line, python, data-analysis
-.. category:
+.. category: data-analysis
 .. link:
-.. description:
+.. description: Most popular top 1 million websites on the internet - alexa, domcomp, majestic comparison.
 .. type: text
 -->
 
 ### Introduction
 
-[Alexa][alexa], [Majestic][majestic] & [Domcop][domcop](based on [CommonCrawl][commoncrawl] data) provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.
+Alexa[^alexa], Domcop[^domcop](based on CommonCrawl[^commoncrawl] data) Majestic[^majestic] &  provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.
 
 
 ### Collecting data
 
-Lets download data from above sources and extract domain names. The data format is different for each source. We can use `awk` tool to extract domains column from the source. After extracting data, sort it and save it to a file.
+Let's download data from above sources and extract domain names. The data format is different for each source. We can use `awk` tool to extract domains column from the source. After extracting data, sort it and save it to a file.
+
+Extracting domains from alexa.
 
 ```sh
 # alexa
@@ -44,6 +47,8 @@ $ head -n 5 alexa
 0002rick.tumblr.com
 ```
 
+Extracting domain names from domcop.
+
 ```sh
 # Domcop
 
@@ -69,6 +74,8 @@ $ head -n 5 domcop
 000139418.wixsite.com
 000fashions.blogspot.com
 ```
+
+Extracting domain names from majestic.
 
 ```sh
 # Majestic
@@ -96,7 +103,7 @@ $ head -n 5 majestic
 
 ### Comparing Data
 
-We have collected and extracted domains from above sources. Lets compare the domains to see how similar they are using `comm`.
+We have collected and extracted domains from above sources. Let's compare the domains to see how similar they are using `comm` tool.
 
 ```sh
 $ comm -123 alexa domcop --total
@@ -124,7 +131,10 @@ So, only 96,835(9.6%) domains are common between all the datasets and the overla
 
 We have collected data from alexa, domcorp & majestic, extracted domains from it and observed that there is only a small overlap between them.
 
-[alexa]: http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
-[domcop]: https://www.domcop.com/top-10-million-domains
-[majestic]: https://blog.majestic.com/development/majestic-million-csv-daily/
-[commoncrawl]: https://commoncrawl.org/
+[^alexa]: [http://s3.amazonaws.com/alexa-static/top-1m.csv.zip](http://s3.amazonaws.com/alexa-static/top-1m.csv.zip)
+
+[^domcop]: [https://www.domcop.com/files/top/top10milliondomains.csv.zip](https://www.domcop.com/files/top/top10milliondomains.csv.zip)
+
+[^commoncrawl]: [https://commoncrawl.org/](https://commoncrawl.org/)
+
+[^majestic]: [http://downloads.majestic.com/majestic_million.csv](http://downloads.majestic.com/majestic_million.csv)
