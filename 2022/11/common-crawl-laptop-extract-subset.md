@@ -101,14 +101,24 @@ CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro inst
 
 #### Faster Performance
 
-To extract data from index files, we have used Python pandas without specifying the engine. By default it uses `pyarrow` which is bit slow. To imrpove speed we can use `fastparquet` as engine which is ~5x faster than `pyarrow`.
+To extract data from index files, we have used Python pandas without specifying the engine. By default, it uses `pyarrow` which is a bit slow. To improve speed we can use `fastparquet` as engine which is ~5x faster than `pyarrow`.
 
 ```python
+import pandas as pd
+
 filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'
 df = pd.read_parquet(filename, engine='fastparquet')
 ```
 
-To get better performance, we can use duckdb. Duckdb can read parquet files. We can write a simple SQL query to filter out the required rows.
+To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with `parquet` extension. 
+
+```bash
+$ brew install duckdb
+
+$ duckdb -c 'INSTALL parquet;'
+```
+
+We can write a simple SQL query to filter out the required rows.
 
 ```bash
 $ duckdb -c """
@@ -117,10 +127,12 @@ COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c968
 """
 ```
 
-With duckdb, we can even give the remote url directly to the query.
+Duckdb can execute SQL queries on remote files as well with `httpfs` extension.
 
 ```bash
-duckdb -c """
+$ duckdb -c 'INSTALL httpfs;'
+
+$ duckdb -c """
     LOAD httpfs;
     LOAD parquet;
 
@@ -145,10 +157,9 @@ $ duckdb -c """
 
 Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.
 
-
 ### Conclusion
 
-With this script, we can extract a subset of index from CC in < 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
+With this single command, we can extract any subset of index from CC in < 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
 
 
 [^common-crawl]: [https://commoncrawl.org](https://commoncrawl.org)
