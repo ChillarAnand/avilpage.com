@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about data-analysis)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/data-analysis.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 17 Nov 2022 11:17:17 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about data-analysis)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/data-analysis.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 17 Nov 2022 12:00:53 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Common Crawl(CC)&lt;sup id="fnref:common-crawl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:common-crawl"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data.&lt;/p&gt;
 &lt;p&gt;In this post, let's learn how to extract a subset of data(entire telugu language web pages) and process it on our local machine.&lt;/p&gt;
@@ -57,18 +57,27 @@ $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span cl
 &lt;p&gt;My Wi-Fi speed is ~4MBps when downloading the index file. To download faster, I have created t2.micro(free-tier) EC2 instance on AWS. In this machine, download speed is ~10MBps. We can use other instances, but I am trying to use only free resources. In this machine, single file download is taking ~3 minutes.&lt;/p&gt;
 &lt;p&gt;CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro instance in us-east-1 region. This instance is taking &amp;lt;20 seconds to download a single file. We can download entire index in less than 2 hours.&lt;/p&gt;
 &lt;h5&gt;Faster Performance&lt;/h5&gt;
-&lt;p&gt;To extract data from index files, we have used Python pandas without specifying the engine. By default it uses &lt;code&gt;pyarrow&lt;/code&gt; which is bit slow. To imrpove speed we can use &lt;code&gt;fastparquet&lt;/code&gt; as engine which is ~5x faster than &lt;code&gt;pyarrow&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
+&lt;p&gt;To extract data from index files, we have used Python pandas without specifying the engine. By default, it uses &lt;code&gt;pyarrow&lt;/code&gt; which is a bit slow. To improve speed we can use &lt;code&gt;fastparquet&lt;/code&gt; as engine which is ~5x faster than &lt;code&gt;pyarrow&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+&lt;span class="n"&gt;filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
 &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_parquet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;engine&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'fastparquet'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/pre&gt;
-&lt;p&gt;To get better performance, we can use duckdb. Duckdb can read parquet files. We can write a simple SQL query to filter out the required rows.&lt;/p&gt;
+&lt;p&gt;To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with &lt;code&gt;parquet&lt;/code&gt; extension. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install duckdb
+
+$ duckdb -c &lt;span class="s1"&gt;'INSTALL parquet;'&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;We can write a simple SQL query to filter out the required rows.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;LOAD parquet;&lt;/span&gt;
 &lt;span class="s2"&gt;COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te0001.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;/pre&gt;
-&lt;p&gt;With duckdb, we can even give the remote url directly to the query.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;p&gt;Duckdb can execute SQL queries on remote files as well with &lt;code&gt;httpfs&lt;/code&gt; extension.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s1"&gt;'INSTALL httpfs;'&lt;/span&gt;
+
+$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD httpfs;&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD parquet;&lt;/span&gt;
 
@@ -89,7 +98,7 @@ $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span cl
 &lt;/pre&gt;
 &lt;p&gt;Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;With this script, we can extract a subset of index from CC in &amp;lt; 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.&lt;/p&gt;
+&lt;p&gt;With this single command, we can extract any subset of index from CC in &amp;lt; 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
