@@ -110,7 +110,7 @@ filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'
 df = pd.read_parquet(filename, engine='fastparquet')
 ```
 
-To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with `parquet` extension. 
+To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with `parquet` extension.
 
 ```bash
 $ brew install duckdb
@@ -136,7 +136,7 @@ $ duckdb -c """
     LOAD httpfs;
     LOAD parquet;
 
-    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te0001.csv' (DELIMITER ',', HEADER TRUE);"""
+    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);"""
 """
 ```
 
@@ -151,7 +151,7 @@ $ duckdb -c """
     SET s3_access_key_id='s3_secret_access_key';
     SET s3_secret_access_key='s3_secret_access_key';
 
-    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'te$i.csv' (DELIMITER ',', HEADER TRUE);
+    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);
 """
 ```
 
