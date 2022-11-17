@@ -128,24 +128,10 @@ duckdb -c """
 """
 ```
 
-Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this, entire index can be processed in an hour.
-
-
-### Conclusion
-
-We can write a simple shell script as shown below to extract data from the index files.
+Duckdb can also read series of parquet files and treat them as a single table. We can use this feature to process all the index files in a single command.
 
 ```bash
-#! /bin/zsh
-
-set -x
-
-duckdb -c 'INSTALL parquet;'
-duckdb -c 'INSTALL httpfs;'
-
-for i in {0000..0300};
-do
-    duckdb -c """
+$ duckdb -c """
     LOAD httpfs;
     LOAD parquet;
 
@@ -153,13 +139,16 @@ do
     SET s3_access_key_id='s3_secret_access_key';
     SET s3_secret_access_key='s3_secret_access_key';
 
-    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-0$i-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te$i.csv' (DELIMITER ',', HEADER TRUE);"""
-done
+    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'te$i.csv' (DELIMITER ',', HEADER TRUE);
+"""
 ```
 
-With this script, we can extract a subset of index from CC in < 3 hours.
+Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.
 
-In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
+
+### Conclusion
+
+With this script, we can extract a subset of index from CC in < 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
 
 
 [^common-crawl]: [https://commoncrawl.org](https://commoncrawl.org)
