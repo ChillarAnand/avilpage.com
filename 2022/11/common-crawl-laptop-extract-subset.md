@@ -123,7 +123,7 @@ We can write a simple SQL query to filter out the required rows.
 ```bash
 $ duckdb -c """
 LOAD parquet;
-COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te0001.csv' (DELIMITER ',', HEADER TRUE);
+COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);
 """
 ```
 
