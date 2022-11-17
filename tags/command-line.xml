@@ -1,5 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 05 Nov 2022 02:53:28 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>https://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 16 Nov 2022 05:10:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Common Crawl(CC)&lt;sup id="fnref:common-crawl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:common-crawl"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data. &lt;/p&gt;
+&lt;p&gt;In this post, let's learn how to extract a subset of data(entire telugu language web pages) and process it on our local machine.&lt;/p&gt;
+&lt;h4&gt;Exploring Common Crawl&lt;/h4&gt;
+&lt;p&gt;CC provides monthly data dumps in WARC format. Each crawl consists of about ~3 billion web pages with a compressed size of ~100 TB.&lt;/p&gt;
+&lt;p&gt;In addition to WARC files, CC provides index files as well as columnar index&lt;sup id="fnref:columnar-index-wiki"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:columnar-index-wiki"&gt;2&lt;/a&gt;&lt;/sup&gt; files so that users can easily search, filter and download the data. &lt;/p&gt;
+&lt;h4&gt;Common Crawl Index&lt;/h4&gt;
+&lt;p&gt;Each crawl index is spread over 300 files consisting of ~250 GB of data. For this post, let use the latest crawl which is &lt;code&gt;CC-MAIN-2022-40&lt;/code&gt;. &lt;/p&gt;
+&lt;p&gt;The index files can be accessed from AWS S3 or https. We can use aws cli to list all the files along with the sizes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ aws s3 ls --recursive --human-readable --summarize s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:07:59  &lt;span class="m"&gt;621&lt;/span&gt;.9 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:08:26  &lt;span class="m"&gt;721&lt;/span&gt;.6 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00001.gz
+...
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:42:39  &lt;span class="m"&gt;146&lt;/span&gt;.6 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cluster.idx
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:42:33   &lt;span class="m"&gt;30&lt;/span&gt; Bytes cc-index/collections/CC-MAIN-2022-40/metadata.yaml
+
+Total Objects: &lt;span class="m"&gt;302&lt;/span&gt;
+   Total Size: &lt;span class="m"&gt;236&lt;/span&gt;.1 GiB   
+&lt;/pre&gt;
+&lt;p&gt;Let's download an index file to our local machine and see how the data is arranged. We can use &lt;code&gt;aws&lt;/code&gt; cli to download the data from s3 bucket or use wget to download it from https endpoint.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
+$ aws s3 cp s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz .
+
+&lt;span class="c1"&gt;# from https&lt;/span&gt;
+$ wget https://data.commoncrawl.org/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
+&lt;/pre&gt;
+&lt;p&gt;Let's print top five lines of the file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ zcat &amp;lt; cdx-00000.gz &lt;span class="p"&gt;|&lt;/span&gt; head -n &lt;span class="m"&gt;5&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/1klikbet &lt;span class="m"&gt;20221005193707&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;: &lt;span class="s2"&gt;"http://137.184.1.0/1klikbet/"&lt;/span&gt;, &lt;span class="s2"&gt;"mime"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"200"&lt;/span&gt;, &lt;span class="s2"&gt;"digest"&lt;/span&gt;: &lt;span class="s2"&gt;"XTKGORHKLZCHDBBOMYCYYIZVRPMXNRII"&lt;/span&gt;, &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="s2"&gt;"7065"&lt;/span&gt;, &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="s2"&gt;"83437"&lt;/span&gt;, &lt;span class="s2"&gt;"filename"&lt;/span&gt;: &lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00011.warc.gz"&lt;/span&gt;, &lt;span class="s2"&gt;"charset"&lt;/span&gt;: &lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;, &lt;span class="s2"&gt;"languages"&lt;/span&gt;: &lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/7meter &lt;span class="m"&gt;20221005192131&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;: &lt;span class="s2"&gt;"http://137.184.1.0/7meter/"&lt;/span&gt;, &lt;span class="s2"&gt;"mime"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"200"&lt;/span&gt;, &lt;span class="s2"&gt;"digest"&lt;/span&gt;: &lt;span class="s2"&gt;"KUJAMRT6MXYR3RTWRJTIWJ5T2ZUB3EBH"&lt;/span&gt;, &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="s2"&gt;"7456"&lt;/span&gt;, &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="s2"&gt;"142680"&lt;/span&gt;, &lt;span class="s2"&gt;"filename"&lt;/span&gt;: &lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00182.warc.gz"&lt;/span&gt;, &lt;span class="s2"&gt;"charset"&lt;/span&gt;: &lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;, &lt;span class="s2"&gt;"languages"&lt;/span&gt;: &lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+...  
+&lt;/pre&gt;
+&lt;p&gt;The last column of each line contains the language information. We can use these index files, and we can  extract all the lines containing &lt;code&gt;tel&lt;/code&gt; language code.&lt;/p&gt;
+&lt;h4&gt;Columnar Index&lt;/h4&gt;
+&lt;p&gt;We can also use columnar index to filter out telugu language web pages. Let's download a single file from the index.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
+$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
+
+&lt;span class="c1"&gt;# from https&lt;/span&gt;
+$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
+&lt;/pre&gt;
+&lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be use to filter out telugu pages.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ python -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;import pandas as pd&lt;/span&gt;
+&lt;span class="s2"&gt;filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
+&lt;span class="s2"&gt;df = pd.read_parquet(filename)&lt;/span&gt;
+&lt;span class="s2"&gt;df = df[df['content_languages'].str.startswith('tel', na=False)]&lt;/span&gt;
+&lt;span class="s2"&gt;df.to_csv('telugu.csv')&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Improving Performance&lt;/h4&gt;
+&lt;h5&gt;Faster Downloads&lt;/h5&gt;
+&lt;p&gt;I have used Macbook M1 with local ISP to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.&lt;/p&gt;
+&lt;p&gt;Let's see how we can speed it up.&lt;/p&gt;
+&lt;p&gt;My Wi-Fi speed is ~4MBps when downloading the index file. To download faster, I have created t2.micro(free-tier) EC2 instance on AWS. In this machine, download speed is ~10MBps. We can use other instances, but I am trying to use only free resources. In this machine, single file download is taking ~3 minutes.&lt;/p&gt;
+&lt;p&gt;CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro instance in us-east-1 region. This instance is taking &amp;lt;20 seconds to download a single file. We can download entire index in less than 2 hours.&lt;/p&gt;
+&lt;h5&gt;Faster Performance&lt;/h5&gt;
+&lt;p&gt;To extract data from index files, we have used Python pandas without specifying the engine. By default it uses &lt;code&gt;pyarrow&lt;/code&gt; which is bit slow. To imrpove speed we can use &lt;code&gt;fastparquet&lt;/code&gt; as engine which is ~5x faster than &lt;code&gt;pyarrow&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
+&lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_parquet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;engine&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'fastparquet'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;To get better performance, we can use duckdb. Duckdb can read parquet files. We can write a simple SQL query to filter out the required rows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;LOAD parquet;&lt;/span&gt;
+&lt;span class="s2"&gt;COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te0001.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;With duckdb, we can even give the remote url directly to the query.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;    LOAD httpfs;&lt;/span&gt;
+&lt;span class="s2"&gt;    LOAD parquet;&lt;/span&gt;
+
+&lt;span class="s2"&gt;    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te0001.csv' (DELIMITER ',', HEADER TRUE);"""&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this, entire index can be processed in an hour.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We can write a simple shell script as shown below to extract data from the index files.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /bin/zsh&lt;/span&gt;
+
+&lt;span class="nb"&gt;set&lt;/span&gt; -x
+
+duckdb -c &lt;span class="s1"&gt;'INSTALL parquet;'&lt;/span&gt;
+duckdb -c &lt;span class="s1"&gt;'INSTALL httpfs;'&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; i &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="m"&gt;0000&lt;/span&gt;..0300&lt;span class="o"&gt;}&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;do&lt;/span&gt;
+    duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;    LOAD httpfs;&lt;/span&gt;
+&lt;span class="s2"&gt;    LOAD parquet;&lt;/span&gt;
+
+&lt;span class="s2"&gt;    SET s3_region='us-east-1';&lt;/span&gt;
+&lt;span class="s2"&gt;    SET s3_access_key_id='s3_secret_access_key';&lt;/span&gt;
+&lt;span class="s2"&gt;    SET s3_secret_access_key='s3_secret_access_key';&lt;/span&gt;
+
+&lt;span class="s2"&gt;    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-0&lt;/span&gt;&lt;span class="nv"&gt;$i&lt;/span&gt;&lt;span class="s2"&gt;-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'te&lt;/span&gt;&lt;span class="nv"&gt;$i&lt;/span&gt;&lt;span class="s2"&gt;.csv' (DELIMITER ',', HEADER TRUE);"""&lt;/span&gt;
+&lt;span class="k"&gt;done&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;With this script, we can extract a subset of index from CC in &amp;lt; 3 hours. &lt;/p&gt;
+&lt;p&gt;In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:common-crawl"&gt;
+&lt;p&gt;&lt;a href="https://commoncrawl.org"&gt;https://commoncrawl.org&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fnref:common-crawl" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:columnar-index-wiki"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS"&gt;https://en.wikipedia.org/wiki/Column-oriented_DBMS&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>common-crawl</category><category>data-analysis</category><guid>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</guid><pubDate>Fri, 11 Nov 2022 12:11:39 GMT</pubDate></item><item><title>Verifying TLS Certificate Chain With OpenSSL</title><link>https://avilpage.com/2019/11/verify-tls-certificate-chain-with-openssl.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;To communicate securely over the internet, HTTPS (HTTP over TLS) is used. A key component of HTTPS is Certificate authority (CA), which by issuing digital certificates acts as a trusted 3rd party between server(eg: google.com) and others(eg: mobiles, laptops).&lt;/p&gt;
 &lt;p&gt;In this article, we will learn how to obtain certificates from a server and manually verify them on a laptop to establish a chain of trust.&lt;/p&gt;
 &lt;h4&gt;Chain of Trust&lt;/h4&gt;
@@ -136,10 +247,11 @@ sleep &lt;span class="m"&gt;1&lt;/span&gt;
 &lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how to archive million pages with wget in few minutes.&lt;/p&gt;
-&lt;p&gt;wget2 has multithreading support and &lt;a href="https://gitlab.com/gnuwget/wget2/issues/65"&gt;it might have warc output soon&lt;/a&gt;. With that, archiving with wget becomes much easier.&lt;/p&gt;</description><category>command-line</category><guid>https://avilpage.com/2018/11/archive-millions-pages-wget-minutes.html</guid><pubDate>Sun, 18 Nov 2018 11:51:21 GMT</pubDate></item><item><title>Comparision Of Alexa, Majestic &amp; Domcop Top Million Sites</title><link>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;&lt;a href="http://s3.amazonaws.com/alexa-static/top-1m.csv.zip"&gt;Alexa&lt;/a&gt;, &lt;a href="https://blog.majestic.com/development/majestic-million-csv-daily/"&gt;Majestic&lt;/a&gt; &amp;amp; &lt;a href="https://www.domcop.com/top-10-million-domains"&gt;Domcop&lt;/a&gt;(based on &lt;a href="https://commoncrawl.org/"&gt;CommonCrawl&lt;/a&gt; data) provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.&lt;/p&gt;
+&lt;p&gt;wget2 has multithreading support and &lt;a href="https://gitlab.com/gnuwget/wget2/issues/65"&gt;it might have warc output soon&lt;/a&gt;. With that, archiving with wget becomes much easier.&lt;/p&gt;</description><category>command-line</category><guid>https://avilpage.com/2018/11/archive-millions-pages-wget-minutes.html</guid><pubDate>Sun, 18 Nov 2018 11:51:21 GMT</pubDate></item><item><title>Alexa vs Domcop vs Majestic - Top Million Sites</title><link>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Alexa&lt;sup id="fnref:alexa"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fn:alexa"&gt;1&lt;/a&gt;&lt;/sup&gt;, Domcop&lt;sup id="fnref:domcop"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fn:domcop"&gt;2&lt;/a&gt;&lt;/sup&gt;(based on CommonCrawl&lt;sup id="fnref:commoncrawl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fn:commoncrawl"&gt;3&lt;/a&gt;&lt;/sup&gt; data) Majestic&lt;sup id="fnref:majestic"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fn:majestic"&gt;4&lt;/a&gt;&lt;/sup&gt; &amp;amp;  provide top 1 million popular websites based on their analytics. In this article we will download this data and compare them using Linux command line tools.&lt;/p&gt;
 &lt;h4&gt;Collecting data&lt;/h4&gt;
-&lt;p&gt;Lets download data from above sources and extract domain names. The data format is different for each source. We can use &lt;code&gt;awk&lt;/code&gt; tool to extract domains column from the source. After extracting data, sort it and save it to a file.&lt;/p&gt;
+&lt;p&gt;Let's download data from above sources and extract domain names. The data format is different for each source. We can use &lt;code&gt;awk&lt;/code&gt; tool to extract domains column from the source. After extracting data, sort it and save it to a file.&lt;/p&gt;
+&lt;p&gt;Extracting domains from alexa.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# alexa&lt;/span&gt;
 
 $ wget http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
@@ -164,6 +276,7 @@ $ head -n &lt;span class="m"&gt;5&lt;/span&gt; alexa
 &lt;span class="m"&gt;00008888&lt;/span&gt;.tumblr.com
 0002rick.tumblr.com
 &lt;/pre&gt;
+&lt;p&gt;Extracting domain names from domcop.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Domcop&lt;/span&gt;
 
 $ wget https://www.domcop.com/files/top/top10milliondomains.csv.zip
@@ -188,6 +301,7 @@ $ head -n &lt;span class="m"&gt;5&lt;/span&gt; domcop
 &lt;span class="m"&gt;000139418&lt;/span&gt;.wixsite.com
 000fashions.blogspot.com
 &lt;/pre&gt;
+&lt;p&gt;Extracting domain names from majestic.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Majestic&lt;/span&gt;
 
 $ wget http://downloads.majestic.com/majestic_million.csv
@@ -211,7 +325,7 @@ $ head -n &lt;span class="m"&gt;5&lt;/span&gt; majestic
 &lt;span class="m"&gt;0000&lt;/span&gt;.xn--p1ai
 &lt;/pre&gt;
 &lt;h4&gt;Comparing Data&lt;/h4&gt;
-&lt;p&gt;We have collected and extracted domains from above sources. Lets compare the domains to see how similar they are using &lt;code&gt;comm&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We have collected and extracted domains from above sources. Let's compare the domains to see how similar they are using &lt;code&gt;comm&lt;/code&gt; tool.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ comm -123 alexa domcop --total
 &lt;span class="m"&gt;871851&lt;/span&gt;  &lt;span class="m"&gt;871851&lt;/span&gt;  &lt;span class="m"&gt;128149&lt;/span&gt;  total
 
@@ -230,7 +344,24 @@ $ comm -123 domcop majestic --total
 &lt;/p&gt;
 
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;We have collected data from alexa, domcorp &amp;amp; majestic, extracted domains from it and observed that there is only a small overlap between them.&lt;/p&gt;</description><category>command-line</category><category>data-analysis</category><category>python</category><guid>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</guid><pubDate>Fri, 02 Nov 2018 06:34:58 GMT</pubDate></item><item><title>Linux Performance Analysis In Less Than 10 Seconds</title><link>https://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.&lt;/p&gt;
+&lt;p&gt;We have collected data from alexa, domcorp &amp;amp; majestic, extracted domains from it and observed that there is only a small overlap between them.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:alexa"&gt;
+&lt;p&gt;&lt;a href="http://s3.amazonaws.com/alexa-static/top-1m.csv.zip"&gt;http://s3.amazonaws.com/alexa-static/top-1m.csv.zip&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fnref:alexa" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:domcop"&gt;
+&lt;p&gt;&lt;a href="https://www.domcop.com/files/top/top10milliondomains.csv.zip"&gt;https://www.domcop.com/files/top/top10milliondomains.csv.zip&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fnref:domcop" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:commoncrawl"&gt;
+&lt;p&gt;&lt;a href="https://commoncrawl.org/"&gt;https://commoncrawl.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fnref:commoncrawl" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:majestic"&gt;
+&lt;p&gt;&lt;a href="http://downloads.majestic.com/majestic_million.csv"&gt;http://downloads.majestic.com/majestic_million.csv&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fnref:majestic" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>data-analysis</category><category>python</category><guid>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</guid><pubDate>Fri, 02 Nov 2018 06:34:58 GMT</pubDate></item><item><title>Linux Performance Analysis In Less Than 10 Seconds</title><link>https://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.&lt;/p&gt;
 &lt;p&gt;Netflix TechBlog has an article on how to &lt;a href="https://medium.com/netflix-techblog/linux-performance-analysis-in-60-000-milliseconds-accc10403c55"&gt;anlyze Linux performance in 60 seconds&lt;/a&gt;. This article  provides 10+ tools to use in order to see the resource usage and pinpoint the bottleneck.&lt;/p&gt;
 &lt;p&gt;It is strenuous to remember all those tools/options and laborious to run all those commands when working on multiple systems.&lt;/p&gt;
 &lt;p&gt;Instead, we can use &lt;a href="http://atoptool.nl/"&gt;atop&lt;/a&gt;, a tool for one stop solution for performance analysis. Here is a comparision of atop with other tools from &lt;a href="https://lwn.net/Articles/387202/"&gt;LWN&lt;/a&gt;.&lt;/p&gt;
@@ -504,4 +635,4 @@ $ sudo apt-get install nfs-common
 &lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Network-attached_storage"&gt;https://en.wikipedia.org/wiki/Network-attached_storage&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2015/03/wd-my-cloud-nas-setup-on-ubuntu.html#fnref:nas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>command-line</category><category>linux</category><category>ubuntu</category><guid>https://avilpage.com/2015/03/wd-my-cloud-nas-setup-on-ubuntu.html</guid><pubDate>Tue, 17 Mar 2015 08:50:00 GMT</pubDate></item><item><title>Install Oh-My-Zsh On Ubuntu!</title><link>https://avilpage.com/2015/03/install-oh-my-zsh-on-ubuntu.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;&lt;span style="line-height: 25.6000003814697px;"&gt;I crashed my  OS &amp;amp; I had to re install  all  things again. This  is  just  to  keep a track on how  to install zsh.&lt;/span&gt;&lt;br&gt;&lt;span style="line-height: 25.6000003814697px;"&gt;&lt;br&gt;&lt;/span&gt;&lt;span style="line-height: 25.6000003814697px;"&gt;For oh-my-zsh to work, You need to install zsh &amp;amp; git core first. To do that&lt;/span&gt;&lt;/div&gt;&lt;div class="highlight highlight-bash" style="background: rgb(255, 255, 255); box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: 1.45; overflow: auto; padding: 16px; word-break: normal; word-wrap: normal;"&gt;apt-get install zsh&lt;br&gt;apt-get install git-core&lt;/pre&gt;&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;Now, You can install it by&lt;/div&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"&gt;&lt;code style="background-attachment: initial; background-clip: initial; background-color: transparent; background-image: initial; background-origin: initial; background-position: initial; background-repeat: initial; background-size: initial; border-image-outset: initial; border-image-repeat: initial; border-image-slice: initial; border-image-source: initial; border-image-width: initial; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;"&gt;&lt;span style="color: #333333; font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;"&gt;&lt;span style="font-size: 13.6000003814697px; line-height: 19.7199993133545px;"&gt;curl -L http://install.ohmyz.sh | sh&lt;/span&gt;&lt;span style="font-size: 13.6000003814697px; line-height: inherit;"&gt;&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;Next, cha&lt;span style="line-height: 25.6000003814697px;"&gt;nge your shell to zsh&lt;/span&gt;&lt;/div&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"&gt;&lt;code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;"&gt;chsh -s `which zsh`&lt;br&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6000003814697px; margin-bottom: 16px;"&gt;and then restart your system.&lt;/div&gt;&lt;pre style="background-color: #f7f7f7; border-radius: 3px; box-sizing: border-box; color: #333333; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: 1.45; margin-bottom: 16px; overflow: auto; padding: 16px; word-wrap: normal;"&gt;&lt;code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 13.6000003814697px; line-height: inherit; margin: 0px; max-width: initial; overflow: initial; padding: 0px; word-break: normal; word-wrap: normal;"&gt;sudo shutdown -r 0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description><category>command-line</category><category>ubuntu</category><guid>https://avilpage.com/2015/03/install-oh-my-zsh-on-ubuntu.html</guid><pubDate>Sun, 15 Mar 2015 12:24:00 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>command-line</category><category>linux</category><category>ubuntu</category><guid>https://avilpage.com/2015/03/wd-my-cloud-nas-setup-on-ubuntu.html</guid><pubDate>Tue, 17 Mar 2015 08:50:00 GMT</pubDate></item></channel></rss>
