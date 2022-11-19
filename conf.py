@@ -79,7 +79,7 @@ NAVIGATION_LINKS = {
         DEFAULT_LANG: (
                 ("/top-10.html", "Top 10"),
                 ("/archive.html", "Articles"),
-                ("/p/projects.html", "Projects"),
+                # ("/p/projects.html", "Projects"),
                 # ("/tags", "Topics"),
                 # ("/p/talks.html", "Talks"),
                 # ("/p/pages.html", "Pages"),
