@@ -95,10 +95,10 @@ During a hot reload, Dart VM will apply changes to a live program[^hot]. If the 
 
 In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.
 
-[^program]: https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/
+[^program]: [https://www.reddit.com/r/FlutterDev/hot-reload](https://www.reddit.com/r/FlutterDev/comments/f7sn1w/how_stateful_hot_reloading_of_flutter_works_under/fij638y/)
 
-[^periodic]: https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html
+[^periodic]: [dart.dev/dart-async/Timer/Timer.periodic.html](https://api.dart.dev/stable/2.8.4/dart-async/Timer/Timer.periodic.html)
 
-[^observatory]: https://dart-lang.github.io/observatory/
+[^observatory]: [https://dart.dev/tools/dart-observatory](https://dart.dev/tools/dart-observatory)
 
-[^hot]: https://github.com/dart-lang/sdk/wiki/Hot-reload
+[^hot]: [https://github.com/dart-lang/sdk/wiki/Hot-reload](https://github.com/dart-lang/sdk/wiki/Hot-reload)
