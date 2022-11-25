@@ -118,10 +118,10 @@ $ wget https://data.commoncrawl.org/cc-index/collections/CC-MAIN-2022-40/indexes
 <h4>Columnar Index</h4>
 <p>We can also use columnar index to filter out telugu language web pages. Let's download a single file from the index.</p>
 <pre class="code literal-block"><span class="c1"># from s3</span>
-$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
+$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
 
 <span class="c1"># from https</span>
-$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
+$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 </pre>
 <p>We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has <code>content_languages</code> column which can be use to filter out telugu pages.</p>
 <pre class="code literal-block">$ python -c <span class="s2">"""</span>
@@ -178,9 +178,15 @@ $ duckdb -c <span class="s2">"""</span>
 <span class="s2">    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);</span>
 <span class="s2">"""</span>
 </pre>
-<p>Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.</p>
+<p>Depending on the file size, duckdb takes 10-15 seconds to process a single file. Since we don't need all the columns for further data processing, we can limit columns to required 5 columns.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">    COPY (select url, content_languages, warc_filename, warc_record_offset, warc_record_length from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);</span>
+<span class="s2">"""</span>
+</pre>
+<p>By limiting columns<sup id="fnref:cc-gg"><a class="footnote-ref" href="../2022/11/common-crawl-laptop-extract-subset.html#fn:cc-gg">3</a></sup> there is another 65% improvement in performance. Now duckdb can process a file in 3 to 8 seconds depending on the size of the file. We can process entire index in ~20 minutes.</p>
 <h4>Conclusion</h4>
-<p>With this single command, we can extract any subset of index from CC in &lt; 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.</p>
+<p>With a single command, we can extract a subset of index from CC in ~2 hours. So far we have processed all files in a single process. We can also parallelize the process using <code>parallel</code> to get faster results.</p>
+<p>In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.</p>
 <div class="footnote">
 <hr>
 <ol>
@@ -189,6 +195,9 @@ $ duckdb -c <span class="s2">"""</span>
 </li>
 <li id="fn:columnar-index-wiki">
 <p><a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">https://en.wikipedia.org/wiki/Column-oriented_DBMS</a> <a class="footnote-backref" href="../2022/11/common-crawl-laptop-extract-subset.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:cc-gg">
+<p><a href="https://groups.google.com/g/common-crawl/c/WYwkW97RM4s">https://groups.google.com/g/common-crawl/c/WYwkW97RM4s</a> <a class="footnote-backref" href="../2022/11/common-crawl-laptop-extract-subset.html#fnref:cc-gg" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
 </ol>
 </div>
