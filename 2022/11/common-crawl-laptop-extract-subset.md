@@ -2,6 +2,7 @@
 .. title: Common Crawl On Laptop - Extracting Subset Of Data
 .. slug: common-crawl-laptop-extract-subset
 .. date: 2022-11-17 06:41:39 UTC+05:30
+.. updated: 2022-11-17 06:41:39 UTC+05:30
 .. tags: common-crawl, command-line, data-analysis
 .. category: programming
 .. link:
@@ -69,10 +70,10 @@ We can also use columnar index to filter out telugu language web pages. Let's do
 
 ```bash
 # from s3
-$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
+$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
 
 # from https
-$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
+$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 ```
 
 We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has `content_languages` column which can be use to filter out telugu pages.
@@ -155,12 +156,22 @@ $ duckdb -c """
 """
 ```
 
-Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.
+Depending on the file size, duckdb takes 10-15 seconds to process a single file. Since we don't need all the columns for further data processing, we can limit columns to required 5 columns.
+
+```bash
+$ duckdb -c """
+    COPY (select url, content_languages, warc_filename, warc_record_offset, warc_record_length from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);
+"""
+```
+
+By limiting columns[^cc-gg] there is another 65% improvement in performance. Now duckdb can process a file in 3 to 8 seconds depending on the size of the file. We can process entire index in ~20 minutes.
 
 ### Conclusion
 
-With this single command, we can extract any subset of index from CC in < 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
+With a single command, we can extract a subset of index from CC in ~2 hours. So far we have processed all files in a single process. We can also parallelize the process using `parallel` to get faster results.
 
+ In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.
 
 [^common-crawl]: [https://commoncrawl.org](https://commoncrawl.org)
 [^columnar-index-wiki]: [https://en.wikipedia.org/wiki/Column-oriented_DBMS](https://en.wikipedia.org/wiki/Column-oriented_DBMS)
+[^cc-gg]: [https://groups.google.com/g/common-crawl/c/WYwkW97RM4s](https://groups.google.com/g/common-crawl/c/WYwkW97RM4s)

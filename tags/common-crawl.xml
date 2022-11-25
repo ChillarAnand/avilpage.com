@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about common-crawl)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/common-crawl.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 17 Nov 2022 12:34:48 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about common-crawl)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/common-crawl.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 21 Nov 2022 05:31:04 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Common Crawl(CC)&lt;sup id="fnref:common-crawl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:common-crawl"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data.&lt;/p&gt;
 &lt;p&gt;In this post, let's learn how to extract a subset of data(entire telugu language web pages) and process it on our local machine.&lt;/p&gt;
@@ -36,10 +36,10 @@ $ wget https://data.commoncrawl.org/cc-index/collections/CC-MAIN-2022-40/indexes
 &lt;h4&gt;Columnar Index&lt;/h4&gt;
 &lt;p&gt;We can also use columnar index to filter out telugu language web pages. Let's download a single file from the index.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
-$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
+$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
 
 &lt;span class="c1"&gt;# from https&lt;/span&gt;
-$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
+$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 &lt;/pre&gt;
 &lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be use to filter out telugu pages.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ python -c &lt;span class="s2"&gt;"""&lt;/span&gt;
@@ -96,9 +96,15 @@ $ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;/pre&gt;
-&lt;p&gt;Depending on the file size, duckdb takes 10-15 seconds to process a single file. With this single command, entire index can be processed in an hour. We can also parallelize the process for faster results.&lt;/p&gt;
+&lt;p&gt;Depending on the file size, duckdb takes 10-15 seconds to process a single file. Since we don't need all the columns for further data processing, we can limit columns to required 5 columns.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;    COPY (select url, content_languages, warc_filename, warc_record_offset, warc_record_length from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;By limiting columns&lt;sup id="fnref:cc-gg"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:cc-gg"&gt;3&lt;/a&gt;&lt;/sup&gt; there is another 65% improvement in performance. Now duckdb can process a file in 3 to 8 seconds depending on the size of the file. We can process entire index in ~20 minutes.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;With this single command, we can extract any subset of index from CC in &amp;lt; 3 hours. In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.&lt;/p&gt;
+&lt;p&gt;With a single command, we can extract a subset of index from CC in ~2 hours. So far we have processed all files in a single process. We can also parallelize the process using &lt;code&gt;parallel&lt;/code&gt; to get faster results.&lt;/p&gt;
+&lt;p&gt;In the upcoming posts, let's see how we can fetch the data from WARC files using this index and do further data processing.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
@@ -107,6 +113,9 @@ $ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;/li&gt;
 &lt;li id="fn:columnar-index-wiki"&gt;
 &lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS"&gt;https://en.wikipedia.org/wiki/Column-oriented_DBMS&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:cc-gg"&gt;
+&lt;p&gt;&lt;a href="https://groups.google.com/g/common-crawl/c/WYwkW97RM4s"&gt;https://groups.google.com/g/common-crawl/c/WYwkW97RM4s&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fnref:cc-gg" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>command-line</category><category>common-crawl</category><category>data-analysis</category><guid>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</guid><pubDate>Thu, 17 Nov 2022 01:11:39 GMT</pubDate></item></channel></rss>
