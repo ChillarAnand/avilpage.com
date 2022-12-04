@@ -12,6 +12,9 @@
 
 This series of posts discuss processing of common crawl dataset on laptop.
 
+1. [Extracting Subset of Common Crawl](/2022/11/common-crawl-laptop-extract-subset.html) (this post)
+2. [Building web directory](/2022/12/common-crawl-laptop-web-directory.html)
+
 ### Introduction
 
 Common Crawl(CC)[^common-crawl] is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data.
@@ -76,7 +79,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/s
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 ```
 
-We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has `content_languages` column which can be use to filter out telugu pages.
+We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has `content_languages` column which can be used to filter out telugu pages.
 
 ```bash
 $ python -c """
@@ -111,7 +114,7 @@ filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'
 df = pd.read_parquet(filename, engine='fastparquet')
 ```
 
-To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with `parquet` extension.
+To get better performance, we can use duckdb. Duckdb is an in-process SQL OLAP DBMS and it can execute SQL queries directly on parquet files with `parquet` extension.
 
 ```bash
 $ brew install duckdb
