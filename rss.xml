@@ -1,5 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 Nov 2022 03:38:44 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 08 Dec 2022 14:05:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl on Laptop - Building Web Directory</title><link>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html"&gt;Extracting Subset of Common Crawl&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html"&gt;Building web directory&lt;/a&gt; (this post)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;In the earlier post, we have extracted all telugu web page urls to a csv file. In this post, let's explore these urls and build a web directory from it.&lt;/p&gt;
+&lt;h4&gt;Explore Data&lt;/h4&gt;
+&lt;p&gt;Let's see how many urls are present in the extracted subset of data.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ wc -l telugu.csv
+  &lt;span class="m"&gt;852025&lt;/span&gt; telugu.csv 
+&lt;/pre&gt;
+&lt;p&gt;In the earlier post, we have installed &lt;code&gt;duckdb&lt;/code&gt; and used it for processing parquet files. &lt;code&gt;duckdb&lt;/code&gt; can execute SQL queries directly on csv file. Let's use it to explore the data stored in telugu.csv.&lt;/p&gt;
+&lt;p&gt;Let's see how many unique domains are present in the data.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;    SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites&lt;/span&gt;
+&lt;span class="s2"&gt;    FROM read_csv('telugu.csv', auto_detect = TRUE);&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+┌──────────────┐
+│ unique_sites │
+├──────────────┤
+│ &lt;span class="m"&gt;13632&lt;/span&gt;        │
+└──────────────┘
+&lt;/pre&gt;
+&lt;p&gt;There ~14k unique domains. Let's see page density across these domains.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;SELECT count    AS page_count,&lt;/span&gt;
+&lt;span class="s2"&gt;COUNT(*) AS sites&lt;/span&gt;
+&lt;span class="s2"&gt;FROM (SELECT url_host_name_reversed, COUNT(*) AS count&lt;/span&gt;
+&lt;span class="s2"&gt;FROM read_csv('te.csv', auto_detect = TRUE)&lt;/span&gt;
+&lt;span class="s2"&gt;GROUP BY url_host_name_reversed) AS t&lt;/span&gt;
+&lt;span class="s2"&gt;GROUP BY page_count&lt;/span&gt;
+&lt;span class="s2"&gt;ORDER BY page_count;&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+┌────────────┬───────┐
+│ page_count │ sites │
+├────────────┼───────┤
+│ &lt;span class="m"&gt;1&lt;/span&gt;          │ &lt;span class="m"&gt;6326&lt;/span&gt;  │
+│ &lt;span class="m"&gt;2&lt;/span&gt;          │ &lt;span class="m"&gt;1904&lt;/span&gt;  │
+│ &lt;span class="m"&gt;3&lt;/span&gt;          │ &lt;span class="m"&gt;733&lt;/span&gt;   │
+│ &lt;span class="m"&gt;4&lt;/span&gt;          │ &lt;span class="m"&gt;459&lt;/span&gt;   │
+│ &lt;span class="m"&gt;5&lt;/span&gt;          │ &lt;span class="m"&gt;315&lt;/span&gt;   │
+&lt;/pre&gt;
+&lt;p&gt;About ~75% of the sites have less than 5 pages. It is highly unlikely that these sites complete content is in Telugu language. After manually checking a few of these sites, I found that there are a lot of false positives. &lt;/p&gt;
+&lt;p&gt;In the earlier post, we have extracted all pages where there is Telugu language content. Let's filter out pages where Telugu is &lt;strong&gt;primary&lt;/strong&gt; language.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;  COPY (&lt;/span&gt;
+&lt;span class="s2"&gt;    SELECT * FROM read_csv('cct.csv', auto_detect=true) &lt;/span&gt;
+&lt;span class="s2"&gt;    WHERE content_languages like 'tel%'&lt;/span&gt;
+&lt;span class="s2"&gt;  ) TO 'te_primary.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ wc -l te_primary.csv
+  &lt;span class="m"&gt;573130&lt;/span&gt; te_primary.csv
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"&lt;/span&gt;                           
+┌──────────────┐
+│ unique_sites │
+├──────────────┤
+│ &lt;span class="m"&gt;5666&lt;/span&gt;         │
+└──────────────┘    
+&lt;/pre&gt;
+&lt;p&gt;Let's see how page density per domain has changed.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;SELECT count    AS page_count,&lt;/span&gt;
+&lt;span class="s2"&gt;COUNT(*) AS sites&lt;/span&gt;
+&lt;span class="s2"&gt;FROM (SELECT url_host_name_reversed, COUNT(*) AS count&lt;/span&gt;
+&lt;span class="s2"&gt;FROM read_csv('te_primary.csv', auto_detect = TRUE)&lt;/span&gt;
+&lt;span class="s2"&gt;GROUP BY url_host_name_reversed) AS t&lt;/span&gt;
+&lt;span class="s2"&gt;GROUP BY page_count&lt;/span&gt;
+&lt;span class="s2"&gt;ORDER BY page_count&lt;/span&gt;
+&lt;span class="s2"&gt;;&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+┌────────────┬───────┐
+│ page_count │ sites │
+├────────────┼───────┤
+│ &lt;span class="m"&gt;1&lt;/span&gt;          │ &lt;span class="m"&gt;2183&lt;/span&gt;  │
+│ &lt;span class="m"&gt;2&lt;/span&gt;          │ &lt;span class="m"&gt;843&lt;/span&gt;   │
+│ &lt;span class="m"&gt;3&lt;/span&gt;          │ &lt;span class="m"&gt;235&lt;/span&gt;   │
+│ &lt;span class="m"&gt;4&lt;/span&gt;          │ &lt;span class="m"&gt;146&lt;/span&gt;   │
+│ &lt;span class="m"&gt;5&lt;/span&gt;          │ &lt;span class="m"&gt;98&lt;/span&gt;    │
+&lt;/pre&gt;
+&lt;p&gt;Page density remains almost the same. &lt;/p&gt;
+&lt;p&gt;Let's filter out sites which have at least 5 pages in Telugu. This will eliminate a lot of false positives. Let's look at the most popular sites from the results.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;   &lt;span class="m"&gt;1&lt;/span&gt;   │ Rank,Domain,Open Page Rank
+   &lt;span class="m"&gt;2&lt;/span&gt;   │ &lt;span class="m"&gt;25&lt;/span&gt;,support.google.com,8.55
+   &lt;span class="m"&gt;3&lt;/span&gt;   │ &lt;span class="m"&gt;57&lt;/span&gt;,t.me,7.76
+   &lt;span class="m"&gt;4&lt;/span&gt;   │ &lt;span class="m"&gt;76&lt;/span&gt;,chrome.google.com,7.49
+   &lt;span class="m"&gt;5&lt;/span&gt;   │ &lt;span class="m"&gt;163&lt;/span&gt;,support.mozilla.org,6.99
+   &lt;span class="m"&gt;6&lt;/span&gt;   │ &lt;span class="m"&gt;170&lt;/span&gt;,groups.google.com,6.94
+&lt;/pre&gt;
+&lt;p&gt;A lot of unrelated domains are present here because there might be 10+ pages in telugu in these domains as well. But we don't need these.&lt;/p&gt;
+&lt;p&gt;Let's look at only home page(or translated home page) where primary content language is telugu.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;span class="s2"&gt;  SELECT COUNT(distinct url) &lt;/span&gt;
+&lt;span class="s2"&gt;  FROM read_csv('te_primary.csv', auto_detect=true) &lt;/span&gt;
+&lt;span class="s2"&gt;  WHERE (url_path = '/' or url_path = '/te/') and url_query is null;&lt;/span&gt;
+&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Now the domain count has reduced to 6k. Let's export these domains to csv file.&lt;/p&gt;
+&lt;p&gt;To categorize these domains, Common-crawl doesn't yet provide any kind of categorisation. For now, we can use Open PageRank to sort these domains based on rank. &lt;/p&gt;
+&lt;p&gt;We can download top 10 million domains from Open PageRank&lt;sup id="fnref:pagerank"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fn:pagerank"&gt;3&lt;/a&gt;&lt;/sup&gt;. Here is a simple python script to extract telugu domains from the list.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+&lt;span class="n"&gt;domains_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'domains.csv'&lt;/span&gt;
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;domains_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'r'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;telugu_domains&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strip&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;readlines&lt;/span&gt;&lt;span class="p"&gt;()]&lt;/span&gt;
+
+&lt;span class="n"&gt;telugu_domains&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'.'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;reversed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;domain&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'.'&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;domain&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;telugu_domains&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+&lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'t10m.csv'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Domain'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;telugu_domains&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+
+&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'t10m_telugu.csv'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Now, we have list of all telugu domains sorted by rank. In the next post, we will use this list to categorize the domains.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:common-crawl"&gt;
+&lt;p&gt;&lt;a href="https://commoncrawl.org"&gt;https://commoncrawl.org&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fnref:common-crawl" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:columnar-index-wiki"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS"&gt;https://en.wikipedia.org/wiki/Column-oriented_DBMS&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:pagerank"&gt;
+&lt;p&gt;&lt;a href="https://www.domcop.com/openpagerank"&gt;https://www.domcop.com/openpagerank&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fnref:pagerank" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:duckdb"&gt;
+&lt;p&gt;&lt;a href="https://duckdb.org"&gt;https://duckdb.org&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fnref:duckdb" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>common-crawl</category><category>data-analysis</category><guid>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</guid><pubDate>Thu, 08 Dec 2022 02:11:39 GMT</pubDate></item><item><title>Common Crawl On Laptop - Extracting Subset Of Data</title><link>https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html"&gt;Extracting Subset of Common Crawl&lt;/a&gt; (this post)&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html"&gt;Building web directory&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Common Crawl(CC)&lt;sup id="fnref:common-crawl"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:common-crawl"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data.&lt;/p&gt;
 &lt;p&gt;In this post, let's learn how to extract a subset of data(entire telugu language web pages) and process it on our local machine.&lt;/p&gt;
@@ -41,7 +177,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"
 &lt;span class="c1"&gt;# from https&lt;/span&gt;
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 &lt;/pre&gt;
-&lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be use to filter out telugu pages.&lt;/p&gt;
+&lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be used to filter out telugu pages.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ python -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;import pandas as pd&lt;/span&gt;
 &lt;span class="s2"&gt;filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
@@ -602,37 +738,4 @@ bench --site example.com install-app twilio_integration
 &lt;p&gt;&lt;a href="https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721"&gt;https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html#fnref:tqa" title="Jump back to footnote 7 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>trading</category><guid>https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</guid><pubDate>Sun, 15 May 2022 07:14:24 GMT</pubDate></item><item><title>Using Frappe Framework As REST API Generator</title><link>https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;When a company plans to build a mobile application and/or a web application, they need to create REST APIs to store data. This is a common requirement for CRUD applications.&lt;/p&gt;
-&lt;p&gt;In the Python ecosystem, there are several projects like Django Rest Framework, Flask-RESTful, FastApi which does the heavy lifting of implementing REST APIs. In other ecosystems, there are similar projects/frameworks for this job.&lt;/p&gt;
-&lt;h4&gt;REST API Generators&lt;/h4&gt;
-&lt;p&gt;By using the above mentioned frameworks, developers can build REST APIs at a faster rate. Still, developers have to develop and maintain code for these APIs.&lt;/p&gt;
-&lt;p&gt;To avoid even this work, there are REST API generators like postgrest&lt;sup id="fnref:postgrest"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:postgrest"&gt;1&lt;/a&gt;&lt;/sup&gt;, prest which can instantly generate REST APIs by inspecting database schema. With these, developers just have to design the DB schema and these tools take care of generating APIs without writing a single line of code.&lt;/p&gt;
-&lt;p&gt;In this post, let us see how Frappe framework can be used as a REST API generator and what are the advantages of using Frappe.&lt;/p&gt;
-&lt;h4&gt;Frappe Framework&lt;/h4&gt;
-&lt;p&gt;Frappe framework is meta data driven low code, web framework written in Python and Javascript.&lt;/p&gt;
-&lt;h5&gt;Web UI&lt;/h5&gt;
-&lt;p&gt;Frappe framework provides web UI to create models(called doctypes in Frappe) and it provides REST API&lt;sup id="fnref:rest_api"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fn:rest_api"&gt;2&lt;/a&gt;&lt;/sup&gt; for all the models out of the box.&lt;/p&gt;
-&lt;p&gt;There is no need to write manual SQL queries to manage schema. With some training even non-developers can even manage models in Frappe.&lt;/p&gt;
-&lt;h5&gt;Roles &amp;amp; Permissions&lt;/h5&gt;
-&lt;p&gt;With traditional API generators, managing roles &amp;amp; permissions involves additional development and maintenance costs. Frappes comes with an authentication system and it has support for role based permissions out of the box. From the web UI, users can manage roles &amp;amp; permissions.&lt;/p&gt;
-&lt;h5&gt;Hooks&lt;/h5&gt;
-&lt;p&gt;Even though REST API generators give API out of the box, there will be scenarios where custom business logic needs to be hooked in for various events.
-In such scenarios, developers end up using an alternate framework/tool to manage hooks and business logic.&lt;/p&gt;
-&lt;p&gt;Frappe provides server scripts by which arbitrary python code can be executed dynamically based on model events. There is no need to set up another framework for these things.&lt;/p&gt;
-&lt;h5&gt;Utilities&lt;/h5&gt;
-&lt;p&gt;Frappe framework comes with a lot of utilities like Job Queues, Schedulers, Admin interface, socket.io etc. As the project grows and the need evolves, Frappe has all the common utilities that are required for a web application development.&lt;/p&gt;
-&lt;h5&gt;Conclusion&lt;/h5&gt;
-&lt;p&gt;When a company wants to build a solution to a problem, it should focus most of the time in solving that problem instead of wasting their time on building CRUD interfaces or REST APIs.&lt;/p&gt;
-&lt;p&gt;Frappe framework was designed to rapidly build web applications with low code. If you need a REST API generator and some additional functionality for the REST APIs, Frappe framework fits the bill and reduces a lot of development time.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:postgrest"&gt;
-&lt;p&gt;&lt;a href="https://github.com/PostgREST/postgrest"&gt;https://github.com/PostgREST/postgrest&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:postgrest" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:rest_api"&gt;
-&lt;p&gt;&lt;a href="https://frappeframework.com/docs/user/en/api/rest"&gt;https://frappeframework.com/docs/user/en/api/rest&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>frappe-framework</category><guid>https://avilpage.com/2022/04/frappe-framework-rest-api-generator.html</guid><pubDate>Sat, 30 Apr 2022 13:31:53 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>trading</category><guid>https://avilpage.com/2022/05/why-dmart-is-not-in-fno-category.html</guid><pubDate>Sun, 15 May 2022 07:14:24 GMT</pubDate></item></channel></rss>

@@ -70,7 +70,153 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/11/common-crawl-laptop-extract-subset.html" class="u-url">Common Crawl On Laptop - Extracting Subset Of Data</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/common-crawl-laptop-web-directory.html" class="u-url">Common Crawl on Laptop - Building Web Directory</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/12/common-crawl-laptop-web-directory.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-12-08T07:41:39+05:30" itemprop="datePublished" title="2022-12-08">2022-12-08</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>This series of posts discuss processing of common crawl dataset on laptop.</p>
+<ol>
+<li><a href="../2022/11/common-crawl-laptop-extract-subset.html">Extracting Subset of Common Crawl</a></li>
+<li>
+<a href="../2022/12/common-crawl-laptop-web-directory.html">Building web directory</a> (this post)</li>
+</ol>
+<h4>Introduction</h4>
+<p>In the earlier post, we have extracted all telugu web page urls to a csv file. In this post, let's explore these urls and build a web directory from it.</p>
+<h4>Explore Data</h4>
+<p>Let's see how many urls are present in the extracted subset of data.</p>
+<pre class="code literal-block">$ wc -l telugu.csv
+  <span class="m">852025</span> telugu.csv 
+</pre>
+<p>In the earlier post, we have installed <code>duckdb</code> and used it for processing parquet files. <code>duckdb</code> can execute SQL queries directly on csv file. Let's use it to explore the data stored in telugu.csv.</p>
+<p>Let's see how many unique domains are present in the data.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">    SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites</span>
+<span class="s2">    FROM read_csv('telugu.csv', auto_detect = TRUE);</span>
+<span class="s2">"""</span>
+┌──────────────┐
+│ unique_sites │
+├──────────────┤
+│ <span class="m">13632</span>        │
+└──────────────┘
+</pre>
+<p>There ~14k unique domains. Let's see page density across these domains.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">SELECT count    AS page_count,</span>
+<span class="s2">COUNT(*) AS sites</span>
+<span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
+<span class="s2">FROM read_csv('te.csv', auto_detect = TRUE)</span>
+<span class="s2">GROUP BY url_host_name_reversed) AS t</span>
+<span class="s2">GROUP BY page_count</span>
+<span class="s2">ORDER BY page_count;</span>
+<span class="s2">"""</span>
+┌────────────┬───────┐
+│ page_count │ sites │
+├────────────┼───────┤
+│ <span class="m">1</span>          │ <span class="m">6326</span>  │
+│ <span class="m">2</span>          │ <span class="m">1904</span>  │
+│ <span class="m">3</span>          │ <span class="m">733</span>   │
+│ <span class="m">4</span>          │ <span class="m">459</span>   │
+│ <span class="m">5</span>          │ <span class="m">315</span>   │
+</pre>
+<p>About ~75% of the sites have less than 5 pages. It is highly unlikely that these sites complete content is in Telugu language. After manually checking a few of these sites, I found that there are a lot of false positives. </p>
+<p>In the earlier post, we have extracted all pages where there is Telugu language content. Let's filter out pages where Telugu is <strong>primary</strong> language.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">  COPY (</span>
+<span class="s2">    SELECT * FROM read_csv('cct.csv', auto_detect=true) </span>
+<span class="s2">    WHERE content_languages like 'tel%'</span>
+<span class="s2">  ) TO 'te_primary.csv' (DELIMITER ',', HEADER TRUE);</span>
+<span class="s2">"""</span>
+</pre>
+<pre class="code literal-block">$ wc -l te_primary.csv
+  <span class="m">573130</span> te_primary.csv
+</pre>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"</span>                           
+┌──────────────┐
+│ unique_sites │
+├──────────────┤
+│ <span class="m">5666</span>         │
+└──────────────┘    
+</pre>
+<p>Let's see how page density per domain has changed.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">SELECT count    AS page_count,</span>
+<span class="s2">COUNT(*) AS sites</span>
+<span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
+<span class="s2">FROM read_csv('te_primary.csv', auto_detect = TRUE)</span>
+<span class="s2">GROUP BY url_host_name_reversed) AS t</span>
+<span class="s2">GROUP BY page_count</span>
+<span class="s2">ORDER BY page_count</span>
+<span class="s2">;</span>
+<span class="s2">"""</span>
+┌────────────┬───────┐
+│ page_count │ sites │
+├────────────┼───────┤
+│ <span class="m">1</span>          │ <span class="m">2183</span>  │
+│ <span class="m">2</span>          │ <span class="m">843</span>   │
+│ <span class="m">3</span>          │ <span class="m">235</span>   │
+│ <span class="m">4</span>          │ <span class="m">146</span>   │
+│ <span class="m">5</span>          │ <span class="m">98</span>    │
+</pre>
+<p>Page density remains almost the same. </p>
+<p>Let's filter out sites which have at least 5 pages in Telugu. This will eliminate a lot of false positives. Let's look at the most popular sites from the results.</p>
+<pre class="code literal-block">   <span class="m">1</span>   │ Rank,Domain,Open Page Rank
+   <span class="m">2</span>   │ <span class="m">25</span>,support.google.com,8.55
+   <span class="m">3</span>   │ <span class="m">57</span>,t.me,7.76
+   <span class="m">4</span>   │ <span class="m">76</span>,chrome.google.com,7.49
+   <span class="m">5</span>   │ <span class="m">163</span>,support.mozilla.org,6.99
+   <span class="m">6</span>   │ <span class="m">170</span>,groups.google.com,6.94
+</pre>
+<p>A lot of unrelated domains are present here because there might be 10+ pages in telugu in these domains as well. But we don't need these.</p>
+<p>Let's look at only home page(or translated home page) where primary content language is telugu.</p>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
+<span class="s2">  SELECT COUNT(distinct url) </span>
+<span class="s2">  FROM read_csv('te_primary.csv', auto_detect=true) </span>
+<span class="s2">  WHERE (url_path = '/' or url_path = '/te/') and url_query is null;</span>
+<span class="s2">"""</span>
+</pre>
+<p>Now the domain count has reduced to 6k. Let's export these domains to csv file.</p>
+<p>To categorize these domains, Common-crawl doesn't yet provide any kind of categorisation. For now, we can use Open PageRank to sort these domains based on rank. </p>
+<p>We can download top 10 million domains from Open PageRank<sup id="fnref:pagerank"><a class="footnote-ref" href="../2022/12/common-crawl-laptop-web-directory.html#fn:pagerank">3</a></sup>. Here is a simple python script to extract telugu domains from the list.</p>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">domains_file</span> <span class="o">=</span> <span class="s1">'domains.csv'</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">domains_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">telugu_domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+
+<span class="n">telugu_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'.'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)))</span> <span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="n">telugu_domains</span><span class="p">]</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'t10m.csv'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'Domain'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">telugu_domains</span><span class="p">)]</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'t10m_telugu.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre>
+<p>Now, we have list of all telugu domains sorted by rank. In the next post, we will use this list to categorize the domains.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:common-crawl">
+<p><a href="https://commoncrawl.org">https://commoncrawl.org</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:common-crawl" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:columnar-index-wiki">
+<p><a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">https://en.wikipedia.org/wiki/Column-oriented_DBMS</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:pagerank">
+<p><a href="https://www.domcop.com/openpagerank">https://www.domcop.com/openpagerank</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:pagerank" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:duckdb">
+<p><a href="https://duckdb.org">https://duckdb.org</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:duckdb" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/11/common-crawl-laptop-extract-subset.html" class="u-url">Common Crawl On Laptop - Extracting Subset Of Data</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -82,6 +228,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         </div>
     </header><div class="e-content entry-content">
     <p>This series of posts discuss processing of common crawl dataset on laptop.</p>
+<ol>
+<li>
+<a href="../2022/11/common-crawl-laptop-extract-subset.html">Extracting Subset of Common Crawl</a> (this post)</li>
+<li><a href="../2022/12/common-crawl-laptop-web-directory.html">Building web directory</a></li>
+</ol>
 <h4>Introduction</h4>
 <p>Common Crawl(CC)<sup id="fnref:common-crawl"><a class="footnote-ref" href="../2022/11/common-crawl-laptop-extract-subset.html#fn:common-crawl">1</a></sup> is an open repository of web containing peta bytes of data since 2008. As the dataset is huge, most of the tutorials use AWS EMR/Athena to process the data.</p>
 <p>In this post, let's learn how to extract a subset of data(entire telugu language web pages) and process it on our local machine.</p>
@@ -123,7 +274,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl<span class="o">=<
 <span class="c1"># from https</span>
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 </pre>
-<p>We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has <code>content_languages</code> column which can be use to filter out telugu pages.</p>
+<p>We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has <code>content_languages</code> column which can be used to filter out telugu pages.</p>
 <pre class="code literal-block">$ python -c <span class="s2">"""</span>
 <span class="s2">import pandas as pd</span>
 <span class="s2">filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'</span>
@@ -782,52 +933,6 @@ bench --site example.com install-app twilio_integration
 </li>
 <li id="fn:tqa">
 <p><a href="https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721">https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721</a> <a class="footnote-backref" href="../2022/05/why-dmart-is-not-in-fno-category.html#fnref:tqa" title="Jump back to footnote 7 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/04/frappe-framework-rest-api-generator.html" class="u-url">Using Frappe Framework As REST API Generator</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/04/frappe-framework-rest-api-generator.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-04-30T19:01:53+05:30" itemprop="datePublished" title="2022-04-30">2022-04-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>When a company plans to build a mobile application and/or a web application, they need to create REST APIs to store data. This is a common requirement for CRUD applications.</p>
-<p>In the Python ecosystem, there are several projects like Django Rest Framework, Flask-RESTful, FastApi which does the heavy lifting of implementing REST APIs. In other ecosystems, there are similar projects/frameworks for this job.</p>
-<h4>REST API Generators</h4>
-<p>By using the above mentioned frameworks, developers can build REST APIs at a faster rate. Still, developers have to develop and maintain code for these APIs.</p>
-<p>To avoid even this work, there are REST API generators like postgrest<sup id="fnref:postgrest"><a class="footnote-ref" href="../2022/04/frappe-framework-rest-api-generator.html#fn:postgrest">1</a></sup>, prest which can instantly generate REST APIs by inspecting database schema. With these, developers just have to design the DB schema and these tools take care of generating APIs without writing a single line of code.</p>
-<p>In this post, let us see how Frappe framework can be used as a REST API generator and what are the advantages of using Frappe.</p>
-<h4>Frappe Framework</h4>
-<p>Frappe framework is meta data driven low code, web framework written in Python and Javascript.</p>
-<h5>Web UI</h5>
-<p>Frappe framework provides web UI to create models(called doctypes in Frappe) and it provides REST API<sup id="fnref:rest_api"><a class="footnote-ref" href="../2022/04/frappe-framework-rest-api-generator.html#fn:rest_api">2</a></sup> for all the models out of the box.</p>
-<p>There is no need to write manual SQL queries to manage schema. With some training even non-developers can even manage models in Frappe.</p>
-<h5>Roles &amp; Permissions</h5>
-<p>With traditional API generators, managing roles &amp; permissions involves additional development and maintenance costs. Frappes comes with an authentication system and it has support for role based permissions out of the box. From the web UI, users can manage roles &amp; permissions.</p>
-<h5>Hooks</h5>
-<p>Even though REST API generators give API out of the box, there will be scenarios where custom business logic needs to be hooked in for various events.
-In such scenarios, developers end up using an alternate framework/tool to manage hooks and business logic.</p>
-<p>Frappe provides server scripts by which arbitrary python code can be executed dynamically based on model events. There is no need to set up another framework for these things.</p>
-<h5>Utilities</h5>
-<p>Frappe framework comes with a lot of utilities like Job Queues, Schedulers, Admin interface, socket.io etc. As the project grows and the need evolves, Frappe has all the common utilities that are required for a web application development.</p>
-<h5>Conclusion</h5>
-<p>When a company wants to build a solution to a problem, it should focus most of the time in solving that problem instead of wasting their time on building CRUD interfaces or REST APIs.</p>
-<p>Frappe framework was designed to rapidly build web applications with low code. If you need a REST API generator and some additional functionality for the REST APIs, Frappe framework fits the bill and reduces a lot of development time.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:postgrest">
-<p><a href="https://github.com/PostgREST/postgrest">https://github.com/PostgREST/postgrest</a> <a class="footnote-backref" href="../2022/04/frappe-framework-rest-api-generator.html#fnref:postgrest" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:rest_api">
-<p><a href="https://frappeframework.com/docs/user/en/api/rest">https://frappeframework.com/docs/user/en/api/rest</a> <a class="footnote-backref" href="../2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>
