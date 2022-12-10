@@ -114,7 +114,7 @@ filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'
 df = pd.read_parquet(filename, engine='fastparquet')
 ```
 
-To get better performance, we can use duckdb. Duckdb can execute SQL queries directly on parquet files with `parquet` extension.
+To get better performance, we can use duckdb. Duckdb is an in-process SQL OLAP DBMS and it can execute SQL queries directly on parquet files with `parquet` extension.
 
 ```bash
 $ brew install duckdb
