@@ -1,5 +1,5 @@
 <!--
-.. title: Local Kubernetes Cluster with K3s on Mac M1
+.. title: Local Kubernetes Cluster with K3s on MacBook M1
 .. slug: local-kubernetes-with-k3s-on-mac
 .. date: 2022-10-11 08:08:36 UTC+05:30
 .. tags: devops, kubernetes, macbook

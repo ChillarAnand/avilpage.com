@@ -1,7 +1,8 @@
 <!--
-.. title: Lesser Know Useful Utilities For MacBook
+.. title: MacBook Productivity Tools For Developers
 .. slug: lesser-know-useful-utilities-for-mac
-.. date: 2021-06-11 08:00:00 UTC+06:30
+.. date: 2021-06-11 08:00:00 UTC+05:30
+.. updated: 2022-12-11 08:00:00 UTC+05:30
 .. tags: macbook
 .. category: tech
 .. link:
@@ -17,50 +18,22 @@ Here are some of the useful but lesser know utilities for mac.
 
 <br />
 
-### iGlance
+### Alfred
+
+<img src="/images/mac-alfred.png" alt="Alfred" />
+
+Alfred[^alfred] is a productivity app for Mac which helps you to search and launch apps, files, bookmarks, and more. You can also search the web and do calculations.
+
+<br/>
+### Bandwidth+
 
 <p align="center">
-<img height="400" width="800" src="/images/iglance.png" />
+<img src="/images/bandwidth.png" />
 </p>
 
-[iGlance](https://github.com/iglance/iGlance) is a system monitor tool that shows all the stats right from the menu bar itself.
+[Bandwidth+](https://apps.apple.com/us/app/bandwidth/id490461369?mt=12) tracks network usage on Mac. If there are multiple networks, it gives detailed information about the network consumed on all the networks.
 
 <br />
-
-### Debokee Tools
-
-<p align="center">
-<img src="/images/debokee.png" />
-</p>
-
-Wondering which network your Mac connected to? If you use multiple wireless networks, then [Debokee Tools](https://apps.apple.com/us/app/debookee-tools/id1110355801?mt=12) can show the connected wireless network name directly in the menu bar.
-
-<br />
-
-### Espanso
-
-<p align="center">
-<img src="/images/espanso.gif" />
-</p>
-
-[Espanso](https://github.com/federico-terzi/espanso) is a text expanding tool that improves productivity across the system. We can set up shortcuts for frequently typed things like email, phone number etc so that we don't have to type them again and again.
-
-
-<br />
-
-### Karabiner-Elements
-
-[Karabiner Elements](https://karabiner-elements.pqrs.org/) allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc.
-
-<br />
-
-### Flycut
-
-[Flycut](https://github.com/TermiT/Flycut) is a simple clipboard manager, stores history. When you want to copy/paste frequently, this comes in handy.
-
-
-<br />
-
 ### CheatSheet
 
 <p align="center">
@@ -70,19 +43,34 @@ Wondering which network your Mac connected to? If you use multiple wireless netw
 
 Ever wondered what are the keybindings when using any application? With [CheatSheet](https://www.mediaatelier.com/CheatSheet/), we can just hold `⌘` key bit longer, and it will show all the available shortcuts in the application.
 
-<br />
 
-### Bandwidth+
+<br />
+### Debokee Tools
 
 <p align="center">
-<img src="/images/bandwidth.png" />
+<img src="/images/debokee.png" />
 </p>
 
-[Bandwidth+](https://apps.apple.com/us/app/bandwidth/id490461369?mt=12) tracks network usage on Mac. If there are multiple networks, it gives detailed information about the network consumed on all the networks.
+Wondering which network your Mac connected to? If you use multiple wireless networks, then [Debokee Tools](https://apps.apple.com/us/app/debookee-tools/id1110355801?mt=12) can show the connected wireless network name directly in the menu bar.
 
 
 <br />
+### Espanso
 
+<p align="center">
+<img src="/images/espanso.gif" />
+</p>
+
+[Espanso](https://github.com/federico-terzi/espanso) is a text expanding tool that improves productivity across the system. We can set up shortcuts for frequently typed things like email, phone number etc., so that we don't have to type them again and again.
+
+
+<br />
+### Flycut
+
+[Flycut](https://github.com/TermiT/Flycut) is a simple clipboard manager, stores history. When you want to copy/paste frequently, this comes in handy.
+
+
+<br />
 ### Grand Perspective
 
 <p align="center">
@@ -93,7 +81,17 @@ If Mac is running low on disk space, [Grand Perspective](https://apps.apple.com/
 
 
 <br />
+### Karabiner-Elements
+
+[Karabiner Elements](https://karabiner-elements.pqrs.org/) allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc.
+
+We can use space bar as space and control as well with a simple [modification rule](https://github.com/ChillarAnand/init/blob/main/karabiner_space_control.json).
+<br />
+
 
 ### Conclusion
 
 These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.
+
+
+[^alfred]: [Alfred](https://www.alfredapp.com/)
