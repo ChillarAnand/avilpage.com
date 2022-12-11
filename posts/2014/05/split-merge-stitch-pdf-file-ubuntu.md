@@ -2,8 +2,8 @@
 .. title: Split/Merge PDF Files From Command Line
 .. slug: split-merge-stitch-pdf-file-ubuntu
 .. date: 2014-05-07 13:44:00
-.. category: programming, linux
-.. tags: command-line
+.. category: programming
+.. tags: command-line, linux
 .. description: A simple way to split & merge multiple pdf files with pdf tool kit in linux terminal.
 -->
 
