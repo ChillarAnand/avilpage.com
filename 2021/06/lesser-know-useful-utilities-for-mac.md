@@ -22,7 +22,7 @@ Here are some of the useful but lesser know utilities for mac.
 
 <img src="/images/mac-alfred.png" alt="Alfred" />
 
-Alfred[^alfred] is a productivity app for Mac which helps you to search and launch apps, files, bookmarks, and more. You can also search the web and do calculations.
+[Alfred](https://alfredapp.com) is a productivity app for Mac which helps you to search and launch apps, files, bookmarks, and more. You can also search the web and do calculations.
 
 <br/>
 ### Bandwidth+
@@ -86,12 +86,18 @@ If Mac is running low on disk space, [Grand Perspective](https://apps.apple.com/
 [Karabiner Elements](https://karabiner-elements.pqrs.org/) allows users to customize keyboard via simple modifications, complex modifications, function key modifications etc.
 
 We can use space bar as space and control as well with a simple [modification rule](https://github.com/ChillarAnand/init/blob/main/karabiner_space_control.json).
+
+
 <br />
+### Stats
+
+<p align="center">
+<img src="/images/mac-stats.png" />
+</p>
+
+Stats[^stats] is a simple app that shows the CPU, memory, disk, and network usage in the menu bar. It also shows the temperature of the CPU.
 
 
 ### Conclusion
 
 These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.
-
-
-[^alfred]: [Alfred](https://www.alfredapp.com/)
