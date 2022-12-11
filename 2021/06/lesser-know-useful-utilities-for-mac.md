@@ -77,7 +77,18 @@ Wondering which network your Mac connected to? If you use multiple wireless netw
 <img src="/images/grand_perspective.jpg" />
 </p>
 
-If Mac is running low on disk space, [Grand Perspective](https://apps.apple.com/us/app/grandperspective/id1111570163?mt=12) shows a graphical view of the disk usage. It will be much easier to pinpoint large files that are consuming the disk and then clean them up.
+If Mac is running low on disk space, [Grand Perspective](https://apps.apple.com/us/app/grandperspective/id1111570163) shows a graphical view of the disk usage. It will be much easier to pinpoint large files that are consuming the disk and then clean them up.
+
+
+<br/>
+### Hotkey
+
+<p align="center">
+<img src="/images/mac-hotkey.png" />
+</p>
+
+
+[Hotkey](https://apps.apple.com/app/hotkey-app/id975890633) is a simple app that allows you to set up global shortcuts for frequently used actions. It can be used to open applications, folders, websites, and more.
 
 
 <br />
@@ -95,9 +106,10 @@ We can use space bar as space and control as well with a simple [modification ru
 <img src="/images/mac-stats.png" />
 </p>
 
-Stats[^stats] is a simple app that shows the CPU, memory, disk, and network usage in the menu bar. It also shows the temperature of the CPU.
+[Stats](https://github.com/exelban/stats) is a simple app that shows the CPU, memory, disk, and network usage in the menu bar. It also shows the temperature of the CPU.
 
 
+<br />
 ### Conclusion
 
 These are some useful utilities for day to day usage. In the upcoming articles, lets learn about useful command line utilities that improve productivity on a daily basis.
