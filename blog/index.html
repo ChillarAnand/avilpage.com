@@ -70,13 +70,89 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../hands-on-apache-kafka-10-minutes.html" class="u-url">Hands-on Apache Kafka in 10 Minutes</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
             </span></p>
             <p class="dateline">
-            <a href="../hands-on-apache-kafka-10-minutes.html" rel="bookmark">
+            <a href="../2022/12/hands-on-rabbitmq-tutorial.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-12-21T05:12:21+05:30" itemprop="datePublished" title="2022-12-21">2022-12-21</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>A short hands-on guide to get started with RabbitMQ for people who are in a hurry.</p>
+<h4>What is RabbitMQ?</h4>
+<p><img src="../images/rabbitmq-overview.png" alt="RabbitMQ"></p>
+<p style="text-align:center;">Image Credit: CloudAMQP</p>
+
+<p>RabbitMQ<sup id="fnref:wikipedia-rabbitmq"><a class="footnote-ref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fn:wikipedia-rabbitmq">1</a></sup> is an open-source message broker software that implements the Advanced Message Queuing Protocol (AMQP). With RabbitMQ, producer and consumer applications can communicate asynchronously, and they will be completely decoupled. </p>
+<h4>RabbitMQ Terminology</h4>
+<p><b>Producer</b>: A producer is a client that publishes messages to the RabbitMQ broker. Producers write data to exchanges.</p>
+<p><b>Consumer</b>: A consumer is a client that subscribes to queues and processes the messages. Consumers read data from queues.</p>
+<p><b>Queue</b>: A queue is a buffer that stores messages. A queue is bound to an exchange and receives messages from it.</p>
+<p><b>Exchange</b>: An exchange is a message routing agent that receives messages from producers and routes them to queues.</p>
+<p><b>Binding</b>: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.</p>
+<h4>RabbitMQ Setup</h4>
+<p>We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:</p>
+<pre class="code literal-block">$ docker run --rm --name<span class="o">=</span>rabbitmq -p <span class="m">15672</span>:15672 -p <span class="m">5672</span>:5672 rabbitmq:3-management
+</pre>
+<p>This image has rabbitmq management plugin enabled. We can access the management UI at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and password are both <code>guest</code>.</p>
+<p>It also has <code>rabbitmqadmin</code> command line tool installed, which can manage RabbitMQ. </p>
+<h4>Passing Messages from UI</h4>
+<p>We can use the management UI to send and receive messages. We can create a new queue and exchange from the <code>Queues</code> section.</p>
+<p><img src="../images/rabbitmq-queue.png" alt="RabbitMQ Queue"></p>
+<p>Once a queue is created, we can publish and consume messages from that queue. </p>
+<p><img src="../images/rabbitmq-publish.png" alt="RabbitMQ Publish"></p>
+<h4>Passing Messages from CLI</h4>
+<p>Instead of using web UI, we can use <code>rabbitmqadmin</code> CLI tool<sup id="fnref:rabbitmq-cli"><a class="footnote-ref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli">2</a></sup> to send and receive messages. Let's create a topic exchange and a queue. </p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> exchange <span class="nv">type</span><span class="o">=</span>direct <span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; exchange declared</span>
+</pre>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> queue <span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; queue declared</span>
+</pre>
+<p>Let's publish a message to the exchange:</p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin publish <span class="nv">routing_key</span><span class="o">=</span>orders <span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
+<span class="c1"># =&gt; Message published</span>
+</pre>
+<p>To receive messages from the queue, we can use the following command:</p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin get <span class="nv">queue</span><span class="o">=</span>orders
+</pre>
+<p><img src="../images/rabbitmq-get-message.png" alt="RabbitMQ CLI"></p>
+<h4>Passing Messages from REST API</h4>
+<p>We can also use REST API to send and receive messages. Let's create a new exchange and queue:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"direct"}'</span> http://localhost:15672/api/exchanges/%2f/orders
+</pre>
+<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"topic", "durable": true}'</span> http://localhost:15672/api/queues/%2f/orders
+</pre>
+<p>We can publish a message to the exchange:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X POST -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span> http://localhost:15672/api/exchanges/%2f/orders/publish
+</pre>
+<p>To receive messages from the queue, we can use the following command:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
+</pre>
+<h4>Conclusion</h4>
+<p>In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:wikipedia-rabbitmq">
+<p><a href="https://en.wikipedia.org/wiki/RabbitMQ">https://en.wikipedia.org/wiki/RabbitMQ</a> <a class="footnote-backref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fnref:wikipedia-rabbitmq" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:rabbitmq-cli">
+<p><a href="https://www.rabbitmq.com/management-cli.html">https://www.rabbitmq.com/management-cli.html</a> <a class="footnote-backref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka Tutorial</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/12/hands-on-apache-kafka-tutorial.html" rel="bookmark">
             <time class="published dt-published" datetime="2022-12-17T07:12:21+05:30" itemprop="datePublished" title="2022-12-17">2022-12-17</time></a>
             </p>
         </div>
@@ -85,7 +161,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this guide, we will learn what is Apache Kafka, how to install and run it. We will also learn how to create/modify a topic and produce/consume messages from it.</p>
 <h4>What is Apache Kafka?</h4>
 <p><img src="../images/kafka-overview.jpg" alt="Apache Kafka"></p>
-<p>Apache Kafka<sup id="fnref:wikipedia apache kafka"><a class="footnote-ref" href="../hands-on-apache-kafka-10-minutes.html#fn:wikipedia%20apache%20kafka">1</a></sup> is a distributed event store and streaming-processing platform. It is used to
+<p>Apache Kafka<sup id="fnref:wikipedia apache kafka"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:wikipedia%20apache%20kafka">1</a></sup> is a distributed event store and streaming-processing platform. It is used to
 build real-time data pipelines and streaming apps. It is horizontally scalable, fault-tolerant, and has high throughput.</p>
 <h4>Kafka Terminology</h4>
 <p><b>Topic</b>: A topic is a category or feed name to which records are published/consumed. It is configured with a set of
@@ -103,7 +179,7 @@ connect to ZooKeeper.</p>
 <p><b>Kraft</b>: Kraft(Apache Kafka Raft) is a consensus protocol that is used to manage the metadata of the Kafka cluster.
 It is introduced to remove dependency on ZooKeeper.</p>
 <h4>Installing Apache Kafka</h4>
-<p>We can use cp-all-in-one<sup id="fnref:cp-all-in-one"><a class="footnote-ref" href="../hands-on-apache-kafka-10-minutes.html#fn:cp-all-in-one">2</a></sup> docker compose files to run Apache Kafka locally. This image contains all the
+<p>We can use cp-all-in-one<sup id="fnref:cp-all-in-one"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one">2</a></sup> docker compose files to run Apache Kafka locally. This image contains all the
 components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
 Proxy, Confluent Control Center, and others.</p>
 <pre class="code literal-block">$ git clone https://github.com/confluentinc/cp-all-in-one
@@ -163,7 +239,7 @@ Topic: <span class="nb">test</span> TopicId: 7CckqkXsQXCNY0MNHYRv2w PartitionCou
 <pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-consumer-groups --bootstrap-server localhost:9092 --list
 </pre>
 <h4>Kafka Rest Proxy</h4>
-<p>Kafka Rest Proxy<sup id="fnref:kafka rest proxy"><a class="footnote-ref" href="../hands-on-apache-kafka-10-minutes.html#fn:kafka%20rest%20proxy">3</a></sup> is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
+<p>Kafka Rest Proxy<sup id="fnref:kafka rest proxy"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy">3</a></sup> is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
 and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
 protocol or clients.</p>
 <p>To produce messages to a <code>test</code> topic with curl:</p>
@@ -188,13 +264,13 @@ protocol or clients.</p>
 <hr>
 <ol>
 <li id="fn:wikipedia apache kafka">
-<p><a href="https://en.wikipedia.org/wiki/Apache_Kafka">https://en.wikipedia.org/wiki/Apache_Kafka</a> <a class="footnote-backref" href="../hands-on-apache-kafka-10-minutes.html#fnref:wikipedia%20apache%20kafka" title="Jump back to footnote 1 in the text">↩</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Apache_Kafka">https://en.wikipedia.org/wiki/Apache_Kafka</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:wikipedia%20apache%20kafka" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
 <li id="fn:cp-all-in-one">
-<p><a href="https://github.com/confluentinc/cp-all-in-one">https://github.com/confluentinc/cp-all-in-one</a> <a class="footnote-backref" href="../hands-on-apache-kafka-10-minutes.html#fnref:cp-all-in-one" title="Jump back to footnote 2 in the text">↩</a></p>
+<p><a href="https://github.com/confluentinc/cp-all-in-one">https://github.com/confluentinc/cp-all-in-one</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:cp-all-in-one" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 <li id="fn:kafka rest proxy">
-<p><a href="https://github.com/confluentinc/kafka-rest">https://github.com/confluentinc/kafka-rest</a> <a class="footnote-backref" href="../hands-on-apache-kafka-10-minutes.html#fnref:kafka%20rest%20proxy" title="Jump back to footnote 3 in the text">↩</a></p>
+<p><a href="https://github.com/confluentinc/kafka-rest">https://github.com/confluentinc/kafka-rest</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:kafka%20rest%20proxy" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
 </ol>
 </div>
@@ -933,71 +1009,6 @@ $ fastboot reboot
 </li>
 <li id="fn:dcmtk">
 <p><a href="https://github.com/DCMTK/dcmtk">https://github.com/DCMTK/dcmtk</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/06/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/06/twilio-frappe.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-06-30T11:46:02+05:30" itemprop="datePublished" title="2022-06-30">2022-06-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>Frappe<sup id="fnref:frappe"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:frappe">1</a></sup> is a low code framework for rapidly developing web applications. Twilio<sup id="fnref:twilio"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:twilio">2</a></sup> is a SAAS platform for SMS, Video etc with APIs.</p>
-<p>In this post, lets see how to setup Twilio Integration with Frappe.</p>
-<h4>Sending SMS</h4>
-<p>Frappe has inbuilt SMS manager<sup id="fnref:sms"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:sms">3</a></sup> where users can confgiure SMS gateway and send SMS to mobiles directly.</p>
-<p>To send out messages/SMS with Twilio, we just need to configure Twilio API keys in SMS settings.</p>
-<p>First, create an account in Twilio and collect the following information from the account.</p>
-<ul>
-<li>
-<p>Twilio account SID</p>
-</li>
-<li>
-<p>Gateway URL</p>
-</li>
-<li>
-<p>Auth Token</p>
-</li>
-<li>
-<p>"From" Phone number</p>
-</li>
-</ul>
-<p>These details need to be added to SMS settings in the following format.</p>
-<p><img src="../images/frappe-twilio.png"></p>
-<p>For <code>authorization</code> parameter, we need to enter base64 encoded value of <code>account_sid:auth_token</code>.</p>
-<p>Once these values are set, we can go to SMS Center and send out dummy messages to ensure all settings are configured properly.</p>
-<h4>Twilio App</h4>
-<p>If we want to manage incoming/outgoing voice calls or send messages via WhatsApp, we need to install <code>twilio-integration</code><sup id="fnref:tl"><a class="footnote-ref" href="../2022/06/twilio-frappe.html#fn:tl">4</a></sup> app. We can install the app on our site by running the following commands.</p>
-<pre class="code literal-block">bench get-app https://github.com/frappe/twilio-integration.git
-bench --site example.com install-app twilio_integration
-</pre>
-<p>Once the app is installed, we can go to <code>Twilio Settings</code> and configure the keys as shown below.</p>
-<p><img src="../images/twilio-settings.png"></p>
-<p>After that we can setup <code>Voice Call Settings</code> to manage incoming/outgoing calls.</p>
-<p><img src="../images/twilio-voice.png"></p>
-<p>To send messages via Whatsapp, we can set the channel as <code>Whatsapp</code> in Notification doctype.</p>
-<p><img src="../images/twilio-whatsapp.png"></p>
-<p>This is how we can send SMS, Whatsapp messages &amp; manage calls via Twilio using Frappe Framework.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:frappe">
-<p><a href="https://github.com/frappe/frappe">https://github.com/frappe/frappe</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:frappe" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:twilio">
-<p><a href="https://www.twilio.com">https://www.twilio.com</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:twilio" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:sms">
-<p><a href="https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting">https://docs.erpnext.com/docs/v13/user/manual/en/setting-up/sms-setting</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:sms" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:tl">
-<p><a href="https://github.com/frappe/twilio-integration">https://github.com/frappe/twilio-integration</a> <a class="footnote-backref" href="../2022/06/twilio-frappe.html#fnref:tl" title="Jump back to footnote 4 in the text">↩</a></p>
 </li>
 </ol>
 </div>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="A practical guide to getting started with rabbitmq message broker.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hands-on RabbitMQ Tutorial | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="hands-on-apache-kafka-tutorial.html" title="Hands-on Apache Kafka Tutorial" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Hands-on RabbitMQ Tutorial">
+<meta property="og:url" content="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html">
+<meta property="og:description" content="A practical guide to getting started with rabbitmq message broker.">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-12-21T05:12:21+05:30">
+<meta property="article:tag" content="rabbitmq">
+<meta property="article:tag" content="tutorial">
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Articles</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+            </span></p>
+
+            <p class="dateline">
+
+
+                    5 min read
+
+            </p>
+
+            <p class="dateline">
+                <a href="#" rel="bookmark">
+                    <time class="published dt-published" datetime="2022-12-21T05:12:21+05:30" itemprop="datePublished" title="2022-12-21">2022-12-21</time></a>
+            </p>
+            
+
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>A short hands-on guide to get started with RabbitMQ for people who are in a hurry.</p>
+<h4>What is RabbitMQ?</h4>
+<p><img src="../../images/rabbitmq-overview.png" alt="RabbitMQ"></p>
+<p style="text-align:center;">Image Credit: CloudAMQP</p>
+
+<p>RabbitMQ<sup id="fnref:wikipedia-rabbitmq"><a class="footnote-ref" href="hands-on-rabbitmq-tutorial.html#fn:wikipedia-rabbitmq">1</a></sup> is an open-source message broker software that implements the Advanced Message Queuing Protocol (AMQP). With RabbitMQ, producer and consumer applications can communicate asynchronously, and they will be completely decoupled. </p>
+<h4>RabbitMQ Terminology</h4>
+<p><b>Producer</b>: A producer is a client that publishes messages to the RabbitMQ broker. Producers write data to exchanges.</p>
+<p><b>Consumer</b>: A consumer is a client that subscribes to queues and processes the messages. Consumers read data from queues.</p>
+<p><b>Queue</b>: A queue is a buffer that stores messages. A queue is bound to an exchange and receives messages from it.</p>
+<p><b>Exchange</b>: An exchange is a message routing agent that receives messages from producers and routes them to queues.</p>
+<p><b>Binding</b>: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.</p>
+<h4>RabbitMQ Setup</h4>
+<p>We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:</p>
+<pre class="code literal-block">$ docker run --rm --name<span class="o">=</span>rabbitmq -p <span class="m">15672</span>:15672 -p <span class="m">5672</span>:5672 rabbitmq:3-management
+</pre>
+<p>This image has rabbitmq management plugin enabled. We can access the management UI at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and password are both <code>guest</code>.</p>
+<p>It also has <code>rabbitmqadmin</code> command line tool installed, which can manage RabbitMQ. </p>
+<h4>Passing Messages from UI</h4>
+<p>We can use the management UI to send and receive messages. We can create a new queue and exchange from the <code>Queues</code> section.</p>
+<p><img src="../../images/rabbitmq-queue.png" alt="RabbitMQ Queue"></p>
+<p>Once a queue is created, we can publish and consume messages from that queue. </p>
+<p><img src="../../images/rabbitmq-publish.png" alt="RabbitMQ Publish"></p>
+<h4>Passing Messages from CLI</h4>
+<p>Instead of using web UI, we can use <code>rabbitmqadmin</code> CLI tool<sup id="fnref:rabbitmq-cli"><a class="footnote-ref" href="hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli">2</a></sup> to send and receive messages. Let's create a topic exchange and a queue. </p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> exchange <span class="nv">type</span><span class="o">=</span>direct <span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; exchange declared</span>
+</pre>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> queue <span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; queue declared</span>
+</pre>
+<p>Let's publish a message to the exchange:</p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin publish <span class="nv">routing_key</span><span class="o">=</span>orders <span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
+<span class="c1"># =&gt; Message published</span>
+</pre>
+<p>To receive messages from the queue, we can use the following command:</p>
+<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin get <span class="nv">queue</span><span class="o">=</span>orders
+</pre>
+<p><img src="../../images/rabbitmq-get-message.png" alt="RabbitMQ CLI"></p>
+<h4>Passing Messages from REST API</h4>
+<p>We can also use REST API to send and receive messages. Let's create a new exchange and queue:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"direct"}'</span> http://localhost:15672/api/exchanges/%2f/orders
+</pre>
+<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"topic", "durable": true}'</span> http://localhost:15672/api/queues/%2f/orders
+</pre>
+<p>We can publish a message to the exchange:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X POST -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span> http://localhost:15672/api/exchanges/%2f/orders/publish
+</pre>
+<p>To receive messages from the queue, we can use the following command:</p>
+<pre class="code literal-block">$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
+</pre>
+<h4>Conclusion</h4>
+<p>In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:wikipedia-rabbitmq">
+<p><a href="https://en.wikipedia.org/wiki/RabbitMQ">https://en.wikipedia.org/wiki/RabbitMQ</a> <a class="footnote-backref" href="hands-on-rabbitmq-tutorial.html#fnref:wikipedia-rabbitmq" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:rabbitmq-cli">
+<p><a href="https://www.rabbitmq.com/management-cli.html">https://www.rabbitmq.com/management-cli.html</a> <a class="footnote-backref" href="hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/rabbitmq.html" rel="tag">rabbitmq</a></li>
+            <li><a class="tag p-category" href="../../tags/tutorial.html" rel="tag">tutorial</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="hands-on-apache-kafka-tutorial.html" rel="prev" title="Hands-on Apache Kafka Tutorial">Previous post</a>
+            </li>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

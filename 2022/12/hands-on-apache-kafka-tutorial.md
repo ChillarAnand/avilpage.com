@@ -1,9 +1,9 @@
 <!--
-.. title: Hands-on Apache Kafka in 10 Minutes
-.. slug: hands-on-apache-kafka-10-minutes
+.. title: Hands-on Apache Kafka Tutorial
+.. slug: hands-on-apache-kafka-tutorial
 .. date: 2022-12-17 07:12:21 UTC+05:30
-.. tags: kafka, 10-minute-guide
-.. category: programming
+.. tags: kafka, tutorial
+.. category: backend
 .. link: 
 .. description: A short hands on practical guide to get started with Apache Kafka for people who are in a hurry.
 .. type: text
