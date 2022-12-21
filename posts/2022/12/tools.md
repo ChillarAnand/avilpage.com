@@ -1,8 +1,8 @@
 <!--
 .. title: Tools That I Use Regularly
 .. slug: tools
-.. date: 2022-09-15 10:34:38 UTC+05:30
-.. tags: tech, draft
+.. date: 2022-12-21 10:34:38 UTC+05:30
+.. tags: tech
 .. category: tech
 .. link:
 .. description: Recommended tools for android, ios, linux, mac.
@@ -22,15 +22,15 @@ This post is just to keep a track of tools that I use on various platforms.
 
 [Flud](https://play.google.com/store/apps/details?id=com.delphicoder.flud)
 
-[GBWhatsApp](https://alexmods.com/wamods-en/)
+[//]: # ([GBWhatsApp]&#40;https://alexmods.com/wamods-en/&#41;)
 
-[Lucky Patcher](https://www.luckypatchers.com)
+[//]: # ([Lucky Patcher]&#40;https://www.luckypatchers.com&#41;)
 
 [Network Cell Info & WiFi](https://play.google.com/store/apps/details?id=com.wilysis.cellinfo)
 
-[scrcpy](https://github.com/Genymobile/scrcpy)
-
 [Open Signal](https://play.google.com/store/apps/details?id=com.staircase3.opensignal)
+
+[scrcpy](https://github.com/Genymobile/scrcpy)
 
 [Termux](https://play.google.com/store/apps/details?id=com.termux)
 
@@ -46,36 +46,46 @@ This post is just to keep a track of tools that I use on various platforms.
 
 ### Macbook
 
+[Alfred](https://www.alfredapp.com/)
+
+[Bandwidth+](https://apps.apple.com/us/app/bandwidth/id490461369)
+
 [CheatSheet](https://www.mediaatelier.com/CheatSheet)
 
-[Debookee Tools](https://apps.apple.com/us/app/debookee-tools/id1110355801?mt=12)
+[Debookee Tools](https://apps.apple.com/us/app/debookee-tools/id1110355801)
 
-[Flycut](https://github.com/TermiT/Flycut)
+[FlyCut](https://github.com/TermiT/Flycut)
 
 [Grand Perspective](https://en.wikipedia.org/wiki/GrandPerspective)
 
-[iGlance](https://github.com/iglance/iGlance)
+[HotKey](https://apps.apple.com/us/app/hotkey-app/id975890633)
 
 [Karabiner Elements](https://karabiner-elements.pqrs.org/)
 
-
+[Stats](https://github.com/exelban/stats)
 
 
 ### Linux
 
+[atop](https://www.atoptool.nl/)
+
+[byobu](https://byobu.org/)
+
 [xcape](https://github.com/alols/xcape)
-
-
 
 
 ### Cross Platform
 
-[Fing](https://www.fing.com)
-
 [Brave](https://brave.com)
+
+[Calibre](https://calibre-ebook.com/)
+
+[Docker](https://www.docker.com/)
 
 [Espanso](https://espanso.org)
 
-
+[Fing](https://www.fing.com)
 
 [mitmproxy](https://mitmproxy.org)
+
+[oh-my-zsh](https://ohmyz.sh)
