@@ -1,4 +1,4 @@
-### Avilpage
+### Avil Page
 
 This is personal/tech blog of Chillar Anand
 
