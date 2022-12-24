@@ -1,7 +1,7 @@
 <!--
 .. title: This Post is Mostly Written by GitHub Copilot
 .. slug: letting-copilot-to-write-technical-posts
-.. date: 2022-12-24 01:32:12 UTC+05:30
+.. date: 2022-12-24 14:32:12 UTC+05:30
 .. tags: writing, copilot, draft
 .. category: programming
 .. link:
