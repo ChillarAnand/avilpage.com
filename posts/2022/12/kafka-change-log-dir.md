@@ -1,7 +1,7 @@
 <!--
 .. title: Change Kafka Log Directory & Format It
 .. slug: change-kafka-log-dir-format
-.. date: 2022-12-23 12:19:41 UTC+05:30
+.. date: 2022-12-24 12:19:41 UTC+05:30
 .. tags: kafka, debugging, backend
 .. category: backend
 .. link: 
