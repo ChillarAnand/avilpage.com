@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to change apache kafka log directory and format it?">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Change Kafka Log Directory &amp; Format It | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2022/12/change-kafka-log-dir-format.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="hands-on-rabbitmq-tutorial.html" title="Hands-on RabbitMQ Tutorial" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Change Kafka Log Directory &amp; Format It">
+<meta property="og:url" content="https://avilpage.com/2022/12/change-kafka-log-dir-format.html">
+<meta property="og:description" content="How to change apache kafka log directory and format it?">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-12-23T12:19:41+05:30">
+<meta property="article:tag" content="backend">
+<meta property="article:tag" content="debugging">
+<meta property="article:tag" content="kafka">
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Articles</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Change Kafka Log Directory &amp; Format It</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+            </span></p>
+
+            <p class="dateline">
+
+
+                    4 min read
+
+            </p>
+
+            <p class="dateline">
+                <a href="#" rel="bookmark">
+                    <time class="published dt-published" datetime="2022-12-23T12:19:41+05:30" itemprop="datePublished" title="2022-12-23">2022-12-23</time></a>
+            </p>
+            
+
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <h4>Problem Statement</h4>
+<p>On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.</p>
+<pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,217<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">139</span> <span class="k">in</span> <span class="m">5198</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,536<span class="o">]</span> ERROR <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> registerBroker: unable to start processing because of NotControllerException. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:35,834<span class="o">]</span> ERROR <span class="o">[</span>RaftManager <span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> Had an error during log cleaning <span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
+org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to <span class="m">927939</span> of partition __cluster_metadata-0 since it is larger than the high watermark <span class="m">926507</span>
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,035<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">294</span> <span class="k">in</span> <span class="m">137</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+java.lang.RuntimeException: Cant create a new <span class="k">in</span>-memory snapshot at epoch <span class="m">926507</span> because there is already a snapshot with epoch <span class="m">927938</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,252<span class="o">]</span> ERROR Exiting Kafka due to fatal exception during startup. <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+</pre>
+<h4>Debugging</h4>
+<p>I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.</p>
+<h4>Solution</h4>
+<p>I create a new temporary directory and set the log directory to that.</p>
+<pre class="code literal-block">$ mkdir /tmp/kafka-logs
+
+<span class="c1"># inside server.properties</span>
+log.dirs<span class="o">=</span>/tmp/kafka-logs
+</pre>
+<p>When I started the Kafka server, it failed.</p>
+<pre class="code literal-block">$ kafka-server-start server.properties
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:30:50,018<span class="o">]</span> ERROR Exiting Kafka due to fatal exception <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+org.apache.kafka.common.KafkaException: No <span class="sb">`</span>meta.properties<span class="sb">`</span> found <span class="k">in</span> /tmp/ <span class="o">(</span>have you run <span class="sb">`</span>kafka-storage.sh<span class="sb">`</span> to format the directory?<span class="o">)</span>
+</pre>
+<p>I ran the <code>kafka-storage</code> script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.</p>
+<pre class="code literal-block">$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
+<span class="c1">#</span>
+<span class="c1">#Thu Oct 20 11:48:12 IST 2022</span>
+cluster.id<span class="o">=</span>5MB5lq-XT-6JzQqJeIuhWQ
+node.id<span class="o">=</span><span class="m">1</span>
+<span class="nv">version</span><span class="o">=</span><span class="m">1</span>      
+</pre>
+<p>Now, we can format the new directory.</p>
+<pre class="code literal-block">$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3.
+</pre>
+<p>After changing log directory, Kafka has started working.</p>
+<pre class="code literal-block">$ kafka-start-server /path/to/server.properties
+</pre>
+<p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug futher.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/backend.html" rel="tag">backend</a></li>
+            <li><a class="tag p-category" href="../../tags/debugging.html" rel="tag">debugging</a></li>
+            <li><a class="tag p-category" href="../../tags/kafka.html" rel="tag">kafka</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="hands-on-rabbitmq-tutorial.html" rel="prev" title="Hands-on RabbitMQ Tutorial">Previous post</a>
+            </li>
+        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

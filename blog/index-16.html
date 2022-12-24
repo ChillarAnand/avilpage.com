@@ -71,7 +71,65 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/06/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - #3 Setup Modality Worklist SCP</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/07/dicom-modality-worklist-scp.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-07-31T18:19:29+05:30" itemprop="datePublished" title="2022-07-31">2022-07-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information</p>
+<h4>Using Orthanc Worklist Plugin</h4>
+<p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
+<p>Generate default configuration by running the following command.</p>
+<pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
+</pre>
+<p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
+<pre class="code literal-block">  "Plugins" : [
+    "libModalityWorklists.dylib"
+  ],
+
+  "Worklists" : {
+    "Enable": true,
+    "Database": "./WorklistsDatabase",
+    "FilterIssuerAet": false,
+    "LimitAnswers": 0
+  },
+
+  "DicomModalities" : {
+      "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
+      "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
+  }
+</pre>
+<p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
+<pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
+</pre>
+<p>This will retrieve all worklist files from the server.</p>
+<h4>Using wlmscpfs</h4>
+<p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
+<pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+</pre>
+<p>Once the service is started modalities can send C-FIND query to this service.</p>
+<h4>Conclusion</h4>
+<p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:owp">
+<p><a href="https://book.orthanc-server.com/plugins/worklists-plugin.html">https://book.orthanc-server.com/plugins/worklists-plugin.html</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:dcmtk">
+<p><a href="https://github.com/DCMTK/dcmtk">https://github.com/DCMTK/dcmtk</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/06/twilio-frappe.html" class="u-url">Twilio Integration With Frappe Framework</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
