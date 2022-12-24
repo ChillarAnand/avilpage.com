@@ -70,7 +70,64 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/change-kafka-log-dir-format.html" class="u-url">Change Kafka Log Directory &amp; Format It</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/12/change-kafka-log-dir-format.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-12-23T12:19:41+05:30" itemprop="datePublished" title="2022-12-23">2022-12-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.</p>
+<pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,217<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">139</span> <span class="k">in</span> <span class="m">5198</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,536<span class="o">]</span> ERROR <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> registerBroker: unable to start processing because of NotControllerException. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:35,834<span class="o">]</span> ERROR <span class="o">[</span>RaftManager <span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> Had an error during log cleaning <span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
+org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to <span class="m">927939</span> of partition __cluster_metadata-0 since it is larger than the high watermark <span class="m">926507</span>
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,035<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">294</span> <span class="k">in</span> <span class="m">137</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+java.lang.RuntimeException: Cant create a new <span class="k">in</span>-memory snapshot at epoch <span class="m">926507</span> because there is already a snapshot with epoch <span class="m">927938</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,252<span class="o">]</span> ERROR Exiting Kafka due to fatal exception during startup. <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+</pre>
+<h4>Debugging</h4>
+<p>I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.</p>
+<h4>Solution</h4>
+<p>I create a new temporary directory and set the log directory to that.</p>
+<pre class="code literal-block">$ mkdir /tmp/kafka-logs
+
+<span class="c1"># inside server.properties</span>
+log.dirs<span class="o">=</span>/tmp/kafka-logs
+</pre>
+<p>When I started the Kafka server, it failed.</p>
+<pre class="code literal-block">$ kafka-server-start server.properties
+
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:30:50,018<span class="o">]</span> ERROR Exiting Kafka due to fatal exception <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+org.apache.kafka.common.KafkaException: No <span class="sb">`</span>meta.properties<span class="sb">`</span> found <span class="k">in</span> /tmp/ <span class="o">(</span>have you run <span class="sb">`</span>kafka-storage.sh<span class="sb">`</span> to format the directory?<span class="o">)</span>
+</pre>
+<p>I ran the <code>kafka-storage</code> script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.</p>
+<pre class="code literal-block">$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
+<span class="c1">#</span>
+<span class="c1">#Thu Oct 20 11:48:12 IST 2022</span>
+cluster.id<span class="o">=</span>5MB5lq-XT-6JzQqJeIuhWQ
+node.id<span class="o">=</span><span class="m">1</span>
+<span class="nv">version</span><span class="o">=</span><span class="m">1</span>      
+</pre>
+<p>Now, we can format the new directory.</p>
+<pre class="code literal-block">$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3.
+</pre>
+<p>After changing log directory, Kafka has started working.</p>
+<pre class="code literal-block">$ kafka-start-server /path/to/server.properties
+</pre>
+<p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug futher.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -951,64 +1008,6 @@ $ fastboot reboot
 </li>
 <li id="fn:ss">
 <p><a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script">https://frappeframework.com/docs/user/en/desk/scripting/server-script</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - #3 Setup Modality Worklist SCP</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/07/dicom-modality-worklist-scp.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-07-31T18:19:29+05:30" itemprop="datePublished" title="2022-07-31">2022-07-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information</p>
-<h4>Using Orthanc Worklist Plugin</h4>
-<p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
-<p>Generate default configuration by running the following command.</p>
-<pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
-</pre>
-<p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
-<pre class="code literal-block">  "Plugins" : [
-    "libModalityWorklists.dylib"
-  ],
-
-  "Worklists" : {
-    "Enable": true,
-    "Database": "./WorklistsDatabase",
-    "FilterIssuerAet": false,
-    "LimitAnswers": 0
-  },
-
-  "DicomModalities" : {
-      "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
-      "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
-  }
-</pre>
-<p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
-<pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
-</pre>
-<p>This will retrieve all worklist files from the server.</p>
-<h4>Using wlmscpfs</h4>
-<p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="../2022/07/dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
-<pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
-</pre>
-<p>Once the service is started modalities can send C-FIND query to this service.</p>
-<h4>Conclusion</h4>
-<p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:owp">
-<p><a href="https://book.orthanc-server.com/plugins/worklists-plugin.html">https://book.orthanc-server.com/plugins/worklists-plugin.html</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:owp" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:dcmtk">
-<p><a href="https://github.com/DCMTK/dcmtk">https://github.com/DCMTK/dcmtk</a> <a class="footnote-backref" href="../2022/07/dicom-modality-worklist-scp.html#fnref:dcmtk" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>

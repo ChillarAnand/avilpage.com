@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about backend)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_backend.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 21 Dec 2022 02:01:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about backend)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_backend.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 24 Dec 2022 09:14:20 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Change Kafka Log Directory &amp; Format It</title><link>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;p&gt;On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;139&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;5198&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; registerBroker: unable to start processing because of NotControllerException. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;RaftManager &lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; Had an error during log cleaning &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to &lt;span class="m"&gt;927939&lt;/span&gt; of partition __cluster_metadata-0 since it is larger than the high watermark &lt;span class="m"&gt;926507&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;294&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;137&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+java.lang.RuntimeException: Cant create a new &lt;span class="k"&gt;in&lt;/span&gt;-memory snapshot at epoch &lt;span class="m"&gt;926507&lt;/span&gt; because there is already a snapshot with epoch &lt;span class="m"&gt;927938&lt;/span&gt;
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception during startup. &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Debugging&lt;/h4&gt;
+&lt;p&gt;I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.&lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;p&gt;I create a new temporary directory and set the log directory to that.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ mkdir /tmp/kafka-logs
+
+&lt;span class="c1"&gt;# inside server.properties&lt;/span&gt;
+log.dirs&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kafka-logs
+&lt;/pre&gt;
+&lt;p&gt;When I started the Kafka server, it failed.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ kafka-server-start server.properties
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.KafkaException: No &lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt; found &lt;span class="k"&gt;in&lt;/span&gt; /tmp/ &lt;span class="o"&gt;(&lt;/span&gt;have you run &lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt; to format the directory?&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;I ran the &lt;code&gt;kafka-storage&lt;/code&gt; script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
+&lt;span class="c1"&gt;#&lt;/span&gt;
+&lt;span class="c1"&gt;#Thu Oct 20 11:48:12 IST 2022&lt;/span&gt;
+cluster.id&lt;span class="o"&gt;=&lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
+node.id&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;      
+&lt;/pre&gt;
+&lt;p&gt;Now, we can format the new directory.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting /tmp/kafka-logs/ with metadata.version &lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
+&lt;/pre&gt;
+&lt;p&gt;After changing log directory, Kafka has started working.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ kafka-start-server /path/to/server.properties
+&lt;/pre&gt;
+&lt;p&gt;Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug futher.&lt;/p&gt;</description><category>backend</category><category>debugging</category><category>kafka</category><guid>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</guid><pubDate>Fri, 23 Dec 2022 06:49:41 GMT</pubDate></item><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
 &lt;h4&gt;What is RabbitMQ?&lt;/h4&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-overview.png" alt="RabbitMQ"&gt;&lt;/p&gt;
 &lt;p style="text-align:center;"&gt;Image Credit: CloudAMQP&lt;/p&gt;
