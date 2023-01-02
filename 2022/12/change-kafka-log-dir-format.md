@@ -1,8 +1,8 @@
 <!--
 .. title: Change Kafka Log Directory & Format It
 .. slug: change-kafka-log-dir-format
-.. date: 2022-12-23 12:19:41 UTC+05:30
-.. tags: kafka, debugging, backend
+.. date: 2022-12-24 12:19:41 UTC+05:30
+.. tags: kafka, debugging, message-broker
 .. category: backend
 .. link: 
 .. description: How to change apache kafka log directory and format it?
@@ -77,4 +77,4 @@ After changing log directory, Kafka has started working.
 $ kafka-start-server /path/to/server.properties
 ```
 
-Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug futher.
+Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.

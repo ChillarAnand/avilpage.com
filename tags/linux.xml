@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about linux)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 15 Dec 2022 04:43:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about linux)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 02 Jan 2023 09:20:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cat users.csv
+id,user,active
+&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
+
+$ column -s, -t &amp;lt; users.csv
+id  user        active
+&lt;span class="m"&gt;1&lt;/span&gt;   John Doe    &lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;   Will Smith  &lt;span class="nb"&gt;false&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;tail&lt;/code&gt; command-line utility prints the last 10 lines of a file. It can be used with &lt;code&gt;-f&lt;/code&gt; option to follow the file as it grows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ tail -f users.csv
+id,user,active
+&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
+&lt;/pre&gt;
+&lt;p&gt;To format the output of &lt;code&gt;tail -f&lt;/code&gt; command, we can't use &lt;code&gt;column&lt;/code&gt; command directly. &lt;code&gt;column&lt;/code&gt; command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ tail -f users.csv &lt;span class="p"&gt;|&lt;/span&gt; column -s, -t
+&lt;/pre&gt;
+&lt;p&gt;So, the above command won't work. &lt;/p&gt;
+&lt;p&gt;As the goal is to follow the output of the file, we can use &lt;code&gt;watch&lt;/code&gt; command for this. &lt;code&gt;watch&lt;/code&gt; command executes a command periodically, and displays its output. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"tail -n 20 users.csv | column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.&lt;/p&gt;
+&lt;p&gt;As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use &lt;code&gt;head&lt;/code&gt; command in addition to &lt;code&gt;tail&lt;/code&gt; command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"(head -n1 &amp;amp;&amp;amp; tail -n20) &amp;lt; users.csv| column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to &lt;code&gt;column&lt;/code&gt; command, and displayed.&lt;/p&gt;
+&lt;p&gt;Here is a screenshot of the output of a demo csv.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="pipe tail output to column" src="https://avilpage.com/images/pipe-tail-output-into-column.png"&gt;&lt;/p&gt;
+&lt;p&gt;This makes it easy to watch the output of a file as it grows.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</guid><pubDate>Mon, 02 Jan 2023 00:56:28 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ uname -mp
 arm64 arm
@@ -268,31 +299,4 @@ Out[13]: 1416649608.58369
 
 &lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;48&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;calendar&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timegm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dt&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;utctimetuple&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
 &lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;48&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="mi"&gt;1416669150&lt;/span&gt;
-&lt;/pre&gt;</description><category>linux</category><category>python</category><guid>https://avilpage.com/2014/11/python-unix-timestamp-utc-and-their.html</guid><pubDate>Sat, 22 Nov 2014 12:56:00 GMT</pubDate></item><item><title>Split/Merge PDF Files From Command Line</title><link>https://avilpage.com/2014/05/split-merge-stitch-pdf-file-ubuntu.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Sometimes we come across a situation where we need to split or stitch the pdf document. The simplest and easiest way is to use PDF Toolkit on the command line.&lt;/p&gt;
-&lt;p&gt;Let's first install it using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo apt-get install pdftk
-&lt;/pre&gt;
-&lt;p&gt;Now that pdftk is installed, lets take a smaple pdf file and split it into parts.&lt;/p&gt;
-&lt;h4&gt;Splitting PDF&lt;/h4&gt;
-&lt;p&gt;We can split the entire pdf into single pages using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pdftk myFile.pdf burst
-&lt;/pre&gt;
-&lt;p&gt;We can also split only specific page by specifying the page number:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pdftk myFile.pdf cat &lt;span class="m"&gt;21&lt;/span&gt; output page_21.pdf
-&lt;/pre&gt;
-&lt;p&gt;You can also split specific set of pages by using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pdftk myFile.pdf cat  &lt;span class="m"&gt;21&lt;/span&gt;-end output 21_to_last.pdf
-&lt;/pre&gt;
-&lt;h4&gt;Merging PDF&lt;/h4&gt;
-&lt;p&gt;Now that we have scissored a lot of pages. Let's go ahead and stitch a few of them.&lt;/p&gt;
-&lt;p&gt;We can merge specific pages by using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pdftk page_21.pdf 21_to_end.pdf cat output stitched.pdf
-&lt;/pre&gt;
-&lt;p&gt;This will stitch the two pdf's we created above.&lt;/p&gt;
-&lt;p&gt;If we have a huge list of single age pdf's in a folder and if we want to stitch them together, we can run the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pdftk *.pdf cat output newFile.pdf
-&lt;/pre&gt;
-&lt;p&gt;This will stitch all the pdf in the current directory to a single pdf.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;That's it. We have successfully split and merged pdf files using pdftk. Hope you find this useful.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2014/05/split-merge-stitch-pdf-file-ubuntu.html</guid><pubDate>Wed, 07 May 2014 08:14:00 GMT</pubDate></item></channel></rss>
+&lt;/pre&gt;</description><category>linux</category><category>python</category><guid>https://avilpage.com/2014/11/python-unix-timestamp-utc-and-their.html</guid><pubDate>Sat, 22 Nov 2014 12:56:00 GMT</pubDate></item></channel></rss>
