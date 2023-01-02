@@ -71,55 +71,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/03/convert-browser-requests-to-python-requests.html" class="u-url">Convert Browser Requests To Python Requests For Scraping</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2018/03/convert-browser-requests-to-python-requests.html" rel="bookmark">
-            <time class="published dt-published" datetime="2018-03-26T21:21:21+05:30" itemprop="datePublished" title="2018-03-26">2018-03-26</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.</p>
-<p>If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.</p>
-<p>Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.</p>
-<p>From browser developer options, we can capture <a href="https://curl.haxx.se/">curl</a> equivalent command for any request from <code>Network</code> tab with <code>copy as cURL</code> option.</p>
-<p align="center">
-<img src="../images/requests-python-browser.png" height="300px" width="600"></p>
-
-<p>Here is one such request.</p>
-<pre class="code literal-block"><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
-</pre>
-<p>Once we get curl command, we can directly convert it to python requests using <a href="https://pypi.python.org/pypi/uncurl/">uncurl</a>.</p>
-<pre class="code literal-block">$ pip install uncurl
-</pre>
-<p>Since the copied curl request is in clipboard, we can pipe it to uncurl.</p>
-<pre class="code literal-block"><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
-
-<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://avilpage.com/dummy"</span><span class="p">,</span>
-    <span class="n">data</span><span class="o">=</span><span class="s1">'page=2&amp;category=python'</span><span class="p">,</span>
-    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"</span><span class="p">,</span>
-        <span class="s2">"Accept-Encoding"</span><span class="p">:</span> <span class="s2">"gzip, deflate"</span><span class="p">,</span>
-        <span class="s2">"Accept-Language"</span><span class="p">:</span> <span class="s2">"en-US,en;q=0.9,ms;q=0.8,te;q=0.7"</span><span class="p">,</span>
-        <span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"max-age=0"</span><span class="p">,</span>
-        <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/x-www-form-urlencoded"</span><span class="p">,</span>
-        <span class="s2">"Origin"</span><span class="p">:</span> <span class="s2">"http://avilpage.com"</span><span class="p">,</span>
-        <span class="s2">"Referer"</span><span class="p">:</span> <span class="s2">"http://avilpage.com/"</span><span class="p">,</span>
-        <span class="s2">"Upgrade-Insecure-Requests"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
-        <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"</span>
-    <span class="p">},</span>
-    <span class="n">cookies</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">"ASPSESSIONIDSABAAQDA"</span><span class="p">:</span> <span class="s2">"FKOHHAGAFODIIGNNNDFKNGLM"</span>
-    <span class="p">},</span>
-<span class="p">)</span>
-</pre>
-<p>If we have to use some other programming language, we can use <a href="https://curl.trillworks.com/">curlconverter</a> to convert curl command to Go or Node.js equivalent code.</p>
-<p>Now, we can use this code to get contents of current page and then continue scraping from the urls in it.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -614,6 +566,34 @@ $ cat /dev/rfcomm0
 hello from android
 </pre>
 <p>This way, we can communicate with any bluetooth module using a laptop or a smart phone.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2017/08/arduino-programming-from-text-editor-cli.html" class="u-url">Arduino Programming From Text Editor &amp; Command Line</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2017/08/arduino-programming-from-text-editor-cli.html" rel="bookmark">
+            <time class="published dt-published" datetime="2017-08-24T13:29:59Z" itemprop="datePublished" title="2017-08-24">2017-08-24</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>To program Arduino, we can use <a href="https://www.arduino.cc/en/main/software">Arduino IDE</a> which facilitates writing and uploading code to the board.</p>
+<p>If we are using a text editor for programming, it will have lot of customisations which speed up development process. In such case, it is better to use same text editor for arduino programming too.</p>
+<p>I use Emacs as IDE and there is <a href="https://github.com/bookest/arduino-mode">arduino mode</a> for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.</p>
+<p>Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.</p>
+<p>In Linux system, to upload a file called <code>foo.ino</code>, we can run</p>
+<pre class="code literal-block">arduino --port /dev/ttyACM0 --board arduino:avr:mega
+ <span class="se">\ </span>--upload foo.ino
+</pre>
+<p>An alternate way is to use <a href="https://github.com/platformio/platformio-core/">platformio</a>, an opensource tool chain for IoT development.</p>
+<p>It can be installed using pip.</p>
+<pre class="code literal-block">pip install platformio
+</pre>
+<p>Once it is installed, code can be directly uploaded using <code>ci</code> command.</p>
+<pre class="code literal-block">pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
+</pre>
+<p>By this we can use text editor to write code and arduino/platformio to upload code to arduino board.</p>
     </div>
     </article>
 </div>

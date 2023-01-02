@@ -70,14 +70,58 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/change-kafka-log-dir-format.html" class="u-url">Change Kafka Log Directory &amp; Format It</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/01/pipe-tail-output-into-column.html" class="u-url">Pipe tail output into column</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/01/pipe-tail-output-into-column.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-01-02T06:26:28+05:30" itemprop="datePublished" title="2023-01-02">2023-01-02</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><code>column</code> command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. </p>
+<pre class="code literal-block">$ cat users.csv
+id,user,active
+<span class="m">1</span>,John Doe,true
+<span class="m">2</span>,Will Smith,false
+
+$ column -s, -t &lt; users.csv
+id  user        active
+<span class="m">1</span>   John Doe    <span class="nb">true</span>
+<span class="m">2</span>   Will Smith  <span class="nb">false</span>
+</pre>
+<p><code>tail</code> command-line utility prints the last 10 lines of a file. It can be used with <code>-f</code> option to follow the file as it grows.</p>
+<pre class="code literal-block">$ tail -f users.csv
+id,user,active
+<span class="m">1</span>,John Doe,true
+<span class="m">2</span>,Will Smith,false
+</pre>
+<p>To format the output of <code>tail -f</code> command, we can't use <code>column</code> command directly. <code>column</code> command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. </p>
+<pre class="code literal-block">$ tail -f users.csv <span class="p">|</span> column -s, -t
+</pre>
+<p>So, the above command won't work. </p>
+<p>As the goal is to follow the output of the file, we can use <code>watch</code> command for this. <code>watch</code> command executes a command periodically, and displays its output. </p>
+<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
+</pre>
+<p>This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.</p>
+<p>As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use <code>head</code> command in addition to <code>tail</code> command.</p>
+<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
+</pre>
+<p>This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to <code>column</code> command, and displayed.</p>
+<p>Here is a screenshot of the output of a demo csv.</p>
+<p><img alt="pipe tail output to column" src="../images/pipe-tail-output-into-column.png"></p>
+<p>This makes it easy to watch the output of a file as it grows.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/change-kafka-log-dir-format.html" class="u-url">Change Kafka Log Directory &amp; Format It</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
             </span></p>
             <p class="dateline">
             <a href="../2022/12/change-kafka-log-dir-format.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-12-23T12:19:41+05:30" itemprop="datePublished" title="2022-12-23">2022-12-23</time></a>
+            <time class="published dt-published" datetime="2022-12-24T12:19:41+05:30" itemprop="datePublished" title="2022-12-24">2022-12-24</time></a>
             </p>
         </div>
     </header><div class="e-content entry-content">
@@ -125,7 +169,7 @@ Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3
 <p>After changing log directory, Kafka has started working.</p>
 <pre class="code literal-block">$ kafka-start-server /path/to/server.properties
 </pre>
-<p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug futher.</p>
+<p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.</p>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
         <div class="metadata">
@@ -938,76 +982,6 @@ $ fastboot reboot
 </li>
 <li id="fn:xda">
 <p><a href="https://forum.xda-developers.com/t/guide-magisk-root-access-for-redmi-9-mediatek-helio-g80-without-twrp.4149531/">Guide @ XDA</a> <a class="footnote-backref" href="../2022/09/how-to-root-redmi-9-prime-lancelot.html#fnref:xda" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/08/frappe-health-snomed-ct.html" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/08/frappe-health-snomed-ct.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-08-31T16:29:13+05:30" itemprop="datePublished" title="2022-08-31">2022-08-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>Frappe Health<sup id="fnref:FH"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:FH">1</a></sup> is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework<sup id="fnref:ff"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ff">2</a></sup>, a low code highly customizable framework.</p>
-<p>Frappe Health provides support for integrating various medical coding standards<sup id="fnref:mcs"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:mcs">3</a></sup>. In the patient encounter doctype, doctors can search and add pre-configured medical codes.</p>
-<p><img src="../images/snomed-frappe-health1.png"></p>
-<p>In this article, let’s see how to integrate Frappe Health with SNOMED CT.</p>
-<h4>SNOMED CT Integration</h4>
-<p>SNOMED CT<sup id="fnref:snomed"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:snomed">4</a></sup> is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.</p>
-<p>Since SNOMED CT is a huge dataset, it takes a lot of effort to import the entire dataset into Frappe Health. It also provides REST API to query SNOMED terms. Also, if your healthcare organization is focusing on only a specific domain, it doesn’t make sense to import the entire dataset.</p>
-<p>In such scenarios, it is better to map only the required diagnosis, symptoms, and other clinical objects.</p>
-<p>Frappe Health has a Diagnosis doctype where practitioners can enter diagnosis. We can add an additional field called <code>Snomed Code</code> to link diagnosis to relevant SNOMED code.</p>
-<p><img src="../images/snomed-frappe-health2.png"></p>
-<p>Frappe framework provides server script<sup id="fnref:ss"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ss">5</a></sup> to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.</p>
-<p><img src="../images/snomed-frappe-health3.png"></p>
-<p>Here is a simple python server script that adds relevant snomed codes to diagnosis.</p>
-<pre class="code literal-block"><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">diagnosis</span>
-
-<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&amp;limit=50&amp;term="</span> <span class="o">+</span> <span class="n">diagnosis</span> <span class="o">+</span> <span class="s2">"&amp;conceptActive=true&amp;lang=english&amp;skipTo=0&amp;returnLimit=100"</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">make_get_request</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="n">code</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'id'</span><span class="p">]</span>
-<span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'fsn'</span><span class="p">][</span><span class="s1">'term'</span><span class="p">]</span>
-
-<span class="n">mc</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">get_doc</span><span class="p">({</span>
-    <span class="s1">'doctype'</span><span class="p">:</span> <span class="s1">'Medical Code'</span><span class="p">,</span>
-    <span class="s1">'code'</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
-    <span class="s1">'medical_code_standard'</span><span class="p">:</span> <span class="s1">'SNOMED'</span><span class="p">,</span>
-    <span class="s1">'description'</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
-<span class="p">})</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">mc</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="k">pass</span>
-
-<span class="n">doc</span><span class="o">.</span><span class="n">medical_code</span> <span class="o">=</span> <span class="n">medical_code</span><span class="o">.</span><span class="n">name</span>
-</pre>
-<p>After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.</p>
-<p><img src="../images/snomed-frappe-health4.png"></p>
-<p>The server script makes sure all the diagnosis objects are codified automatically without any manual effort.</p>
-<p>Since Frappe Framework &amp; Frappe Health are low code, extremely customizable, we are able to integrate it with SNOMED in just a few minutes. Similarly, we can codify other clinical objects like Symptoms, Procedures, Medications, etc.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:FH">
-<p><a href="https://github.com/frappe/health">https://github.com/frappe/health</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:ff">
-<p><a href="https://frappeframework.com">https://frappeframework.com</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:mcs">
-<p><a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard">https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:snomed">
-<p><a href="https://www.nlm.nih.gov/healthit/snomedct/index.html">https://www.nlm.nih.gov/healthit/snomedct/index.html</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-<li id="fn:ss">
-<p><a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script">https://frappeframework.com/docs/user/en/desk/scripting/server-script</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text">↩</a></p>
 </li>
 </ol>
 </div>

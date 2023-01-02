@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 21 Dec 2022 02:01:00 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl on Laptop - Building Web Directory</title><link>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 02 Jan 2023 09:20:41 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cat users.csv
+id,user,active
+&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
+
+$ column -s, -t &amp;lt; users.csv
+id  user        active
+&lt;span class="m"&gt;1&lt;/span&gt;   John Doe    &lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;   Will Smith  &lt;span class="nb"&gt;false&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;tail&lt;/code&gt; command-line utility prints the last 10 lines of a file. It can be used with &lt;code&gt;-f&lt;/code&gt; option to follow the file as it grows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ tail -f users.csv
+id,user,active
+&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
+&lt;/pre&gt;
+&lt;p&gt;To format the output of &lt;code&gt;tail -f&lt;/code&gt; command, we can't use &lt;code&gt;column&lt;/code&gt; command directly. &lt;code&gt;column&lt;/code&gt; command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ tail -f users.csv &lt;span class="p"&gt;|&lt;/span&gt; column -s, -t
+&lt;/pre&gt;
+&lt;p&gt;So, the above command won't work. &lt;/p&gt;
+&lt;p&gt;As the goal is to follow the output of the file, we can use &lt;code&gt;watch&lt;/code&gt; command for this. &lt;code&gt;watch&lt;/code&gt; command executes a command periodically, and displays its output. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"tail -n 20 users.csv | column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.&lt;/p&gt;
+&lt;p&gt;As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use &lt;code&gt;head&lt;/code&gt; command in addition to &lt;code&gt;tail&lt;/code&gt; command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"(head -n1 &amp;amp;&amp;amp; tail -n20) &amp;lt; users.csv| column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to &lt;code&gt;column&lt;/code&gt; command, and displayed.&lt;/p&gt;
+&lt;p&gt;Here is a screenshot of the output of a demo csv.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="pipe tail output to column" src="https://avilpage.com/images/pipe-tail-output-into-column.png"&gt;&lt;/p&gt;
+&lt;p&gt;This makes it easy to watch the output of a file as it grows.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</guid><pubDate>Mon, 02 Jan 2023 00:56:28 GMT</pubDate></item><item><title>Common Crawl on Laptop - Building Web Directory</title><link>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html"&gt;Extracting Subset of Common Crawl&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html"&gt;Building web directory&lt;/a&gt; (this post)&lt;/li&gt;
@@ -603,57 +634,4 @@ $ heroku container:release web
 &lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>aws</category><category>devops</category><category>HealthIT</category><category>kubernetes</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Set Default Date For Date Hierarchy In Django Admin</title><link>https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;When we monitor daily events from django admin, most of the time we are interested in events related to today. Django admin provides date based drill down navigation page via ModelAdmin.date_hierarchy&lt;sup id="fnref:dh"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html#fn:dh"&gt;1&lt;/a&gt;&lt;/sup&gt; option. With this, we can navigate to any date to filter out events related to that date.&lt;/p&gt;
-&lt;p&gt;One problem with this drill down navigation is, we have to navigate to todays date every time we open a model in admin. Since we are interested in todays events most of the time, setting todays date as default filtered date will solve the problem.&lt;/p&gt;
-&lt;h4&gt;Set Default Date For Date Hierarchy&lt;/h4&gt;
-&lt;p&gt;Let us create an admin page to show all the users who logged in today. Since User model is already registered in admin by default, let us create a proxy model to register it again.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib.auth.models&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;User&lt;/span&gt;
-
-
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-        &lt;span class="n"&gt;proxy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;True&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;Lets register this model in admin to show logged in users details along with date hierarchy.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;admin&lt;/span&gt;
-
-
-&lt;span class="nd"&gt;@admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;MetaUserAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ModelAdmin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="n"&gt;list_display&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'is_active'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;date_hierarchy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'last_login'&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;If we open &lt;code&gt;DjangoUser&lt;/code&gt; model in admin page, it will show drill down navigation bar like this.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/django-admin-date.png"&gt;&lt;/p&gt;
-&lt;p&gt;Now, if we drill down to a particular date, django adds additional query params to the admin url. For example, if we visit 2020-06-26 date, corresponding query params are &lt;code&gt;/?last_login__day=26&amp;amp;last_login__month=6&amp;amp;last_login__year=2020&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;We can override changelist view and set default params to todays date if there are no query params. If there are query params then render the original response.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;@admin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;DjangoUser&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;MetaUserAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;admin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ModelAdmin&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;list_display&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'is_active'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;date_hierarchy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'last_login'&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;changelist_view&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;GET&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;changelist_view&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nc"&gt;date&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nc"&gt;date&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'day', 'month', 'year'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;field_keys&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'{}__{}'.format(self.date_hierarchy, i) for i in params&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;field_values&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;getattr(date, i) for i in params&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;query_params&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;field_keys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;field_values&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{}?{}'&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;path&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;urlencode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;query_params&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;redirect&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;Now if we open the same admin page, it will redirect to todays date by default.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/django-admin-date2.png"&gt;&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have seen how to set a default date for &lt;code&gt;date_hierarchy&lt;/code&gt; in admin page. We can also achieve similar filtering by settiing default values for &lt;code&gt;search_filter&lt;/code&gt; or &lt;code&gt;list_filter&lt;/code&gt; which will filter items related to any specific date.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:dh"&gt;
-&lt;p&gt;&lt;a href="https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.date_hierarchy"&gt;Django docs - ModelAdmin.date_hierarchy&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html#fnref:dh" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>django</category><guid>https://avilpage.com/2020/07/default-date-hierarchy-in-django-admin.html</guid><pubDate>Fri, 31 Jul 2020 14:36:49 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>aws</category><category>devops</category><category>HealthIT</category><category>kubernetes</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item></channel></rss>

@@ -71,7 +71,77 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - #3 Setup Modality Worklist SCP</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/08/frappe-health-snomed-ct.html" class="u-url">Integrating Frappe Health with SNOMED CT</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/08/frappe-health-snomed-ct.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-08-31T16:29:13+05:30" itemprop="datePublished" title="2022-08-31">2022-08-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Frappe Health<sup id="fnref:FH"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:FH">1</a></sup> is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework<sup id="fnref:ff"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ff">2</a></sup>, a low code highly customizable framework.</p>
+<p>Frappe Health provides support for integrating various medical coding standards<sup id="fnref:mcs"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:mcs">3</a></sup>. In the patient encounter doctype, doctors can search and add pre-configured medical codes.</p>
+<p><img src="../images/snomed-frappe-health1.png"></p>
+<p>In this article, let’s see how to integrate Frappe Health with SNOMED CT.</p>
+<h4>SNOMED CT Integration</h4>
+<p>SNOMED CT<sup id="fnref:snomed"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:snomed">4</a></sup> is a comprehensive collection of medical terms which helps consistent data exchange between systems. It can also cross-map to other standards like ICD-10, LOINC, etc.</p>
+<p>Since SNOMED CT is a huge dataset, it takes a lot of effort to import the entire dataset into Frappe Health. It also provides REST API to query SNOMED terms. Also, if your healthcare organization is focusing on only a specific domain, it doesn’t make sense to import the entire dataset.</p>
+<p>In such scenarios, it is better to map only the required diagnosis, symptoms, and other clinical objects.</p>
+<p>Frappe Health has a Diagnosis doctype where practitioners can enter diagnosis. We can add an additional field called <code>Snomed Code</code> to link diagnosis to relevant SNOMED code.</p>
+<p><img src="../images/snomed-frappe-health2.png"></p>
+<p>Frappe framework provides server script<sup id="fnref:ss"><a class="footnote-ref" href="../2022/08/frappe-health-snomed-ct.html#fn:ss">5</a></sup> to dynamically run python script on any document event. We can write a simple python script to fetch relevant SNOMED code using SNOMED REST API. This script can be executed whenever the clinical object gets modified.</p>
+<p><img src="../images/snomed-frappe-health3.png"></p>
+<p>Here is a simple python server script that adds relevant snomed codes to diagnosis.</p>
+<pre class="code literal-block"><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">diagnosis</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">"https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&amp;limit=50&amp;term="</span> <span class="o">+</span> <span class="n">diagnosis</span> <span class="o">+</span> <span class="s2">"&amp;conceptActive=true&amp;lang=english&amp;skipTo=0&amp;returnLimit=100"</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">make_get_request</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'id'</span><span class="p">]</span>
+<span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'items'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">'concept'</span><span class="p">][</span><span class="s1">'fsn'</span><span class="p">][</span><span class="s1">'term'</span><span class="p">]</span>
+
+<span class="n">mc</span> <span class="o">=</span> <span class="n">frappe</span><span class="o">.</span><span class="n">get_doc</span><span class="p">({</span>
+    <span class="s1">'doctype'</span><span class="p">:</span> <span class="s1">'Medical Code'</span><span class="p">,</span>
+    <span class="s1">'code'</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+    <span class="s1">'medical_code_standard'</span><span class="p">:</span> <span class="s1">'SNOMED'</span><span class="p">,</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">insert</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">doc</span><span class="o">.</span><span class="n">medical_code</span> <span class="o">=</span> <span class="n">medical_code</span><span class="o">.</span><span class="n">name</span>
+</pre>
+<p>After saving this script, if we go ahead and create or modify any diagnosis, it will automatically add relevant Snomed code to the diagnosis as shown below.</p>
+<p><img src="../images/snomed-frappe-health4.png"></p>
+<p>The server script makes sure all the diagnosis objects are codified automatically without any manual effort.</p>
+<p>Since Frappe Framework &amp; Frappe Health are low code, extremely customizable, we are able to integrate it with SNOMED in just a few minutes. Similarly, we can codify other clinical objects like Symptoms, Procedures, Medications, etc.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:FH">
+<p><a href="https://github.com/frappe/health">https://github.com/frappe/health</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:FH" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ff">
+<p><a href="https://frappeframework.com">https://frappeframework.com</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ff" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:mcs">
+<p><a href="https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard">https://frappehealth.com/docs/v13/user/manual/en/healthcare/medical_code_standard</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:mcs" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:snomed">
+<p><a href="https://www.nlm.nih.gov/healthit/snomedct/index.html">https://www.nlm.nih.gov/healthit/snomedct/index.html</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:snomed" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:ss">
+<p><a href="https://frappeframework.com/docs/user/en/desk/scripting/server-script">https://frappeframework.com/docs/user/en/desk/scripting/server-script</a> <a class="footnote-backref" href="../2022/08/frappe-health-snomed-ct.html#fnref:ss" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/07/dicom-modality-worklist-scp.html" class="u-url">Mastering DICOM - #3 Setup Modality Worklist SCP</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -254,6 +324,52 @@ bench --site example.com install-app twilio_integration
 </li>
 <li id="fn:tqa">
 <p><a href="https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721">https://tradingqna.com/t/why-dmart-is-not-in-f-o/119721</a> <a class="footnote-backref" href="../2022/05/why-dmart-is-not-in-fno-category.html#fnref:tqa" title="Jump back to footnote 7 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/04/frappe-framework-rest-api-generator.html" class="u-url">Using Frappe Framework As REST API Generator</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/04/frappe-framework-rest-api-generator.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-04-30T19:01:53+05:30" itemprop="datePublished" title="2022-04-30">2022-04-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>When a company plans to build a mobile application and/or a web application, they need to create REST APIs to store data. This is a common requirement for CRUD applications.</p>
+<p>In the Python ecosystem, there are several projects like Django Rest Framework, Flask-RESTful, FastApi which does the heavy lifting of implementing REST APIs. In other ecosystems, there are similar projects/frameworks for this job.</p>
+<h4>REST API Generators</h4>
+<p>By using the above mentioned frameworks, developers can build REST APIs at a faster rate. Still, developers have to develop and maintain code for these APIs.</p>
+<p>To avoid even this work, there are REST API generators like postgrest<sup id="fnref:postgrest"><a class="footnote-ref" href="../2022/04/frappe-framework-rest-api-generator.html#fn:postgrest">1</a></sup>, prest which can instantly generate REST APIs by inspecting database schema. With these, developers just have to design the DB schema and these tools take care of generating APIs without writing a single line of code.</p>
+<p>In this post, let us see how Frappe framework can be used as a REST API generator and what are the advantages of using Frappe.</p>
+<h4>Frappe Framework</h4>
+<p>Frappe framework is meta data driven low code, web framework written in Python and Javascript.</p>
+<h5>Web UI</h5>
+<p>Frappe framework provides web UI to create models(called doctypes in Frappe) and it provides REST API<sup id="fnref:rest_api"><a class="footnote-ref" href="../2022/04/frappe-framework-rest-api-generator.html#fn:rest_api">2</a></sup> for all the models out of the box.</p>
+<p>There is no need to write manual SQL queries to manage schema. With some training even non-developers can even manage models in Frappe.</p>
+<h5>Roles &amp; Permissions</h5>
+<p>With traditional API generators, managing roles &amp; permissions involves additional development and maintenance costs. Frappes comes with an authentication system and it has support for role based permissions out of the box. From the web UI, users can manage roles &amp; permissions.</p>
+<h5>Hooks</h5>
+<p>Even though REST API generators give API out of the box, there will be scenarios where custom business logic needs to be hooked in for various events.
+In such scenarios, developers end up using an alternate framework/tool to manage hooks and business logic.</p>
+<p>Frappe provides server scripts by which arbitrary python code can be executed dynamically based on model events. There is no need to set up another framework for these things.</p>
+<h5>Utilities</h5>
+<p>Frappe framework comes with a lot of utilities like Job Queues, Schedulers, Admin interface, socket.io etc. As the project grows and the need evolves, Frappe has all the common utilities that are required for a web application development.</p>
+<h5>Conclusion</h5>
+<p>When a company wants to build a solution to a problem, it should focus most of the time in solving that problem instead of wasting their time on building CRUD interfaces or REST APIs.</p>
+<p>Frappe framework was designed to rapidly build web applications with low code. If you need a REST API generator and some additional functionality for the REST APIs, Frappe framework fits the bill and reduces a lot of development time.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:postgrest">
+<p><a href="https://github.com/PostgREST/postgrest">https://github.com/PostgREST/postgrest</a> <a class="footnote-backref" href="../2022/04/frappe-framework-rest-api-generator.html#fnref:postgrest" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:rest_api">
+<p><a href="https://frappeframework.com/docs/user/en/api/rest">https://frappeframework.com/docs/user/en/api/rest</a> <a class="footnote-backref" href="../2022/04/frappe-framework-rest-api-generator.html#fnref:rest_api" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>

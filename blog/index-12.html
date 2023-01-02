@@ -71,62 +71,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/11/how-to-install-private-python-packages-with-pip.html" class="u-url">How To Install Private Python Packages With Pip</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2018/11/how-to-install-private-python-packages-with-pip.html" rel="bookmark">
-            <time class="published dt-published" datetime="2019-01-31T12:12:12+05:30" itemprop="datePublished" title="2019-01-31">2019-01-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>To distribute python code, we need to package it and host it somewhere, so that users can install and use it. If the code is public, it can be published to <a href="https://pypi.org">PyPi</a> or any public repository, so that anyone can access it. If the code is private, we need to provide proper authentication mechanism before allowing users to access it.</p>
-<p>In this article, we will see how to use <a href="https://packaging.python.org/key_projects/#pip">pip</a> to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.</p>
-<h4>Packaging</h4>
-<p>To package python project, we need to create <code>setup.py</code> file which is build script for setuptools. Below is a sample setup file to create a package named <code>library</code>.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">setuptools</span>
-
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"README.md"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-    <span class="n">long_description</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-
-<span class="n">setuptools</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">"library"</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="s2">"0.0.1"</span><span class="p">,</span>
-    <span class="n">author</span><span class="o">=</span><span class="s2">"chillaranand"</span><span class="p">,</span>
-    <span class="n">author_email</span><span class="o">=</span><span class="s2">"foo@avilpage.com"</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">"A simple python package"</span><span class="p">,</span>
-    <span class="n">long_description</span><span class="o">=</span><span class="n">long_description</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="s2">"https://github.com/chillaranand/library"</span><span class="p">,</span>
-    <span class="n">packages</span><span class="o">=</span><span class="n">setuptools</span><span class="o">.</span><span class="n">find_packages</span><span class="p">(),</span>
-    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
-        <span class="s2">"Programming Language :: Python :: 3"</span><span class="p">,</span>
-        <span class="s2">"License :: OSI Approved :: MIT License"</span><span class="p">,</span>
-        <span class="s2">"Operating System :: OS Independent"</span><span class="p">,</span>
-    <span class="p">],</span>
-<span class="p">)</span>
-</pre>
-<p>Python provides <a href="https://packaging.python.org/tutorials/packaging-projects/">detailed packaging documentation</a> on structuring and building the package.</p>
-<h4>Installation</h4>
-<p>Once module(s) is packaged and pushed to hosting service, it can be installed with pip.</p>
-<pre class="code literal-block"><span class="c1"># using https</span>
-$ pip install git+https://github.com/chillaranand/library.git
-
-<span class="c1"># using ssh</span>
-pip install git+ssh://git@github.com/chillaranand/library.git
-</pre>
-<p>This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.</p>
-<pre class="code literal-block">$ <span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
-
-$ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chillaranand/library.git
-</pre>
-<h4>Conclusion</h4>
-<p>In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/12/django-bottleneck-performance-scaling.html" class="u-url">Find High-impact Performance Bottlenecks in Django</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/12/django-bottleneck-performance-scaling.html" class="u-url">Find High-impact Performance Bottlenecks in Django</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -844,6 +789,54 @@ SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</
 </pre>
 <p>When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.</p>
 <p>When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/03/convert-browser-requests-to-python-requests.html" class="u-url">Convert Browser Requests To Python Requests For Scraping</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2018/03/convert-browser-requests-to-python-requests.html" rel="bookmark">
+            <time class="published dt-published" datetime="2018-03-26T21:21:21+05:30" itemprop="datePublished" title="2018-03-26">2018-03-26</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Scraping content behind a login page is bit difficult as there are wide variety of authentication mechanisms and web server needs correct headers, session, cookies to authenticate the request.</p>
+<p>If we need a crawler which runs everyday to scrape content, then we have to implement authentication mechanism. If we need to quickly scrape content just for once, implementing authentication is an overhead.</p>
+<p>Instead, we can manually login to the website, capture an authenticated request and use it for scraping other pages by changing url/form parameters.</p>
+<p>From browser developer options, we can capture <a href="https://curl.haxx.se/">curl</a> equivalent command for any request from <code>Network</code> tab with <code>copy as cURL</code> option.</p>
+<p align="center">
+<img src="../images/requests-python-browser.png" height="300px" width="600"></p>
+
+<p>Here is one such request.</p>
+<pre class="code literal-block"><span class="n">curl</span> <span class="s1">'http://avilpage.com/dummy'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cookie: ASPSESSIONIDSABAAQDA=FKOHHAGAFODIIGNNNDFKNGLM'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Origin: http://avilpage.com'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Encoding: gzip, deflate'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept-Language: en-US,en;q=0.9,ms;q=0.8,te;q=0.7'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Upgrade-Insecure-Requests: 1'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Content-Type: application/x-www-form-urlencoded'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Cache-Control: max-age=0'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Referer: http://avilpage.com/'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'Connection: keep-alive'</span> <span class="o">-</span><span class="n">H</span> <span class="s1">'DNT: 1'</span> <span class="o">--</span><span class="n">data</span> <span class="s1">'page=2&amp;category=python'</span> <span class="o">--</span><span class="n">compressed</span>
+</pre>
+<p>Once we get curl command, we can directly convert it to python requests using <a href="https://pypi.python.org/pypi/uncurl/">uncurl</a>.</p>
+<pre class="code literal-block">$ pip install uncurl
+</pre>
+<p>Since the copied curl request is in clipboard, we can pipe it to uncurl.</p>
+<pre class="code literal-block"><span class="err">$</span> <span class="n">clipit</span> <span class="o">-</span><span class="n">c</span> <span class="o">|</span> <span class="n">uncurl</span>
+
+<span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"http://avilpage.com/dummy"</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="s1">'page=2&amp;category=python'</span><span class="p">,</span>
+    <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"Accept"</span><span class="p">:</span> <span class="s2">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"</span><span class="p">,</span>
+        <span class="s2">"Accept-Encoding"</span><span class="p">:</span> <span class="s2">"gzip, deflate"</span><span class="p">,</span>
+        <span class="s2">"Accept-Language"</span><span class="p">:</span> <span class="s2">"en-US,en;q=0.9,ms;q=0.8,te;q=0.7"</span><span class="p">,</span>
+        <span class="s2">"Cache-Control"</span><span class="p">:</span> <span class="s2">"max-age=0"</span><span class="p">,</span>
+        <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/x-www-form-urlencoded"</span><span class="p">,</span>
+        <span class="s2">"Origin"</span><span class="p">:</span> <span class="s2">"http://avilpage.com"</span><span class="p">,</span>
+        <span class="s2">"Referer"</span><span class="p">:</span> <span class="s2">"http://avilpage.com/"</span><span class="p">,</span>
+        <span class="s2">"Upgrade-Insecure-Requests"</span><span class="p">:</span> <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"</span>
+    <span class="p">},</span>
+    <span class="n">cookies</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"ASPSESSIONIDSABAAQDA"</span><span class="p">:</span> <span class="s2">"FKOHHAGAFODIIGNNNDFKNGLM"</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre>
+<p>If we have to use some other programming language, we can use <a href="https://curl.trillworks.com/">curlconverter</a> to convert curl command to Go or Node.js equivalent code.</p>
+<p>Now, we can use this code to get contents of current page and then continue scraping from the urls in it.</p>
     </div>
     </article>
 </div>
