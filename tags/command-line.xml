@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 02 Jan 2023 09:20:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 04 Jan 2023 12:30:43 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ cat users.csv
 id,user,active
 &lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
@@ -208,7 +208,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"
 &lt;span class="c1"&gt;# from https&lt;/span&gt;
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 &lt;/pre&gt;
-&lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be used to filter out telugu pages.&lt;/p&gt;
+&lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be used to filter out telugu pages as shown below.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ python -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;import pandas as pd&lt;/span&gt;
 &lt;span class="s2"&gt;filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
@@ -217,10 +217,10 @@ $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span cl
 &lt;span class="s2"&gt;df.to_csv('telugu.csv')&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;/pre&gt;
+&lt;p&gt;I have used Macbook M1 with local ISP(Internet Service Provider) to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.&lt;/p&gt;
+&lt;p&gt;Let's see how we can speed it up.&lt;/p&gt;
 &lt;h4&gt;Improving Performance&lt;/h4&gt;
 &lt;h5&gt;Faster Downloads&lt;/h5&gt;
-&lt;p&gt;I have used Macbook M1 with local ISP to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.&lt;/p&gt;
-&lt;p&gt;Let's see how we can speed it up.&lt;/p&gt;
 &lt;p&gt;My Wi-Fi speed is ~4MBps when downloading the index file. To download faster, I have created t2.micro(free-tier) EC2 instance on AWS. In this machine, download speed is ~10MBps. We can use other instances, but I am trying to use only free resources. In this machine, single file download is taking ~3 minutes.&lt;/p&gt;
 &lt;p&gt;CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro instance in us-east-1 region. This instance is taking &amp;lt;20 seconds to download a single file. We can download entire index in less than 2 hours.&lt;/p&gt;
 &lt;h5&gt;Faster Performance&lt;/h5&gt;

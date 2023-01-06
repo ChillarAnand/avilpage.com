@@ -5,13 +5,12 @@
 .. tags: HealthIT, frappe-framework
 .. category:
 .. link:
-.. description: How to integrate Frappe Health with snomed ct?
+.. description: How to integrate Frappe Health with SNOMED CT?
 .. type: text
 -->
 
 
 ### Introduction
-
 
 Frappe Health[^FH] is an open-source Healthcare Information System(HIS), to efficiently manage clinics, hospitals, and other healthcare organizations. Frappe Health is built on the Frappe Framework[^ff], a low code highly customizable framework.
 

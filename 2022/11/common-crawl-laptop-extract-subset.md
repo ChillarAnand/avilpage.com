@@ -79,7 +79,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/s
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 ```
 
-We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has `content_languages` column which can be used to filter out telugu pages.
+We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has `content_languages` column which can be used to filter out telugu pages as shown below.
 
 ```bash
 $ python -c """
@@ -91,13 +91,13 @@ df.to_csv('telugu.csv')
 """
 ```
 
+I have used Macbook M1 with local ISP(Internet Service Provider) to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.
+
+Let's see how we can speed it up.
+
 ### Improving Performance
 
 #### Faster Downloads
-
-I have used Macbook M1 with local ISP to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.
-
-Let's see how we can speed it up.
 
 My Wi-Fi speed is ~4MBps when downloading the index file. To download faster, I have created t2.micro(free-tier) EC2 instance on AWS. In this machine, download speed is ~10MBps. We can use other instances, but I am trying to use only free resources. In this machine, single file download is taking ~3 minutes.
 
