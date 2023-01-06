@@ -10,14 +10,16 @@
 {% block extra_head %}
     {{ super() }}
     {% if post.meta('keywords') %}
-    <meta name="keywords" content="{{ smartjoin(', ', post.meta('keywords'))|e }}">
+        <meta name="keywords" content="{{ smartjoin(', ', post.meta('keywords'))|e }}">
     {% endif %}
     <meta name="author" content="{{ post.author()|e }}">
     {% if post.prev_post %}
-        <link rel="prev" href="{{ post.prev_post.permalink() }}" title="{{ post.prev_post.title()|e }}" type="text/html">
+        <link rel="prev" href="{{ post.prev_post.permalink() }}" title="{{ post.prev_post.title()|e }}"
+              type="text/html">
     {% endif %}
     {% if post.next_post %}
-        <link rel="next" href="{{ post.next_post.permalink() }}" title="{{ post.next_post.title()|e }}" type="text/html">
+        <link rel="next" href="{{ post.next_post.permalink() }}" title="{{ post.next_post.title()|e }}"
+              type="text/html">
     {% endif %}
     {% if post.is_draft %}
         <meta name="robots" content="noindex">
@@ -26,29 +28,110 @@
     {{ helper.twitter_card_information(post) }}
     {{ helper.meta_translations(post) }}
     {{ math.math_styles_ifpost(post) }}
+
+    <style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
 {% endblock %}
 
 {% block content %}
-<article class="post-{{ post.meta('type') }} h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article">
+    <article class="post-{{ post.meta('type') }} h-entry hentry postpage" itemscope="itemscope"
+             itemtype="http://schema.org/Article">
 
-    {{ pheader.html_post_header() }}
+        {{ pheader.html_post_header() }}
 
-    <div class="e-content entry-content" itemprop="articleBody text">
-    {{ post.text() }}
-    </div>
-    <aside class="postpromonav">
-    <nav>
-    {{ helper.html_tags(post) }}
-    {{ helper.html_pager(post) }}
-    </nav>
-    </aside>
-    {% if not post.meta('nocomments') and site_has_comments %}
-        <section class="comments hidden-print">
-        <h2>{{ messages("Comments") }}</h2>
-        {{ comments.comment_form(post.permalink(absolute=True), post.title(), post._base_path) }}
-        </section>
-    {% endif %}
-    {{ math.math_scripts_ifpost(post) }}
-</article>
-{{ comments.comment_link_script() }}
+        <div class="e-content entry-content" itemprop="articleBody text">
+            {{ post.text() }}
+        </div>
+        <aside class="postpromonav">
+            <nav>
+                {{ helper.html_tags(post) }}
+                {{ helper.html_pager(post) }}
+            </nav>
+        </aside>
+
+        <div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="/images/chillaranand.jpg">
+                </div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br>
+                    <b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers & life.
+                </p>
+
+            </div>
+        </div>
+
+        {% if not post.meta('nocomments') and site_has_comments %}
+            <section class="comments hidden-print">
+                <h2>{{ messages("Comments") }}</h2>
+                {{ comments.comment_form(post.permalink(absolute=True), post.title(), post._base_path) }}
+            </section>
+        {% endif %}
+        {{ math.math_scripts_ifpost(post) }}
+    </article>
+    {{ comments.comment_link_script() }}
 {% endblock %}
