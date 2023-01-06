@@ -29,6 +29,66 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="article:tag" content="common-crawl">
 <meta property="article:tag" content="data-analysis">
 <style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
+<style>
 
  h1 {
      font-weight: bold;
@@ -78,7 +138,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <div class="body-content col col-lg-6">
             <!--Body content-->
             
-<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Common Crawl On Laptop - Extracting Subset Of Data</a></h1>
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Common Crawl On Laptop - Extracting Subset Of Data</a></h1>
 
         <div class="metadata">
             <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
@@ -101,7 +161,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>This series of posts discuss processing of common crawl dataset on laptop.</p>
+            <p>This series of posts discuss processing of common crawl dataset on laptop.</p>
 <ol>
 <li>
 <a href="#">Extracting Subset of Common Crawl</a> (this post)</li>
@@ -148,7 +208,7 @@ $ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl<span class="o">=<
 <span class="c1"># from https</span>
 $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl<span class="o">=</span>CC-MAIN-2022-40/subset<span class="o">=</span>warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
 </pre>
-<p>We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has <code>content_languages</code> column which can be used to filter out telugu pages.</p>
+<p>We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has <code>content_languages</code> column which can be used to filter out telugu pages as shown below.</p>
 <pre class="code literal-block">$ python -c <span class="s2">"""</span>
 <span class="s2">import pandas as pd</span>
 <span class="s2">filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'</span>
@@ -157,10 +217,10 @@ $ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl<span class
 <span class="s2">df.to_csv('telugu.csv')</span>
 <span class="s2">"""</span>
 </pre>
+<p>I have used Macbook M1 with local ISP(Internet Service Provider) to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.</p>
+<p>Let's see how we can speed it up.</p>
 <h4>Improving Performance</h4>
 <h5>Faster Downloads</h5>
-<p>I have used Macbook M1 with local ISP to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.</p>
-<p>Let's see how we can speed it up.</p>
 <p>My Wi-Fi speed is ~4MBps when downloading the index file. To download faster, I have created t2.micro(free-tier) EC2 instance on AWS. In this machine, download speed is ~10MBps. We can use other instances, but I am trying to use only free resources. In this machine, single file download is taking ~3 minutes.</p>
 <p>CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro instance in us-east-1 region. This instance is taking &lt;20 seconds to download a single file. We can download entire index in less than 2 hours.</p>
 <h5>Faster Performance</h5>
@@ -226,8 +286,8 @@ $ duckdb -c <span class="s2">"""</span>
 </li>
 </ol>
 </div>
-    </div>
-    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
 <li><a class="tag p-category" href="../../tags/command-line.html" rel="tag">command-line</a></li>
             <li><a class="tag p-category" href="../../tags/common-crawl.html" rel="tag">common-crawl</a></li>
             <li><a class="tag p-category" href="../../tags/data-analysis.html" rel="tag">data-analysis</a></li>
@@ -239,7 +299,25 @@ $ duckdb -c <span class="s2">"""</span>
             <li class="next">
                 <a href="../12/common-crawl-laptop-web-directory.html" rel="next" title="Common Crawl on Laptop - Building Web Directory">Next post</a>
             </li>
-        </ul></nav></aside></article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    Written by
+                    <br><b>Chillar Anand</b>
+                    <br>
+                    Musings about programming, careers &amp; life.
+                </p>
+
+            </div>
+        </div>
+
+        
+    </article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
 
 <footer class="footer"><a href="https://github.com/ChillarAnand">
 <img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
