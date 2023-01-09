@@ -45,6 +45,21 @@ def suppress_stdout_stderr():
             yield err, out
 
 
+logger = logging.getLogger('confluent_kafka')
+logger.setLevel(logging.ERROR)
+
+logger = logging.getLogger('consumer')
+logger.setLevel(logging.ERROR)
+
+
+class KafkaLogFilter(logging.Filter):
+    def filter(self, record):
+        print('=====>', record)
+
+
+logger.addFilter(KafkaLogFilter())
+
+
 while True:
     msg = None
     # with suppress_stdout_stderr():
