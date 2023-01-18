@@ -4,7 +4,7 @@
 .. date: 2013-03-21 12:12:00
 .. tags: gaming
 .. categories: gaming
-.. description: All cheats for unblock me iOS/Andoid puzzle game.
+.. description: All cheats for unblock me iOS/Android puzzle game.
 -->
 
 
@@ -12,9 +12,7 @@ I like to solve puzzles a lot. I started playing UnblockMe puzzle. I solved all 
 
 Here is a sample screencast.
 
-<embed width="600" height="400"
-src="https://www.youtube.com/v/5qvaJPrzzk0?version=3&amp;f=user_uploads&amp;c=google-webdrive-0&amp;app=youtube_gdata"
-type="application/x-shockwave-flash" allowfullscreen="true">
+<embed width="600" height="400" src="https://youtube.com/v/5qvaJPrzzk0" type="application/x-shockwave-flash" allowfullscreen="true">
 
 
 Thanks to Divakar, Nagmohan, Chaitanya, Nagendra for helping with screencasting.

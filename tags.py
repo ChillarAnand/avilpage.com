@@ -31,7 +31,7 @@ def get_top_tags_html(tag_data):
         if tag.strip() in ('how-to',  'django-tips-tricks', 'featured', 'tech'):
             continue
         print(tag, count[0])
-        li = '<li><a class="tag p-category" href="/tags/{}.html" rel="tag">{}<span class="badge badge-light">{}</span></a></li>'.format(tag, tag, count[0])
+        li = '<li><a class="tag p-category" href="/tags/{}.html" rel="tag">{}<span class="badge badge-light">{}</span></a></li>'.format(tag.lower(), tag, count[0])
         top_tags_html += li
         items += 1
 
