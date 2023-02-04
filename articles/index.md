@@ -1,11 +1,11 @@
 <!--
-.. title: AvilPage - Blog of Chillar Anand
+.. title: AvilPage - Blog about Python, Careers, Life
 .. slug: index
 .. date: 2022-05-14 11:16:41 UTC+05:30
 .. tags: home
 .. category: meta
 .. link:
-.. description: AvilPage - Personal, tech blog of Chillar Anand(aka Pandikunta Anand Reddy)
+.. description: AvilPage - Blog about Python, Career, Life
 .. type: text
 -->
 
@@ -19,15 +19,14 @@
 <p class="avatar-module">
     <b>Chillar Anand (Pandikunta Anand Reddy)</b>
     <br>
-    Musings about programming, careers & life.
+    <a href="rubik-cube-mosaics.html">Artist</a>,
+    <a href="books.html">Author</a>, 
+    <a href="talks.html">Speaker</a>, 
+    <a href="projects.html">Software Engineer</a>
 </p>
 
 </div>
 </div>
-
-<hr>
-
-I am an [author](books.html), [speaker](talks.html), [rubik cube mosaic artist](rubik-cube-mosaics.html) and a software engineer.
 
 <hr>
 
