@@ -30,7 +30,7 @@ Due to this, a set of publicly exposed servers will have incremental domain name
 
 When I was trying to access a demo site at [http://app-00421.on-aptible.com](), I made a typo and visited [http://app-00412.on-aptible.com](). This site was a staging site of some other company without any authentication. The company's source code, AWS keys and a lot of sensitive information was publicly accessible.
 
-I quickly sent an email to that company regarding this issue and they took their site offline. As per [Aptible disclosure policy]()[^disclosure], this bug is out of scope. However I sent an email to their team regarding the severity of the issue. Since sequential domain names are generating additional target surface for attackers, I suggested to move to random urls.
+I quickly emailed that company regarding this issue and they took their site offline. As per [Aptible disclosure policy]()[^disclosure], this bug is out of scope. Howev er, I sent an email to their team regarding the severity of the issue. Since sequential domain names are generating additional target surface for attackers, I suggested to move to random urls.
 
 For this disclosure, they have provided a bounty of 100$ and Aptible decided to move away from sequential domain names.
 
