@@ -1,7 +1,6 @@
 import logging
-from contextlib import contextmanager, redirect_stderr, redirect_stdout
-from os import devnull
 
+import snoop
 from confluent_kafka import Consumer, KafkaError
 
 logger = logging.getLogger(__file__)
@@ -21,53 +20,45 @@ def error_handler(error):
     print('======>', error, 'Consumer')
 
 
-consumer = Consumer({
-    'bootstrap.servers': 'localhost:9092',
-    'group.id': '0',
-    'auto.offset.reset': 'earliest',
-    'logger': logger,
-    # 'log.queue': True,
-    'max.poll.interval.ms': 10000,
-    'session.timeout.ms': 6000,
-    'log.connection.close': True,
-    'error_cb': error_handler,
-})
-
-topic = 'test'
-consumer.subscribe([topic])
-print(f'"{topic}" topic subscribed')
-
-@contextmanager
-def suppress_stdout_stderr():
-    """A context manager that redirects stdout and stderr to devnull"""
-    with open(devnull, 'w') as fnull:
-        with redirect_stderr(fnull) as err, redirect_stdout(fnull) as out:
-            yield err, out
-
-
-logger = logging.getLogger('confluent_kafka')
-logger.setLevel(logging.ERROR)
-
-logger = logging.getLogger('consumer')
-logger.setLevel(logging.ERROR)
-
-
 class KafkaLogFilter(logging.Filter):
     def filter(self, record):
-        print('=====>', record)
+        return "Connection refused" not in record.getMessage()
 
 
-logger.addFilter(KafkaLogFilter())
+@snoop()
+def main():
+    logger = logging.getLogger(__file__)
+    logger.setLevel(logging.ERROR)
+    f = KafkaLogFilter()
+    logger.addFilter(f)
+
+    consumer = Consumer({
+        'bootstrap.servers': 'localhost:9092',
+        'group.id': '0',
+        'auto.offset.reset': 'earliest',
+        'logger': logger,
+        # 'log.queue': True,
+        'max.poll.interval.ms': 10000,
+        'session.timeout.ms': 6000,
+        'log.connection.close': True,
+        'error_cb': error_handler,
+    })
+
+    topic = 'test'
+    consumer.subscribe([topic])
+    print(f'"{topic}" topic subscribed. Waiting for messages...')
+
+    while True:
+        print('aa')
+        print('aaa')
+        msg = None
+        msg = consumer.poll(1.0)
+        if msg is None:
+            continue
+        print('Received message: {}'.format(msg.value().decode('utf-8')))
+
+    consumer.close()
 
 
-while True:
-    msg = None
-    # with suppress_stdout_stderr():
-    #     msg = consumer.poll(1.0)
-    msg = consumer.poll(1.0)
-    if msg is None:
-        continue
-    print('Received message: {}'.format(msg.value().decode('utf-8')))
-
-
-consumer.close()
+if __name__ == '__main__':
+    main()
