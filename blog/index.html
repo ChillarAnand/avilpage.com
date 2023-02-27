@@ -70,7 +70,49 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/02/stateful-hot-module-reload-in-python.html" class="u-url">Hot Module Reload In Python With Reloadium</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html" class="u-url">Using Conda/Mamba with Python Pip on M1 Mac</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-02-28T01:01:01+05:30" itemprop="datePublished" title="2023-02-28">2023-02-28</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>From 2020, all Apple MacBooks are powered by Apple Silicone(M1) chips. This chip uses Aarch64 architecture which is different from x86 architecture which was used by Intel chips earlier.</p>
+<p>Python is a cross-platform language. It can run on any platform. However, Python packages are compiled for specific platforms. For example, a package compiled for x86 will not work on  Aarch64 platform. Also, many Python packages are not yet available for ARM64/Aarch64 platform.</p>
+<h4>M1 Mac and Python</h4>
+<p>If we want to run a python package on M1 Mac which doesn't have ARM64 support, we need to use an emulator(or a cross-architecture Docker image). This will significantly slow down the application.</p>
+<p>An alternate solution is to build packages for ARM64 platform. Building binary packages from the source code requires a lot of time and effort. Also, we need to build the package for each Python version.</p>
+<p>Instead of building from source, we can use Conda/Mamba to install Python packages as well as other system packages. Conda/Mamba will automatically install the correct binary for the package.</p>
+<p>For example, python-confluent-kafka<sup id="fnref:confluent-kafka"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:confluent-kafka">3</a></sup> package doesn't have Linux aarch64 support. To run it on aarch64 platform, we have to build from source which takes a lot of time. Instead, we can simply install it using Conda/Mamba with a single command.</p>
+<pre class="code literal-block">$ conda install -c conda-forge python-confluent-kafka
+</pre>
+<p>Similar to pip, Conda can also install all the packages mentioned in a file like <code>requirements.txt</code>.</p>
+<pre class="code literal-block">$ conda install --file requirements.txt
+</pre>
+<h4>Conclusion</h4>
+<p>In data science ecosystem, Conda<sup id="fnref:conda"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:conda">1</a></sup>/Mamba<sup id="fnref:mamba"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:mamba">2</a></sup> are widely used as package managers. In web development ecosystem, they are not as widely used as pip.</p>
+<p>Conda/Mamba is a great cross-platform system package manager, and it doesn't have all the Python packages available on PyPi. However, we can use it along with pip for easy package management on M1 Macbook.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:conda">
+<p><a href="https://en.wikipedia.org/wiki/Conda_(package_manager)">https://en.wikipedia.org/wiki/Conda_(package_manager)</a> <a class="footnote-backref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fnref:conda" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:mamba">
+<p><a href="https://github.com/mamba-org/mamba">https://github.com/mamba-org/mamba</a> <a class="footnote-backref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fnref:mamba" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:confluent-kafka">
+<p><a href="https://pypi.org/project/confluent-kafka/">https://pypi.org/project/confluent-kafka/</a> <a class="footnote-backref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fnref:confluent-kafka" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/02/stateful-hot-module-reload-in-python.html" class="u-url">Hot Module Reload In Python With Reloadium</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -855,79 +897,6 @@ This <code>lib</code> directory contains our compiled module. We can import this
 <p><code>cibuildwheel</code> runs on most CI servers. With proper workflows, we can easily get wheels for all platforms and architectures. We can then upload these wheels to PyPI and users can easily install these wheels.</p>
 <h4>Conclusion</h4>
 <p>In this article, we saw how to build and distribute a Python C extension module using wheels. We saw how to build a C extension module and how to distribute it as a binary distribution. We also saw how to use <code>cibuildwheel</code> to build wheels across all platforms and architectures.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/10/speedup-amd64-containers-on-arm.html" class="u-url">Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/10/speedup-amd64-containers-on-arm.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-10-20T22:38:56+05:30" itemprop="datePublished" title="2022-10-20">2022-10-20</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run <code>uname -mp</code> on these devices, we can see the CPU architecture details.</p>
-<pre class="code literal-block">$ uname -mp
-arm64 arm
-</pre>
-<p>Let's run the same command on a device using Intel x86 processor.</p>
-<pre class="code literal-block">$ uname -mp
-x86_64 x86_64
-</pre>
-<p>Many popular docker images<sup id="fnref:dhub"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:dhub">1</a></sup> doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.</p>
-<p>In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.</p>
-<h4>Setup</h4>
-<p>Lima<sup id="fnref:lima"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:lima">2</a></sup> can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp; ARM64 VM and install k3s<sup id="fnref:k3s"><a class="footnote-ref" href="../2022/10/speedup-amd64-containers-on-arm.html#fn:k3s">3</a></sup> in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.</p>
-<pre class="code literal-block">$ brew install lima
-
-$ limactl start linux_arm64
-$ limactl start linux_amd64
-</pre>
-<p>When starting a VM, we can edit <code>arch</code> parameter in the configuration. Once VM starts, we can see the details by running <code>limactl list</code>.</p>
-<pre class="code literal-block">$ limactl list
-NAME                ARCH
-linux_amd64         x86_64
-linux_arm64         aarch64
-</pre>
-<p>Lets login to each VM &amp; install k3s.</p>
-<pre class="code literal-block">$ limactl shell linux_arm64
-
-$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
-</pre>
-<pre class="code literal-block">$ limactl shell linux_amd64
-
-$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
-</pre>
-<p>If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.</p>
-<p align="center">
-<img src="../images/arch-arm-docker.png"></p>
-
-<p>We can login to individual VMs, run <code>top</code> to see the load average as well.</p>
-<h4>Fast Mode</h4>
-<p><code>lima</code> provides <code>fast-mode</code> option for cross architecture VMs which will speed up the performance.</p>
-<p>For that, we need to log in to VMs and install emulators.</p>
-<pre class="code literal-block">$ sudo systemctl start containerd
-$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-</pre>
-<p>After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.</p>
-<h4>Conclusion</h4>
-<p>In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:dhub">
-<p><a href="https://hub.docker.com/search?q=&amp;page=10">https://hub.docker.com/search?q=&amp;page=10</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:dhub" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:lima">
-<p><a href="https://github.com/lima-vm/lima">https://github.com/lima-vm/lima</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:lima" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:k3s">
-<p><a href="../2022/10/local-kubernetes-with-k3s-on-mac.html">Install k3s on Mac M1</a> <a class="footnote-backref" href="../2022/10/speedup-amd64-containers-on-arm.html#fnref:k3s" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-</ol>
-</div>
     </div>
     </article>
 </div>
