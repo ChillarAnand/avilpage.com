@@ -71,100 +71,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/11/detect-correct-skew-images-python.html" class="u-url">Detect &amp; Correct Skew In Images Using Python</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2016/11/detect-correct-skew-images-python.html" rel="bookmark">
-            <time class="published dt-published" datetime="2016-11-12T12:11:17Z" itemprop="datePublished" title="2016-11-12">2016-11-12</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>When scanning a document, a slight skew gets into the scanned image. If you are using the scanned image to extract information from it, detecting and correcting skew is crucial.</p>
-<p>There are several techniques that are used to skew correction.</p>
-<ul>
-<li>
-<p>Projection profile method</p>
-</li>
-<li>
-<p>Hough transform</p>
-</li>
-<li>
-<p>Topline method</p>
-</li>
-<li>
-<p>Scanline method</p>
-</li>
-</ul>
-<p>However, projection profile method is the simplest and easiest way to determine skew in documents in the range ±5°. Lets take a part of scanned image and see how to correct skew.</p>
-<p>In this method, we will convert image to black (absence of pixel) &amp; white (presence of pixel). Now image is projected vertically to get a histogram of pixels. Now image is rotated at various angles and above process is repeated. Wherver we find maximum diffrence between peaks, that will be the best angle.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">im</span>
-<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">interpolation</span> <span class="k">as</span> <span class="n">inter</span>
-
-<span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
-
-<span class="c1"># convert to binary</span>
-<span class="n">wd</span><span class="p">,</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span>
-<span class="n">pix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">'1'</span><span class="p">)</span><span class="o">.</span><span class="n">getdata</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-<span class="n">bin_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ht</span><span class="p">,</span> <span class="n">wd</span><span class="p">))</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'gray'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">'binary.png'</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">find_score</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">hist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">score</span>
-
-
-<span class="n">delta</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">limit</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">limit</span><span class="p">,</span> <span class="n">limit</span><span class="o">+</span><span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
-    <span class="n">hist</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">find_score</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
-    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
-
-<span class="n">best_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
-<span class="n">best_angle</span> <span class="o">=</span> <span class="n">angles</span><span class="p">[</span><span class="n">scores</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best_score</span><span class="p">)]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'Best angle: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">formate</span><span class="p">(</span><span class="n">best_angle</span><span class="p">))</span>
-
-<span class="c1"># correct skew</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">bin_img</span><span class="p">,</span> <span class="n">best_angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">fromarray</span><span class="p">((</span><span class="mi">255</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">))</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">)</span>
-<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'skew_corrected.png'</span><span class="p">)</span>
-</pre>
-<p><strong>Results:</strong></p>
-<p align="center"><img align="center" src="../skew_python/original.png"></p>
-<p align="center">Original Image</p>
-<hr>
-<p align="center"><img align="center" src="../skew_python/gray.png"></p>
-<p align="center">Black &amp; white image</p>
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_0.png"></p>
-<p align="center">Histogram of image</p>
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_scores.png"></p>
-<p align="center">Scores at various angles</p>
-<hr>
-<p align="center"><img align="center" src="../skew_python/hist_best.png"></p>
-<p align="center">Histogram at 2° (best angle)</p>
-<hr>
-<p align="center"><img align="center" src="../skew_python/skew_corrected.png"></p>
-<p align="center">Skew corrected image</p>
-
-<p>Here we have done only one iteration to find best angle. To get better accuracy, we can search over at (2 ± 0.5)°. This process can be repeated until we find a suitable level of accuracy.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/10/why-use-cyanogenmod.html" class="u-url">Why I Use CyanogenMod?</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -576,6 +483,25 @@ Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:
 <div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">
 <br>Read more <a href="http://www.avilpage.com/search/label/django%20tips" target="">django tips</a>.<br>Read more <a href="http://www.avilpage.com/search/label/django">posts about django</a>.<br><br>
 </div>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2016/02/auto-convert-upload-books-to-kindle.html" class="u-url">Auto Convert &amp; Upload Books To Kindle</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2016/02/auto-convert-upload-books-to-kindle.html" rel="bookmark">
+            <time class="published dt-published" datetime="2016-02-28T16:02:00+05:30" itemprop="datePublished" title="2016-02-28">2016-02-28</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I have ebooks in various formats like pdf, epub, mobi e.t.c. If I want to read books in laptop, I could use ebook reader like <a href="https://github.com/kovidgoyal/calibre" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">Calibre</a> which can open supports most of the formats.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">If I have to read them on Kindle paperwhite, it becomes a problem as it supports only few formats. So whenever I get an ebook, I have to convert it to mobi format and send it to kindle.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I can connect kindle to laptop via USB cable and I can copy books. I can also send books to <a href="http://www.amazon.com/gp/sendtokindle/email" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">kindle via email</a>.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">I found an <a href="https://ifttt.com/recipes/168186-drop-ebooks-and-documents-into-dropbox-folder-to-send-to-kindle-via-gmail-as-azw-ebook" style="box-sizing: border-box; color: #4078c0; text-decoration: none;">IFTTT recipe</a>, to automate all this process. I just need to create a folder to store all the books in dropbox. Then use IFTTT recipe to link dropbox folder which has books and gmail to send books to kindle email.</div>
+<div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;">Now when I move required books into dropbox folder in my laptop, they will automatically appear in my kinde.</div>
 </div>
     </div>
     </article>

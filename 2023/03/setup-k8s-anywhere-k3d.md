@@ -46,7 +46,13 @@ Once it is installed, we can create a cluster using the following command:
 $ k3d cluster create demo
 ```
 
-This will launch a cluster with a single node. We can verify the cluster is up and running using the following command:
+This will launch a cluster with a single node. We can also setup a multi-node cluster using the following command:
+
+```shell
+$ k3d cluster create demo --servers 3 --agents 2
+```
+
+We can verify the cluster is up and running using the following command:
 
 ```shell
 $ kubectl get nodes
