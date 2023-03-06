@@ -9,6 +9,12 @@
 .. type: text
 -->
 
+<br/>
+
+**Update:** This article is outdated. I wrote an updated article on [setting up k8s anywhere with single command](/2023/03/setup-k8s-anywhere-k3d.html).
+
+<br/>
+
 <div class="embed-responsive embed-responsive-16by9">
 <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/vi5eRgBMs90" allowfullscreen>
 </iframe>
