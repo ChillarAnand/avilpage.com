@@ -2,7 +2,7 @@
 .. title: Setup Kubernetes Anywhere with Single Command
 .. slug: setup-k8s-anywhere-k3d
 .. date: 2023-03-04 02:55:27 UTC+05:30
-.. tags: kubernets, devops, linux
+.. tags: kubernetes, devops
 .. category: 
 .. link: 
 .. description: 
