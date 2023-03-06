@@ -11,7 +11,7 @@
 
 <br/>
 
-**Update:** This article is outdated. I wrote an updated article on [setting up k8s anywhere with single command](/2021/03/setup-k8s-anywhere-k3d.html).
+**Update:** This article is outdated. I wrote an updated article on [setting up k8s anywhere with single command](/2023/03/setup-k8s-anywhere-k3d.html).
 
 <br/>
 
