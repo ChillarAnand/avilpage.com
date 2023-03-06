@@ -5,7 +5,7 @@
 .. tags: dicom, HealthIT
 .. category: programming
 .. link:
-.. description: Setup orthanc pacs & dicom server locally or on aws for learning dicom.
+.. description: Setup Orthanc PACS & DICOM server locally or on aws for learning dicom.
 .. type: text
 -->
 

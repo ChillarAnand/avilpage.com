@@ -71,47 +71,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/deploy-django-web-app-android.html" class="u-url">Running Django Web Apps On Android Devices</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2018/02/deploy-django-web-app-android.html" rel="bookmark">
-            <time class="published dt-published" datetime="2018-02-19T17:40:56+05:30" itemprop="datePublished" title="2018-02-19">2018-02-19</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>When deploying a django webapp to Linux servers, Nginx/Apache as server, PostgreSQL/MySQL as database are preferred. For this tutorial, we will be using django development server with SQLite database.</p>
-<p>First install <a href="https://play.google.com/store/apps/details?id=berserker.android.apps.sshdroid">SSHDroid</a> app on Android. It will start ssh server on port 2222. If android phone is rooted, we can run ssh on port 22.</p>
-<p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
-<p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
-<p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
-<pre class="code literal-block">rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
-</pre>
-<p>Now ssh into android, install django and start django server.</p>
-<pre class="code literal-block">$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
-</pre>
-<pre class="code literal-block">$ python -m pip install django
-$ <span class="nb">cd</span> /data/local/django-bookmarks
-$ python manage.py runvserver
-</pre>
-<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
-<pre class="code literal-block">$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
-
-Forwarding HTTP traffic from https://incepro.serveo.net
-Press g to start a GUI session and ctrl-c to quit.
-</pre>
-<p>Now we can share our django app with anyone.</p>
-<p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
-<pre class="code literal-block">ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
--H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
-http://incepro.serveo/list/
-</pre>
-<p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
-<p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2018/02/load-testing-celery-brokers.html" class="u-url">Load Testing Celery With Different Brokers</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -594,6 +554,35 @@ hello from android
 <pre class="code literal-block">pio ci --board<span class="o">=</span>megaatmega2560 --project-option<span class="o">=</span><span class="s2">"upload_port=/dev/ttyACM0"</span> --project-option<span class="o">=</span><span class="s2">"targets=upload"</span> foo.ino
 </pre>
 <p>By this we can use text editor to write code and arduino/platformio to upload code to arduino board.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html" class="u-url">Using LSTM-CTC For Complex Script Recognistion</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html" rel="bookmark">
+            <time class="published dt-published" datetime="2017-07-22T14:09:32Z" itemprop="datePublished" title="2017-07-22">2017-07-22</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Most Indian languages have strong consonant-vowel structure which combine to give syllables. These syllables are written as one continuous ligature and they require <a href="https://en.wikipedia.org/wiki/Complex_text_layout">complex text rendering</a> (CTL) for type setting.</p>
+<p>Writing OCR (Optical Character Recognistion) software for CTL scripts is a challenging task as segmentation is hard. Because of this overall accuracy drops drastically.</p>
+<p>A better approach is to use Connectionist Temporal Classification<sup id="fnref:ctc"><a class="footnote-ref" href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html#fn:ctc">1</a></sup>(CTC) which can identify unsegmented sequence directly as it has one-to-one correspondence between input samples and output labels.</p>
+<p>Here is a sample input and output of a <a href="https://github.com/rakeshvar/rnn_ctc">RNN-CTC</a> network which takes an unsegmented sequence and outputs labels.</p>
+<p align="center">
+<img src="../images/ctc.png"></p>
+
+<p>Open source OCR software <a href="https://github.com/tmbdev/ocropy/">ocorpy</a> uses BLSTM-CTC for text recognistion. <a href="https://github.com/tesseract-ocr/tesseract">Tesseract</a> started using the same in its latest(4.0) version.</p>
+<p>I have <a href="https://github.com/ChillarAnand/likitham">trained a model</a> to recognize Telugu script using ocropy and the accuracy is ~99% which is far better when compared to OCR softwares without CTC which are accurate to ~70%.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:ctc">
+<p><a href="https://en.wikipedia.org/wiki/Connectionist_temporal_classification">https://en.wikipedia.org/wiki/Connectionist_temporal_classification</a> <a class="footnote-backref" href="../2017/07/using-lstm-ctc-for-complex-script-recognistion.html#fnref:ctc" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
     </div>
     </article>
 </div>
