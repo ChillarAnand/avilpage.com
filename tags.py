@@ -25,9 +25,9 @@ def get_top_tags_html(tag_data):
     tag_counter = collections.Counter(tag_data)
 
     for tag, count in tag_counter.most_common():
-        # print(tag, count[0])
+        print(tag, count[0])
         if items == 12:
-            break
+            continue
         if tag.strip() in ('how-to',  'django-tips-tricks', 'featured', 'tech'):
             continue
         print(tag, count[0])

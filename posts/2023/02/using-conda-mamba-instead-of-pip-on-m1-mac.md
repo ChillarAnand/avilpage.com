@@ -2,7 +2,7 @@
 .. title: Using Conda/Mamba with Python Pip on M1 Mac
 .. slug: using-conda-mamba-instead-of-pip-on-m1-mac
 .. date: 2023-02-28 01:01:01 UTC+05:30
-.. tags: python
+.. tags: python, macbook
 .. category: programming
 .. link:
 .. description:
