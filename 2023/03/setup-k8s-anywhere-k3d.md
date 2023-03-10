@@ -2,10 +2,10 @@
 .. title: Setup Kubernetes Anywhere with Single Command
 .. slug: setup-k8s-anywhere-k3d
 .. date: 2023-03-04 02:55:27 UTC+05:30
-.. tags: kubernetes, devops
+.. tags: kubernetes, devops, docker
 .. category: 
 .. link: 
-.. description: 
+.. description: How to set up Kubernetes on Windows, Linux, or Mac(M1) with Docker. This is a great option for running Kubernetes on your local machine. We can also use this to run production setup for small applications.
 .. type: text
 -->
 
@@ -13,6 +13,7 @@
 <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/Vo0mAsXe-hI" allowfullscreen>
 </iframe>
 </div>
+
 <br />
 
 
