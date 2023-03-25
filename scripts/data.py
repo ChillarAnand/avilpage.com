@@ -1,4 +1,3 @@
 def get_data():
-    x = [4, None, 3, 222, 1, '2']
+    x = [4, 3, 22, 7, 5, 9, '2', None]
     return x
-

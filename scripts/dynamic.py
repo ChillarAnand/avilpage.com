@@ -1,20 +1,20 @@
 from data import get_data
 
 
-def process_data(data):
-    try:
-        squares = [i ** 2 for i in data]
-        return squares
-    except Exception:
-        return []
-
-
 def fetch_data():
     try:
         data = get_data()
     except Exception:
         data = []
     return data
+
+
+def process_data(data):
+    try:
+        squares = [i ** 2 for i in data]
+        return squares
+    except Exception:
+        return []
 
 
 def main():
