@@ -161,7 +161,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p>Celery is mainly used to offload work from request/response cycle in web applications and to build pipelines in data processing applications. Lets run a load test on celery to see how well it queues the tasks with various brokers.</p>
 <p>Let us take a simple add task and measure queueing time.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">timeit</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">timeit</span>
 
 <span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">Celery</span>
 
@@ -182,7 +182,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="n">duration</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 <span class="n">rate</span> <span class="o">=</span> <span class="n">tasks</span><span class="o">//</span><span class="n">duration</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> tasks/sec"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">))</span>
-</pre>
+</pre></div>
+
 <p>On development machine, with AMD A4-5000 CPU, queueing time is as follows</p>
 <ul>
 <li>memory ---&gt; 400 tasks/sec</li>
@@ -199,8 +200,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </ul>
 <p>For low/medium traffic webistes and applications, 1000 tasks/second should be fine. For high traffic webistes, there will be multiple servers queueing up the tasks.</p>
 <p>Incase if we need to queue the tasks at a higher rate and if we have task arguments before hand, we can chunk the tasks.</p>
-<pre class="code literal-block"><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">tasks</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)),</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
 <p>This will divide 1000 tasks into 10 groups of 100 tasks each. As there is no messaging overhead, it can queue any number of tasks in less than a second.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

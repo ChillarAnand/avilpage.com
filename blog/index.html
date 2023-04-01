@@ -70,7 +70,69 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/03/custom-action-mac-finder.html" class="u-url">Automator Quick Action for KDiff3 in Finder</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/04/reduce-system-load-with-chatgpt.html" class="u-url">Reducing System Load With ChatGPT</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/04/reduce-system-load-with-chatgpt.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-04-01T07:55:49+05:30" itemprop="datePublished" title="2023-04-01">2023-04-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. </p>
+<p>I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  </p>
+<h4>Solution</h4>
+<p>To reduce system load, I decided to build aarch64 wheels for confluent-kafka-python. I looked at open issues on GitHub and asked maintainers how to build aarch64 wheels. There was no response<sup id="fnref:librdkafka"><a class="footnote-ref" href="../2023/04/reduce-system-load-with-chatgpt.html#fn:librdkafka">1</a></sup> from them.</p>
+<p>As a workaround, I asked ChatGPT<sup id="fnref:chatgpt"><a class="footnote-ref" href="../2023/04/reduce-system-load-with-chatgpt.html#fn:chatgpt">2</a></sup> on how to build confluent-kafka-python aarch64 wheels in a docker container.</p>
+<p align="center">
+<img src="../images/chatgpt-reduce-system-load.png" alt="chatgpt-reduce-system-load"></p>
+
+<p>This initial suggestion didn't work as <code>confluent-kafka-python</code> depends on <code>librdkafka</code> which is a C library. I had to build <code>librdkafka</code> from source for aarch64 and then build <code>confluent-kafka-python</code> from source.</p>
+<p>To build <code>librdkafka</code> from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build <code>librdkafka</code> from the source for aarch64.</p>
+<p>Here is the final snippet:</p>
+<pre class="code literal-block"><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
+
+<span class="n">ARG</span> <span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
+
+<span class="n">RUN</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+  <span class="n">wget</span> <span class="n">git</span> <span class="n">curl</span> <span class="n">g</span><span class="o">++</span> <span class="n">make</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">client</span> \
+  <span class="n">nano</span> <span class="n">less</span> <span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span> <span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span> \
+  <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">vim</span> <span class="n">tzdata</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
+
+<span class="n">RUN</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">RUN</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">setuptools</span>
+
+<span class="n">WORKDIR</span> <span class="o">/</span>
+<span class="n">RUN</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">WORKDIR</span> <span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+
+<span class="n">COPY</span> <span class="o">.</span> <span class="o">/</span><span class="n">app</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
+<span class="n">RUN</span> <span class="o">./</span><span class="n">configure</span> <span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
+<span class="n">RUN</span> <span class="n">make</span>
+<span class="n">RUN</span> <span class="n">make</span> <span class="n">install</span>
+
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">RUN</span> <span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre>
+<h4>Conclusion</h4>
+<p>By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp; environments that we are not familiar with.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:librdkafka">
+<p><a href="https://github.com/confluentinc/librdkafka/issues/3546#issuecomment-1340237177">https://github.com/confluentinc/librdkafka/3546</a> <a class="footnote-backref" href="../2023/04/reduce-system-load-with-chatgpt.html#fnref:librdkafka" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:chatgpt">
+<p><a href="https://en.wikipedia.org/wiki/ChatGPT">https://en.wikipedia.org/wiki/ChatGPT</a> <a class="footnote-backref" href="../2023/04/reduce-system-load-with-chatgpt.html#fnref:chatgpt" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/03/custom-action-mac-finder.html" class="u-url">Automator Quick Action for KDiff3 in Finder</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -94,8 +156,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>For Workflow receives current, select <code>files or folders</code> and then select <code>in Finder</code>. </p>
 <p><img src="../images/mac-finder-quick-action2.png" alt="mac-finder-quick-action"></p>
 <p>Then select pass input <code>as agruments</code> and in the script section let us add the following command.</p>
-<pre class="code literal-block">/path/to/kdiff3 <span class="nv">$1</span> <span class="nv">$2</span>
-</pre>
+<div class="code"><pre class="code literal-block">/path/to/kdiff3<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="nv">$2</span>
+</pre></div>
+
 <p>After adding the command, save this Quick Action. </p>
 <p>Now if we relaunch Finder app and then select multiple directories, and right click we can see <code>Compare with KDiff3</code> in quick actions.</p>
 <p><img src="../images/mac-finder-kdiff3-quick-action.png" alt="mac-finder-kdiff3"></p>
@@ -139,19 +202,23 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>k3d<sup id="fnref:k3d"><a class="footnote-ref" href="../2023/03/setup-k8s-anywhere-k3d.html#fn:k3d">4</a></sup> is a wrapper around k3s that allows you to run k3s on Docker. It is a great option for running Kubernetes on your local machine.</p>
 <h4>Installation</h4>
 <p>k3d can be installed using the following command:</p>
-<pre class="code literal-block">$ brew install k3d  <span class="c1"># mac</span>
-$ chocolatey install k3d  <span class="c1"># windows</span>
-$ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh <span class="p">|</span> bash <span class="c1"># linux</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>k3d<span class="w">  </span><span class="c1"># mac</span>
+$<span class="w"> </span>chocolatey<span class="w"> </span>install<span class="w"> </span>k3d<span class="w">  </span><span class="c1"># windows</span>
+$<span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span><span class="c1"># linux</span>
+</pre></div>
+
 <p>Once it is installed, we can create a cluster using the following command:</p>
-<pre class="code literal-block">$ k3d cluster create demo
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k3d<span class="w"> </span>cluster<span class="w"> </span>create<span class="w"> </span>demo
+</pre></div>
+
 <p>This will launch a cluster with a single node. We can also setup a multi-node cluster using the following command:</p>
-<pre class="code literal-block">$ k3d cluster create demo --servers <span class="m">3</span> --agents <span class="m">2</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k3d<span class="w"> </span>cluster<span class="w"> </span>create<span class="w"> </span>demo<span class="w"> </span>--servers<span class="w"> </span><span class="m">3</span><span class="w"> </span>--agents<span class="w"> </span><span class="m">2</span>
+</pre></div>
+
 <p>We can verify the cluster is up and running using the following command:</p>
-<pre class="code literal-block">$ kubectl get nodes
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
+</pre></div>
+
 <p>We can also use GUI tools like Lens to manage and navigate the cluster. In the above video we have used Lens to create a Jenkins deployment as well.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to set up Kubernetes on Docker. This is a great option for running Kubernetes on your local machine. We can also use this to run production setup for small applications.</p>
@@ -192,11 +259,13 @@ $ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh <span cla
 <p>An alternate solution is to build packages for ARM64 platform. Building binary packages from the source code requires a lot of time and effort. Also, we need to build the package for each Python version.</p>
 <p>Instead of building from source, we can use Conda/Mamba to install Python packages as well as other system packages. Conda/Mamba will automatically install the correct binary for the package.</p>
 <p>For example, python-confluent-kafka<sup id="fnref:confluent-kafka"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:confluent-kafka">3</a></sup> package doesn't have Linux aarch64 support. To run it on aarch64 platform, we have to build from source which takes a lot of time. Instead, we can simply install it using Conda/Mamba with a single command.</p>
-<pre class="code literal-block">$ conda install -c conda-forge python-confluent-kafka
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-confluent-kafka
+</pre></div>
+
 <p>Similar to pip, Conda can also install all the packages mentioned in a file like <code>requirements.txt</code>.</p>
-<pre class="code literal-block">$ conda install --file requirements.txt
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>--file<span class="w"> </span>requirements.txt
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In data science ecosystem, Conda<sup id="fnref:conda"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:conda">1</a></sup>/Mamba<sup id="fnref:mamba"><a class="footnote-ref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fn:mamba">2</a></sup> are widely used as package managers. In web development ecosystem, they are not as widely used as pip.</p>
 <p>Conda/Mamba is a great cross-platform system package manager, and it doesn't have all the Python packages available on PyPi. However, we can use it along with pip for easy package management on M1 Macbook.</p>
@@ -237,9 +306,10 @@ $ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh <span cla
 </div>
 <p><br></p>
 <p>Currently, reloadium can be used as a standalone tool. We can install it from PyPi and run any arbitrary python script with reloadium.</p>
-<pre class="code literal-block"><span class="o">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">reloadium</span>
-<span class="o">$</span> <span class="n">reloadium</span> <span class="n">run</span> <span class="n">myscript</span><span class="o">.</span><span class="n">py</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">reloadium</span>
+<span class="o">$</span><span class="w"> </span><span class="n">reloadium</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">myscript</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+
 <p>Alternatively, it is available as a plugin for PyCharm as shown in the above video. VS Code support is also in the works.</p>
 <p>Reloadium is capable of profiling too. Without writing a single line of code, we can profile Python code. But that's a topic for another article.</p>
 <h4>Conclusion</h4>
@@ -335,33 +405,38 @@ $ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh <span cla
         </div>
     </header><div class="e-content entry-content">
     <p><code>column</code> command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. </p>
-<pre class="code literal-block">$ cat users.csv
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>users.csv
 id,user,active
-<span class="m">1</span>,John Doe,true
-<span class="m">2</span>,Will Smith,false
+<span class="m">1</span>,John<span class="w"> </span>Doe,true
+<span class="m">2</span>,Will<span class="w"> </span>Smith,false
 
-$ column -s, -t &lt; users.csv
-id  user        active
-<span class="m">1</span>   John Doe    <span class="nb">true</span>
-<span class="m">2</span>   Will Smith  <span class="nb">false</span>
-</pre>
+$<span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t<span class="w"> </span>&lt;<span class="w"> </span>users.csv
+id<span class="w">  </span>user<span class="w">        </span>active
+<span class="m">1</span><span class="w">   </span>John<span class="w"> </span>Doe<span class="w">    </span><span class="nb">true</span>
+<span class="m">2</span><span class="w">   </span>Will<span class="w"> </span>Smith<span class="w">  </span><span class="nb">false</span>
+</pre></div>
+
 <p><code>tail</code> command-line utility prints the last 10 lines of a file. It can be used with <code>-f</code> option to follow the file as it grows.</p>
-<pre class="code literal-block">$ tail -f users.csv
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv
 id,user,active
-<span class="m">1</span>,John Doe,true
-<span class="m">2</span>,Will Smith,false
-</pre>
+<span class="m">1</span>,John<span class="w"> </span>Doe,true
+<span class="m">2</span>,Will<span class="w"> </span>Smith,false
+</pre></div>
+
 <p>To format the output of <code>tail -f</code> command, we can't use <code>column</code> command directly. <code>column</code> command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. </p>
-<pre class="code literal-block">$ tail -f users.csv <span class="p">|</span> column -s, -t
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t
+</pre></div>
+
 <p>So, the above command won't work. </p>
 <p>As the goal is to follow the output of the file, we can use <code>watch</code> command for this. <code>watch</code> command executes a command periodically, and displays its output. </p>
-<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
+</pre></div>
+
 <p>This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.</p>
 <p>As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use <code>head</code> command in addition to <code>tail</code> command.</p>
-<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
+</pre></div>
+
 <p>This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to <code>column</code> command, and displayed.</p>
 <p>Here is a screenshot of the output of a demo csv.</p>
 <p><img alt="pipe tail output to column" src="../images/pipe-tail-output-into-column.png"></p>
@@ -380,48 +455,54 @@ id,user,active
     </header><div class="e-content entry-content">
     <h4>Problem Statement</h4>
 <p>On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.</p>
-<pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,217<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">139</span> <span class="k">in</span> <span class="m">5198</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+<div class="code"><pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,217<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">139</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">5198</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,536<span class="o">]</span> ERROR <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> registerBroker: unable to start processing because of NotControllerException. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,536<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>registerBroker:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>start<span class="w"> </span>processing<span class="w"> </span>because<span class="w"> </span>of<span class="w"> </span>NotControllerException.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:35,834<span class="o">]</span> ERROR <span class="o">[</span>RaftManager <span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> Had an error during log cleaning <span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
-org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to <span class="m">927939</span> of partition __cluster_metadata-0 since it is larger than the high watermark <span class="m">926507</span>
-<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,035<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">294</span> <span class="k">in</span> <span class="m">137</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
-java.lang.RuntimeException: Cant create a new <span class="k">in</span>-memory snapshot at epoch <span class="m">926507</span> because there is already a snapshot with epoch <span class="m">927938</span>
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:35,834<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>RaftManager<span class="w"> </span><span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>Had<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>during<span class="w"> </span>log<span class="w"> </span>cleaning<span class="w"> </span><span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
+org.apache.kafka.common.errors.OffsetOutOfRangeException:<span class="w"> </span>Cannot<span class="w"> </span>increment<span class="w"> </span>the<span class="w"> </span>log<span class="w"> </span>start<span class="w"> </span>offset<span class="w"> </span>to<span class="w"> </span><span class="m">927939</span><span class="w"> </span>of<span class="w"> </span>partition<span class="w"> </span>__cluster_metadata-0<span class="w"> </span>since<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>larger<span class="w"> </span>than<span class="w"> </span>the<span class="w"> </span>high<span class="w"> </span>watermark<span class="w"> </span><span class="m">926507</span>
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,035<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">294</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">137</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+java.lang.RuntimeException:<span class="w"> </span>Cant<span class="w"> </span>create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span><span class="k">in</span>-memory<span class="w"> </span>snapshot<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">926507</span><span class="w"> </span>because<span class="w"> </span>there<span class="w"> </span>is<span class="w"> </span>already<span class="w"> </span>a<span class="w"> </span>snapshot<span class="w"> </span>with<span class="w"> </span>epoch<span class="w"> </span><span class="m">927938</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,252<span class="o">]</span> ERROR Exiting Kafka due to fatal exception during startup. <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
-</pre>
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,252<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span>during<span class="w"> </span>startup.<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+</pre></div>
+
 <h4>Debugging</h4>
 <p>I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.</p>
 <h4>Solution</h4>
 <p>I create a new temporary directory and set the log directory to that.</p>
-<pre class="code literal-block">$ mkdir /tmp/kafka-logs
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>mkdir<span class="w"> </span>/tmp/kafka-logs
 
 <span class="c1"># inside server.properties</span>
 log.dirs<span class="o">=</span>/tmp/kafka-logs
-</pre>
-<p>When I started the Kafka server, it failed.</p>
-<pre class="code literal-block">$ kafka-server-start server.properties
+</pre></div>
 
-<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:30:50,018<span class="o">]</span> ERROR Exiting Kafka due to fatal exception <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
-org.apache.kafka.common.KafkaException: No <span class="sb">`</span>meta.properties<span class="sb">`</span> found <span class="k">in</span> /tmp/ <span class="o">(</span>have you run <span class="sb">`</span>kafka-storage.sh<span class="sb">`</span> to format the directory?<span class="o">)</span>
-</pre>
+<p>When I started the Kafka server, it failed.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-server-start<span class="w"> </span>server.properties
+
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:30:50,018<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+org.apache.kafka.common.KafkaException:<span class="w"> </span>No<span class="w"> </span><span class="sb">`</span>meta.properties<span class="sb">`</span><span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>/tmp/<span class="w"> </span><span class="o">(</span>have<span class="w"> </span>you<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>kafka-storage.sh<span class="sb">`</span><span class="w"> </span>to<span class="w"> </span>format<span class="w"> </span>the<span class="w"> </span>directory?<span class="o">)</span>
+</pre></div>
+
 <p>I ran the <code>kafka-storage</code> script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.</p>
-<pre class="code literal-block">$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>~/homebrew/var/lib/kraft-combined-logs/meta.properties<span class="w"> </span>
 <span class="c1">#</span>
 <span class="c1">#Thu Oct 20 11:48:12 IST 2022</span>
 cluster.id<span class="o">=</span>5MB5lq-XT-6JzQqJeIuhWQ
 node.id<span class="o">=</span><span class="m">1</span>
-<span class="nv">version</span><span class="o">=</span><span class="m">1</span>      
-</pre>
-<p>Now, we can format the new directory.</p>
-<pre class="code literal-block">$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
+<span class="nv">version</span><span class="o">=</span><span class="m">1</span><span class="w">      </span>
+</pre></div>
 
-Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3.
-</pre>
+<p>Now, we can format the new directory.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-storage<span class="w"> </span>format<span class="w"> </span>--config<span class="w"> </span>server.properties<span class="w"> </span>--cluster-id<span class="w"> </span>5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting<span class="w"> </span>/tmp/kafka-logs/<span class="w"> </span>with<span class="w"> </span>metadata.version<span class="w"> </span><span class="m">3</span>.3-IV3.
+</pre></div>
+
 <p>After changing log directory, Kafka has started working.</p>
-<pre class="code literal-block">$ kafka-start-server /path/to/server.properties
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-start-server<span class="w"> </span>/path/to/server.properties
+</pre></div>
+
 <p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.</p>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
@@ -449,8 +530,9 @@ Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3
 <p><b>Binding</b>: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.</p>
 <h4>RabbitMQ Setup</h4>
 <p>We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:</p>
-<pre class="code literal-block">$ docker run --rm --name<span class="o">=</span>rabbitmq -p <span class="m">15672</span>:15672 -p <span class="m">5672</span>:5672 rabbitmq:3-management
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--name<span class="o">=</span>rabbitmq<span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span>rabbitmq:3-management
+</pre></div>
+
 <p>This image has rabbitmq management plugin enabled. We can access the management UI at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and password are both <code>guest</code>.</p>
 <p>It also has <code>rabbitmqadmin</code> command line tool installed, which can manage RabbitMQ. </p>
 <h4>Passing Messages from UI</h4>
@@ -460,32 +542,40 @@ Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3
 <p><img src="../images/rabbitmq-publish.png" alt="RabbitMQ Publish"></p>
 <h4>Passing Messages from CLI</h4>
 <p>Instead of using web UI, we can use <code>rabbitmqadmin</code> CLI tool<sup id="fnref:rabbitmq-cli"><a class="footnote-ref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli">2</a></sup> to send and receive messages. Let's create a topic exchange and a queue. </p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> exchange <span class="nv">type</span><span class="o">=</span>direct <span class="nv">name</span><span class="o">=</span>orders
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>exchange<span class="w"> </span><span class="nv">type</span><span class="o">=</span>direct<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
 <span class="c1"># =&gt; exchange declared</span>
-</pre>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> queue <span class="nv">name</span><span class="o">=</span>orders
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>queue<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
 <span class="c1"># =&gt; queue declared</span>
-</pre>
+</pre></div>
+
 <p>Let's publish a message to the exchange:</p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin publish <span class="nv">routing_key</span><span class="o">=</span>orders <span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>publish<span class="w"> </span><span class="nv">routing_key</span><span class="o">=</span>orders<span class="w"> </span><span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
 <span class="c1"># =&gt; Message published</span>
-</pre>
+</pre></div>
+
 <p>To receive messages from the queue, we can use the following command:</p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin get <span class="nv">queue</span><span class="o">=</span>orders
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>get<span class="w"> </span><span class="nv">queue</span><span class="o">=</span>orders
+</pre></div>
+
 <p><img src="../images/rabbitmq-get-message.png" alt="RabbitMQ CLI"></p>
 <h4>Passing Messages from REST API</h4>
 <p>We can also use REST API to send and receive messages. Let's create a new exchange and queue:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"direct"}'</span> http://localhost:15672/api/exchanges/%2f/orders
-</pre>
-<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"topic", "durable": true}'</span> http://localhost:15672/api/queues/%2f/orders
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"direct"}'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"topic", "durable": true}'</span><span class="w"> </span>http://localhost:15672/api/queues/%2f/orders
+</pre></div>
+
 <p>We can publish a message to the exchange:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X POST -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span> http://localhost:15672/api/exchanges/%2f/orders/publish
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders/publish
+</pre></div>
+
 <p>To receive messages from the queue, we can use the following command:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:15672/api/queues/%2f/orders/get
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.</p>
 <div class="footnote">
@@ -536,81 +626,93 @@ It is introduced to remove dependency on ZooKeeper.</p>
 <p>We can use cp-all-in-one<sup id="fnref:cp-all-in-one"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one">2</a></sup> docker compose files to run Apache Kafka locally. This image contains all the
 components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
 Proxy, Confluent Control Center, and others.</p>
-<pre class="code literal-block">$ git clone https://github.com/confluentinc/cp-all-in-one
-$ <span class="nb">cd</span> cp-all-in-one/cp-all-in-one
-$ docker-compose up
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/confluentinc/cp-all-in-one
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>cp-all-in-one/cp-all-in-one
+$<span class="w"> </span>docker-compose<span class="w"> </span>up
+</pre></div>
+
 <p>Confluent Control Center is a web UI to manage and monitor Apache Kafka.</p>
 <p><img src="../images/kafka-control-center.png" alt="Kafka Control Center"></p>
 <p>We can visit it <a href="http://localhost:9021">http://localhost:9021</a> and monitor the cluster from this UI.</p>
 <h4>Producing and Consuming Messages</h4>
 <p>Kafka stores messages in topics. A topic is a category or feed name to which messages are published/consumed.</p>
 <p>Let us create a topic called <code>test</code> with <code>kafka-topics</code> command.</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --create 
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--create<span class="w"> </span>
+</pre></div>
+
 <p>This will create a topic called <code>test</code> with a single partition and a replication factor of 1. In multi-node cluster, we
 can use <code>--replication-factor</code>, <code>--partitions</code> to specify the number of replicas/partitions for the topic.</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --partitions <span class="m">3</span> --replication-factor <span class="m">2</span> --create --if-not-exists
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--partitions<span class="w"> </span><span class="m">3</span><span class="w"> </span>--replication-factor<span class="w"> </span><span class="m">2</span><span class="w"> </span>--create<span class="w"> </span>--if-not-exists
+</pre></div>
+
 <p>To produce messages to a topic named <code>test</code>, we can use <code>kafka-console-producer</code> and add messages to the topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-producer --broker-list localhost:9092 --topic <span class="nb">test</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-console-producer<span class="w"> </span>--broker-list<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span>
 
-&gt;order received
-&gt;order updated
-&gt;order shipped
-&gt;order delivered
-&gt;<span class="o">{</span><span class="s2">"status"</span>: <span class="s2">"completed"</span><span class="o">}</span>
-</pre>
+&gt;order<span class="w"> </span>received
+&gt;order<span class="w"> </span>updated
+&gt;order<span class="w"> </span>shipped
+&gt;order<span class="w"> </span>delivered
+&gt;<span class="o">{</span><span class="s2">"status"</span>:<span class="w"> </span><span class="s2">"completed"</span><span class="o">}</span>
+</pre></div>
+
 <p>To consume messages from the same topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-consumer --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --from-beginning
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-console-consumer<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--from-beginning
 
-order received
-order updated
-order shipped
-order delivered
-<span class="o">{</span><span class="s2">"status"</span>: <span class="s2">"completed"</span><span class="o">}</span>
-</pre>
+order<span class="w"> </span>received
+order<span class="w"> </span>updated
+order<span class="w"> </span>shipped
+order<span class="w"> </span>delivered
+<span class="o">{</span><span class="s2">"status"</span>:<span class="w"> </span><span class="s2">"completed"</span><span class="o">}</span>
+</pre></div>
+
 <p>Since we have not defined schema for the messages, Kafka will store the messages as byte arrays. We can explicitly define the schema for the messages using Confluent Schema Registry if required.</p>
 <p>We can list all the topics in cluster using <code>kafka-topics</code>:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --list
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--list
 
 default_ksql_processing_log
 docker-connect-configs
 docker-connect-offsets
 docker-connect-status
 <span class="nb">test</span>
-</pre>
-<p>To show details of a topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --describe --topic <span class="nb">test</span>
+</pre></div>
 
-Topic: <span class="nb">test</span> TopicId: 7CckqkXsQXCNY0MNHYRv2w PartitionCount: <span class="m">1</span>   ReplicationFactor: <span class="m">1</span>    Configs: 
-    Topic: <span class="nb">test</span> Partition: <span class="m">0</span>    Leader: <span class="m">1</span>   Replicas: <span class="m">1</span> Isr: <span class="m">1</span>  Offline:         
-</pre>
+<p>To show details of a topic:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--describe<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span>
+
+Topic:<span class="w"> </span><span class="nb">test</span><span class="w"> </span>TopicId:<span class="w"> </span>7CckqkXsQXCNY0MNHYRv2w<span class="w"> </span>PartitionCount:<span class="w"> </span><span class="m">1</span><span class="w">   </span>ReplicationFactor:<span class="w"> </span><span class="m">1</span><span class="w">    </span>Configs:<span class="w"> </span>
+<span class="w">    </span>Topic:<span class="w"> </span><span class="nb">test</span><span class="w"> </span>Partition:<span class="w"> </span><span class="m">0</span><span class="w">    </span>Leader:<span class="w"> </span><span class="m">1</span><span class="w">   </span>Replicas:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Isr:<span class="w"> </span><span class="m">1</span><span class="w">  </span>Offline:<span class="w">         </span>
+</pre></div>
+
 <p>By default all messages are stored in the topic for 7 days. We can change this retention period using <code>retention.ms</code> configuration:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --alter --topic <span class="nb">test</span> --config retention.ms<span class="o">=</span><span class="m">10000</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--alter<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--config<span class="w"> </span>retention.ms<span class="o">=</span><span class="m">10000</span>
+</pre></div>
+
 <p>To see all the available consumer groups, we can use <code>kafka-consumer-groups</code>:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-consumer-groups --bootstrap-server localhost:9092 --list
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-consumer-groups<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--list
+</pre></div>
+
 <h4>Kafka Rest Proxy</h4>
 <p>Kafka Rest Proxy<sup id="fnref:kafka rest proxy"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy">3</a></sup> is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
 and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
 protocol or clients.</p>
 <p>To produce messages to a <code>test</code> topic with curl:</p>
-<pre class="code literal-block">$ curl -X POST -H <span class="s2">"Content-Type: application/vnd.kafka.json.v2+json"</span> <span class="se">\</span>
-    --data <span class="s1">'{"records":[{"value":{"status": "completed"}}]}'</span> <span class="se">\</span>
-    <span class="s2">"http://localhost:8082/topics/test"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/vnd.kafka.json.v2+json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--data<span class="w"> </span><span class="s1">'{"records":[{"value":{"status": "completed"}}]}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"http://localhost:8082/topics/test"</span>
+</pre></div>
+
 <p>To consume messages from the same topic:</p>
-<pre class="code literal-block">$ curl -X GET -H <span class="s2">"Accept: application/vnd.kafka.json.v2+json"</span> <span class="se">\</span>
-    <span class="s2">"http://localhost:8082/topics/test"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: application/vnd.kafka.json.v2+json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"http://localhost:8082/topics/test"</span>
+</pre></div>
+
 <p>We can dynamically configure Kafka cluster settings as well.</p>
 <p>To change log level of various components of Kafka cluster using Kafka Rest Proxy.</p>
-<pre class="code literal-block">$ curl -X POST -H <span class="s2">"Content-Type: application/vnd.kafka.v2+json"</span> <span class="se">\</span>
-    --data <span class="s1">'{"log4j.logger.kafka.server":"DEBUG"}'</span> <span class="se">\</span>
-    <span class="s2">"http://localhost:8082/config"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/vnd.kafka.v2+json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--data<span class="w"> </span><span class="s1">'{"log4j.logger.kafka.server":"DEBUG"}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"http://localhost:8082/config"</span>
+</pre></div>
+
 <p>We can update the log level of various components of Kafka cluster and check the logs.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to install Apache Kafka locally using Docker. We have also seen how to produce and consume messages using Kafka console commands and Kafka Rest Proxy.</p>
@@ -625,152 +727,6 @@ protocol or clients.</p>
 </li>
 <li id="fn:kafka rest proxy">
 <p><a href="https://github.com/confluentinc/kafka-rest">https://github.com/confluentinc/kafka-rest</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:kafka%20rest%20proxy" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/common-crawl-laptop-web-directory.html" class="u-url">Common Crawl on Laptop - Building Web Directory</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/12/common-crawl-laptop-web-directory.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-12-08T07:41:39+05:30" itemprop="datePublished" title="2022-12-08">2022-12-08</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>This series of posts discuss processing of common crawl dataset on laptop.</p>
-<ol>
-<li><a href="../2022/11/common-crawl-laptop-extract-subset.html">Extracting Subset of Common Crawl</a></li>
-<li>
-<a href="../2022/12/common-crawl-laptop-web-directory.html">Building web directory</a> (this post)</li>
-</ol>
-<h4>Introduction</h4>
-<p>In the earlier post, we have extracted all telugu web page urls to a csv file. In this post, let's explore these urls and build a web directory from it.</p>
-<h4>Explore Data</h4>
-<p>Let's see how many urls are present in the extracted subset of data.</p>
-<pre class="code literal-block">$ wc -l telugu.csv
-  <span class="m">852025</span> telugu.csv 
-</pre>
-<p>In the earlier post, we have installed <code>duckdb</code> and used it for processing parquet files. <code>duckdb</code> can execute SQL queries directly on csv file. Let's use it to explore the data stored in telugu.csv.</p>
-<p>Let's see how many unique domains are present in the data.</p>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
-<span class="s2">    SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites</span>
-<span class="s2">    FROM read_csv('telugu.csv', auto_detect = TRUE);</span>
-<span class="s2">"""</span>
-┌──────────────┐
-│ unique_sites │
-├──────────────┤
-│ <span class="m">13632</span>        │
-└──────────────┘
-</pre>
-<p>There ~14k unique domains. Let's see page density across these domains.</p>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
-<span class="s2">SELECT count    AS page_count,</span>
-<span class="s2">COUNT(*) AS sites</span>
-<span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
-<span class="s2">FROM read_csv('te.csv', auto_detect = TRUE)</span>
-<span class="s2">GROUP BY url_host_name_reversed) AS t</span>
-<span class="s2">GROUP BY page_count</span>
-<span class="s2">ORDER BY page_count;</span>
-<span class="s2">"""</span>
-┌────────────┬───────┐
-│ page_count │ sites │
-├────────────┼───────┤
-│ <span class="m">1</span>          │ <span class="m">6326</span>  │
-│ <span class="m">2</span>          │ <span class="m">1904</span>  │
-│ <span class="m">3</span>          │ <span class="m">733</span>   │
-│ <span class="m">4</span>          │ <span class="m">459</span>   │
-│ <span class="m">5</span>          │ <span class="m">315</span>   │
-</pre>
-<p>About ~75% of the sites have less than 5 pages. It is highly unlikely that these sites complete content is in Telugu language. After manually checking a few of these sites, I found that there are a lot of false positives. </p>
-<p>In the earlier post, we have extracted all pages where there is Telugu language content. Let's filter out pages where Telugu is <strong>primary</strong> language.</p>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
-<span class="s2">  COPY (</span>
-<span class="s2">    SELECT * FROM read_csv('cct.csv', auto_detect=true) </span>
-<span class="s2">    WHERE content_languages like 'tel%'</span>
-<span class="s2">  ) TO 'te_primary.csv' (DELIMITER ',', HEADER TRUE);</span>
-<span class="s2">"""</span>
-</pre>
-<pre class="code literal-block">$ wc -l te_primary.csv
-  <span class="m">573130</span> te_primary.csv
-</pre>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"</span>                           
-┌──────────────┐
-│ unique_sites │
-├──────────────┤
-│ <span class="m">5666</span>         │
-└──────────────┘    
-</pre>
-<p>Let's see how page density per domain has changed.</p>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
-<span class="s2">SELECT count    AS page_count,</span>
-<span class="s2">COUNT(*) AS sites</span>
-<span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
-<span class="s2">FROM read_csv('te_primary.csv', auto_detect = TRUE)</span>
-<span class="s2">GROUP BY url_host_name_reversed) AS t</span>
-<span class="s2">GROUP BY page_count</span>
-<span class="s2">ORDER BY page_count</span>
-<span class="s2">;</span>
-<span class="s2">"""</span>
-┌────────────┬───────┐
-│ page_count │ sites │
-├────────────┼───────┤
-│ <span class="m">1</span>          │ <span class="m">2183</span>  │
-│ <span class="m">2</span>          │ <span class="m">843</span>   │
-│ <span class="m">3</span>          │ <span class="m">235</span>   │
-│ <span class="m">4</span>          │ <span class="m">146</span>   │
-│ <span class="m">5</span>          │ <span class="m">98</span>    │
-</pre>
-<p>Page density remains almost the same. </p>
-<p>Let's filter out sites which have at least 5 pages in Telugu. This will eliminate a lot of false positives. Let's look at the most popular sites from the results.</p>
-<pre class="code literal-block">   <span class="m">1</span>   │ Rank,Domain,Open Page Rank
-   <span class="m">2</span>   │ <span class="m">25</span>,support.google.com,8.55
-   <span class="m">3</span>   │ <span class="m">57</span>,t.me,7.76
-   <span class="m">4</span>   │ <span class="m">76</span>,chrome.google.com,7.49
-   <span class="m">5</span>   │ <span class="m">163</span>,support.mozilla.org,6.99
-   <span class="m">6</span>   │ <span class="m">170</span>,groups.google.com,6.94
-</pre>
-<p>A lot of unrelated domains are present here because there might be 10+ pages in telugu in these domains as well. But we don't need these.</p>
-<p>Let's look at only home page(or translated home page) where primary content language is telugu.</p>
-<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
-<span class="s2">  SELECT COUNT(distinct url) </span>
-<span class="s2">  FROM read_csv('te_primary.csv', auto_detect=true) </span>
-<span class="s2">  WHERE (url_path = '/' or url_path = '/te/') and url_query is null;</span>
-<span class="s2">"""</span>
-</pre>
-<p>Now the domain count has reduced to 6k. Let's export these domains to csv file.</p>
-<p>To categorize these domains, Common-crawl doesn't yet provide any kind of categorisation. For now, we can use Open PageRank to sort these domains based on rank. </p>
-<p>We can download top 10 million domains from Open PageRank<sup id="fnref:pagerank"><a class="footnote-ref" href="../2022/12/common-crawl-laptop-web-directory.html#fn:pagerank">3</a></sup>. Here is a simple python script to extract telugu domains from the list.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-
-<span class="n">domains_file</span> <span class="o">=</span> <span class="s1">'domains.csv'</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">domains_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">telugu_domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
-
-<span class="n">telugu_domains</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'.'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)))</span> <span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="n">telugu_domains</span><span class="p">]</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'t10m.csv'</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'Domain'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">telugu_domains</span><span class="p">)]</span>
-
-<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'t10m_telugu.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre>
-<p>Now, we have list of all telugu domains sorted by rank. In the next post, we will use this list to categorize the domains.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:common-crawl">
-<p><a href="https://commoncrawl.org">https://commoncrawl.org</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:common-crawl" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:columnar-index-wiki">
-<p><a href="https://en.wikipedia.org/wiki/Column-oriented_DBMS">https://en.wikipedia.org/wiki/Column-oriented_DBMS</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:columnar-index-wiki" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:pagerank">
-<p><a href="https://www.domcop.com/openpagerank">https://www.domcop.com/openpagerank</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:pagerank" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:duckdb">
-<p><a href="https://duckdb.org">https://duckdb.org</a> <a class="footnote-backref" href="../2022/12/common-crawl-laptop-web-directory.html#fnref:duckdb" title="Jump back to footnote 4 in the text">↩</a></p>
 </li>
 </ol>
 </div>

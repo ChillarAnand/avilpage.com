@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about rabbitmq)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/rabbitmq.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 02 Jan 2023 09:20:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about rabbitmq)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/rabbitmq.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 19 Mar 2023 11:48:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
 &lt;h4&gt;What is RabbitMQ?&lt;/h4&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-overview.png" alt="RabbitMQ"&gt;&lt;/p&gt;
 &lt;p style="text-align:center;"&gt;Image Credit: CloudAMQP&lt;/p&gt;
@@ -13,8 +13,9 @@
 &lt;p&gt;&lt;b&gt;Binding&lt;/b&gt;: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.&lt;/p&gt;
 &lt;h4&gt;RabbitMQ Setup&lt;/h4&gt;
 &lt;p&gt;We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker run --rm --name&lt;span class="o"&gt;=&lt;/span&gt;rabbitmq -p &lt;span class="m"&gt;15672&lt;/span&gt;:15672 -p &lt;span class="m"&gt;5672&lt;/span&gt;:5672 rabbitmq:3-management
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="o"&gt;=&lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15672&lt;/span&gt;:15672&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5672&lt;/span&gt;:5672&lt;span class="w"&gt; &lt;/span&gt;rabbitmq:3-management
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This image has rabbitmq management plugin enabled. We can access the management UI at &lt;a href="http://localhost:15672"&gt;http://localhost:15672&lt;/a&gt;. The default username and password are both &lt;code&gt;guest&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;It also has &lt;code&gt;rabbitmqadmin&lt;/code&gt; command line tool installed, which can manage RabbitMQ. &lt;/p&gt;
 &lt;h4&gt;Passing Messages from UI&lt;/h4&gt;
@@ -24,32 +25,40 @@
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-publish.png" alt="RabbitMQ Publish"&gt;&lt;/p&gt;
 &lt;h4&gt;Passing Messages from CLI&lt;/h4&gt;
 &lt;p&gt;Instead of using web UI, we can use &lt;code&gt;rabbitmqadmin&lt;/code&gt; CLI tool&lt;sup id="fnref:rabbitmq-cli"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli"&gt;2&lt;/a&gt;&lt;/sup&gt; to send and receive messages. Let's create a topic exchange and a queue. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin &lt;span class="nb"&gt;declare&lt;/span&gt; exchange &lt;span class="nv"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;direct &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;exchange&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;direct&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
 &lt;span class="c1"&gt;# =&amp;gt; exchange declared&lt;/span&gt;
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin &lt;span class="nb"&gt;declare&lt;/span&gt; queue &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;queue&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
 &lt;span class="c1"&gt;# =&amp;gt; queue declared&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Let's publish a message to the exchange:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin publish &lt;span class="nv"&gt;routing_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders &lt;span class="nv"&gt;payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'dummy message'&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;publish&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;routing_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'dummy message'&lt;/span&gt;
 &lt;span class="c1"&gt;# =&amp;gt; Message published&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin get &lt;span class="nv"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-get-message.png" alt="RabbitMQ CLI"&gt;&lt;/p&gt;
 &lt;h4&gt;Passing Messages from REST API&lt;/h4&gt;
 &lt;p&gt;We can also use REST API to send and receive messages. Let's create a new exchange and queue:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X PUT -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"type":"direct"}'&lt;/span&gt; http://localhost:15672/api/exchanges/%2f/orders
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X PUT -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"type":"topic", "durable": true}'&lt;/span&gt; http://localhost:15672/api/queues/%2f/orders
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"direct"}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"topic", "durable": true}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can publish a message to the exchange:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X POST -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'&lt;/span&gt; http://localhost:15672/api/exchanges/%2f/orders/publish
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders/publish
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders/get
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.&lt;/p&gt;
 &lt;div class="footnote"&gt;

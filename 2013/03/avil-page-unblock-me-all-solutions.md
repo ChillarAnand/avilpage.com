@@ -8,14 +8,11 @@
 -->
 
 
-I like to solve puzzles a lot. I started playing UnblockMe puzzle. I solved all levels. Since some people are asking for solutions, I have screencast solutions and uploaded them to YouTube.
+I like to solve puzzles a lot. I started playing UnblockMe puzzle. I solved all levels. Since some people are asking for solutions, I have screencasted solutions and uploaded them to youtube.
 
 Here is a sample screencast.
 
-<div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/5qvaJPrzzk0" allowfullscreen>
-</iframe>
-</div>
+<embed width="600" height="400" src="https://youtube.com/v/5qvaJPrzzk0" type="application/x-shockwave-flash" allowfullscreen="true">
 
 
-Thanks to Divakar, Nagmohan, Chaitanya, Nagendra for helping with screen casting.
+Thanks to Divakar, Nagmohan, Chaitanya, Nagendra for helping with screencasting.
