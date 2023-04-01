@@ -148,7 +148,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    4 min read
+                    5 min read
             </p>
 
             <p class="dateline">
@@ -162,37 +162,43 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <h4>Introduction</h4>
 <p>From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run <code>uname -mp</code> on these devices, we can see the CPU architecture details.</p>
-<pre class="code literal-block">$ uname -mp
-arm64 arm
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>uname<span class="w"> </span>-mp
+arm64<span class="w"> </span>arm
+</pre></div>
+
 <p>Let's run the same command on a device using Intel x86 processor.</p>
-<pre class="code literal-block">$ uname -mp
-x86_64 x86_64
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>uname<span class="w"> </span>-mp
+x86_64<span class="w"> </span>x86_64
+</pre></div>
+
 <p>Many popular docker images<sup id="fnref:dhub"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:dhub">1</a></sup> doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.</p>
 <p>In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.</p>
 <h4>Setup</h4>
 <p>Lima<sup id="fnref:lima"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:lima">2</a></sup> can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp; ARM64 VM and install k3s<sup id="fnref:k3s"><a class="footnote-ref" href="speedup-amd64-containers-on-arm.html#fn:k3s">3</a></sup> in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.</p>
-<pre class="code literal-block">$ brew install lima
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>lima
 
-$ limactl start linux_arm64
-$ limactl start linux_amd64
-</pre>
+$<span class="w"> </span>limactl<span class="w"> </span>start<span class="w"> </span>linux_arm64
+$<span class="w"> </span>limactl<span class="w"> </span>start<span class="w"> </span>linux_amd64
+</pre></div>
+
 <p>When starting a VM, we can edit <code>arch</code> parameter in the configuration. Once VM starts, we can see the details by running <code>limactl list</code>.</p>
-<pre class="code literal-block">$ limactl list
-NAME                ARCH
-linux_amd64         x86_64
-linux_arm64         aarch64
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>limactl<span class="w"> </span>list
+NAME<span class="w">                </span>ARCH
+linux_amd64<span class="w">         </span>x86_64
+linux_arm64<span class="w">         </span>aarch64
+</pre></div>
+
 <p>Lets login to each VM &amp; install k3s.</p>
-<pre class="code literal-block">$ limactl shell linux_arm64
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>limactl<span class="w"> </span>shell<span class="w"> </span>linux_arm64
 
-$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
-</pre>
-<pre class="code literal-block">$ limactl shell linux_amd64
+$<span class="w"> </span>curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-
+</pre></div>
 
-$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>limactl<span class="w"> </span>shell<span class="w"> </span>linux_amd64
+
+$<span class="w"> </span>curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-
+</pre></div>
+
 <p>If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.</p>
 <p align="center">
 <img src="../../images/arch-arm-docker.png"></p>
@@ -201,9 +207,10 @@ $ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
 <h4>Fast Mode</h4>
 <p><code>lima</code> provides <code>fast-mode</code> option for cross architecture VMs which will speed up the performance.</p>
 <p>For that, we need to log in to VMs and install emulators.</p>
-<pre class="code literal-block">$ sudo systemctl start containerd
-$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>containerd
+$<span class="w"> </span>sudo<span class="w"> </span>nerdctl<span class="w"> </span>run<span class="w"> </span>--privileged<span class="w"> </span>--rm<span class="w"> </span>tonistiigi/binfmt<span class="w"> </span>--install<span class="w"> </span>all
+</pre></div>
+
 <p>After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.</p>
 <h4>Conclusion</h4>
 <p>In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.</p>

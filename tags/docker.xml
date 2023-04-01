@@ -1,5 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about docker)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/docker.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 06 Mar 2023 06:52:05 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Kubernetes Anywhere with Single Command</title><link>https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div class="embed-responsive embed-responsive-16by9"&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about docker)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/docker.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 01 Apr 2023 12:24:48 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;p&gt;I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. &lt;/p&gt;
+&lt;p&gt;I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  &lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;p&gt;To reduce system load, I decided to build aarch64 wheels for confluent-kafka-python. I looked at open issues on GitHub and asked maintainers how to build aarch64 wheels. There was no response&lt;sup id="fnref:librdkafka"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fn:librdkafka"&gt;1&lt;/a&gt;&lt;/sup&gt; from them.&lt;/p&gt;
+&lt;p&gt;As a workaround, I asked ChatGPT&lt;sup id="fnref:chatgpt"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fn:chatgpt"&gt;2&lt;/a&gt;&lt;/sup&gt; on how to build confluent-kafka-python aarch64 wheels in a docker container.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/chatgpt-reduce-system-load.png" alt="chatgpt-reduce-system-load"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This initial suggestion didn't work as &lt;code&gt;confluent-kafka-python&lt;/code&gt; depends on &lt;code&gt;librdkafka&lt;/code&gt; which is a C library. I had to build &lt;code&gt;librdkafka&lt;/code&gt; from source for aarch64 and then build &lt;code&gt;confluent-kafka-python&lt;/code&gt; from source.&lt;/p&gt;
+&lt;p&gt;To build &lt;code&gt;librdkafka&lt;/code&gt; from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build &lt;code&gt;librdkafka&lt;/code&gt; from the source for aarch64.&lt;/p&gt;
+&lt;p&gt;Here is the final snippet:&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;22.04&lt;/span&gt;
+
+&lt;span class="n"&gt;ARG&lt;/span&gt; &lt;span class="n"&gt;DEBIAN_FRONTEND&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;noninteractive&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;update&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; \
+  &lt;span class="n"&gt;wget&lt;/span&gt; &lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;curl&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;postgresql&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt; \
+  &lt;span class="n"&gt;nano&lt;/span&gt; &lt;span class="n"&gt;less&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mime&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;openjdk&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;jre&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;headless&lt;/span&gt; \
+  &lt;span class="n"&gt;libpq&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt; &lt;span class="n"&gt;vim&lt;/span&gt; &lt;span class="n"&gt;tzdata&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;setuptools&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;clone&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluentinc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+
+&lt;span class="n"&gt;COPY&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="o"&gt;./&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;arch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;aarch64&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp;amp; environments that we are not familiar with.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:librdkafka"&gt;
+&lt;p&gt;&lt;a href="https://github.com/confluentinc/librdkafka/issues/3546#issuecomment-1340237177"&gt;https://github.com/confluentinc/librdkafka/3546&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fnref:librdkafka" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:chatgpt"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/ChatGPT"&gt;https://en.wikipedia.org/wiki/ChatGPT&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fnref:chatgpt" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>docker</category><category>macbook</category><category>python</category><guid>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</guid><pubDate>Sat, 01 Apr 2023 02:25:49 GMT</pubDate></item><item><title>Setup Kubernetes Anywhere with Single Command</title><link>https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div class="embed-responsive embed-responsive-16by9"&gt;
 &lt;iframe class="embed-responsive-item" src="https://www.youtube.com/embed/Vo0mAsXe-hI" allowfullscreen&gt;
 &lt;/iframe&gt;
 &lt;/div&gt;
@@ -14,19 +64,23 @@
 &lt;p&gt;k3d&lt;sup id="fnref:k3d"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html#fn:k3d"&gt;4&lt;/a&gt;&lt;/sup&gt; is a wrapper around k3s that allows you to run k3s on Docker. It is a great option for running Kubernetes on your local machine.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;k3d can be installed using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install k3d  &lt;span class="c1"&gt;# mac&lt;/span&gt;
-$ chocolatey install k3d  &lt;span class="c1"&gt;# windows&lt;/span&gt;
-$ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh &lt;span class="p"&gt;|&lt;/span&gt; bash &lt;span class="c1"&gt;# linux&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# mac&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;chocolatey&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# windows&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# linux&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once it is installed, we can create a cluster using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k3d cluster create demo
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will launch a cluster with a single node. We can also setup a multi-node cluster using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k3d cluster create demo --servers &lt;span class="m"&gt;3&lt;/span&gt; --agents &lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo&lt;span class="w"&gt; &lt;/span&gt;--servers&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--agents&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can verify the cluster is up and running using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl get nodes
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;nodes
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can also use GUI tools like Lens to manage and navigate the cluster. In the above video we have used Lens to create a Jenkins deployment as well.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how to set up Kubernetes on Docker. This is a great option for running Kubernetes on your local machine. We can also use this to run production setup for small applications.&lt;/p&gt;

@@ -1,67 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about aws)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/aws.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 02 Jan 2023 09:20:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about aws)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/aws.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 19 Mar 2023 11:48:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
 &lt;h4&gt;Deployment To k8s&lt;/h4&gt;
 &lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt; run -p &lt;span class="m"&gt;8080&lt;/span&gt;:8080 -p &lt;span class="m"&gt;8443&lt;/span&gt;:8443 nextgenhealthcare/connect
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8080&lt;/span&gt;:8080&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8443&lt;/span&gt;:8443&lt;span class="w"&gt; &lt;/span&gt;nextgenhealthcare/connect
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can use this docker image and create a k8s deployment to start a container.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
-&lt;span class="nv"&gt;apiVersion&lt;/span&gt;: &lt;span class="nv"&gt;apps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;v1beta1&lt;/span&gt;
-&lt;span class="nv"&gt;kind&lt;/span&gt;: &lt;span class="nv"&gt;Deployment&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="nv"&gt;apiVersion&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;apps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;v1beta1&lt;/span&gt;
+&lt;span class="nv"&gt;kind&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;Deployment&lt;/span&gt;
 &lt;span class="nv"&gt;metadata&lt;/span&gt;:
-  &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-  &lt;span class="nv"&gt;namespace&lt;/span&gt;: &lt;span class="nv"&gt;default&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;namespace&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;default&lt;/span&gt;
 &lt;span class="nv"&gt;spec&lt;/span&gt;:
-  &lt;span class="nv"&gt;template&lt;/span&gt;:
-    &lt;span class="nv"&gt;spec&lt;/span&gt;:
-      &lt;span class="nv"&gt;containers&lt;/span&gt;:
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-        &lt;span class="nv"&gt;image&lt;/span&gt;: &lt;span class="nv"&gt;docker&lt;/span&gt;.&lt;span class="nv"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;nextgenhealthcare&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-        &lt;span class="nv"&gt;ports&lt;/span&gt;:
-        &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;http&lt;/span&gt;
-          &lt;span class="nv"&gt;containerPort&lt;/span&gt;: &lt;span class="mi"&gt;8080&lt;/span&gt;
-        &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;https&lt;/span&gt;
-          &lt;span class="nv"&gt;containerPort&lt;/span&gt;: &lt;span class="mi"&gt;8443&lt;/span&gt;
-        &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;test&lt;/span&gt;
-          &lt;span class="nv"&gt;containerPort&lt;/span&gt;: &lt;span class="mi"&gt;9001&lt;/span&gt;
-        &lt;span class="nv"&gt;env&lt;/span&gt;:
-          &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;DATABASE&lt;/span&gt;
-            &lt;span class="nv"&gt;value&lt;/span&gt;: &lt;span class="nv"&gt;postgres&lt;/span&gt;
-          &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nv"&gt;name&lt;/span&gt;: &lt;span class="nv"&gt;DATABASE_URL&lt;/span&gt;
-            &lt;span class="nv"&gt;value&lt;/span&gt;: &lt;span class="nv"&gt;jdbc&lt;/span&gt;:&lt;span class="nv"&gt;postgresql&lt;/span&gt;:&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;avilpage&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;:&lt;span class="mi"&gt;5432&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;mirth_db&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;template&lt;/span&gt;:
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;spec&lt;/span&gt;:
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="nv"&gt;containers&lt;/span&gt;:
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;image&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;docker&lt;/span&gt;.&lt;span class="nv"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;nextgenhealthcare&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;ports&lt;/span&gt;:
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;http&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;https&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8443&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;test&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;env&lt;/span&gt;:
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;DATABASE&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;value&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;postgres&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;DATABASE_URL&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;value&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;jdbc&lt;/span&gt;:&lt;span class="nv"&gt;postgresql&lt;/span&gt;:&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;avilpage&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;:&lt;span class="mi"&gt;5432&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;mirth_db&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This deployment file can be applied on a cluster using &lt;code&gt;kubectl&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl apply -f connect-deployment.yaml
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;connect-deployment.yaml
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To access this container, we can create a service to expose this deployment to public.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
-&lt;span class="n"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;v1&lt;/span&gt;
-&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Service&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="n"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;
+&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Service&lt;/span&gt;
 &lt;span class="n"&gt;metadata&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-  &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
-  &lt;span class="n"&gt;annotations&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;arn&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;acm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ap&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;south&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;
-    &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"443"&lt;/span&gt;
-    &lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;annotations&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;arn&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;acm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ap&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;south&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"443"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;
 &lt;span class="n"&gt;spec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-  &lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;LoadBalancer&lt;/span&gt;
-  &lt;span class="n"&gt;selector&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
-  &lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;
-      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;80&lt;/span&gt;
-      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8080&lt;/span&gt;
-      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
-    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;
-      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;443&lt;/span&gt;
-      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;8443&lt;/span&gt;
-      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
-    &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;
-      &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;9001&lt;/span&gt;
-      &lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;9001&lt;/span&gt;
-      &lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;TCP&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;LoadBalancer&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;selector&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;https&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;443&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8443&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.&lt;/p&gt;
 &lt;p&gt;Once Mirth Connect is up &amp;amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -76,89 +80,95 @@
 &lt;/div&gt;</description><category>aws</category><category>devops</category><category>HealthIT</category><category>kubernetes</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to set up a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
 &lt;h4&gt;Prerequisites&lt;/h4&gt;
 &lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
-$ kubectl config get-contexts
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;cluster-info
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;config&lt;span class="w"&gt; &lt;/span&gt;get-contexts
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;You should know how to manually deploy your application to kubernetes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
-$ docker push chillaranand/library
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;chillaranand/library
 
 &lt;span class="c1"&gt;# deploy latest image to k8s&lt;/span&gt;
-$ kubectl apply -f app/deployment.yaml
-$ kubectl apply -f app/service.yaml
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;app/deployment.yaml
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;app/service.yaml
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Skaffold&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://github.com/GoogleContainerTools/skaffold"&gt;Skaffold&lt;/a&gt; is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.&lt;/p&gt;
 &lt;p&gt;Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
-$ chmod +x skaffold
-$ sudo mv skaffold /usr/local/bin
-&lt;/pre&gt;
-&lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ skaffold init
-Configuration skaffold.yaml was written
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-Lo&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$&lt;span class="w"&gt; &lt;/span&gt;chmod&lt;span class="w"&gt; &lt;/span&gt;+x&lt;span class="w"&gt; &lt;/span&gt;skaffold
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;mv&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;/usr/local/bin
+&lt;/pre&gt;&lt;/div&gt;
 
-$ cat skaffold.yaml
-apiVersion: skaffold/v2beta1
-kind: Config
+&lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;init
+Configuration&lt;span class="w"&gt; &lt;/span&gt;skaffold.yaml&lt;span class="w"&gt; &lt;/span&gt;was&lt;span class="w"&gt; &lt;/span&gt;written
+
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;skaffold.yaml
+apiVersion:&lt;span class="w"&gt; &lt;/span&gt;skaffold/v2beta1
+kind:&lt;span class="w"&gt; &lt;/span&gt;Config
 metadata:
-  name: library
+&lt;span class="w"&gt;  &lt;/span&gt;name:&lt;span class="w"&gt; &lt;/span&gt;library
 build:
-  artifacts:
-  - image: docker.io/chillaranand/library
+&lt;span class="w"&gt;  &lt;/span&gt;artifacts:
+&lt;span class="w"&gt;  &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;image:&lt;span class="w"&gt; &lt;/span&gt;docker.io/chillaranand/library
 deploy:
-  kubectl:
-    manifests:
-    - kubernetes/deployment.yaml
-    - kubernetes/service.yaml
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;kubectl:
+&lt;span class="w"&gt;    &lt;/span&gt;manifests:
+&lt;span class="w"&gt;    &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;kubernetes/deployment.yaml
+&lt;span class="w"&gt;    &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;kubernetes/service.yaml
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To deploy latest changes to your cluster, run&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ skaffold run
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;run
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.&lt;/p&gt;
 &lt;h4&gt;CircleCI Workflow&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;version:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.1
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.19
-  kubernetes: circleci/kubernetes@0.11.0
+&lt;span class="w"&gt;  &lt;/span&gt;aws-cli:&lt;span class="w"&gt; &lt;/span&gt;circleci/aws-cli@0.1.19
+&lt;span class="w"&gt;  &lt;/span&gt;kubernetes:&lt;span class="w"&gt; &lt;/span&gt;circleci/kubernetes@0.11.0
 
 commands:
-  kubernetes-deploy:
+&lt;span class="w"&gt;  &lt;/span&gt;kubernetes-deploy:
 
-    steps:
-      - setup_remote_docker
+&lt;span class="w"&gt;    &lt;/span&gt;steps:
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;setup_remote_docker
 
-      - aws-cli/setup:
-          profile-name: default
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;aws-cli/setup:
+&lt;span class="w"&gt;          &lt;/span&gt;profile-name:&lt;span class="w"&gt; &lt;/span&gt;default
 
-      - kubernetes/install-kubectl:
-          kubectl-version: v1.15.10
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;kubernetes/install-kubectl:
+&lt;span class="w"&gt;          &lt;/span&gt;kubectl-version:&lt;span class="w"&gt; &lt;/span&gt;v1.15.10
 
-      - checkout
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;checkout
 
-      - run:
-          name: container registry log &lt;span class="k"&gt;in&lt;/span&gt;
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            sudo &lt;span class="k"&gt;$(&lt;/span&gt;aws ecr get-login --region ap-south-1 --no-include-email&lt;span class="k"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;run:
+&lt;span class="w"&gt;          &lt;/span&gt;name:&lt;span class="w"&gt; &lt;/span&gt;container&lt;span class="w"&gt; &lt;/span&gt;registry&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;command:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;aws&lt;span class="w"&gt; &lt;/span&gt;ecr&lt;span class="w"&gt; &lt;/span&gt;get-login&lt;span class="w"&gt; &lt;/span&gt;--region&lt;span class="w"&gt; &lt;/span&gt;ap-south-1&lt;span class="w"&gt; &lt;/span&gt;--no-include-email&lt;span class="k"&gt;)&lt;/span&gt;
 
-      - run:
-          name: install skaffold
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-            chmod +x skaffold
-            sudo mv skaffold /usr/local/bin
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;run:
+&lt;span class="w"&gt;          &lt;/span&gt;name:&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;skaffold
+&lt;span class="w"&gt;          &lt;/span&gt;command:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-Lo&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+&lt;span class="w"&gt;            &lt;/span&gt;chmod&lt;span class="w"&gt; &lt;/span&gt;+x&lt;span class="w"&gt; &lt;/span&gt;skaffold
+&lt;span class="w"&gt;            &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;mv&lt;span class="w"&gt; &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;/usr/local/bin
 
-      - run:
-          name: update kube config to connect to the required cluster
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;run:
+&lt;span class="w"&gt;          &lt;/span&gt;name:&lt;span class="w"&gt; &lt;/span&gt;update&lt;span class="w"&gt; &lt;/span&gt;kube&lt;span class="w"&gt; &lt;/span&gt;config&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;connect&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;required&lt;span class="w"&gt; &lt;/span&gt;cluster
+&lt;span class="w"&gt;          &lt;/span&gt;command:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;aws&lt;span class="w"&gt; &lt;/span&gt;eks&lt;span class="w"&gt; &lt;/span&gt;--region&lt;span class="w"&gt; &lt;/span&gt;ap-south-1&lt;span class="w"&gt; &lt;/span&gt;update-kubeconfig&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="w"&gt; &lt;/span&gt;demo-cluster
 
-      - run:
-          name: deploy to k8s
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            skaffold run
-&lt;/pre&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;run:
+&lt;span class="w"&gt;          &lt;/span&gt;name:&lt;span class="w"&gt; &lt;/span&gt;deploy&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;k8s
+&lt;span class="w"&gt;          &lt;/span&gt;command:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;skaffold&lt;span class="w"&gt; &lt;/span&gt;run
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.&lt;/p&gt;
 &lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a separate environment is created for it.&lt;/p&gt;
 &lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
@@ -166,45 +176,50 @@ commands:
 &lt;p&gt;Here we have seen how to set up CD to kubernetes in CircleCI. If we want to set up this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item><item><title>How To Reduce Python Package Footprint?</title><link>https://avilpage.com/2020/02/reduce-python-package-footprint.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;PyPi&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt; hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt; along with the package.&lt;/p&gt;
 &lt;h4&gt;Build From Source&lt;/h4&gt;
 &lt;p&gt;If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pip install numpy
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;numpy
 
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+&lt;span class="w"&gt; &lt;/span&gt;85M&lt;span class="w"&gt;    &lt;/span&gt;/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp;amp; pandas, overall size of the package crosses 250MB.&lt;/p&gt;
 &lt;p&gt;An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nv"&gt;CLFAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'&lt;/span&gt; pip install numpy --global-option&lt;span class="o"&gt;=&lt;/span&gt;build_ext
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;CLFAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;numpy&lt;span class="w"&gt; &lt;/span&gt;--global-option&lt;span class="o"&gt;=&lt;/span&gt;build_ext
 
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+&lt;span class="w"&gt; &lt;/span&gt;23M&lt;span class="w"&gt;    &lt;/span&gt;/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can see the footprint has reduced by ~70% when using sdist instead of wheel. This&lt;sup id="fnref:4"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:4"&gt;4&lt;/a&gt;&lt;/sup&gt; article provides more details about these CFLAG optimization when installing a package from source.&lt;/p&gt;
 &lt;h4&gt;Shared Packages&lt;/h4&gt;
 &lt;p&gt;When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.&lt;/p&gt;
 &lt;p&gt;To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.&lt;/p&gt;
 &lt;p&gt;For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ cat common-requirements.txt  &lt;span class="c1"&gt;# shared across all enviroments&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;common-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# shared across all enviroments&lt;/span&gt;
 &lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
 &lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.1
 &lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
 
-$ cat project1-requirements.txt  &lt;span class="c1"&gt;# project1 requirements&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;project1-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# project1 requirements&lt;/span&gt;
 &lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
 &lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
 &lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
 
-$ cat project2-requirements.txt  &lt;span class="c1"&gt;# project2 enviroments&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;project2-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# project2 enviroments&lt;/span&gt;
 &lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.17
 &lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
 &lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After creating a virtual enviroment for a project, we can create a &lt;code&gt;.pth&lt;/code&gt; file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'&lt;/span&gt; &amp;gt;
- ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;
+&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Then we can install the project requirements which will install only missing packages.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pip install -r project1-requirements.txt
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;project1-requirements.txt
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Global Store&lt;/h4&gt;
 &lt;p&gt;The above shared packages solution has couple issues.&lt;/p&gt;
 &lt;ol&gt;
@@ -213,13 +228,14 @@ $ cat project2-requirements.txt  &lt;span class="c1"&gt;# project2 enviroments&l
 &lt;/ol&gt;
 &lt;p&gt;To solve this&lt;sup id="fnref:5"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:5"&gt;5&lt;/a&gt;&lt;/sup&gt;, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.&lt;/p&gt;
 &lt;p&gt;For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3.6&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--target&lt;span class="w"&gt; &lt;/span&gt;~/.mpip/numpy/3.6_1.18&lt;span class="w"&gt; &lt;/span&gt;numpy
 
-$ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
+$&lt;span class="w"&gt; &lt;/span&gt;python3.7&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--target&lt;span class="w"&gt; &lt;/span&gt;~/.mpip/numpy/3.7_1.17&lt;span class="w"&gt; &lt;/span&gt;numpy
 
 &lt;span class="c1"&gt;# in project venv&lt;/span&gt;
-&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'~/.mpip/numpy/3.7_1.17'&lt;/span&gt; &amp;gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-&lt;/pre&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'~/.mpip/numpy/3.7_1.17'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip&lt;sup id="fnref:6"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:6"&gt;6&lt;/a&gt;&lt;/sup&gt; as a POC to test this and it seems to work as expected.&lt;/p&gt;
 &lt;p&gt;These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -254,7 +270,7 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 &lt;/p&gt;
 
 &lt;p&gt;We can do the same with Python boto3 library.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
 
 
 &lt;span class="n"&gt;bucket_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'avilpage'&lt;/span&gt;
@@ -270,11 +286,12 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 
 &lt;span class="c1"&gt;# disable versioning&lt;/span&gt;
 &lt;span class="n"&gt;versioning&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;suspend&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Retrieving Objects&lt;/h4&gt;
 &lt;p&gt;Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.&lt;/p&gt;
 &lt;p&gt;We can write a simple script to generate a text file with a random text and upload it to S3.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;string&lt;/span&gt;
 
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
@@ -288,7 +305,8 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
     &lt;span class="n"&gt;fh&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="n"&gt;s3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;upload_file&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bucket_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;file_name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.&lt;/p&gt;
 &lt;p&gt;We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at &lt;code&gt;Latest version&lt;/code&gt;.&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -296,7 +314,7 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 &lt;/p&gt;
 
 &lt;p&gt;We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;boto3&lt;/span&gt;
 
 
 &lt;span class="n"&gt;bucket_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'avilpage'&lt;/span&gt;
@@ -315,7 +333,8 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
     &lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Body'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
     &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>https://avilpage.com/2019/07/aws-s3-bucket-objects-versions.html</guid><pubDate>Wed, 24 Jul 2019 15:51:21 GMT</pubDate></item><item><title>Setup Continous Deployment For Python Chalice</title><link>https://avilpage.com/2018/10/cd-python-chalice-aws.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Outline&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://pypi.org/project/chalice/"&gt;Chalice&lt;/a&gt; is a microframework developed by Amazon for quickly creating and deploying serverless applications in Python.&lt;/p&gt;
@@ -330,24 +349,25 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 &lt;p&gt;This by default uses CodeCommit repository for hosting code. We can use GitHub repo as a source instead of CodeCommit.&lt;/p&gt;
 &lt;p&gt;Chalice by default provides a build file to package code and push it to S3. In the deploy step, it uses this artifact to deploy the code.&lt;/p&gt;
 &lt;p&gt;We can use a custom buildpsec file to directly deploy the code from build step.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;0.1&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;version&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;
 
 &lt;span class="n"&gt;phases&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-  &lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Entering&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="k"&gt;install&lt;/span&gt; &lt;span class="k"&gt;phase&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Installing&lt;/span&gt; &lt;span class="n"&gt;dependencies&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="k"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="k"&gt;upgrade&lt;/span&gt; &lt;span class="n"&gt;awscli&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;aws&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="k"&gt;install&lt;/span&gt; &lt;span class="n"&gt;chalice&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="k"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Entering&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;phase&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Installing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;dependencies&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="k"&gt;upgrade&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;awscli&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;version&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;chalice&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;requirements&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;txt&lt;/span&gt;
 
-  &lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-    &lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;entered&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;build&lt;/span&gt; &lt;span class="k"&gt;phase&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;Build&lt;/span&gt; &lt;span class="n"&gt;started&lt;/span&gt; &lt;span class="k"&gt;on&lt;/span&gt; &lt;span class="n n-Quoted"&gt;`date`&lt;/span&gt;
-      &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;chalice&lt;/span&gt; &lt;span class="n"&gt;deploy&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;stage&lt;/span&gt; &lt;span class="n"&gt;staging&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;commands&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;entered&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;phase&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Build&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;started&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n n-Quoted"&gt;`date`&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;chalice&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;deploy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;stage&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;staging&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This buildspec file install requirements and deploys chalice app to staging. We can add one more build step to deploy it production after manual intervention.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have seen how to setup continous deployment for chalice application with GitHub and AWS CodePipeline.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>python</category><guid>https://avilpage.com/2018/10/cd-python-chalice-aws.html</guid><pubDate>Tue, 30 Oct 2018 15:51:21 GMT</pubDate></item></channel></rss>

@@ -261,26 +261,28 @@ Photo by Kaboompics on Pexels
 <p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
 <p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
 <p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
-<pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
-    jodogne/orthanc-python
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">4242</span>:4242<span class="w"> </span>-p<span class="w"> </span><span class="m">8042</span>:8042<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>jodogne/orthanc-python
+</pre></div>
+
 <p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
 <h4>Heroku Deployment</h4>
 <p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
 <p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
 <p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
-<pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
 
-<span class="nb">set</span> -x
+<span class="nb">set</span><span class="w"> </span>-x
 
-<span class="nb">echo</span> <span class="nv">$PORT</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$PORT</span>
 
-sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
+sed<span class="w"> </span><span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span><span class="w"> </span>-i<span class="w"> </span>/etc/orthanc/orthanc.json
 
-Orthanc /etc/orthanc/
-</pre>
+Orthanc<span class="w"> </span>/etc/orthanc/
+</pre></div>
+
 <p>We can use this shell script as entry point in docker as follows.</p>
-<pre class="code literal-block">FROM jodogne/orthanc-python
+<div class="code"><pre class="code literal-block">FROM jodogne/orthanc-python
 
 EXPOSE $PORT
 
@@ -288,13 +290,15 @@ WORKDIR /app
 ADD . /app
 
 ENTRYPOINT [ "./run.sh" ]
-</pre>
-<p>We can create a new app in heroku and we can deploy this container.</p>
-<pre class="code literal-block">$ heroku apps:create orthanc-demo
+</pre></div>
 
-$ heroku container:push web
-$ heroku container:release web
-</pre>
+<p>We can create a new app in heroku and we can deploy this container.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>heroku<span class="w"> </span>apps:create<span class="w"> </span>orthanc-demo
+
+$<span class="w"> </span>heroku<span class="w"> </span>container:push<span class="w"> </span>web
+$<span class="w"> </span>heroku<span class="w"> </span>container:release<span class="w"> </span>web
+</pre></div>
+
 <p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>
@@ -351,7 +355,7 @@ $ heroku container:release web
 <p>Replicating production performance on development machine will be costly. To avoid these, we can use APM tool to monitor performance in production.</p>
 <h4>Sentry Performance</h4>
 <p>Sentry is widely used Open source error tracking tool. Recently, it has introduced Performance to track performance also. Sentry doesn't need any agent running on the host machine to track performance. Enabling performance monitoring is just a single line change in Sentry<sup id="fnref:sentry"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn:sentry">3</a></sup> setup.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sentry_sdk</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sentry_sdk</span>
 
 
 <span class="n">sentry_sdk</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
@@ -359,7 +363,8 @@ $ heroku container:release web
     <span class="c1"># Trace half the requests</span>
     <span class="n">traces_sample_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
 <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Tracing performance will have additional overhead<sup id="fnref:oh"><a class="footnote-ref" href="../2020/11/python-web-applications-performance-sentry.html#fn:oh">4</a></sup> on the web application response time. Depending on the traffic, server capacity, acceptable overhead, we can decide what percentage of the requests we need to trace.</p>
 <p>Once performance is enabled, we can head over to Sentry web application and see traces for the transactions along with operation breakdown as shown below.</p>
 <p><img src="../images/sentry0.png" style="vertical-align:middle"></p>
@@ -405,7 +410,7 @@ $ heroku container:release web
 <p>When using Docker, if the build is taking time or the build image is huge, it will waste system resources as well as our time. In this article, let's see how to reduce build time as well as image size when using Docker for Python projects.</p>
 <h4>Project</h4>
 <p>Let us take a hello world application written in flask.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">flask</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">flask</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -414,14 +419,16 @@ $ heroku container:release web
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
     <span class="k">return</span> <span class="s1">'hello world - v1.0.0'</span>
-</pre>
+</pre></div>
+
 <p>Let's create a requirements.txt file to list out python packages required for the project.</p>
-<pre class="code literal-block">flask==1.1.2
+<div class="code"><pre class="code literal-block">flask==1.1.2
 pandas==1.1.2
-</pre>
+</pre></div>
+
 <p>Pandas binary wheel size is ~10MB. It is included in requirements to see how python packages affect docker image size.</p>
 <p>Here is our Dockerfile to run the flask application.</p>
-<pre class="code literal-block">FROM python:3.7
+<div class="code"><pre class="code literal-block">FROM python:3.7
 
 ADD . /app
 
@@ -434,23 +441,25 @@ EXPOSE 5000
 ENTRYPOINT [ "python" ]
 
 CMD [ "-m" "flask" "run" ]
-</pre>
+</pre></div>
+
 <p>Let's use the following commands to measure the image size &amp; build time with/without cache.</p>
-<pre class="code literal-block">$ docker build . -t flask:0.0 --pull --no-cache
-<span class="o">[</span>+<span class="o">]</span> Building <span class="m">45</span>.3s <span class="o">(</span><span class="m">9</span>/9<span class="o">)</span> FINISHED
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>flask:0.0<span class="w"> </span>--pull<span class="w"> </span>--no-cache
+<span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Building<span class="w"> </span><span class="m">45</span>.3s<span class="w"> </span><span class="o">(</span><span class="m">9</span>/9<span class="o">)</span><span class="w"> </span>FINISHED
 
-$ touch app.py  <span class="c1"># modify app.py file</span>
+$<span class="w"> </span>touch<span class="w"> </span>app.py<span class="w">  </span><span class="c1"># modify app.py file</span>
 
-$ docker build . -t flask:0.1
-<span class="o">[</span>+<span class="o">]</span> Building <span class="m">15</span>.3s <span class="o">(</span><span class="m">9</span>/9<span class="o">)</span> FINISHED
+$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>flask:0.1
+<span class="o">[</span>+<span class="o">]</span><span class="w"> </span>Building<span class="w"> </span><span class="m">15</span>.3s<span class="w"> </span><span class="o">(</span><span class="m">9</span>/9<span class="o">)</span><span class="w"> </span>FINISHED
 
-$ docker images <span class="p">|</span> grep flask
-flask               <span class="m">0</span>.1     06d3e985f12e    <span class="m">1</span>.01GB
-</pre>
+$<span class="w"> </span>docker<span class="w"> </span>images<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>flask
+flask<span class="w">               </span><span class="m">0</span>.1<span class="w">     </span>06d3e985f12e<span class="w">    </span><span class="m">1</span>.01GB
+</pre></div>
+
 <p>With the current docker, here are the results.</p>
 <p><img src="../images/docker0.png" style="vertical-align:middle"></p>
 <h4>1. Install requirements first</h4>
-<pre class="code literal-block">FROM python:3.7
+<div class="code"><pre class="code literal-block">FROM python:3.7
 
 WORKDIR /app
 
@@ -465,12 +474,13 @@ EXPOSE 5000
 ENTRYPOINT [ "python" ]
 
 CMD [ "-m" "flask" "run" ]
-</pre>
+</pre></div>
+
 <p>Let us modify the docker file to install requirements first and then add code to the docker image.</p>
 <p><img src="../images/docker1.png" style="vertical-align:middle"></p>
 <p>Now, build without cache took almost the same time. With cache, the build is completed in a second. Since docker caches step by step, it has cached python package installation step and thereby reducing the build time.</p>
 <h4>2. Disable Cache</h4>
-<pre class="code literal-block">FROM python:3.7
+<div class="code"><pre class="code literal-block">FROM python:3.7
 
 WORKDIR /app
 
@@ -485,23 +495,26 @@ EXPOSE 5000
 ENTRYPOINT [ "python" ]
 
 CMD [ "-m" "flask" "run" ]
-</pre>
+</pre></div>
+
 <p>By default, pip will cache the downloaded packages. Since we don't need a cache inside docker, let's disable pip cache by passing <code>--no-cache</code> argument.</p>
 <p><img src="../images/docker2.png" style="vertical-align:middle"></p>
 <p>This reduced the docker image size by ~20MB. In real-world projects, where there are a good number of dependencies, the overall image size will be reduced a lot.</p>
 <h4>3. Use slim variant</h4>
 <p>Till now, we have been using defacto Python variant. It has a large number of common debian packages. There is a slim variant that doesn't contain all these common packages<sup id="fnref:dpy"><a class="footnote-ref" href="../2020/10/python-docker-build-slim-fast.html#fn:dpy">4</a></sup>. Since we don't need all these debian packages, let's use slim variant.</p>
-<pre class="code literal-block">FROM python:3.7-slim
+<div class="code"><pre class="code literal-block">FROM python:3.7-slim
 
 ...
-</pre>
+</pre></div>
+
 <p><img src="../images/docker3.png" style="vertical-align:middle"></p>
 <p>This reduced the docker image size by ~750 MB without affecting the build time.</p>
 <h4>4. Build from source</h4>
 <p>Python packages can be installed via wheels (.whl files) for a faster and smoother installation. We can also install them via source code. If we look at Pandas project files on PyPi<sup id="fnref:pandas"><a class="footnote-ref" href="../2020/10/python-docker-build-slim-fast.html#fn:pandas">1</a></sup>, it provides both wheels as well as tar zip source files. Pip will prefer wheels over source code the installation process will be much smoother.</p>
 <p>To reduce Docker image size, we can build from source instead of using the wheel. This will increase build time as the python package will take some time to compile while building.</p>
-<pre class="code literal-block">
-</pre>
+<div class="code"><pre class="code literal-block">
+</pre></div>
+
 <p><img src="../images/docker4.png" style="vertical-align:middle"></p>
 <p>Here build size is reduced by ~20MB but the build has increased to 15 minutes.</p>
 <h4>5. Use Alpine</h4>
@@ -545,65 +558,69 @@ CMD [ "-m" "flask" "run" ]
 <p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
 <h4>Deployment To k8s</h4>
 <p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref:nc"><a class="footnote-ref" href="../2020/07/deploy-mirth-to-kubernetes.html#fn:nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
-<pre class="code literal-block"><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">$docker</span><span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>-p<span class="w"> </span><span class="m">8443</span>:8443<span class="w"> </span>nextgenhealthcare/connect
+</pre></div>
+
 <p>We can use this docker image and create a k8s deployment to start a container.</p>
-<pre class="code literal-block"><span class="o">---</span>
-<span class="nv">apiVersion</span>: <span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
-<span class="nv">kind</span>: <span class="nv">Deployment</span>
+<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<span class="nv">apiVersion</span>:<span class="w"> </span><span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
+<span class="nv">kind</span>:<span class="w"> </span><span class="nv">Deployment</span>
 <span class="nv">metadata</span>:
-  <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
-  <span class="nv">namespace</span>: <span class="nv">default</span>
+<span class="w">  </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+<span class="w">  </span><span class="nv">namespace</span>:<span class="w"> </span><span class="nv">default</span>
 <span class="nv">spec</span>:
-  <span class="nv">template</span>:
-    <span class="nv">spec</span>:
-      <span class="nv">containers</span>:
-      <span class="o">-</span> <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
-        <span class="nv">image</span>: <span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">nextgenhealthcare</span><span class="o">/</span><span class="k">connect</span>
-        <span class="nv">ports</span>:
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">http</span>
-          <span class="nv">containerPort</span>: <span class="mi">8080</span>
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">https</span>
-          <span class="nv">containerPort</span>: <span class="mi">8443</span>
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">hl7</span><span class="o">-</span><span class="nv">test</span>
-          <span class="nv">containerPort</span>: <span class="mi">9001</span>
-        <span class="nv">env</span>:
-          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE</span>
-            <span class="nv">value</span>: <span class="nv">postgres</span>
-          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE_URL</span>
-            <span class="nv">value</span>: <span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
-</pre>
+<span class="w">  </span><span class="nv">template</span>:
+<span class="w">    </span><span class="nv">spec</span>:
+<span class="w">      </span><span class="nv">containers</span>:
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+<span class="w">        </span><span class="nv">image</span>:<span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">nextgenhealthcare</span><span class="o">/</span><span class="k">connect</span>
+<span class="w">        </span><span class="nv">ports</span>:
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">http</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">8080</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">https</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">8443</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">hl7</span><span class="o">-</span><span class="nv">test</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">9001</span>
+<span class="w">        </span><span class="nv">env</span>:
+<span class="w">          </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">DATABASE</span>
+<span class="w">            </span><span class="nv">value</span>:<span class="w"> </span><span class="nv">postgres</span>
+<span class="w">          </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">DATABASE_URL</span>
+<span class="w">            </span><span class="nv">value</span>:<span class="w"> </span><span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
+</pre></div>
+
 <p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
-<pre class="code literal-block">$ kubectl apply -f connect-deployment.yaml
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>connect-deployment.yaml
+</pre></div>
+
 <p>To access this container, we can create a service to expose this deployment to public.</p>
-<pre class="code literal-block"><span class="o">---</span>
-<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
-<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
-  <span class="n">name</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
-  <span class="n">annotations</span><span class="p">:</span>
-    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span> <span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span>
-    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span> <span class="s2">"443"</span>
-    <span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span> <span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span>
+<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+<span class="w">  </span><span class="n">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span><span class="w"> </span><span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span><span class="w"> </span><span class="s2">"443"</span>
+<span class="w">    </span><span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span><span class="w"> </span><span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span>
 <span class="n">spec</span><span class="p">:</span>
-  <span class="n">type</span><span class="p">:</span> <span class="n">LoadBalancer</span>
-  <span class="n">selector</span><span class="p">:</span>
-    <span class="n">app</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
-  <span class="n">ports</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8080</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">https</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8443</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">hl7</span><span class="o">-</span><span class="n">test</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">9001</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9001</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-</pre>
+<span class="w">  </span><span class="n">type</span><span class="p">:</span><span class="w"> </span><span class="n">LoadBalancer</span>
+<span class="w">  </span><span class="n">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="n">app</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+<span class="w">  </span><span class="n">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">http</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8080</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">https</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">443</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8443</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">hl7</span><span class="o">-</span><span class="n">test</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+</pre></div>
+
 <p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
 <p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
 <h4>Conclusion</h4>
@@ -634,7 +651,7 @@ CMD [ "-m" "flask" "run" ]
 <p>In this article, lets write a simple terminal to address the above issues.</p>
 <h4>Bluetooth Receiver</h4>
 <p>pyserial-asyncio<sup id="fnref:pyserial-asyncio"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:pyserial-asyncio">2</a></sup> package provides Async I/O interface for communicating with serial ports. We can write a simple function to read and print all the messages being received on a serial port as follows.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 
@@ -660,19 +677,21 @@ CMD [ "-m" "flask" "run" ]
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>Now we can connect a phone's bluetooth to a laptop bluetooth. From phone we can send messages to laptop using bluetooth terminal app like Serial bluetooth terminal<sup id="fnref:asbt"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:asbt">4</a></sup>.</p>
 <p>Here a screenshot of messages being send from an Android device.</p>
 <p><img src="../images/android-bluetooth.jpg" width="300" height="500" style="vertical-align:middle"></p>
 <p>We can listen to these messages on laptop via serial port by running the following command.</p>
-<pre class="code literal-block">$ python receiver.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
-<span class="m">2020</span>-08-31 <span class="m">10</span>:44:50.995281 Rx &lt;<span class="o">==</span> ping from android
-<span class="m">2020</span>-08-31 <span class="m">10</span>:44:57.702866 Rx &lt;<span class="o">==</span> <span class="nb">test</span> message
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>receiver.py<span class="w"> </span>/dev/cu.Bluetooth-Incoming-Port<span class="w"> </span><span class="m">9600</span>
+<span class="m">2020</span>-08-31<span class="w"> </span><span class="m">10</span>:44:50.995281<span class="w"> </span>Rx<span class="w"> </span>&lt;<span class="o">==</span><span class="w"> </span>ping<span class="w"> </span>from<span class="w"> </span>android
+<span class="m">2020</span>-08-31<span class="w"> </span><span class="m">10</span>:44:57.702866<span class="w"> </span>Rx<span class="w"> </span>&lt;<span class="o">==</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>message
+</pre></div>
+
 <h4>Bluetooth Sender</h4>
 <p>Now lets write a sender to send messages typed on the terminal to the bluetooth.</p>
 <p>To read input from terminal, we need to use aioconsole <sup id="fnref:aioc"><a class="footnote-ref" href="../2020/08/bluetooth-terminal-python-asyncio.html#fn:aioc">3</a></sup>. It provides async input equivalent function to read input typed on the terminal.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
 
@@ -703,14 +722,16 @@ CMD [ "-m" "flask" "run" ]
 <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">baudrate</span><span class="p">))</span>
 <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre>
-<p>We can run the program with the following command and send messages to phone's bluetooth.</p>
-<pre class="code literal-block">$ python sender.py /dev/cu.Bluetooth-Incoming-Port <span class="m">9600</span>
+</pre></div>
 
-ping from mac
-<span class="m">2020</span>-08-31 <span class="m">10</span>:46:52.222676 <span class="nv">Tx</span> <span class="o">==</span>&gt; ping from mac
-<span class="m">2020</span>-08-31 <span class="m">10</span>:46:58.423492 <span class="nv">Tx</span> <span class="o">==</span>&gt; <span class="nb">test</span> message
-</pre>
+<p>We can run the program with the following command and send messages to phone's bluetooth.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>sender.py<span class="w"> </span>/dev/cu.Bluetooth-Incoming-Port<span class="w"> </span><span class="m">9600</span>
+
+ping<span class="w"> </span>from<span class="w"> </span>mac
+<span class="m">2020</span>-08-31<span class="w"> </span><span class="m">10</span>:46:52.222676<span class="w"> </span><span class="nv">Tx</span><span class="w"> </span><span class="o">==</span>&gt;<span class="w"> </span>ping<span class="w"> </span>from<span class="w"> </span>mac
+<span class="m">2020</span>-08-31<span class="w"> </span><span class="m">10</span>:46:58.423492<span class="w"> </span><span class="nv">Tx</span><span class="w"> </span><span class="o">==</span>&gt;<span class="w"> </span><span class="nb">test</span><span class="w"> </span>message
+</pre></div>
+
 <p>Here a screenshot of messages received on Android device.</p>
 <p><img src="../images/android-bluetooth-receive.jpg" width="300" height="500" style="vertical-align:middle"></p>
 <h4>Conclusion</h4>
