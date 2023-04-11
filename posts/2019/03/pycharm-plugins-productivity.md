@@ -59,12 +59,18 @@ To convert lower case letters to upper case letter, [String manipulation plugin]
 These are some plugins which will boost developers productivity while writing and debugging code in PyCharm or other JetBrains IDE.
 
 
+[jetbrains survery]: https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools
+
+
+[AceJump plugin]: https://plugins.jetbrains.com/plugin/7086-acejump
+
+[GitToolBox]: https://plugins.jetbrains.com/plugin/7499-gittoolbox
+
+[Grep Console]: https://plugins.jetbrains.com/plugin/7125-grep-console
 
 [Highlight Bracket Pair]: https://plugins.jetbrains.com/plugin/10465-highlightbracketpair
 
 [Rainbow Brackets]: https://plugins.jetbrains.com/plugin/10080-rainbow-brackets
-
-[Grep Console]: https://plugins.jetbrains.com/plugin/7125-grep-console
 
 [Save Actions]: https://plugins.jetbrains.com/plugin/7642-save-actions
 
@@ -72,9 +78,3 @@ These are some plugins which will boost developers productivity while writing an
 
 [String Manipulation plugin]: https://plugins.jetbrains.com/plugin/2162-string-manipulation
 
-[AceJump plugin]: https://plugins.jetbrains.com/plugin/7086-acejump
-
-
-[jetbrains survery]: https://www.jetbrains.com/research/python-developers-survey-2018/#development-tools
-
-[GitToolBox]: https://plugins.jetbrains.com/plugin/7499-gittoolbox
