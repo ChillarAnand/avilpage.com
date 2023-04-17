@@ -70,7 +70,71 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/04/reduce-system-load-with-chatgpt.html" class="u-url">Reducing System Load With ChatGPT</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/04/record-resource-usage-per-process.html" class="u-url">Record Resource Usage of Single Process</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/04/record-resource-usage-per-process.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-04-14T06:18:37+05:30" itemprop="datePublished" title="2023-04-14">2023-04-14</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>On Linux &amp; Mac, we can use an inbuilt <code>top</code> command line tool to monitor the resource usage of a single process in real time. </p>
+<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$ top -p <span class="m">1234</span>
+
+<span class="c1"># On Mac, for a given pid</span>
+$ top -pid <span class="m">1234</span>
+</pre>
+<p>In this article, we will see how to record and plot resource usage of a single process using <code>top</code> and a Python package called psrecord<sup id="fnref:psrecord"><a class="footnote-ref" href="../2023/04/record-resource-usage-per-process.html#fn:psrecord">1</a></sup>.</p>
+<h4>Record Resource Usage</h4>
+<p>In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use <code>top</code> to log resource usage into a text file. </p>
+<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$ top -p <span class="m">1234</span> -b -d <span class="m">1</span> &gt; top.log
+
+<span class="c1"># On Mac, for a given pid</span>
+$ top -l <span class="m">0</span> -s <span class="m">1</span> -pid <span class="m">32515</span> <span class="p">|</span> awk <span class="s1">'NR%13==0; fflush(stdout)'</span> &gt; top.log
+</pre>
+<p>Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like <code>gnuplot</code> or <code>matplotlib</code>.</p>
+<p>Instead of using <code>top</code> command, we can use <code>psrecord</code> to record the resource usage of a process. <code>psrecord</code> is a Python package that can be installed all using <code>pip</code>. </p>
+<pre class="code literal-block">$ python -m pip install psrecord
+</pre>
+<p>Once installed, we can use <code>psrecord</code> to record the resource usage of a process. </p>
+<pre class="code literal-block"><span class="c1"># record resource usage of a process with pid 1234</span>
+$ psrecord <span class="m">1234</span> --log top.log
+
+<span class="c1"># start and record resource usage of a process</span>
+$ psrecord python script.py --plot graph.png
+</pre>
+<p>We can view the raw data in the log file.</p>
+<pre class="code literal-block"><span class="c1"># view raw data</span>
+$ head top.log
+❯ head a.txt
+<span class="c1"># Elapsed time   CPU (%)     Real (MB)   Virtual (MB)</span>
+       <span class="m">0</span>.000        <span class="m">0</span>.000        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">93</span>.700        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">96</span>.300        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">91</span>.900        <span class="m">5</span>.000   <span class="m">399461</span>.438
+</pre>
+<p>Here is the generated graph.</p>
+<p align="center">
+<img src="../images/single-proc-resource.png" alt="single-proc-resource"></p>
+
+<h4>Conclusion</h4>
+<p>In this article, we have seen how to record and plot resource usage of a single process using top(inbuilt tool), psrecord(3rd party package).</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:psrecord">
+<p><a href="https://pypi.org/project/psrecord/">https://pypi.org/project/psrecord/</a> <a class="footnote-backref" href="../2023/04/record-resource-usage-per-process.html#fnref:psrecord" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/04/reduce-system-load-with-chatgpt.html" class="u-url">Reducing System Load With ChatGPT</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -586,147 +650,6 @@ Formatting<span class="w"> </span>/tmp/kafka-logs/<span class="w"> </span>with<s
 </li>
 <li id="fn:rabbitmq-cli">
 <p><a href="https://www.rabbitmq.com/management-cli.html">https://www.rabbitmq.com/management-cli.html</a> <a class="footnote-backref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka Tutorial</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2022/12/hands-on-apache-kafka-tutorial.html" rel="bookmark">
-            <time class="published dt-published" datetime="2022-12-17T07:12:21+05:30" itemprop="datePublished" title="2022-12-17">2022-12-17</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>A short hands-on guide to get started with Apache Kafka for people who are in a hurry.</p>
-<p>In this guide, we will learn what is Apache Kafka, how to install and run it. We will also learn how to create/modify a topic and produce/consume messages from it.</p>
-<h4>What is Apache Kafka?</h4>
-<p><img src="../images/kafka-overview.jpg" alt="Apache Kafka"></p>
-<p>Apache Kafka<sup id="fnref:wikipedia apache kafka"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:wikipedia%20apache%20kafka">1</a></sup> is a distributed event store and streaming-processing platform. It is used to
-build real-time data pipelines and streaming apps. It is horizontally scalable, fault-tolerant, and has high throughput.</p>
-<h4>Kafka Terminology</h4>
-<p><b>Topic</b>: A topic is a category or feed name to which records are published/consumed. It is configured with a set of
-key-value pairs called topic configuration.</p>
-<p><b>Producer</b>: A producer is a client that publishes records to the Kafka cluster. Producers write data to topics and
-partitions.</p>
-<p><b>Consumer</b>: A consumer is a client that subscribes to topics and processes the records. Consumers read data from
-topics and partitions.</p>
-<p><b>Consumer Group</b>: A consumer group is a group of consumers that share a common purpose. Consumer groups enable a
-pool of processes to divide the work of consuming and processing records.</p>
-<p><b>Broker</b>: A broker is a server that hosts a set of topics/partitions. It receives data from producers and sends
-data to consumers.</p>
-<p><b>ZooKeeper</b>: ZooKeeper is used to store the cluster configuration and the state of the cluster. All Kafka brokers
-connect to ZooKeeper.</p>
-<p><b>Kraft</b>: Kraft(Apache Kafka Raft) is a consensus protocol that is used to manage the metadata of the Kafka cluster.
-It is introduced to remove dependency on ZooKeeper.</p>
-<h4>Installing Apache Kafka</h4>
-<p>We can use cp-all-in-one<sup id="fnref:cp-all-in-one"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one">2</a></sup> docker compose files to run Apache Kafka locally. This image contains all the
-components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
-Proxy, Confluent Control Center, and others.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/confluentinc/cp-all-in-one
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>cp-all-in-one/cp-all-in-one
-$<span class="w"> </span>docker-compose<span class="w"> </span>up
-</pre></div>
-
-<p>Confluent Control Center is a web UI to manage and monitor Apache Kafka.</p>
-<p><img src="../images/kafka-control-center.png" alt="Kafka Control Center"></p>
-<p>We can visit it <a href="http://localhost:9021">http://localhost:9021</a> and monitor the cluster from this UI.</p>
-<h4>Producing and Consuming Messages</h4>
-<p>Kafka stores messages in topics. A topic is a category or feed name to which messages are published/consumed.</p>
-<p>Let us create a topic called <code>test</code> with <code>kafka-topics</code> command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--create<span class="w"> </span>
-</pre></div>
-
-<p>This will create a topic called <code>test</code> with a single partition and a replication factor of 1. In multi-node cluster, we
-can use <code>--replication-factor</code>, <code>--partitions</code> to specify the number of replicas/partitions for the topic.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--partitions<span class="w"> </span><span class="m">3</span><span class="w"> </span>--replication-factor<span class="w"> </span><span class="m">2</span><span class="w"> </span>--create<span class="w"> </span>--if-not-exists
-</pre></div>
-
-<p>To produce messages to a topic named <code>test</code>, we can use <code>kafka-console-producer</code> and add messages to the topic:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-console-producer<span class="w"> </span>--broker-list<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span>
-
-&gt;order<span class="w"> </span>received
-&gt;order<span class="w"> </span>updated
-&gt;order<span class="w"> </span>shipped
-&gt;order<span class="w"> </span>delivered
-&gt;<span class="o">{</span><span class="s2">"status"</span>:<span class="w"> </span><span class="s2">"completed"</span><span class="o">}</span>
-</pre></div>
-
-<p>To consume messages from the same topic:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-console-consumer<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--from-beginning
-
-order<span class="w"> </span>received
-order<span class="w"> </span>updated
-order<span class="w"> </span>shipped
-order<span class="w"> </span>delivered
-<span class="o">{</span><span class="s2">"status"</span>:<span class="w"> </span><span class="s2">"completed"</span><span class="o">}</span>
-</pre></div>
-
-<p>Since we have not defined schema for the messages, Kafka will store the messages as byte arrays. We can explicitly define the schema for the messages using Confluent Schema Registry if required.</p>
-<p>We can list all the topics in cluster using <code>kafka-topics</code>:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--list
-
-default_ksql_processing_log
-docker-connect-configs
-docker-connect-offsets
-docker-connect-status
-<span class="nb">test</span>
-</pre></div>
-
-<p>To show details of a topic:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--describe<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span>
-
-Topic:<span class="w"> </span><span class="nb">test</span><span class="w"> </span>TopicId:<span class="w"> </span>7CckqkXsQXCNY0MNHYRv2w<span class="w"> </span>PartitionCount:<span class="w"> </span><span class="m">1</span><span class="w">   </span>ReplicationFactor:<span class="w"> </span><span class="m">1</span><span class="w">    </span>Configs:<span class="w"> </span>
-<span class="w">    </span>Topic:<span class="w"> </span><span class="nb">test</span><span class="w"> </span>Partition:<span class="w"> </span><span class="m">0</span><span class="w">    </span>Leader:<span class="w"> </span><span class="m">1</span><span class="w">   </span>Replicas:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Isr:<span class="w"> </span><span class="m">1</span><span class="w">  </span>Offline:<span class="w">         </span>
-</pre></div>
-
-<p>By default all messages are stored in the topic for 7 days. We can change this retention period using <code>retention.ms</code> configuration:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-topics<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--alter<span class="w"> </span>--topic<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--config<span class="w"> </span>retention.ms<span class="o">=</span><span class="m">10000</span>
-</pre></div>
-
-<p>To see all the available consumer groups, we can use <code>kafka-consumer-groups</code>:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>broker<span class="w"> </span>kafka-consumer-groups<span class="w"> </span>--bootstrap-server<span class="w"> </span>localhost:9092<span class="w"> </span>--list
-</pre></div>
-
-<h4>Kafka Rest Proxy</h4>
-<p>Kafka Rest Proxy<sup id="fnref:kafka rest proxy"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy">3</a></sup> is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
-and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
-protocol or clients.</p>
-<p>To produce messages to a <code>test</code> topic with curl:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/vnd.kafka.json.v2+json"</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--data<span class="w"> </span><span class="s1">'{"records":[{"value":{"status": "completed"}}]}'</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="s2">"http://localhost:8082/topics/test"</span>
-</pre></div>
-
-<p>To consume messages from the same topic:</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Accept: application/vnd.kafka.json.v2+json"</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="s2">"http://localhost:8082/topics/test"</span>
-</pre></div>
-
-<p>We can dynamically configure Kafka cluster settings as well.</p>
-<p>To change log level of various components of Kafka cluster using Kafka Rest Proxy.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/vnd.kafka.v2+json"</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--data<span class="w"> </span><span class="s1">'{"log4j.logger.kafka.server":"DEBUG"}'</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="s2">"http://localhost:8082/config"</span>
-</pre></div>
-
-<p>We can update the log level of various components of Kafka cluster and check the logs.</p>
-<h4>Conclusion</h4>
-<p>In this article, we have seen how to install Apache Kafka locally using Docker. We have also seen how to produce and consume messages using Kafka console commands and Kafka Rest Proxy.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:wikipedia apache kafka">
-<p><a href="https://en.wikipedia.org/wiki/Apache_Kafka">https://en.wikipedia.org/wiki/Apache_Kafka</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:wikipedia%20apache%20kafka" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:cp-all-in-one">
-<p><a href="https://github.com/confluentinc/cp-all-in-one">https://github.com/confluentinc/cp-all-in-one</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:cp-all-in-one" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:kafka rest proxy">
-<p><a href="https://github.com/confluentinc/kafka-rest">https://github.com/confluentinc/kafka-rest</a> <a class="footnote-backref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fnref:kafka%20rest%20proxy" title="Jump back to footnote 3 in the text">↩</a></p>
 </li>
 </ol>
 </div>
