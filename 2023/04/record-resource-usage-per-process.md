@@ -58,7 +58,7 @@ We can view the raw data in the log file.
 ```bash
 # view raw data
 $ head top.log
-❯ head a.txt
+$ head a.txt
 # Elapsed time   CPU (%)     Real (MB)   Virtual (MB)
        0.000        0.000        5.000   399461.438
        0.000       93.700        5.000   399461.438
