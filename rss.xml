@@ -1,5 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 01 Apr 2023 12:24:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 17 Apr 2023 02:34:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
+
+&lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
+$ top -pid &lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;In this article, we will see how to record and plot resource usage of a single process using &lt;code&gt;top&lt;/code&gt; and a Python package called psrecord&lt;sup id="fnref:psrecord"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fn:psrecord"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;h4&gt;Record Resource Usage&lt;/h4&gt;
+&lt;p&gt;In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use &lt;code&gt;top&lt;/code&gt; to log resource usage into a text file. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$ top -p &lt;span class="m"&gt;1234&lt;/span&gt; -b -d &lt;span class="m"&gt;1&lt;/span&gt; &amp;gt; top.log
+
+&lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
+$ top -l &lt;span class="m"&gt;0&lt;/span&gt; -s &lt;span class="m"&gt;1&lt;/span&gt; -pid &lt;span class="m"&gt;32515&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt; &amp;gt; top.log
+&lt;/pre&gt;
+&lt;p&gt;Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like &lt;code&gt;gnuplot&lt;/code&gt; or &lt;code&gt;matplotlib&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Instead of using &lt;code&gt;top&lt;/code&gt; command, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;code&gt;psrecord&lt;/code&gt; is a Python package that can be installed all using &lt;code&gt;pip&lt;/code&gt;. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ python -m pip install psrecord
+&lt;/pre&gt;
+&lt;p&gt;Once installed, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
+$ psrecord &lt;span class="m"&gt;1234&lt;/span&gt; --log top.log
+
+&lt;span class="c1"&gt;# start and record resource usage of a process&lt;/span&gt;
+$ psrecord python script.py --plot graph.png
+&lt;/pre&gt;
+&lt;p&gt;We can view the raw data in the log file.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
+$ head top.log
+❯ head a.txt
+&lt;span class="c1"&gt;# Elapsed time   CPU (%)     Real (MB)   Virtual (MB)&lt;/span&gt;
+       &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;93&lt;/span&gt;.700        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;96&lt;/span&gt;.300        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;91&lt;/span&gt;.900        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;/pre&gt;
+&lt;p&gt;Here is the generated graph.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/single-proc-resource.png" alt="single-proc-resource"&gt;
+&lt;/p&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this article, we have seen how to record and plot resource usage of a single process using top(inbuilt tool), psrecord(3rd party package).&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:psrecord"&gt;
+&lt;p&gt;&lt;a href="https://pypi.org/project/psrecord/"&gt;https://pypi.org/project/psrecord/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fnref:psrecord" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>linux</category><category>mac</category><guid>https://avilpage.com/2023/04/record-resource-usage-per-process.html</guid><pubDate>Fri, 14 Apr 2023 00:48:37 GMT</pubDate></item><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. &lt;/p&gt;
 &lt;p&gt;I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  &lt;/p&gt;
 &lt;h4&gt;Solution&lt;/h4&gt;
@@ -405,132 +457,4 @@ Formatting&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs/&lt;span class="w"
 &lt;p&gt;&lt;a href="https://www.rabbitmq.com/management-cli.html"&gt;https://www.rabbitmq.com/management-cli.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>rabbitmq</category><category>tutorial</category><guid>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</guid><pubDate>Tue, 20 Dec 2022 23:42:21 GMT</pubDate></item><item><title>Hands-on Apache Kafka Tutorial</title><link>https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with Apache Kafka for people who are in a hurry.&lt;/p&gt;
-&lt;p&gt;In this guide, we will learn what is Apache Kafka, how to install and run it. We will also learn how to create/modify a topic and produce/consume messages from it.&lt;/p&gt;
-&lt;h4&gt;What is Apache Kafka?&lt;/h4&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/kafka-overview.jpg" alt="Apache Kafka"&gt;&lt;/p&gt;
-&lt;p&gt;Apache Kafka&lt;sup id="fnref:wikipedia apache kafka"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fn:wikipedia%20apache%20kafka"&gt;1&lt;/a&gt;&lt;/sup&gt; is a distributed event store and streaming-processing platform. It is used to
-build real-time data pipelines and streaming apps. It is horizontally scalable, fault-tolerant, and has high throughput.&lt;/p&gt;
-&lt;h4&gt;Kafka Terminology&lt;/h4&gt;
-&lt;p&gt;&lt;b&gt;Topic&lt;/b&gt;: A topic is a category or feed name to which records are published/consumed. It is configured with a set of
-key-value pairs called topic configuration.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Producer&lt;/b&gt;: A producer is a client that publishes records to the Kafka cluster. Producers write data to topics and
-partitions.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Consumer&lt;/b&gt;: A consumer is a client that subscribes to topics and processes the records. Consumers read data from
-topics and partitions.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Consumer Group&lt;/b&gt;: A consumer group is a group of consumers that share a common purpose. Consumer groups enable a
-pool of processes to divide the work of consuming and processing records.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Broker&lt;/b&gt;: A broker is a server that hosts a set of topics/partitions. It receives data from producers and sends
-data to consumers.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;ZooKeeper&lt;/b&gt;: ZooKeeper is used to store the cluster configuration and the state of the cluster. All Kafka brokers
-connect to ZooKeeper.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Kraft&lt;/b&gt;: Kraft(Apache Kafka Raft) is a consensus protocol that is used to manage the metadata of the Kafka cluster.
-It is introduced to remove dependency on ZooKeeper.&lt;/p&gt;
-&lt;h4&gt;Installing Apache Kafka&lt;/h4&gt;
-&lt;p&gt;We can use cp-all-in-one&lt;sup id="fnref:cp-all-in-one"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one"&gt;2&lt;/a&gt;&lt;/sup&gt; docker compose files to run Apache Kafka locally. This image contains all the
-components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
-Proxy, Confluent Control Center, and others.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/confluentinc/cp-all-in-one
-$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cp-all-in-one/cp-all-in-one
-$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;up
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Confluent Control Center is a web UI to manage and monitor Apache Kafka.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/kafka-control-center.png" alt="Kafka Control Center"&gt;&lt;/p&gt;
-&lt;p&gt;We can visit it &lt;a href="http://localhost:9021"&gt;http://localhost:9021&lt;/a&gt; and monitor the cluster from this UI.&lt;/p&gt;
-&lt;h4&gt;Producing and Consuming Messages&lt;/h4&gt;
-&lt;p&gt;Kafka stores messages in topics. A topic is a category or feed name to which messages are published/consumed.&lt;/p&gt;
-&lt;p&gt;Let us create a topic called &lt;code&gt;test&lt;/code&gt; with &lt;code&gt;kafka-topics&lt;/code&gt; command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--create&lt;span class="w"&gt; &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This will create a topic called &lt;code&gt;test&lt;/code&gt; with a single partition and a replication factor of 1. In multi-node cluster, we
-can use &lt;code&gt;--replication-factor&lt;/code&gt;, &lt;code&gt;--partitions&lt;/code&gt; to specify the number of replicas/partitions for the topic.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--partitions&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--replication-factor&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--create&lt;span class="w"&gt; &lt;/span&gt;--if-not-exists
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To produce messages to a topic named &lt;code&gt;test&lt;/code&gt;, we can use &lt;code&gt;kafka-console-producer&lt;/code&gt; and add messages to the topic:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-console-producer&lt;span class="w"&gt; &lt;/span&gt;--broker-list&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;
-
-&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;received
-&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;updated
-&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;shipped
-&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;delivered
-&amp;gt;&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To consume messages from the same topic:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-console-consumer&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--from-beginning
-
-order&lt;span class="w"&gt; &lt;/span&gt;received
-order&lt;span class="w"&gt; &lt;/span&gt;updated
-order&lt;span class="w"&gt; &lt;/span&gt;shipped
-order&lt;span class="w"&gt; &lt;/span&gt;delivered
-&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Since we have not defined schema for the messages, Kafka will store the messages as byte arrays. We can explicitly define the schema for the messages using Confluent Schema Registry if required.&lt;/p&gt;
-&lt;p&gt;We can list all the topics in cluster using &lt;code&gt;kafka-topics&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--list
-
-default_ksql_processing_log
-docker-connect-configs
-docker-connect-offsets
-docker-connect-status
-&lt;span class="nb"&gt;test&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To show details of a topic:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--describe&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;
-
-Topic:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;TopicId:&lt;span class="w"&gt; &lt;/span&gt;7CckqkXsQXCNY0MNHYRv2w&lt;span class="w"&gt; &lt;/span&gt;PartitionCount:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;ReplicationFactor:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;Configs:&lt;span class="w"&gt; &lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;Topic:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Partition:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;Leader:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;Replicas:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Isr:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;Offline:&lt;span class="w"&gt;         &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;By default all messages are stored in the topic for 7 days. We can change this retention period using &lt;code&gt;retention.ms&lt;/code&gt; configuration:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--alter&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="w"&gt; &lt;/span&gt;retention.ms&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;10000&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To see all the available consumer groups, we can use &lt;code&gt;kafka-consumer-groups&lt;/code&gt;:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-consumer-groups&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--list
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Kafka Rest Proxy&lt;/h4&gt;
-&lt;p&gt;Kafka Rest Proxy&lt;sup id="fnref:kafka rest proxy"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy"&gt;3&lt;/a&gt;&lt;/sup&gt; is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
-and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
-protocol or clients.&lt;/p&gt;
-&lt;p&gt;To produce messages to a &lt;code&gt;test&lt;/code&gt; topic with curl:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.json.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;--data&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"records":[{"value":{"status": "completed"}}]}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To consume messages from the same topic:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Accept: application/vnd.kafka.json.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can dynamically configure Kafka cluster settings as well.&lt;/p&gt;
-&lt;p&gt;To change log level of various components of Kafka cluster using Kafka Rest Proxy.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;--data&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"log4j.logger.kafka.server":"DEBUG"}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/config"&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can update the log level of various components of Kafka cluster and check the logs.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have seen how to install Apache Kafka locally using Docker. We have also seen how to produce and consume messages using Kafka console commands and Kafka Rest Proxy.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:wikipedia apache kafka"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Apache_Kafka"&gt;https://en.wikipedia.org/wiki/Apache_Kafka&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fnref:wikipedia%20apache%20kafka" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:cp-all-in-one"&gt;
-&lt;p&gt;&lt;a href="https://github.com/confluentinc/cp-all-in-one"&gt;https://github.com/confluentinc/cp-all-in-one&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fnref:cp-all-in-one" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:kafka rest proxy"&gt;
-&lt;p&gt;&lt;a href="https://github.com/confluentinc/kafka-rest"&gt;https://github.com/confluentinc/kafka-rest&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fnref:kafka%20rest%20proxy" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>kafka</category><category>tutorial</category><guid>https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html</guid><pubDate>Sat, 17 Dec 2022 01:42:21 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>rabbitmq</category><category>tutorial</category><guid>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</guid><pubDate>Tue, 20 Dec 2022 23:42:21 GMT</pubDate></item></channel></rss>
