@@ -1,5 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 17 Apr 2023 02:36:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 22 May 2023 04:12:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering HammerSpoon - Excel Automation</title><link>https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Recently, I have been using Excel a lot. When opening a new Excel file, I have to do the following:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Maximize the window&lt;/li&gt;
+&lt;li&gt;Select all columns and fit them to its width&lt;/li&gt;
+&lt;li&gt;Apply filters to all columns&lt;/li&gt;
+&lt;li&gt;Freeze the first row&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;When opening and closing multiple Excel files, this becomes a tedious task. So, I decided to automate this and came across Hammerspoon.&lt;/p&gt;
+&lt;h4&gt;HammerSpoon&lt;/h4&gt;
+&lt;p&gt;Hammerspoon&lt;sup id="fnref:hammerspoon"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon"&gt;1&lt;/a&gt;&lt;/sup&gt; is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our own keybindings.&lt;/p&gt;
+&lt;p&gt;First, let's install Hammerspoon using Homebrew.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install hammerspoon
+&lt;/pre&gt;
+&lt;p&gt;We can write our automation script in &lt;code&gt;~/.hammerspoon/init.lua&lt;/code&gt; file. Let us see how we can automate the above tasks.&lt;/p&gt;
+&lt;h4&gt;Automating Excel&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;-- excel&lt;/span&gt;
+&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;excel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focusedWindow&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+   &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+      &lt;span class="kr"&gt;return&lt;/span&gt;
+   &lt;span class="kr"&gt;end&lt;/span&gt;
+    &lt;span class="n"&gt;win&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;maximize&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;selectMenuItem&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;"Edit"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Select all"&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+    &lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;selectMenuItem&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;"Format"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Column"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Autofit Selection"&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+    &lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;selectMenuItem&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;"Data"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"Auto-filter"&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+
+&lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;applicationWatcher&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appName&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;eventType&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+   &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;w&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;application&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;watcher&lt;/span&gt;
+   &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;eventType&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;activated&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;eventType&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;w&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;launched&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+      &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appName&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Microsoft Excel"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+         &lt;span class="n"&gt;excel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+      &lt;span class="kr"&gt;end&lt;/span&gt;
+   &lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This script will watch for application events and when Excel is launched or activated, it will call the &lt;code&gt;excel&lt;/code&gt; function. &lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;excel&lt;/code&gt; function will maximize the window, select all columns and fit them to its width, apply filters to all columns.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Free top row&lt;/code&gt; option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Hammerspoon is a powerful tool for various automation tasks. In addition to that it can replace a lot of utility apps like CheatSheet, BlueSnooze&lt;sup id="fnref:bluesnooze"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:bluesnooze"&gt;2&lt;/a&gt;&lt;/sup&gt;, Rectangle, ShiftIT&lt;sup id="fnref:shiftit"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:shiftit"&gt;3&lt;/a&gt;&lt;/sup&gt;, HotKey etc. I have replaced most of the utility apps with Hammerspoon, and it is working great. I will be writing about it in detail in the upcoming posts.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:hammerspoon"&gt;
+&lt;p&gt;&lt;a href="https://github.com/Hammerspoon/hammerspoon"&gt;https://github.com/Hammerspoon/hammerspoon&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fnref:hammerspoon" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:bluesnooze"&gt;
+&lt;p&gt;&lt;a href="https://github.com/odlp/bluesnooze"&gt;https://github.com/odlp/bluesnooze&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fnref:bluesnooze" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:shiftit"&gt;
+&lt;p&gt;&lt;a href="https://github.com/fikovnik/ShiftIt"&gt;https://github.com/fikovnik/ShiftIt&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fnref:shiftit" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>automation</category><category>hammerspoon</category><category>mac</category><guid>https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html</guid><pubDate>Sun, 21 May 2023 12:44:00 GMT</pubDate></item><item><title>re-arranging csv columns from command line</title><link>https://avilpage.com/2023/05/re-arranging-csv-columns-from-command-line.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Write your post here.&lt;/p&gt;</description><guid>https://avilpage.com/2023/05/re-arranging-csv-columns-from-command-line.html</guid><pubDate>Wed, 03 May 2023 11:49:54 GMT</pubDate></item><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
 &lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
 $ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
@@ -335,126 +393,4 @@ id,user,active
 &lt;p&gt;This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to &lt;code&gt;column&lt;/code&gt; command, and displayed.&lt;/p&gt;
 &lt;p&gt;Here is a screenshot of the output of a demo csv.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="pipe tail output to column" src="https://avilpage.com/images/pipe-tail-output-into-column.png"&gt;&lt;/p&gt;
-&lt;p&gt;This makes it easy to watch the output of a file as it grows.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</guid><pubDate>Mon, 02 Jan 2023 00:56:28 GMT</pubDate></item><item><title>Change Kafka Log Directory &amp; Format It</title><link>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
-&lt;p&gt;On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;139&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5198&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
-
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;registerBroker:&lt;span class="w"&gt; &lt;/span&gt;unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;processing&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;NotControllerException.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
-
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;RaftManager&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Had&lt;span class="w"&gt; &lt;/span&gt;an&lt;span class="w"&gt; &lt;/span&gt;error&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;cleaning&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.errors.OffsetOutOfRangeException:&lt;span class="w"&gt; &lt;/span&gt;Cannot&lt;span class="w"&gt; &lt;/span&gt;increment&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927939&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;partition&lt;span class="w"&gt; &lt;/span&gt;__cluster_metadata-0&lt;span class="w"&gt; &lt;/span&gt;since&lt;span class="w"&gt; &lt;/span&gt;it&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;larger&lt;span class="w"&gt; &lt;/span&gt;than&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;high&lt;span class="w"&gt; &lt;/span&gt;watermark&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;294&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;137&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
-java.lang.RuntimeException:&lt;span class="w"&gt; &lt;/span&gt;Cant&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;new&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;-memory&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;there&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;already&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;
-
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;startup.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Debugging&lt;/h4&gt;
-&lt;p&gt;I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.&lt;/p&gt;
-&lt;h4&gt;Solution&lt;/h4&gt;
-&lt;p&gt;I create a new temporary directory and set the log directory to that.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs
-
-&lt;span class="c1"&gt;# inside server.properties&lt;/span&gt;
-log.dirs&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kafka-logs
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;When I started the Kafka server, it failed.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-server-start&lt;span class="w"&gt; &lt;/span&gt;server.properties
-
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.KafkaException:&lt;span class="w"&gt; &lt;/span&gt;No&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;found&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/tmp/&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;have&lt;span class="w"&gt; &lt;/span&gt;you&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;directory?&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;I ran the &lt;code&gt;kafka-storage&lt;/code&gt; script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;~/homebrew/var/lib/kraft-combined-logs/meta.properties&lt;span class="w"&gt; &lt;/span&gt;
-&lt;span class="c1"&gt;#&lt;/span&gt;
-&lt;span class="c1"&gt;#Thu Oct 20 11:48:12 IST 2022&lt;/span&gt;
-cluster.id&lt;span class="o"&gt;=&lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
-node.id&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Now, we can format the new directory.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-storage&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="w"&gt; &lt;/span&gt;server.properties&lt;span class="w"&gt; &lt;/span&gt;--cluster-id&lt;span class="w"&gt; &lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
-
-Formatting&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs/&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;metadata.version&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;After changing log directory, Kafka has started working.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-start-server&lt;span class="w"&gt; &lt;/span&gt;/path/to/server.properties
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.&lt;/p&gt;</description><category>debugging</category><category>kafka</category><category>message-broker</category><guid>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</guid><pubDate>Sat, 24 Dec 2022 06:49:41 GMT</pubDate></item><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
-&lt;h4&gt;What is RabbitMQ?&lt;/h4&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-overview.png" alt="RabbitMQ"&gt;&lt;/p&gt;
-&lt;p style="text-align:center;"&gt;Image Credit: CloudAMQP&lt;/p&gt;
-
-&lt;p&gt;RabbitMQ&lt;sup id="fnref:wikipedia-rabbitmq"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fn:wikipedia-rabbitmq"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source message broker software that implements the Advanced Message Queuing Protocol (AMQP). With RabbitMQ, producer and consumer applications can communicate asynchronously, and they will be completely decoupled. &lt;/p&gt;
-&lt;h4&gt;RabbitMQ Terminology&lt;/h4&gt;
-&lt;p&gt;&lt;b&gt;Producer&lt;/b&gt;: A producer is a client that publishes messages to the RabbitMQ broker. Producers write data to exchanges.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Consumer&lt;/b&gt;: A consumer is a client that subscribes to queues and processes the messages. Consumers read data from queues.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Queue&lt;/b&gt;: A queue is a buffer that stores messages. A queue is bound to an exchange and receives messages from it.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Exchange&lt;/b&gt;: An exchange is a message routing agent that receives messages from producers and routes them to queues.&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Binding&lt;/b&gt;: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.&lt;/p&gt;
-&lt;h4&gt;RabbitMQ Setup&lt;/h4&gt;
-&lt;p&gt;We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="o"&gt;=&lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15672&lt;/span&gt;:15672&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5672&lt;/span&gt;:5672&lt;span class="w"&gt; &lt;/span&gt;rabbitmq:3-management
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This image has rabbitmq management plugin enabled. We can access the management UI at &lt;a href="http://localhost:15672"&gt;http://localhost:15672&lt;/a&gt;. The default username and password are both &lt;code&gt;guest&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;It also has &lt;code&gt;rabbitmqadmin&lt;/code&gt; command line tool installed, which can manage RabbitMQ. &lt;/p&gt;
-&lt;h4&gt;Passing Messages from UI&lt;/h4&gt;
-&lt;p&gt;We can use the management UI to send and receive messages. We can create a new queue and exchange from the &lt;code&gt;Queues&lt;/code&gt; section.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-queue.png" alt="RabbitMQ Queue"&gt;&lt;/p&gt;
-&lt;p&gt;Once a queue is created, we can publish and consume messages from that queue. &lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-publish.png" alt="RabbitMQ Publish"&gt;&lt;/p&gt;
-&lt;h4&gt;Passing Messages from CLI&lt;/h4&gt;
-&lt;p&gt;Instead of using web UI, we can use &lt;code&gt;rabbitmqadmin&lt;/code&gt; CLI tool&lt;sup id="fnref:rabbitmq-cli"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli"&gt;2&lt;/a&gt;&lt;/sup&gt; to send and receive messages. Let's create a topic exchange and a queue. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;exchange&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;direct&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
-&lt;span class="c1"&gt;# =&amp;gt; exchange declared&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;queue&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
-&lt;span class="c1"&gt;# =&amp;gt; queue declared&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let's publish a message to the exchange:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;publish&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;routing_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'dummy message'&lt;/span&gt;
-&lt;span class="c1"&gt;# =&amp;gt; Message published&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-get-message.png" alt="RabbitMQ CLI"&gt;&lt;/p&gt;
-&lt;h4&gt;Passing Messages from REST API&lt;/h4&gt;
-&lt;p&gt;We can also use REST API to send and receive messages. Let's create a new exchange and queue:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"direct"}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"topic", "durable": true}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can publish a message to the exchange:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders/publish
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders/get
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:wikipedia-rabbitmq"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/RabbitMQ"&gt;https://en.wikipedia.org/wiki/RabbitMQ&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fnref:wikipedia-rabbitmq" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:rabbitmq-cli"&gt;
-&lt;p&gt;&lt;a href="https://www.rabbitmq.com/management-cli.html"&gt;https://www.rabbitmq.com/management-cli.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>rabbitmq</category><category>tutorial</category><guid>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</guid><pubDate>Tue, 20 Dec 2022 23:42:21 GMT</pubDate></item></channel></rss>
+&lt;p&gt;This makes it easy to watch the output of a file as it grows.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</guid><pubDate>Mon, 02 Jan 2023 00:56:28 GMT</pubDate></item></channel></rss>

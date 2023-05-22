@@ -71,7 +71,155 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka Tutorial</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/change-kafka-log-dir-format.html" class="u-url">Change Kafka Log Directory &amp; Format It</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/12/change-kafka-log-dir-format.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-12-24T12:19:41+05:30" itemprop="datePublished" title="2022-12-24">2022-12-24</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.</p>
+<div class="code"><pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,217<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">139</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">5198</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,536<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>registerBroker:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>start<span class="w"> </span>processing<span class="w"> </span>because<span class="w"> </span>of<span class="w"> </span>NotControllerException.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:35,834<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>RaftManager<span class="w"> </span><span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>Had<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>during<span class="w"> </span>log<span class="w"> </span>cleaning<span class="w"> </span><span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
+org.apache.kafka.common.errors.OffsetOutOfRangeException:<span class="w"> </span>Cannot<span class="w"> </span>increment<span class="w"> </span>the<span class="w"> </span>log<span class="w"> </span>start<span class="w"> </span>offset<span class="w"> </span>to<span class="w"> </span><span class="m">927939</span><span class="w"> </span>of<span class="w"> </span>partition<span class="w"> </span>__cluster_metadata-0<span class="w"> </span>since<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>larger<span class="w"> </span>than<span class="w"> </span>the<span class="w"> </span>high<span class="w"> </span>watermark<span class="w"> </span><span class="m">926507</span>
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,035<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">294</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">137</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+java.lang.RuntimeException:<span class="w"> </span>Cant<span class="w"> </span>create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span><span class="k">in</span>-memory<span class="w"> </span>snapshot<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">926507</span><span class="w"> </span>because<span class="w"> </span>there<span class="w"> </span>is<span class="w"> </span>already<span class="w"> </span>a<span class="w"> </span>snapshot<span class="w"> </span>with<span class="w"> </span>epoch<span class="w"> </span><span class="m">927938</span>
+
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,252<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span>during<span class="w"> </span>startup.<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+</pre></div>
+
+<h4>Debugging</h4>
+<p>I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.</p>
+<h4>Solution</h4>
+<p>I create a new temporary directory and set the log directory to that.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>mkdir<span class="w"> </span>/tmp/kafka-logs
+
+<span class="c1"># inside server.properties</span>
+log.dirs<span class="o">=</span>/tmp/kafka-logs
+</pre></div>
+
+<p>When I started the Kafka server, it failed.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-server-start<span class="w"> </span>server.properties
+
+<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:30:50,018<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+org.apache.kafka.common.KafkaException:<span class="w"> </span>No<span class="w"> </span><span class="sb">`</span>meta.properties<span class="sb">`</span><span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>/tmp/<span class="w"> </span><span class="o">(</span>have<span class="w"> </span>you<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>kafka-storage.sh<span class="sb">`</span><span class="w"> </span>to<span class="w"> </span>format<span class="w"> </span>the<span class="w"> </span>directory?<span class="o">)</span>
+</pre></div>
+
+<p>I ran the <code>kafka-storage</code> script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>~/homebrew/var/lib/kraft-combined-logs/meta.properties<span class="w"> </span>
+<span class="c1">#</span>
+<span class="c1">#Thu Oct 20 11:48:12 IST 2022</span>
+cluster.id<span class="o">=</span>5MB5lq-XT-6JzQqJeIuhWQ
+node.id<span class="o">=</span><span class="m">1</span>
+<span class="nv">version</span><span class="o">=</span><span class="m">1</span><span class="w">      </span>
+</pre></div>
+
+<p>Now, we can format the new directory.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-storage<span class="w"> </span>format<span class="w"> </span>--config<span class="w"> </span>server.properties<span class="w"> </span>--cluster-id<span class="w"> </span>5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting<span class="w"> </span>/tmp/kafka-logs/<span class="w"> </span>with<span class="w"> </span>metadata.version<span class="w"> </span><span class="m">3</span>.3-IV3.
+</pre></div>
+
+<p>After changing log directory, Kafka has started working.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-start-server<span class="w"> </span>/path/to/server.properties
+</pre></div>
+
+<p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-rabbitmq-tutorial.html" class="u-url">Hands-on RabbitMQ Tutorial</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2022/12/hands-on-rabbitmq-tutorial.html" rel="bookmark">
+            <time class="published dt-published" datetime="2022-12-21T05:12:21+05:30" itemprop="datePublished" title="2022-12-21">2022-12-21</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>A short hands-on guide to get started with RabbitMQ for people who are in a hurry.</p>
+<h4>What is RabbitMQ?</h4>
+<p><img src="../images/rabbitmq-overview.png" alt="RabbitMQ"></p>
+<p style="text-align:center;">Image Credit: CloudAMQP</p>
+
+<p>RabbitMQ<sup id="fnref:wikipedia-rabbitmq"><a class="footnote-ref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fn:wikipedia-rabbitmq">1</a></sup> is an open-source message broker software that implements the Advanced Message Queuing Protocol (AMQP). With RabbitMQ, producer and consumer applications can communicate asynchronously, and they will be completely decoupled. </p>
+<h4>RabbitMQ Terminology</h4>
+<p><b>Producer</b>: A producer is a client that publishes messages to the RabbitMQ broker. Producers write data to exchanges.</p>
+<p><b>Consumer</b>: A consumer is a client that subscribes to queues and processes the messages. Consumers read data from queues.</p>
+<p><b>Queue</b>: A queue is a buffer that stores messages. A queue is bound to an exchange and receives messages from it.</p>
+<p><b>Exchange</b>: An exchange is a message routing agent that receives messages from producers and routes them to queues.</p>
+<p><b>Binding</b>: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.</p>
+<h4>RabbitMQ Setup</h4>
+<p>We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--name<span class="o">=</span>rabbitmq<span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span>rabbitmq:3-management
+</pre></div>
+
+<p>This image has rabbitmq management plugin enabled. We can access the management UI at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and password are both <code>guest</code>.</p>
+<p>It also has <code>rabbitmqadmin</code> command line tool installed, which can manage RabbitMQ. </p>
+<h4>Passing Messages from UI</h4>
+<p>We can use the management UI to send and receive messages. We can create a new queue and exchange from the <code>Queues</code> section.</p>
+<p><img src="../images/rabbitmq-queue.png" alt="RabbitMQ Queue"></p>
+<p>Once a queue is created, we can publish and consume messages from that queue. </p>
+<p><img src="../images/rabbitmq-publish.png" alt="RabbitMQ Publish"></p>
+<h4>Passing Messages from CLI</h4>
+<p>Instead of using web UI, we can use <code>rabbitmqadmin</code> CLI tool<sup id="fnref:rabbitmq-cli"><a class="footnote-ref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli">2</a></sup> to send and receive messages. Let's create a topic exchange and a queue. </p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>exchange<span class="w"> </span><span class="nv">type</span><span class="o">=</span>direct<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; exchange declared</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>queue<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
+<span class="c1"># =&gt; queue declared</span>
+</pre></div>
+
+<p>Let's publish a message to the exchange:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>publish<span class="w"> </span><span class="nv">routing_key</span><span class="o">=</span>orders<span class="w"> </span><span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
+<span class="c1"># =&gt; Message published</span>
+</pre></div>
+
+<p>To receive messages from the queue, we can use the following command:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>get<span class="w"> </span><span class="nv">queue</span><span class="o">=</span>orders
+</pre></div>
+
+<p><img src="../images/rabbitmq-get-message.png" alt="RabbitMQ CLI"></p>
+<h4>Passing Messages from REST API</h4>
+<p>We can also use REST API to send and receive messages. Let's create a new exchange and queue:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"direct"}'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"topic", "durable": true}'</span><span class="w"> </span>http://localhost:15672/api/queues/%2f/orders
+</pre></div>
+
+<p>We can publish a message to the exchange:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders/publish
+</pre></div>
+
+<p>To receive messages from the queue, we can use the following command:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:15672/api/queues/%2f/orders/get
+</pre></div>
+
+<h4>Conclusion</h4>
+<p>In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:wikipedia-rabbitmq">
+<p><a href="https://en.wikipedia.org/wiki/RabbitMQ">https://en.wikipedia.org/wiki/RabbitMQ</a> <a class="footnote-backref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fnref:wikipedia-rabbitmq" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:rabbitmq-cli">
+<p><a href="https://www.rabbitmq.com/management-cli.html">https://www.rabbitmq.com/management-cli.html</a> <a class="footnote-backref" href="../2022/12/hands-on-rabbitmq-tutorial.html#fnref:rabbitmq-cli" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka Tutorial</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
