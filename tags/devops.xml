@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 17 Apr 2023 02:36:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 04 Jun 2023 01:30:24 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -pid &lt;span class="m"&gt;1234&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In this article, we will see how to record and plot resource usage of a single process using &lt;code&gt;top&lt;/code&gt; and a Python package called psrecord&lt;sup id="fnref:psrecord"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fn:psrecord"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;h4&gt;Record Resource Usage&lt;/h4&gt;
 &lt;p&gt;In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use &lt;code&gt;top&lt;/code&gt; to log resource usage into a text file. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt; -b -d &lt;span class="m"&gt;1&lt;/span&gt; &amp;gt; top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -l &lt;span class="m"&gt;0&lt;/span&gt; -s &lt;span class="m"&gt;1&lt;/span&gt; -pid &lt;span class="m"&gt;32515&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt; &amp;gt; top.log
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32515&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like &lt;code&gt;gnuplot&lt;/code&gt; or &lt;code&gt;matplotlib&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Instead of using &lt;code&gt;top&lt;/code&gt; command, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;code&gt;psrecord&lt;/code&gt; is a Python package that can be installed all using &lt;code&gt;pip&lt;/code&gt;. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python -m pip install psrecord
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;psrecord
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once installed, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
-$ psrecord &lt;span class="m"&gt;1234&lt;/span&gt; --log top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--log&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# start and record resource usage of a process&lt;/span&gt;
-$ psrecord python script.py --plot graph.png
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;script.py&lt;span class="w"&gt; &lt;/span&gt;--plot&lt;span class="w"&gt; &lt;/span&gt;graph.png
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can view the raw data in the log file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
-$ head top.log
-$ head a.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;top.log
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;a.txt
 &lt;span class="c1"&gt;# Elapsed time   CPU (%)     Real (MB)   Virtual (MB)&lt;/span&gt;
-       &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;93&lt;/span&gt;.700        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;96&lt;/span&gt;.300        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;91&lt;/span&gt;.900        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;/pre&gt;
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;93&lt;/span&gt;.700&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;96&lt;/span&gt;.300&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;91&lt;/span&gt;.900&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is the generated graph.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/single-proc-resource.png" alt="single-proc-resource"&gt;
