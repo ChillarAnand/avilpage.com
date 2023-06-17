@@ -1,5 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 04 Jun 2023 01:30:24 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 11 Jun 2023 15:56:30 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Remote Debug Docker Container with PyCharm</title><link>https://avilpage.com/2023/06/pycharm-debug-python-app-in-docker.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;p&gt;How to debug a Python application running inside a Docker container that is launched by a third-party process using PyCharm?&lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Install the &lt;code&gt;pydevd-pycharm&lt;/code&gt; package in the Docker image.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;RUN&lt;/span&gt; pip install &lt;span class="s1"&gt;'pydevd-pycharm~=222.4554.11'&lt;/span&gt;
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Add the following lines to the Python script that you want to debug.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pydevd_pycharm&lt;/span&gt;
+&lt;span class="n"&gt;pydevd_pycharm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;settrace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'host.docker.internal'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;12345&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdoutToServer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stderrToServer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Create a new Python Remote Debug configuration in PyCharm with the following settings.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img alt="PyCharm Remote Debug Configuration" src="https://avilpage.com/images/pycharm-docker-debug.png"&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Run the Remote Debug configuration in PyCharm.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the Docker container with the following command or let a shell script or another package run the container.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;$ docker build . -t flask_web
+$ docker run --rm flask_web
+&lt;/pre&gt;
+&lt;h4&gt;Explanation&lt;/h4&gt;
+&lt;p&gt;The &lt;code&gt;pydevd-pycharm&lt;/code&gt; package is a Python debugger that can be used to debug a Python application running inside a Docker container. The &lt;code&gt;pydevd_pycharm.settrace()&lt;/code&gt; function is used to connect the debugger to the PyCharm IDE. The &lt;code&gt;host.docker.internal&lt;/code&gt; is the hostname of the host machine from inside the Docker container. The &lt;code&gt;port&lt;/code&gt; is the port number that is used to connect to the PyCharm IDE. The &lt;code&gt;stdoutToServer&lt;/code&gt; and &lt;code&gt;stderrToServer&lt;/code&gt; are used to redirect the standard output and standard error to the PyCharm IDE.&lt;/p&gt;
+&lt;h4&gt;Gotchas&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;You might face the following error depending on the version of the &lt;code&gt;pydevd-pycharm&lt;/code&gt; package.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;Traceback &lt;span class="o"&gt;(&lt;/span&gt;most recent call last&lt;span class="o"&gt;)&lt;/span&gt;:
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/flask/cli.py"&lt;/span&gt;, line &lt;span class="m"&gt;218&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; locate_app
+    __import__&lt;span class="o"&gt;(&lt;/span&gt;module_name&lt;span class="o"&gt;)&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/app/app.py"&lt;/span&gt;, line &lt;span class="m"&gt;5&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    import pydevd_pycharm
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"&lt;/span&gt;, line &lt;span class="m"&gt;3&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from pydevd import settrace
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;41&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from _pydevd_bundle import pydevd_utils
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"&lt;/span&gt;, line &lt;span class="m"&gt;24&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from _pydevd_asyncio_util.pydevd_asyncio_utils import eval_async_expression_in_context
+ModuleNotFoundError: No module named &lt;span class="s1"&gt;'_pydevd_asyncio_util'&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;There seems to be an issue with all 223.*.* versions. The solution is to use the 222.*.* version.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You might face &lt;code&gt;ConnectionRefused&lt;/code&gt; error when running the docker container.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;1758&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; _locked_settrace
+    debugger.connect&lt;span class="o"&gt;(&lt;/span&gt;host, port&lt;span class="o"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# Note: connect can raise error.&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;660&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; connect
+    &lt;span class="nv"&gt;s&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; start_client&lt;span class="o"&gt;(&lt;/span&gt;host, port&lt;span class="o"&gt;)&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"&lt;/span&gt;, line &lt;span class="m"&gt;463&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; start_client
+    s.connect&lt;span class="o"&gt;((&lt;/span&gt;host, port&lt;span class="o"&gt;))&lt;/span&gt;
+ConnectionRefusedError: &lt;span class="o"&gt;[&lt;/span&gt;Errno &lt;span class="m"&gt;111&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; Connection refused
+&lt;/pre&gt;
+&lt;p&gt;Ensure that you have started the Remote Debug configuration in PyCharm before running the docker container.&lt;/p&gt;</description><category>debugging</category><category>docker</category><category>python</category><guid>https://avilpage.com/2023/06/pycharm-debug-python-app-in-docker.html</guid><pubDate>Sun, 11 Jun 2023 15:36:04 GMT</pubDate></item><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. &lt;/p&gt;
 &lt;p&gt;I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  &lt;/p&gt;
 &lt;h4&gt;Solution&lt;/h4&gt;
@@ -649,36 +709,4 @@ $&lt;span class="w"&gt; &lt;/span&gt;python3.7&lt;span class="w"&gt; &lt;/span&g
 
 &lt;p&gt;We can also create a mixin with the above methods and subclass it wherever this functionality is needed.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.&lt;/p&gt;</description><category>django</category><category>python</category><guid>https://avilpage.com/2020/01/disable-transactions-django-tests.html</guid><pubDate>Fri, 31 Jan 2020 15:51:21 GMT</pubDate></item><item><title>Mastering DICOM - #1 Clinical Workflows 101</title><link>https://avilpage.com/2019/12/mastering-dicom-part-1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;In hospitals, &lt;a href="https://en.wikipedia.org/wiki/Picture_archiving_and_communication_system"&gt;PACS&lt;/a&gt; simplifies the clinical workflow by reducing physical and time barriers. A typical radiology workflow looks like this.&lt;/p&gt;
-&lt;p algin="center"&gt;
-&lt;img src="https://avilpage.com/images/dicom-pacs-python1.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Credit: &lt;cite&gt;Wikipedia&lt;/cite&gt;&lt;/p&gt;
-
-&lt;p&gt;A patient as per doctor's request will visit a radiology center to undergo CT/MRI/X-RAY. Data captured from modality(medical imaging equipments like CT/MRI machine) will be sent to QA for verfication and then sent to PACS for archiving.&lt;/p&gt;
-&lt;p&gt;After this when patient visits doctor, doctor can see this study on his workstation(which has DICOM viewer) by entering patient details.&lt;/p&gt;
-&lt;p&gt;In &lt;a href="https://avilpage.com/tags/dicom.html"&gt;this series of articles&lt;/a&gt;, we will how to achieve this seamless transfer of medical data digitally with DICOM.&lt;/p&gt;
-&lt;h4&gt;DICOM standard&lt;/h4&gt;
-&lt;p&gt;DICOM modalities create files in DICOM format. This file has dicom header which contains meta data and dicom data set which has modality info(equipment information, equipment configuration etc), patient information(name, sex etc) and the image data.&lt;/p&gt;
-&lt;p&gt;Storing and retreiving DICOM files from PACS servers is generally achieved through DIMSE DICOM for desktop applications and DICOMWeb for web applications.&lt;/p&gt;
-&lt;p&gt;All the machines which transfer/receive DICOM data must follow DICOM standard. With this all the DICOM machines which are in a network can store and retrieve DICOM files from PACS.&lt;/p&gt;
-&lt;p&gt;When writing software to handle DICOM data, there are third party packages to handle most of the these things for us.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Python(&lt;a href="https://pypi.org/project/pydicom/"&gt;pydicom&lt;/a&gt;, &lt;a href="https://pypi.org/project/pynetdicom/"&gt;pynetdicom&lt;/a&gt;)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Ruby (&lt;a href="https://rubygems.org/gems/dicom/"&gt;ruby-dicom&lt;/a&gt;)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;R (&lt;a href="https://CRAN.R-project.org/package=oro.dicom"&gt;oro.dicom&lt;/a&gt;)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;C/C++ (&lt;a href="https://dicom.offis.de/dcmtk"&gt;dcmtoolkit&lt;/a&gt;)&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we have learnt the clinical radiology workflow and how DICOM standard is useful in digitally transferring data between DICOM modalities.&lt;/p&gt;
-&lt;p&gt;In the next article, we will dig into DICOM file formats and learn about the structure of DICOM data.&lt;/p&gt;</description><category>dicom</category><category>HealthIT</category><category>python</category><guid>https://avilpage.com/2019/12/mastering-dicom-part-1.html</guid><pubDate>Tue, 31 Dec 2019 13:29:09 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.&lt;/p&gt;</description><category>django</category><category>python</category><guid>https://avilpage.com/2020/01/disable-transactions-django-tests.html</guid><pubDate>Fri, 31 Jan 2020 15:51:21 GMT</pubDate></item></channel></rss>
