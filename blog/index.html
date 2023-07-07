@@ -70,7 +70,80 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/06/pycharm-debug-python-app-in-docker.html" class="u-url">Remote Debug Docker Container with PyCharm</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/07/train-llm-custom-data-laptop.html" class="u-url">Train LLMs with Custom Dataset on Laptop</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/07/train-llm-custom-data-laptop.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-07-07T04:36:42+05:30" itemprop="datePublished" title="2023-07-07">2023-07-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>I want to train a Large Language Model(LLM)<sup id="fnref:LLM"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:LLM">1</a></sup> with some private documents and query various details.</p>
+<h4>Journey</h4>
+<p>There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.</p>
+<p>After trying out various methods, I ended up using privateGPT<sup id="fnref:privateGPT"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:privateGPT">2</a></sup> which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.</p>
+<h4>Training</h4>
+<p>First, let's clone the repo, install requirements.txt and download the default model.</p>
+<pre class="code literal-block">$ git clone https://github.com/imartinez/privateGPT
+$ <span class="nb">cd</span> privateGPT
+$ pip3 install -r requirements.txt
+$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+
+$ cp example.env .env
+$ cat .env
+<span class="nv">MODEL_TYPE</span><span class="o">=</span>GPT4All
+<span class="nv">MODEL_PATH</span><span class="o">=</span>ggml-gpt4all-j-v1.3-groovy.bin
+</pre>
+<p>I have sourced all documents and kept them in a folder called <code>docs</code>. Let's ingest(train) the data.</p>
+<pre class="code literal-block">$ cp ~/docs/* source_documents
+
+$ python ingest.py
+</pre>
+<p>This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.</p>
+<pre class="code literal-block">$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+</pre>
+<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
+<pre class="code literal-block">$ git clone https://huggingface.co/openlm-research/open_llama_13b
+
+$ git clone https://github.com/ggerganov/llama.cpp.git
+$ <span class="nb">cd</span> llama.cpp
+$ python convert.py ../open_llama_13b
+Wrote ../open_llama_13b/ggml-model-f16.bin
+</pre>
+<p>We can now update the <code>.env</code> file to use the new model and start querying again.</p>
+<pre class="code literal-block">$ cat .env
+<span class="nv">MODEL_TYPE</span><span class="o">=</span>LlamaCpp
+<span class="nv">MODEL_PATH</span><span class="o">=</span>/path/to/ggml-model-f16.bin
+
+$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+</pre>
+<h4>Conclusion</h4>
+<p>This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:LLM">
+<p><a href="https://en.wikipedia.org/wiki/Large_language_model">https://en.wikipedia.org/wiki/Large_language_model</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:LLM" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:privateGPT">
+<p><a href="https://github.com/imartinez/privateGPT">https://github.com/imartinez/privateGPT</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:privateGPT" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:gpt4all">
+<p><a href="https://github.com/nomic-ai/gpt4all">https://github.com/nomic-ai/gpt4all</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:gpt4all" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:llama.cpp">
+<p><a href="https://github.com/ggerganov/llama.cpp">https://github.com/ggerganov/llama.cpp</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:llama.cpp" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/06/pycharm-debug-python-app-in-docker.html" class="u-url">Remote Debug Docker Container with PyCharm</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -164,14 +237,13 @@ ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span>
 </ol>
 <p>When opening and closing multiple Excel files, this becomes a tedious task. So, I decided to automate this and came across Hammerspoon.</p>
 <h4>HammerSpoon</h4>
-<p>Hammerspoon<sup id="fnref:hammerspoon"><a class="footnote-ref" href="../2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon">1</a></sup> is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our own keybindings.</p>
+<p>Hammerspoon<sup id="fnref:hammerspoon"><a class="footnote-ref" href="../2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon">1</a></sup> is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our keybindings.</p>
 <p>First, let's install Hammerspoon using Homebrew.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>hammerspoon
-</pre></div>
-
+<pre class="code literal-block">$ brew install hammerspoon
+</pre>
 <p>We can write our automation script in <code>~/.hammerspoon/init.lua</code> file. Let us see how we can automate the above tasks.</p>
 <h4>Automating Excel</h4>
-<div class="code"><pre class="code literal-block"><span class="c1">-- excel</span>
+<pre class="code literal-block"><span class="c1">-- excel</span>
 <span class="kr">function</span> <span class="nf">excel</span><span class="p">(</span><span class="n">appObject</span><span class="p">)</span>
    <span class="kd">local</span> <span class="n">win</span> <span class="o">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">focusedWindow</span><span class="p">()</span>
    <span class="kr">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">win</span><span class="p">)</span> <span class="kr">then</span>
@@ -194,10 +266,9 @@ ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span>
       <span class="kr">end</span>
    <span class="kr">end</span>
 <span class="kr">end</span>
-</pre></div>
-
+</pre>
 <p>This script will watch for application events and when Excel is launched or activated, it will call the <code>excel</code> function. </p>
-<p>The <code>excel</code> function will maximize the window, select all columns and fit them to its width, apply filters to all columns.</p>
+<p>The <code>excel</code> function will maximize the window, select all columns and fit them to it's width, apply filters to all columns.</p>
 <p><code>Free top row</code> option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.</p>
 <h4>Conclusion</h4>
 <p>Hammerspoon is a powerful tool for various automation tasks. In addition to that it can replace a lot of utility apps like CheatSheet, BlueSnooze<sup id="fnref:bluesnooze"><a class="footnote-ref" href="../2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:bluesnooze">2</a></sup>, Rectangle, ShiftIT<sup id="fnref:shiftit"><a class="footnote-ref" href="../2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:shiftit">3</a></sup>, HotKey etc. I have replaced most of the utility apps with Hammerspoon, and it is working great. I will be writing about it in detail in the upcoming posts.</p>
@@ -308,32 +379,31 @@ $<span class="w"> </span>head<span class="w"> </span>a.txt
 <p>This initial suggestion didn't work as <code>confluent-kafka-python</code> depends on <code>librdkafka</code> which is a C library. I had to build <code>librdkafka</code> from source for aarch64 and then build <code>confluent-kafka-python</code> from source.</p>
 <p>To build <code>librdkafka</code> from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build <code>librdkafka</code> from the source for aarch64.</p>
 <p>Here is the final snippet:</p>
-<div class="code"><pre class="code literal-block"><span class="n">FROM</span><span class="w"> </span><span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
+<pre class="code literal-block"><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
 
-<span class="n">ARG</span><span class="w"> </span><span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
+<span class="n">ARG</span> <span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
 
-<span class="n">RUN</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span>\
-<span class="w">  </span><span class="n">wget</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="n">g</span><span class="o">++</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">postgresql</span><span class="o">-</span><span class="n">client</span><span class="w"> </span>\
-<span class="w">  </span><span class="n">nano</span><span class="w"> </span><span class="n">less</span><span class="w"> </span><span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span><span class="w"> </span><span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span><span class="w"> </span>\
-<span class="w">  </span><span class="n">libpq</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">tzdata</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
+<span class="n">RUN</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+  <span class="n">wget</span> <span class="n">git</span> <span class="n">curl</span> <span class="n">g</span><span class="o">++</span> <span class="n">make</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">client</span> \
+  <span class="n">nano</span> <span class="n">less</span> <span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span> <span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span> \
+  <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">vim</span> <span class="n">tzdata</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
 
-<span class="n">RUN</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
-<span class="n">RUN</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">setuptools</span>
+<span class="n">RUN</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">RUN</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">setuptools</span>
 
-<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span>
-<span class="n">RUN</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">WORKDIR</span><span class="w"> </span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">WORKDIR</span> <span class="o">/</span>
+<span class="n">RUN</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">WORKDIR</span> <span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
 
-<span class="n">COPY</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">/</span><span class="n">app</span>
-<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">app</span>
-<span class="n">RUN</span><span class="w"> </span><span class="o">./</span><span class="n">configure</span><span class="w"> </span><span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span><span class="w"> </span><span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
-<span class="n">RUN</span><span class="w"> </span><span class="n">make</span>
-<span class="n">RUN</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">install</span>
+<span class="n">COPY</span> <span class="o">.</span> <span class="o">/</span><span class="n">app</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
+<span class="n">RUN</span> <span class="o">./</span><span class="n">configure</span> <span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
+<span class="n">RUN</span> <span class="n">make</span>
+<span class="n">RUN</span> <span class="n">make</span> <span class="n">install</span>
 
-<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">RUN</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="n">setup</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">install</span>
-</pre></div>
-
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">RUN</span> <span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre>
 <h4>Conclusion</h4>
 <p>By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp; environments that we are not familiar with.</p>
 <div class="footnote">
@@ -608,55 +678,6 @@ $<span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>h
 <p><br></p>
 <h4>Conclusion</h4>
 <p>Most of these courses have an entrance test that candidates have to clear before joining the course. However taking these courses is far better than paying the fees upfront and not getting a job. If you are interested in any of these courses, you can apply for the entrance test and join the course.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/01/pipe-tail-output-into-column.html" class="u-url">Pipe tail output into column</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2023/01/pipe-tail-output-into-column.html" rel="bookmark">
-            <time class="published dt-published" datetime="2023-01-02T06:26:28+05:30" itemprop="datePublished" title="2023-01-02">2023-01-02</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p><code>column</code> command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>users.csv
-id,user,active
-<span class="m">1</span>,John<span class="w"> </span>Doe,true
-<span class="m">2</span>,Will<span class="w"> </span>Smith,false
-
-$<span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t<span class="w"> </span>&lt;<span class="w"> </span>users.csv
-id<span class="w">  </span>user<span class="w">        </span>active
-<span class="m">1</span><span class="w">   </span>John<span class="w"> </span>Doe<span class="w">    </span><span class="nb">true</span>
-<span class="m">2</span><span class="w">   </span>Will<span class="w"> </span>Smith<span class="w">  </span><span class="nb">false</span>
-</pre></div>
-
-<p><code>tail</code> command-line utility prints the last 10 lines of a file. It can be used with <code>-f</code> option to follow the file as it grows.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv
-id,user,active
-<span class="m">1</span>,John<span class="w"> </span>Doe,true
-<span class="m">2</span>,Will<span class="w"> </span>Smith,false
-</pre></div>
-
-<p>To format the output of <code>tail -f</code> command, we can't use <code>column</code> command directly. <code>column</code> command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t
-</pre></div>
-
-<p>So, the above command won't work. </p>
-<p>As the goal is to follow the output of the file, we can use <code>watch</code> command for this. <code>watch</code> command executes a command periodically, and displays its output. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
-</pre></div>
-
-<p>This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.</p>
-<p>As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use <code>head</code> command in addition to <code>tail</code> command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
-</pre></div>
-
-<p>This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to <code>column</code> command, and displayed.</p>
-<p>Here is a screenshot of the output of a demo csv.</p>
-<p><img alt="pipe tail output to column" src="../images/pipe-tail-output-into-column.png"></p>
-<p>This makes it easy to watch the output of a file as it grows.</p>
     </div>
     </article>
 </div>

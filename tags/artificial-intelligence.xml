@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about artificial-intelligence)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/artificial-intelligence.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 07 Jul 2023 03:32:10 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;p&gt;I want to train a Large Language Model(LLM)&lt;sup id="fnref:LLM"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:LLM"&gt;1&lt;/a&gt;&lt;/sup&gt; with some private documents and query various details.&lt;/p&gt;
+&lt;h4&gt;Journey&lt;/h4&gt;
+&lt;p&gt;There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.&lt;/p&gt;
+&lt;p&gt;After trying out various methods, I ended up using privateGPT&lt;sup id="fnref:privateGPT"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:privateGPT"&gt;2&lt;/a&gt;&lt;/sup&gt; which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.&lt;/p&gt;
+&lt;h4&gt;Training&lt;/h4&gt;
+&lt;p&gt;First, let's clone the repo, install requirements.txt and download the default model.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ git clone https://github.com/imartinez/privateGPT
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; privateGPT
+$ pip3 install -r requirements.txt
+$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+
+$ cp example.env .env
+$ cat .env
+&lt;span class="nv"&gt;MODEL_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;GPT4All
+&lt;span class="nv"&gt;MODEL_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ggml-gpt4all-j-v1.3-groovy.bin
+&lt;/pre&gt;
+&lt;p&gt;I have sourced all documents and kept them in a folder called &lt;code&gt;docs&lt;/code&gt;. Let's ingest(train) the data.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cp ~/docs/* source_documents
+
+$ python ingest.py
+&lt;/pre&gt;
+&lt;p&gt;This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+&lt;/pre&gt;
+&lt;p&gt;The default &lt;code&gt;GPT4All-J v1.3-groovy&lt;/code&gt;&lt;sup id="fnref:gpt4all"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:gpt4all"&gt;3&lt;/a&gt;&lt;/sup&gt; model doesn't provide good results. We can easily swap it with &lt;code&gt;LlamaCpp&lt;/code&gt;&lt;sup id="fnref:llama.cpp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp"&gt;4&lt;/a&gt;&lt;/sup&gt;. Lets download the model and convert it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ git clone https://huggingface.co/openlm-research/open_llama_13b
+
+$ git clone https://github.com/ggerganov/llama.cpp.git
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; llama.cpp
+$ python convert.py ../open_llama_13b
+Wrote ../open_llama_13b/ggml-model-f16.bin
+&lt;/pre&gt;
+&lt;p&gt;We can now update the &lt;code&gt;.env&lt;/code&gt; file to use the new model and start querying again.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cat .env
+&lt;span class="nv"&gt;MODEL_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;LlamaCpp
+&lt;span class="nv"&gt;MODEL_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/ggml-model-f16.bin
+
+$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:LLM"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Large_language_model"&gt;https://en.wikipedia.org/wiki/Large_language_model&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fnref:LLM" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:privateGPT"&gt;
+&lt;p&gt;&lt;a href="https://github.com/imartinez/privateGPT"&gt;https://github.com/imartinez/privateGPT&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fnref:privateGPT" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:gpt4all"&gt;
+&lt;p&gt;&lt;a href="https://github.com/nomic-ai/gpt4all"&gt;https://github.com/nomic-ai/gpt4all&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fnref:gpt4all" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:llama.cpp"&gt;
+&lt;p&gt;&lt;a href="https://github.com/ggerganov/llama.cpp"&gt;https://github.com/ggerganov/llama.cpp&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fnref:llama.cpp" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>artificial-intelligence</category><category>python</category><guid>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</guid><pubDate>Thu, 06 Jul 2023 23:06:42 GMT</pubDate></item><item><title>Reducing System Load With ChatGPT</title><link>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;p&gt;I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. &lt;/p&gt;
+&lt;p&gt;I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  &lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;p&gt;To reduce system load, I decided to build aarch64 wheels for confluent-kafka-python. I looked at open issues on GitHub and asked maintainers how to build aarch64 wheels. There was no response&lt;sup id="fnref:librdkafka"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fn:librdkafka"&gt;1&lt;/a&gt;&lt;/sup&gt; from them.&lt;/p&gt;
+&lt;p&gt;As a workaround, I asked ChatGPT&lt;sup id="fnref:chatgpt"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fn:chatgpt"&gt;2&lt;/a&gt;&lt;/sup&gt; on how to build confluent-kafka-python aarch64 wheels in a docker container.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/chatgpt-reduce-system-load.png" alt="chatgpt-reduce-system-load"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This initial suggestion didn't work as &lt;code&gt;confluent-kafka-python&lt;/code&gt; depends on &lt;code&gt;librdkafka&lt;/code&gt; which is a C library. I had to build &lt;code&gt;librdkafka&lt;/code&gt; from source for aarch64 and then build &lt;code&gt;confluent-kafka-python&lt;/code&gt; from source.&lt;/p&gt;
+&lt;p&gt;To build &lt;code&gt;librdkafka&lt;/code&gt; from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build &lt;code&gt;librdkafka&lt;/code&gt; from the source for aarch64.&lt;/p&gt;
+&lt;p&gt;Here is the final snippet:&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mf"&gt;22.04&lt;/span&gt;
+
+&lt;span class="n"&gt;ARG&lt;/span&gt; &lt;span class="n"&gt;DEBIAN_FRONTEND&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;noninteractive&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;update&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; \
+  &lt;span class="n"&gt;wget&lt;/span&gt; &lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;curl&lt;/span&gt; &lt;span class="n"&gt;g&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;postgresql&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt; \
+  &lt;span class="n"&gt;nano&lt;/span&gt; &lt;span class="n"&gt;less&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;mime&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;openjdk&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;17&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;jre&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;headless&lt;/span&gt; \
+  &lt;span class="n"&gt;libpq&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt; &lt;span class="n"&gt;vim&lt;/span&gt; &lt;span class="n"&gt;tzdata&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;
+
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;apt&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;setuptools&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;clone&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluentinc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+
+&lt;span class="n"&gt;COPY&lt;/span&gt; &lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="o"&gt;./&lt;/span&gt;&lt;span class="n"&gt;configure&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;arch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;aarch64&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;
+
+&lt;span class="n"&gt;WORKDIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;confluent&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;kafka&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;span class="n"&gt;RUN&lt;/span&gt; &lt;span class="n"&gt;python3&lt;/span&gt; &lt;span class="n"&gt;setup&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp;amp; environments that we are not familiar with.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:librdkafka"&gt;
+&lt;p&gt;&lt;a href="https://github.com/confluentinc/librdkafka/issues/3546#issuecomment-1340237177"&gt;https://github.com/confluentinc/librdkafka/3546&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fnref:librdkafka" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:chatgpt"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/ChatGPT"&gt;https://en.wikipedia.org/wiki/ChatGPT&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html#fnref:chatgpt" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>artificial-intelligence</category><category>docker</category><category>macbook</category><category>python</category><guid>https://avilpage.com/2023/04/reduce-system-load-with-chatgpt.html</guid><pubDate>Sat, 01 Apr 2023 02:25:49 GMT</pubDate></item><item><title>Using LSTM-CTC For Complex Script Recognition</title><link>https://avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Most Indian languages have strong consonant-vowel structures which combine to give syllables. These syllables are written as one continuous ligature and they require &lt;a href="https://en.wikipedia.org/wiki/Complex_text_layout"&gt;complex text rendering&lt;/a&gt; (CTL) for type setting.&lt;/p&gt;
+&lt;p&gt;Writing OCR (Optical Character Recognition) software for CTL scripts is a challenging task as segmentation is hard. Because of this overall accuracy drops drastically.&lt;/p&gt;
+&lt;p&gt;A better approach is to use Connectionist Temporal Classification&lt;sup id="fnref:ctc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html#fn:ctc"&gt;1&lt;/a&gt;&lt;/sup&gt;(CTC) which can identify unsegmented sequence directly as it has a one-to-one correspondence between input samples and output labels.&lt;/p&gt;
+&lt;p&gt;Here is a sample input and output of an &lt;a href="https://github.com/rakeshvar/rnn_ctc"&gt;RNN-CTC&lt;/a&gt; network which takes an unsegmented sequence and outputs labels.&lt;/p&gt;
+&lt;p align="center"&gt;
+&lt;img src="https://avilpage.com/images/ctc.png"&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Open-source OCR software &lt;a href="https://github.com/tmbdev/ocropy/"&gt;ocorpy&lt;/a&gt; uses BLSTM-CTC for text recognition. &lt;a href="https://github.com/tesseract-ocr/tesseract"&gt;Tesseract&lt;/a&gt; started using the same in its latest(4.0) version.&lt;/p&gt;
+&lt;p&gt;I have &lt;a href="https://github.com/ChillarAnand/likitham"&gt;trained a model&lt;/a&gt; to recognize Telugu script using Ocropy and the accuracy is ~99% which is far better when compared to OCR software without CTC which are accurate to ~70%.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:ctc"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Connectionist_temporal_classification"&gt;https://en.wikipedia.org/wiki/Connectionist_temporal_classification&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html#fnref:ctc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>artificial-intelligence</category><category>data-science</category><category>python</category><guid>https://avilpage.com/2017/07/using-lstm-ctc-for-complex-script-recognistion.html</guid><pubDate>Sat, 22 Jul 2017 14:09:32 GMT</pubDate></item></channel></rss>

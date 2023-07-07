@@ -23,7 +23,7 @@ When opening and closing multiple Excel files, this becomes a tedious task. So, 
 
 ### HammerSpoon
 
-Hammerspoon[^hammerspoon] is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our own keybindings.
+Hammerspoon[^hammerspoon] is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our keybindings.
 
 First, let's install Hammerspoon using Homebrew.
 
@@ -63,7 +63,7 @@ end
 
 This script will watch for application events and when Excel is launched or activated, it will call the `excel` function. 
 
-The `excel` function will maximize the window, select all columns and fit them to its width, apply filters to all columns.
+The `excel` function will maximize the window, select all columns and fit them to it's width, apply filters to all columns.
 
 `Free top row` option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.
 
