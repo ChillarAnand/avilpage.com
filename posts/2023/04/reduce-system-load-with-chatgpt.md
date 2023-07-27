@@ -2,7 +2,7 @@
 .. title: Reducing System Load With ChatGPT
 .. slug: reduce-system-load-with-chatgpt
 .. date: 2023-04-01 07:55:49 UTC+05:30
-.. tags: python, docker, macbook
+.. tags: python, docker, macbook, artificial-intelligence
 .. category: programming
 .. link: 
 .. description: How to use ChatGPT to build aarch64 wheels for confluent-kafka-python and thereby reduce system load on Macbook M1?
