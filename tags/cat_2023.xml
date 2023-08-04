@@ -1,5 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2023)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_2023.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 05 Jul 2023 08:36:52 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering HammerSpoon - Excel Automation</title><link>https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2023)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_2023.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Aug 2023 16:09:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
+&lt;p&gt;For example, look at the below output of 2 simple csv files.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare" src="https://avilpage.com/images/kdiff3-csv-compare.png"&gt;&lt;/p&gt;
+&lt;p&gt;Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare-sorted" src="https://avilpage.com/images/kdiff3-csv-compare-sorted.png"&gt;&lt;/p&gt;
+&lt;p&gt;Now, it is easy to identify the diff.&lt;/p&gt;
+&lt;h4&gt;Rearrange CSV columns alphabetically&lt;/h4&gt;
+&lt;p&gt;We can write a simple python script using Pandas&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt; as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="sd"&gt;re-arrange columns in alphabetical order&lt;/span&gt;
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;input_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;IndexError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_file&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;output_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;We can use this script as follows.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ python3 rearrange_csv_columns.py input.csv output.csv
+&lt;/pre&gt;
+&lt;p&gt;Instead of writing a script by ourselves, we can use &lt;code&gt;miller&lt;/code&gt;&lt;sup id="fnref:miller"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller"&gt;2&lt;/a&gt;&lt;/sup&gt; tool. Miller can perform various operations on CSV files. We can use &lt;code&gt;sort-within-records&lt;/code&gt; to sort the columns.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ mlr --csv sort-within-records -f input.csv &amp;gt; output.csv
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We can use &lt;code&gt;miller&lt;/code&gt; to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:pandas"&gt;
+&lt;p&gt;&lt;a href="https://pandas.pydata.org/"&gt;https://pandas.pydata.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:miller"&gt;
+&lt;p&gt;&lt;a href="https://github.com/johnkerl/miller"&gt;https://github.com/johnkerl/miller&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Mastering HammerSpoon - Excel Automation</title><link>https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Recently, I have been using Excel a lot. When opening a new Excel file, I have to do the following:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Maximize the window&lt;/li&gt;
@@ -11,11 +67,12 @@
 &lt;h4&gt;HammerSpoon&lt;/h4&gt;
 &lt;p&gt;Hammerspoon&lt;sup id="fnref:hammerspoon"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon"&gt;1&lt;/a&gt;&lt;/sup&gt; is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our keybindings.&lt;/p&gt;
 &lt;p&gt;First, let's install Hammerspoon using Homebrew.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install hammerspoon
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;hammerspoon
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can write our automation script in &lt;code&gt;~/.hammerspoon/init.lua&lt;/code&gt; file. Let us see how we can automate the above tasks.&lt;/p&gt;
 &lt;h4&gt;Automating Excel&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;-- excel&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;-- excel&lt;/span&gt;
 &lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;excel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
    &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focusedWindow&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
    &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
@@ -38,7 +95,8 @@
       &lt;span class="kr"&gt;end&lt;/span&gt;
    &lt;span class="kr"&gt;end&lt;/span&gt;
 &lt;span class="kr"&gt;end&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This script will watch for application events and when Excel is launched or activated, it will call the &lt;code&gt;excel&lt;/code&gt; function. &lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;excel&lt;/code&gt; function will maximize the window, select all columns and fit them to it's width, apply filters to all columns.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Free top row&lt;/code&gt; option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.&lt;/p&gt;
