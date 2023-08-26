@@ -1,5 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 19 Mar 2023 11:48:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 Aug 2023 13:56:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Periodically Launch an App in Background</title><link>https://avilpage.com/2023/08/periodically-launch-app-background.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.&lt;/p&gt;
+&lt;p&gt;I want to ensure that it starts periodically so that I don't miss any notifications for meetings.&lt;/p&gt;
+&lt;p&gt;After trying out various methods, I ended up using &lt;code&gt;open&lt;/code&gt; command with &lt;code&gt;cron&lt;/code&gt; to launch the app every 15 minutes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ crontab -e
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. &lt;/p&gt;
+&lt;p&gt;To avoid this, I passed &lt;code&gt;-g&lt;/code&gt; option to run it in background.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ crontab -e
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -g -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.&lt;/p&gt;
+&lt;p&gt;This will ensure that I don't miss any meetings, even if I close outlook accidentally.&lt;/p&gt;</description><category>automation</category><category>command-line</category><category>macbook</category><guid>https://avilpage.com/2023/08/periodically-launch-app-background.html</guid><pubDate>Wed, 23 Aug 2023 13:33:49 GMT</pubDate></item><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
+&lt;p&gt;For example, look at the below output of 2 simple csv files.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare" src="https://avilpage.com/images/kdiff3-csv-compare.png"&gt;&lt;/p&gt;
+&lt;p&gt;Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare-sorted" src="https://avilpage.com/images/kdiff3-csv-compare-sorted.png"&gt;&lt;/p&gt;
+&lt;p&gt;Now, it is easy to identify the diff.&lt;/p&gt;
+&lt;h4&gt;Rearrange CSV columns alphabetically&lt;/h4&gt;
+&lt;p&gt;We can write a simple python script using Pandas&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt; as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="sd"&gt;re-arrange columns in alphabetical order&lt;/span&gt;
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;input_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;IndexError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_file&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;output_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can use this script as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3&lt;span class="w"&gt; &lt;/span&gt;rearrange_csv_columns.py&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Instead of writing a script by ourselves, we can use &lt;code&gt;miller&lt;/code&gt;&lt;sup id="fnref:miller"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller"&gt;2&lt;/a&gt;&lt;/sup&gt; tool. Miller can perform various operations on CSV files. We can use &lt;code&gt;sort-within-records&lt;/code&gt; to sort the columns.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mlr&lt;span class="w"&gt; &lt;/span&gt;--csv&lt;span class="w"&gt; &lt;/span&gt;sort-within-records&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We can use &lt;code&gt;miller&lt;/code&gt; to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:pandas"&gt;
+&lt;p&gt;&lt;a href="https://pandas.pydata.org/"&gt;https://pandas.pydata.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:miller"&gt;
+&lt;p&gt;&lt;a href="https://github.com/johnkerl/miller"&gt;https://github.com/johnkerl/miller&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>python</category><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;users.csv
 id,user,active
 &lt;span class="m"&gt;1&lt;/span&gt;,John&lt;span class="w"&gt; &lt;/span&gt;Doe,true
@@ -663,96 +736,4 @@ $&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;/dev
 hello&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;android
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;</description><category>android</category><category>bluetooth</category><category>command-line</category><category>linux</category><guid>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item><item><title>Arduino Programming From Text Editor &amp; Command Line</title><link>https://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;To program Arduino, we can use &lt;a href="https://www.arduino.cc/en/main/software"&gt;Arduino IDE&lt;/a&gt; which facilitates writing and uploading code to the board.&lt;/p&gt;
-&lt;p&gt;If we are using a text editor for programming, it will have lot of customisations which speed up development process. In such case, it is better to use same text editor for arduino programming too.&lt;/p&gt;
-&lt;p&gt;I use Emacs as IDE and there is &lt;a href="https://github.com/bookest/arduino-mode"&gt;arduino mode&lt;/a&gt; for emacs which provides syntax highlighting and some useful utilites to write arduino code. We can find such packages for other editors also.&lt;/p&gt;
-&lt;p&gt;Arduino also provides cli interface to upload code to arduino. To upload code, we need to specify port, board and the code to upload.&lt;/p&gt;
-&lt;p&gt;In Linux system, to upload a file called &lt;code&gt;foo.ino&lt;/code&gt;, we can run&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;arduino&lt;span class="w"&gt; &lt;/span&gt;--port&lt;span class="w"&gt; &lt;/span&gt;/dev/ttyACM0&lt;span class="w"&gt; &lt;/span&gt;--board&lt;span class="w"&gt; &lt;/span&gt;arduino:avr:mega
-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\ &lt;/span&gt;--upload&lt;span class="w"&gt; &lt;/span&gt;foo.ino
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;An alternate way is to use &lt;a href="https://github.com/platformio/platformio-core/"&gt;platformio&lt;/a&gt;, an opensource tool chain for IoT development.&lt;/p&gt;
-&lt;p&gt;It can be installed using pip.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;platformio
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Once it is installed, code can be directly uploaded using &lt;code&gt;ci&lt;/code&gt; command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pio&lt;span class="w"&gt; &lt;/span&gt;ci&lt;span class="w"&gt; &lt;/span&gt;--board&lt;span class="o"&gt;=&lt;/span&gt;megaatmega2560&lt;span class="w"&gt; &lt;/span&gt;--project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"upload_port=/dev/ttyACM0"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--project-option&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"targets=upload"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;foo.ino
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;By this we can use text editor to write code and arduino/platformio to upload code to arduino board.&lt;/p&gt;</description><category>arduino</category><category>command-line</category><guid>https://avilpage.com/2017/08/arduino-programming-from-text-editor-cli.html</guid><pubDate>Thu, 24 Aug 2017 13:29:59 GMT</pubDate></item><item><title>Super Charge Your Shell For Python Development</title><link>https://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Last month, I gave a lightning talk about supercharging your shell for python development at &lt;a href="http://www.meetup.com/BangPypers/"&gt;BangPypers meetup&lt;/a&gt;.&lt;/p&gt;
-&lt;iframe width="600" height="350" src="https://www.youtube.com/embed/lvmJ0tWCjFA" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
-
-&lt;p&gt;This is a detailed blog post on how to setup your laptop for the same.&lt;/p&gt;
-&lt;h3&gt;Autojump&lt;/h3&gt;
-&lt;p&gt;When working on terminal, &lt;code&gt;cd&lt;/code&gt; is used to traverse directories.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~/projects/python/django
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code&gt;cd&lt;/code&gt; is inefficient to quickly traverse directories which are in different paths and far away from each other.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/var/lib/elasticsearch/
-&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~/sandbox/channels/demo
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code&gt;z&lt;/code&gt;, a oh-my-zsh plugin is efficient for traversing directories. With &lt;code&gt;z&lt;/code&gt;, directory can be changed by typing name of directory.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;z&lt;span class="w"&gt; &lt;/span&gt;junction
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Instead of full name, just a substring would do.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;z&lt;span class="w"&gt; &lt;/span&gt;ju
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code&gt;z&lt;/code&gt; keeps a score of all visited directories and moves to most frecency(frequent+recent) directory that matches the substring.&lt;/p&gt;
-&lt;p&gt;To install &lt;code&gt;z&lt;/code&gt;, install &lt;a href="https://avilpage.com/2015/03/install-oh-my-zsh-on-ubuntu.html"&gt;oh-my-zsh&lt;/a&gt; and add &lt;code&gt;z&lt;/code&gt; to plugins in &lt;code&gt;.zshrc&lt;/code&gt; file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;plugins&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;z&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h3&gt;Aliases&lt;/h3&gt;
-&lt;p&gt;Read this old blog post on how &lt;a href="https://avilpage.com/2014/10/useful-shell-aliases-for-python-and.html"&gt;aliases will improve your productivity&lt;/a&gt;.&lt;/p&gt;
-&lt;h3&gt;Autoenv&lt;/h3&gt;
-&lt;p&gt;When working on multiple projects, it becomes necessary to use virtualenvs so that multiple versions of same package can be used. In addition to that, it be necessary to set environment variables on a per project basis.&lt;/p&gt;
-&lt;p&gt;To automate all these things, &lt;a href="https://pypi.python.org/pypi/autoenv/"&gt;autoenv&lt;/a&gt; provides directory based environments. Whenever user changes directory, it will help to automatically activate environment and set environment variables.&lt;/p&gt;
-&lt;p&gt;If you have file named &lt;code&gt;.env&lt;/code&gt; in a directory, autoenv will automatically source that file whenever user enters into it.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;autoenv&lt;/code&gt; is a python package. It can be installed with&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;autoenv
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It provides a shell script which needs to sourced.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"source `which activate.sh`"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;~/.bashrc
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You can create a .env file like this in project root.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/exp/bin/activate
-&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;SECRET_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;foobar
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Next time, when your enter into that directory, &lt;code&gt;autoenv&lt;/code&gt; finds &lt;code&gt;.env&lt;/code&gt; file and it will source it automatically.&lt;/p&gt;
-&lt;h3&gt;Autoreload&lt;/h3&gt;
-&lt;p&gt;I have written a sepeate blog post on how to &lt;a href="https://avilpage.com/2014/11/python-automagically-reload-imports-in.html"&gt;automagically reload imports&lt;/a&gt; long time back.&lt;/p&gt;
-&lt;h3&gt;Autoimports&lt;/h3&gt;
-&lt;p&gt;When you copy code and paste it in ipython interpreter, it might fail with &lt;code&gt;ImportError&lt;/code&gt; if required modules aren't already imported by the interpreter.&lt;/p&gt;
-&lt;p&gt;Also when playing with code, having some predefined data would be handy. This avoids populating of data everytime shell starts.&lt;/p&gt;
-&lt;p&gt;You can write an init script which will do all these things and load it automatically when ipython starts.&lt;/p&gt;
-&lt;p&gt;Here is a &lt;a href="https://github.com/ChillarAnand/01/blob/master/python/ipython_config.py"&gt;simple init script&lt;/a&gt; which I use to auto import modules and data. This file can be auto loaded by specifying it in your config file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_files&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'ipython_init.py'&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h3&gt;Autocall&lt;/h3&gt;
-&lt;p&gt;When using python interpreter, to call a function, you have to type parenthesis.Typing parenthesis is not ergonomic as you have to move both hands far away from homerow.&lt;/p&gt;
-&lt;p&gt;IPython provides &lt;code&gt;autocall&lt;/code&gt; option to make functions callable without typing parenthesis. This can be activate with &lt;code&gt;%autocall&lt;/code&gt; magic.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;autocall&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;Automatic&lt;/span&gt; &lt;span class="n"&gt;calling&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Smart&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Now functions can be called without parenthesis.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;
-&lt;span class="o"&gt;------&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;You can also enable this by default by activating it in ipython config file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;InteractiveShellApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exec_lines&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="si"&gt;%a&lt;/span&gt;&lt;span class="s1"&gt;utocall  1'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;These are some tips to become more productive with your shell when working on python projects.&lt;/p&gt;</description><category>command-line</category><category>python</category><guid>https://avilpage.com/2017/03/super-charge-your-shell-for-python-development.html</guid><pubDate>Sun, 26 Mar 2017 02:40:31 GMT</pubDate></item></channel></rss>
+&lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;</description><category>android</category><category>bluetooth</category><category>command-line</category><category>linux</category><guid>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item></channel></rss>

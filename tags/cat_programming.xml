@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 29 Jul 2023 16:31:22 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 Aug 2023 13:56:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
+&lt;p&gt;For example, look at the below output of 2 simple csv files.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare" src="https://avilpage.com/images/kdiff3-csv-compare.png"&gt;&lt;/p&gt;
+&lt;p&gt;Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare-sorted" src="https://avilpage.com/images/kdiff3-csv-compare-sorted.png"&gt;&lt;/p&gt;
+&lt;p&gt;Now, it is easy to identify the diff.&lt;/p&gt;
+&lt;h4&gt;Rearrange CSV columns alphabetically&lt;/h4&gt;
+&lt;p&gt;We can write a simple python script using Pandas&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt; as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="sd"&gt;re-arrange columns in alphabetical order&lt;/span&gt;
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;input_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;IndexError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_file&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;output_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can use this script as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3&lt;span class="w"&gt; &lt;/span&gt;rearrange_csv_columns.py&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Instead of writing a script by ourselves, we can use &lt;code&gt;miller&lt;/code&gt;&lt;sup id="fnref:miller"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller"&gt;2&lt;/a&gt;&lt;/sup&gt; tool. Miller can perform various operations on CSV files. We can use &lt;code&gt;sort-within-records&lt;/code&gt; to sort the columns.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mlr&lt;span class="w"&gt; &lt;/span&gt;--csv&lt;span class="w"&gt; &lt;/span&gt;sort-within-records&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We can use &lt;code&gt;miller&lt;/code&gt; to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:pandas"&gt;
+&lt;p&gt;&lt;a href="https://pandas.pydata.org/"&gt;https://pandas.pydata.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:miller"&gt;
+&lt;p&gt;&lt;a href="https://github.com/johnkerl/miller"&gt;https://github.com/johnkerl/miller&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>python</category><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I want to train a Large Language Model(LLM)&lt;sup id="fnref:LLM"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:LLM"&gt;1&lt;/a&gt;&lt;/sup&gt; with some private documents and query various details.&lt;/p&gt;
 &lt;h4&gt;Journey&lt;/h4&gt;
 &lt;p&gt;There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.&lt;/p&gt;
@@ -629,72 +688,4 @@ This &lt;code&gt;lib&lt;/code&gt; directory contains our compiled module. We can
 &lt;p&gt;To build a wheel for a specific platform and a specific architecture, we can run &lt;code&gt;cibuildwheel --platform &amp;lt;platform&amp;gt; --architecture &amp;lt;architecture&amp;gt;&lt;/code&gt;. For example, to build a wheel for Linux x86_64, we can run &lt;code&gt;cibuildwheel --platform linux --architecture x86_64&lt;/code&gt;. This will create a &lt;code&gt;wheelhouse&lt;/code&gt; directory with a wheel file inside it. This wheel file contains our compiled module.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;cibuildwheel&lt;/code&gt; runs on most CI servers. With proper workflows, we can easily get wheels for all platforms and architectures. We can then upload these wheels to PyPI and users can easily install these wheels.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we saw how to build and distribute a Python C extension module using wheels. We saw how to build a C extension module and how to distribute it as a binary distribution. We also saw how to use &lt;code&gt;cibuildwheel&lt;/code&gt; to build wheels across all platforms and architectures.&lt;/p&gt;</description><category>c</category><category>python</category><guid>https://avilpage.com/2022/11/build-distribute-a-python-c-extension-module.html</guid><pubDate>Tue, 01 Nov 2022 16:01:29 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
-arm64&lt;span class="w"&gt; &lt;/span&gt;arm
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let's run the same command on a device using Intel x86 processor.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
-x86_64&lt;span class="w"&gt; &lt;/span&gt;x86_64
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Many popular docker images&lt;sup id="fnref:dhub"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:dhub"&gt;1&lt;/a&gt;&lt;/sup&gt; doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.&lt;/p&gt;
-&lt;p&gt;In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.&lt;/p&gt;
-&lt;h4&gt;Setup&lt;/h4&gt;
-&lt;p&gt;Lima&lt;sup id="fnref:lima"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:lima"&gt;2&lt;/a&gt;&lt;/sup&gt; can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp;amp; ARM64 VM and install k3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:k3s"&gt;3&lt;/a&gt;&lt;/sup&gt; in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;lima
-
-$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
-$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;When starting a VM, we can edit &lt;code&gt;arch&lt;/code&gt; parameter in the configuration. Once VM starts, we can see the details by running &lt;code&gt;limactl list&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;list
-NAME&lt;span class="w"&gt;                &lt;/span&gt;ARCH
-linux_amd64&lt;span class="w"&gt;         &lt;/span&gt;x86_64
-linux_arm64&lt;span class="w"&gt;         &lt;/span&gt;aarch64
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Lets login to each VM &amp;amp; install k3s.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
-
-$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
-
-$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="https://avilpage.com/images/arch-arm-docker.png"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;We can login to individual VMs, run &lt;code&gt;top&lt;/code&gt; to see the load average as well.&lt;/p&gt;
-&lt;h4&gt;Fast Mode&lt;/h4&gt;
-&lt;p&gt;&lt;code&gt;lima&lt;/code&gt; provides &lt;code&gt;fast-mode&lt;/code&gt; option for cross architecture VMs which will speed up the performance.&lt;/p&gt;
-&lt;p&gt;For that, we need to log in to VMs and install emulators.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;containerd
-$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;nerdctl&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--privileged&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;tonistiigi/binfmt&lt;span class="w"&gt; &lt;/span&gt;--install&lt;span class="w"&gt; &lt;/span&gt;all
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:dhub"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/search?q=&amp;amp;page=10"&gt;https://hub.docker.com/search?q=&amp;amp;page=10&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fnref:dhub" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:lima"&gt;
-&lt;p&gt;&lt;a href="https://github.com/lima-vm/lima"&gt;https://github.com/lima-vm/lima&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fnref:lima" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:k3s"&gt;
-&lt;p&gt;&lt;a href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html"&gt;Install k3s on Mac M1&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fnref:k3s" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>linux</category><category>macbook</category><guid>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</guid><pubDate>Thu, 20 Oct 2022 17:08:56 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In this article, we saw how to build and distribute a Python C extension module using wheels. We saw how to build a C extension module and how to distribute it as a binary distribution. We also saw how to use &lt;code&gt;cibuildwheel&lt;/code&gt; to build wheels across all platforms and architectures.&lt;/p&gt;</description><category>c</category><category>python</category><guid>https://avilpage.com/2022/11/build-distribute-a-python-c-extension-module.html</guid><pubDate>Tue, 01 Nov 2022 16:01:29 GMT</pubDate></item></channel></rss>

@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 29 Jul 2023 16:31:20 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about python)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 Aug 2023 13:56:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
+&lt;p&gt;For example, look at the below output of 2 simple csv files.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare" src="https://avilpage.com/images/kdiff3-csv-compare.png"&gt;&lt;/p&gt;
+&lt;p&gt;Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="kdiff3-csv-compare-sorted" src="https://avilpage.com/images/kdiff3-csv-compare-sorted.png"&gt;&lt;/p&gt;
+&lt;p&gt;Now, it is easy to identify the diff.&lt;/p&gt;
+&lt;h4&gt;Rearrange CSV columns alphabetically&lt;/h4&gt;
+&lt;p&gt;We can write a simple python script using Pandas&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt; as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="sd"&gt;re-arrange columns in alphabetical order&lt;/span&gt;
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;input_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;IndexError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;output_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;input_file&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;input_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;colsort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;output_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can use this script as follows.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3&lt;span class="w"&gt; &lt;/span&gt;rearrange_csv_columns.py&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Instead of writing a script by ourselves, we can use &lt;code&gt;miller&lt;/code&gt;&lt;sup id="fnref:miller"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller"&gt;2&lt;/a&gt;&lt;/sup&gt; tool. Miller can perform various operations on CSV files. We can use &lt;code&gt;sort-within-records&lt;/code&gt; to sort the columns.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mlr&lt;span class="w"&gt; &lt;/span&gt;--csv&lt;span class="w"&gt; &lt;/span&gt;sort-within-records&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We can use &lt;code&gt;miller&lt;/code&gt; to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:pandas"&gt;
+&lt;p&gt;&lt;a href="https://pandas.pydata.org/"&gt;https://pandas.pydata.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:miller"&gt;
+&lt;p&gt;&lt;a href="https://github.com/johnkerl/miller"&gt;https://github.com/johnkerl/miller&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>python</category><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I want to train a Large Language Model(LLM)&lt;sup id="fnref:LLM"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:LLM"&gt;1&lt;/a&gt;&lt;/sup&gt; with some private documents and query various details.&lt;/p&gt;
 &lt;h4&gt;Journey&lt;/h4&gt;
 &lt;p&gt;There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.&lt;/p&gt;
@@ -609,91 +668,4 @@ ping&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;
 &lt;p&gt;&lt;a href="https://gist.github.com/ChillarAnand/a7be6adeb84a63d48e8dda27aab7ac94"&gt;Python async client&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html#fnref:gist" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>bluetooth</category><category>featured</category><category>python</category><guid>https://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</guid><pubDate>Mon, 31 Aug 2020 15:51:21 GMT</pubDate></item><item><title>How To Reduce Python Package Footprint?</title><link>https://avilpage.com/2020/02/reduce-python-package-footprint.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;PyPi&lt;sup id="fnref:1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:1"&gt;1&lt;/a&gt;&lt;/sup&gt; hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries&lt;sup id="fnref:2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:2"&gt;2&lt;/a&gt;&lt;/sup&gt; along with the package.&lt;/p&gt;
-&lt;h4&gt;Build From Source&lt;/h4&gt;
-&lt;p&gt;If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB&lt;sup id="fnref:3"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:3"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;numpy
-
-$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
-&lt;span class="w"&gt; &lt;/span&gt;85M&lt;span class="w"&gt;    &lt;/span&gt;/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp;amp; pandas, overall size of the package crosses 250MB.&lt;/p&gt;
-&lt;p&gt;An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;CLFAGS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;numpy&lt;span class="w"&gt; &lt;/span&gt;--global-option&lt;span class="o"&gt;=&lt;/span&gt;build_ext
-
-$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
-&lt;span class="w"&gt; &lt;/span&gt;23M&lt;span class="w"&gt;    &lt;/span&gt;/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can see the footprint has reduced by ~70% when using sdist instead of wheel. This&lt;sup id="fnref:4"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:4"&gt;4&lt;/a&gt;&lt;/sup&gt; article provides more details about these CFLAG optimization when installing a package from source.&lt;/p&gt;
-&lt;h4&gt;Shared Packages&lt;/h4&gt;
-&lt;p&gt;When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.&lt;/p&gt;
-&lt;p&gt;To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.&lt;/p&gt;
-&lt;p&gt;For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;common-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# shared across all enviroments&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.1
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-
-$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;project1-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# project1 requirements&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.18.1
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-
-$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;project2-requirements.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# project2 enviroments&lt;/span&gt;
-&lt;span class="nv"&gt;numpy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.17
-&lt;span class="nv"&gt;pandas&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.0.0
-&lt;span class="nv"&gt;scipy&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.4.1
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;After creating a virtual enviroment for a project, we can create a &lt;code&gt;.pth&lt;/code&gt; file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;
-&lt;span class="w"&gt; &lt;/span&gt;~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then we can install the project requirements which will install only missing packages.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;project1-requirements.txt
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Global Store&lt;/h4&gt;
-&lt;p&gt;The above shared packages solution has couple issues.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;User has to manually create and track shared packages for each Python version and needs to bootstrap it in every project.&lt;/li&gt;
-&lt;li&gt;When there is an incompatible version of package in multiple projects, user will end up with duplicate installations of the same version.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;To solve this&lt;sup id="fnref:5"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:5"&gt;5&lt;/a&gt;&lt;/sup&gt;, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.&lt;/p&gt;
-&lt;p&gt;For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3.6&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--target&lt;span class="w"&gt; &lt;/span&gt;~/.mpip/numpy/3.6_1.18&lt;span class="w"&gt; &lt;/span&gt;numpy
-
-$&lt;span class="w"&gt; &lt;/span&gt;python3.7&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--target&lt;span class="w"&gt; &lt;/span&gt;~/.mpip/numpy/3.7_1.17&lt;span class="w"&gt; &lt;/span&gt;numpy
-
-&lt;span class="c1"&gt;# in project venv&lt;/span&gt;
-&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'~/.mpip/numpy/3.7_1.17'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip&lt;sup id="fnref:6"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fn:6"&gt;6&lt;/a&gt;&lt;/sup&gt; as a POC to test this and it seems to work as expected.&lt;/p&gt;
-&lt;p&gt;These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:1"&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/"&gt;https://pypi.org/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:1" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:2"&gt;
-&lt;p&gt;&lt;a href="https://github.com/numpy/numpy/issues/10920"&gt;https://github.com/numpy/numpy/issues/10920&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:2" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:3"&gt;
-&lt;p&gt;&lt;a href="https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html"&gt;https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:3" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:4"&gt;
-&lt;p&gt;&lt;a href="https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4"&gt;https://towardsdatascience.com/how-to-shrink-numpy-scipy-pandas-and-matplotlib-for-your-data-product-4ec8d7e86ee4&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:4" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:5"&gt;
-&lt;p&gt;&lt;a href="https://github.com/pypa/packaging-problems/issues/328"&gt;https://github.com/pypa/packaging-problems/issues/328&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:5" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:6"&gt;
-&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/mpip"&gt;https://github.com/ChillarAnand/mpip&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/02/reduce-python-package-footprint.html#fnref:6" title="Jump back to footnote 6 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>aws</category><category>featured</category><category>python</category><guid>https://avilpage.com/2020/02/reduce-python-package-footprint.html</guid><pubDate>Sat, 29 Feb 2020 14:50:38 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>bluetooth</category><category>featured</category><category>python</category><guid>https://avilpage.com/2020/08/bluetooth-terminal-python-asyncio.html</guid><pubDate>Mon, 31 Aug 2020 15:51:21 GMT</pubDate></item></channel></rss>

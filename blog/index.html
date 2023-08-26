@@ -73,7 +73,34 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" class="u-url">Rearrange CSV columns alphabetically from CLI</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/periodically-launch-app-background.html" class="u-url">Periodically Launch an App in Background</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/08/periodically-launch-app-background.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-23T19:03:49+05:30" itemprop="datePublished" title="2023-08-23">2023-08-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.</p>
+<p>I want to ensure that it starts periodically so that I don't miss any notifications for meetings.</p>
+<p>After trying out various methods, I ended up using <code>open</code> command with <code>cron</code> to launch the app every 15 minutes.</p>
+<pre class="code literal-block">$ crontab -e
+</pre>
+<pre class="code literal-block">*/15 * * * * /usr/bin/open -a <span class="s2">"Microsoft Outlook"</span>
+</pre>
+<p>This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. </p>
+<p>To avoid this, I passed <code>-g</code> option to run it in background.</p>
+<pre class="code literal-block">$ crontab -e
+</pre>
+<pre class="code literal-block">*/15 * * * * /usr/bin/open -g -a <span class="s2">"Microsoft Outlook"</span>
+</pre>
+<p>This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.</p>
+<p>This will ensure that I don't miss any meetings, even if I close outlook accidentally.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" class="u-url">Rearrange CSV columns alphabetically from CLI</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -92,7 +119,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Now, it is easy to identify the diff.</p>
 <h4>Rearrange CSV columns alphabetically</h4>
 <p>We can write a simple python script using Pandas<sup id="fnref:pandas"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas">1</a></sup> as follows.</p>
-<pre class="code literal-block"><span class="ch">#! /usr/bin/env python3</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /usr/bin/env python3</span>
 
 <span class="sd">"""</span>
 <span class="sd">re-arrange columns in alphabetical order</span>
@@ -121,13 +148,16 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>We can use this script as follows.</p>
-<pre class="code literal-block">$ python3 rearrange_csv_columns.py input.csv output.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python3<span class="w"> </span>rearrange_csv_columns.py<span class="w"> </span>input.csv<span class="w"> </span>output.csv
+</pre></div>
+
 <p>Instead of writing a script by ourselves, we can use <code>miller</code><sup id="fnref:miller"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller">2</a></sup> tool. Miller can perform various operations on CSV files. We can use <code>sort-within-records</code> to sort the columns.</p>
-<pre class="code literal-block">$ mlr --csv sort-within-records -f input.csv &gt; output.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>mlr<span class="w"> </span>--csv<span class="w"> </span>sort-within-records<span class="w"> </span>-f<span class="w"> </span>input.csv<span class="w"> </span>&gt;<span class="w"> </span>output.csv
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>We can use <code>miller</code> to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.</p>
 <div class="footnote">
@@ -651,45 +681,6 @@ $<span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>h
 </li>
 <li id="fn:confluent-kafka">
 <p><a href="https://pypi.org/project/confluent-kafka/">https://pypi.org/project/confluent-kafka/</a> <a class="footnote-backref" href="../2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fnref:confluent-kafka" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/02/stateful-hot-module-reload-in-python.html" class="u-url">Hot Module Reload In Python With Reloadium</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2023/02/stateful-hot-module-reload-in-python.html" rel="bookmark">
-            <time class="published dt-published" datetime="2023-02-16T11:58:58+05:30" itemprop="datePublished" title="2023-02-16">2023-02-16</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>Hot module reloading is a feature that allows you to reload a module without restarting the whole application. This is very useful when we are developing/debugging an application, and we want to see the changes instantaneously.</p>
-<h4>Reloadium</h4>
-<p>Reloadium<sup id="fnref:reloadium"><a class="footnote-ref" href="../2023/02/stateful-hot-module-reload-in-python.html#fn:reloadium">1</a></sup> is an advanced hot reloading library for python.</p>
-<p>Instead of writing an article, I thought it would be much easier to show a live demo of Reloadium. In the below video, we can see how reloadium greatly improves developer experience.</p>
-<div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/9UO1raFQdo8" allowfullscreen>
-</iframe>
-</div>
-<p><br></p>
-<p>Currently, reloadium can be used as a standalone tool. We can install it from PyPi and run any arbitrary python script with reloadium.</p>
-<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">reloadium</span>
-<span class="o">$</span><span class="w"> </span><span class="n">reloadium</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">myscript</span><span class="o">.</span><span class="n">py</span>
-</pre></div>
-
-<p>Alternatively, it is available as a plugin for PyCharm as shown in the above video. VS Code support is also in the works.</p>
-<p>Reloadium is capable of profiling too. Without writing a single line of code, we can profile Python code. But that's a topic for another article.</p>
-<h4>Conclusion</h4>
-<p>I have been using Reloadium from a few months, and it has become an essential part of my development workflow. These days I always run all the scripts or apps in debug mode with reloadium directly. </p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:reloadium">
-<p><a href="https://github.com/reloadware/reloadium">https://github.com/reloadware/reloadium</a> <a class="footnote-backref" href="../2023/02/stateful-hot-module-reload-in-python.html#fnref:reloadium" title="Jump back to footnote 1 in the text">↩</a></p>
 </li>
 </ol>
 </div>

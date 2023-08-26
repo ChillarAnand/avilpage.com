@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Aug 2023 16:09:16 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 26 Aug 2023 13:56:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Periodically Launch an App in Background</title><link>https://avilpage.com/2023/08/periodically-launch-app-background.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.&lt;/p&gt;
+&lt;p&gt;I want to ensure that it starts periodically so that I don't miss any notifications for meetings.&lt;/p&gt;
+&lt;p&gt;After trying out various methods, I ended up using &lt;code&gt;open&lt;/code&gt; command with &lt;code&gt;cron&lt;/code&gt; to launch the app every 15 minutes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ crontab -e
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. &lt;/p&gt;
+&lt;p&gt;To avoid this, I passed &lt;code&gt;-g&lt;/code&gt; option to run it in background.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ crontab -e
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -g -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.&lt;/p&gt;
+&lt;p&gt;This will ensure that I don't miss any meetings, even if I close outlook accidentally.&lt;/p&gt;</description><category>automation</category><category>command-line</category><category>macbook</category><guid>https://avilpage.com/2023/08/periodically-launch-app-background.html</guid><pubDate>Wed, 23 Aug 2023 13:33:49 GMT</pubDate></item><item><title>Rearrange CSV columns alphabetically from CLI</title><link>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.&lt;/p&gt;
 &lt;p&gt;For example, look at the below output of 2 simple csv files.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kdiff3-csv-compare" src="https://avilpage.com/images/kdiff3-csv-compare.png"&gt;&lt;/p&gt;
 &lt;p&gt;Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.&lt;/p&gt;
@@ -7,7 +21,7 @@
 &lt;p&gt;Now, it is easy to identify the diff.&lt;/p&gt;
 &lt;h4&gt;Rearrange CSV columns alphabetically&lt;/h4&gt;
 &lt;p&gt;We can write a simple python script using Pandas&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt; as follows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /usr/bin/env python3&lt;/span&gt;
 
 &lt;span class="sd"&gt;"""&lt;/span&gt;
 &lt;span class="sd"&gt;re-arrange columns in alphabetical order&lt;/span&gt;
@@ -36,13 +50,16 @@
 
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can use this script as follows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python3 rearrange_csv_columns.py input.csv output.csv
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python3&lt;span class="w"&gt; &lt;/span&gt;rearrange_csv_columns.py&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Instead of writing a script by ourselves, we can use &lt;code&gt;miller&lt;/code&gt;&lt;sup id="fnref:miller"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller"&gt;2&lt;/a&gt;&lt;/sup&gt; tool. Miller can perform various operations on CSV files. We can use &lt;code&gt;sort-within-records&lt;/code&gt; to sort the columns.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ mlr --csv sort-within-records -f input.csv &amp;gt; output.csv
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mlr&lt;span class="w"&gt; &lt;/span&gt;--csv&lt;span class="w"&gt; &lt;/span&gt;sort-within-records&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;input.csv&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.csv
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We can use &lt;code&gt;miller&lt;/code&gt; to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -55,7 +72,7 @@
 &lt;p&gt;&lt;a href="https://github.com/johnkerl/miller"&gt;https://github.com/johnkerl/miller&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+&lt;/div&gt;</description><category>command-line</category><category>python</category><guid>https://avilpage.com/2023/08/rearrange-csv-columns-alphabetically-cli.html</guid><pubDate>Fri, 04 Aug 2023 01:49:54 GMT</pubDate></item><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I want to train a Large Language Model(LLM)&lt;sup id="fnref:LLM"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:LLM"&gt;1&lt;/a&gt;&lt;/sup&gt; with some private documents and query various details.&lt;/p&gt;
 &lt;h4&gt;Journey&lt;/h4&gt;
 &lt;p&gt;There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.&lt;/p&gt;
@@ -466,30 +483,4 @@ $&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-s&
 &lt;p&gt;&lt;a href="https://pypi.org/project/confluent-kafka/"&gt;https://pypi.org/project/confluent-kafka/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html#fnref:confluent-kafka" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>macbook</category><category>python</category><guid>https://avilpage.com/2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html</guid><pubDate>Mon, 27 Feb 2023 19:31:01 GMT</pubDate></item><item><title>Hot Module Reload In Python With Reloadium</title><link>https://avilpage.com/2023/02/stateful-hot-module-reload-in-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Hot module reloading is a feature that allows you to reload a module without restarting the whole application. This is very useful when we are developing/debugging an application, and we want to see the changes instantaneously.&lt;/p&gt;
-&lt;h4&gt;Reloadium&lt;/h4&gt;
-&lt;p&gt;Reloadium&lt;sup id="fnref:reloadium"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/02/stateful-hot-module-reload-in-python.html#fn:reloadium"&gt;1&lt;/a&gt;&lt;/sup&gt; is an advanced hot reloading library for python.&lt;/p&gt;
-&lt;p&gt;Instead of writing an article, I thought it would be much easier to show a live demo of Reloadium. In the below video, we can see how reloadium greatly improves developer experience.&lt;/p&gt;
-&lt;div class="embed-responsive embed-responsive-16by9"&gt;
-&lt;iframe class="embed-responsive-item" src="https://www.youtube.com/embed/9UO1raFQdo8" allowfullscreen&gt;
-&lt;/iframe&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;Currently, reloadium can be used as a standalone tool. We can install it from PyPi and run any arbitrary python script with reloadium.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pip&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;reloadium&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;reloadium&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;myscript&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Alternatively, it is available as a plugin for PyCharm as shown in the above video. VS Code support is also in the works.&lt;/p&gt;
-&lt;p&gt;Reloadium is capable of profiling too. Without writing a single line of code, we can profile Python code. But that's a topic for another article.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;I have been using Reloadium from a few months, and it has become an essential part of my development workflow. These days I always run all the scripts or apps in debug mode with reloadium directly. &lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:reloadium"&gt;
-&lt;p&gt;&lt;a href="https://github.com/reloadware/reloadium"&gt;https://github.com/reloadware/reloadium&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/02/stateful-hot-module-reload-in-python.html#fnref:reloadium" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>hot-reload</category><category>python</category><guid>https://avilpage.com/2023/02/stateful-hot-module-reload-in-python.html</guid><pubDate>Thu, 16 Feb 2023 06:28:58 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>macbook</category><category>python</category><guid>https://avilpage.com/2023/02/using-conda-mamba-instead-of-pip-on-m1-mac.html</guid><pubDate>Mon, 27 Feb 2023 19:31:01 GMT</pubDate></item></channel></rss>
