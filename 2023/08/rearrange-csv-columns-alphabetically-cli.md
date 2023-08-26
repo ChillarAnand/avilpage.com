@@ -2,10 +2,10 @@
 .. title: Rearrange CSV columns alphabetically from CLI
 .. slug: rearrange-csv-columns-alphabetically-cli
 .. date: 2023-08-04 07:19:54 UTC+05:30
-.. tags: 
-.. category: 
+.. tags: python, command-line
+.. category: programming
 .. link: 
-.. description: 
+.. description: How to re-order(sort) columns alphabetically in a CSV file from command-line.
 .. type: text
 -->
 

@@ -2,7 +2,7 @@
 .. title: Never Do Poor Mans Covered Call In Indian Stock Market
 .. slug: poor-mans-covered-call-india
 .. date: 2020-11-14 14:21:21 UTC+05:30
-.. tags: trading, fno
+.. tags: trading, fno, stock-market
 .. category:
 .. link:
 .. description: Regular income from stock market series. Why you should never implement poor man's covered call in indian markets.
