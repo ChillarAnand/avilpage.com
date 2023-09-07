@@ -13,6 +13,8 @@
 
 ### 2023
 
+[Stock Markets #2 - Covered Calls Live Trades](/covered-call-live-trades.html)
+
 [Best Bhagavad Gita Slokas in Telugu](/best-bhagavad-gita-slokas-telugu.html)
 
 
