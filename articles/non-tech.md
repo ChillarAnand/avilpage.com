@@ -38,4 +38,8 @@
 
 [Never Do Poor Mans Covered Call In Indian Stock Market](/p/poor-mans-covered-call-india.html)
 
-[Instant WhatsApp](/p/instant-whatsapp.html)
+<!-- [Instant WhatsApp](/p/instant-whatsapp.html) -->
+
+
+<br />
+<br />
