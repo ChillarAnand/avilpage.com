@@ -1,38 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about postgresql)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/postgresql.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 19 Mar 2023 11:48:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>A Short Guide To Debugging PostgreSQL Triggers</title><link>https://avilpage.com/2019/04/how-to-debug-postgres-triggers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about postgresql)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/postgresql.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 07 Sep 2023 02:56:46 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>A Short Guide To Debugging PostgreSQL Triggers</title><link>https://avilpage.com/2019/04/how-to-debug-postgres-triggers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html"&gt;PostgreSQL triggers&lt;/a&gt; will associate a &lt;code&gt;function&lt;/code&gt; to a table for an event. If multiple triggers of the same kind are defined for the same event, they will be executed in alphabetical order by name.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to debug PostgreSQL triggers.&lt;/p&gt;
 &lt;h4&gt;Triggers&lt;/h4&gt;
 &lt;p&gt;First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;triggers&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;triggers&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;We can also use &lt;code&gt;EXPLAIN&lt;/code&gt; to show triggers that are executed for an event by running relevant queries.&lt;/p&gt;
 &lt;h4&gt;PostgreSQL Logging&lt;/h4&gt;
 &lt;p&gt;After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;all&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;queries&lt;/span&gt;
-&lt;span class="n"&gt;log_statement&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'all'&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="n"&gt;let&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;all&lt;/span&gt; &lt;span class="n"&gt;queries&lt;/span&gt;
+&lt;span class="n"&gt;log_statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'all'&lt;/span&gt;
 
-&lt;span class="o"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;level&lt;/span&gt;
-&lt;span class="n"&gt;client_min_messages&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;set&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="k"&gt;to&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;level&lt;/span&gt;
+&lt;span class="n"&gt;client_min_messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Restart PostgreSQL to reflect configuration changes.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Linux&lt;/span&gt;
-sudo&lt;span class="w"&gt; &lt;/span&gt;service&lt;span class="w"&gt; &lt;/span&gt;postgres&lt;span class="w"&gt; &lt;/span&gt;restart
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Linux&lt;/span&gt;
+sudo service postgres restart
 
 &lt;span class="c1"&gt;# Mac&lt;/span&gt;
-brew&lt;span class="w"&gt; &lt;/span&gt;services&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;postgres
-&lt;/pre&gt;&lt;/div&gt;
-
+brew services restart postgres
+&lt;/pre&gt;
 &lt;p&gt;Tail the logs and check if queries are executing correctly with appropriate values.&lt;/p&gt;
 &lt;h4&gt;Triggers Logging&lt;/h4&gt;
 &lt;p&gt;After enabling logging for PostgreSQL, we can &lt;a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html"&gt;raise messages/errors in triggers&lt;/a&gt; so that we can see if any unexpected things are happening at any point in the trigger.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'Updating row with ID: %'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;division_by_zero&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;WARNING&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'Unable to delete record'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="s1"&gt;'Updating row with ID: %'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;division_by_zero&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;WARNING&lt;/span&gt; &lt;span class="s1"&gt;'Unable to delete record'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.&lt;/p&gt;
 &lt;h4&gt;SQL/PostgreSQL Gotchas&lt;/h4&gt;
 &lt;p&gt;Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.&lt;/p&gt;

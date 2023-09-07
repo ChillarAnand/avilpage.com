@@ -150,7 +150,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    3 min read
+                    2 min read
             </p>
 
             <p class="dateline">
@@ -163,38 +163,33 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p><code>column</code> command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>users.csv
+<pre class="code literal-block">$ cat users.csv
 id,user,active
-<span class="m">1</span>,John<span class="w"> </span>Doe,true
-<span class="m">2</span>,Will<span class="w"> </span>Smith,false
+<span class="m">1</span>,John Doe,true
+<span class="m">2</span>,Will Smith,false
 
-$<span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t<span class="w"> </span>&lt;<span class="w"> </span>users.csv
-id<span class="w">  </span>user<span class="w">        </span>active
-<span class="m">1</span><span class="w">   </span>John<span class="w"> </span>Doe<span class="w">    </span><span class="nb">true</span>
-<span class="m">2</span><span class="w">   </span>Will<span class="w"> </span>Smith<span class="w">  </span><span class="nb">false</span>
-</pre></div>
-
+$ column -s, -t &lt; users.csv
+id  user        active
+<span class="m">1</span>   John Doe    <span class="nb">true</span>
+<span class="m">2</span>   Will Smith  <span class="nb">false</span>
+</pre>
 <p><code>tail</code> command-line utility prints the last 10 lines of a file. It can be used with <code>-f</code> option to follow the file as it grows.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv
+<pre class="code literal-block">$ tail -f users.csv
 id,user,active
-<span class="m">1</span>,John<span class="w"> </span>Doe,true
-<span class="m">2</span>,Will<span class="w"> </span>Smith,false
-</pre></div>
-
+<span class="m">1</span>,John Doe,true
+<span class="m">2</span>,Will Smith,false
+</pre>
 <p>To format the output of <code>tail -f</code> command, we can't use <code>column</code> command directly. <code>column</code> command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>users.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>column<span class="w"> </span>-s,<span class="w"> </span>-t
-</pre></div>
-
+<pre class="code literal-block">$ tail -f users.csv <span class="p">|</span> column -s, -t
+</pre>
 <p>So, the above command won't work. </p>
 <p>As the goal is to follow the output of the file, we can use <code>watch</code> command for this. <code>watch</code> command executes a command periodically, and displays its output. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
-</pre></div>
-
+<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"tail -n 20 users.csv | column -s, -t"</span>
+</pre>
 <p>This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.</p>
 <p>As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use <code>head</code> command in addition to <code>tail</code> command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
-</pre></div>
-
+<pre class="code literal-block">$ watch -n <span class="m">1</span> <span class="s2">"(head -n1 &amp;&amp; tail -n20) &lt; users.csv| column -s, -t"</span>
+</pre>
 <p>This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to <code>column</code> command, and displayed.</p>
 <p>Here is a screenshot of the output of a demo csv.</p>
 <p><img alt="pipe tail output to column" src="../../images/pipe-tail-output-into-column.png"></p>
