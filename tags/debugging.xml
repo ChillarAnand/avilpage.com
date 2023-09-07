@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about debugging)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/debugging.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 29 Jul 2023 16:31:20 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Remote Debug Docker Container with PyCharm</title><link>https://avilpage.com/2023/06/pycharm-debug-python-app-in-docker.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about debugging)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/debugging.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 07 Sep 2023 02:56:47 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Remote Debug Docker Container with PyCharm</title><link>https://avilpage.com/2023/06/pycharm-debug-python-app-in-docker.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;How to debug a Python application running inside a Docker container that is launched by a third-party process using PyCharm?&lt;/p&gt;
 &lt;h4&gt;Solution&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;Install the &lt;code&gt;pydevd-pycharm&lt;/code&gt; package in the Docker image.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;RUN&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'pydevd-pycharm~=222.4554.11'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;RUN&lt;/span&gt; pip install &lt;span class="s1"&gt;'pydevd-pycharm~=222.4554.11'&lt;/span&gt;
+&lt;/pre&gt;
 &lt;ul&gt;
 &lt;li&gt;Add the following lines to the Python script that you want to debug.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pydevd_pycharm&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pydevd_pycharm&lt;/span&gt;
 &lt;span class="n"&gt;pydevd_pycharm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;settrace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'host.docker.internal'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;12345&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stdoutToServer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stderrToServer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;ul&gt;
 &lt;li&gt;Create a new Python Remote Debug configuration in PyCharm with the following settings.&lt;/li&gt;
 &lt;/ul&gt;
@@ -27,127 +25,114 @@
 &lt;p&gt;Run the Docker container with the following command or let a shell script or another package run the container.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;build&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;flask_web
-$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;flask_web
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ docker build . -t flask_web
+$ docker run --rm flask_web
+&lt;/pre&gt;
 &lt;h4&gt;Explanation&lt;/h4&gt;
 &lt;p&gt;The &lt;code&gt;pydevd-pycharm&lt;/code&gt; package is a Python debugger that can be used to debug a Python application running inside a Docker container. The &lt;code&gt;pydevd_pycharm.settrace()&lt;/code&gt; function is used to connect the debugger to the PyCharm IDE. The &lt;code&gt;host.docker.internal&lt;/code&gt; is the hostname of the host machine from inside the Docker container. The &lt;code&gt;port&lt;/code&gt; is the port number that is used to connect to the PyCharm IDE. The &lt;code&gt;stdoutToServer&lt;/code&gt; and &lt;code&gt;stderrToServer&lt;/code&gt; are used to redirect the standard output and standard error to the PyCharm IDE.&lt;/p&gt;
 &lt;h4&gt;Gotchas&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;You might face the following error depending on the version of the &lt;code&gt;pydevd-pycharm&lt;/code&gt; package.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;Traceback&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;most&lt;span class="w"&gt; &lt;/span&gt;recent&lt;span class="w"&gt; &lt;/span&gt;call&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="o"&gt;)&lt;/span&gt;:
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/flask/cli.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;218&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;locate_app
-&lt;span class="w"&gt;    &lt;/span&gt;__import__&lt;span class="o"&gt;(&lt;/span&gt;module_name&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/app/app.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;module&amp;gt;
-&lt;span class="w"&gt;    &lt;/span&gt;import&lt;span class="w"&gt; &lt;/span&gt;pydevd_pycharm
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;module&amp;gt;
-&lt;span class="w"&gt;    &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;pydevd&lt;span class="w"&gt; &lt;/span&gt;import&lt;span class="w"&gt; &lt;/span&gt;settrace
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;41&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;module&amp;gt;
-&lt;span class="w"&gt;    &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;_pydevd_bundle&lt;span class="w"&gt; &lt;/span&gt;import&lt;span class="w"&gt; &lt;/span&gt;pydevd_utils
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;24&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;module&amp;gt;
-&lt;span class="w"&gt;    &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;_pydevd_asyncio_util.pydevd_asyncio_utils&lt;span class="w"&gt; &lt;/span&gt;import&lt;span class="w"&gt; &lt;/span&gt;eval_async_expression_in_context
-ModuleNotFoundError:&lt;span class="w"&gt; &lt;/span&gt;No&lt;span class="w"&gt; &lt;/span&gt;module&lt;span class="w"&gt; &lt;/span&gt;named&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'_pydevd_asyncio_util'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;Traceback &lt;span class="o"&gt;(&lt;/span&gt;most recent call last&lt;span class="o"&gt;)&lt;/span&gt;:
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/flask/cli.py"&lt;/span&gt;, line &lt;span class="m"&gt;218&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; locate_app
+    __import__&lt;span class="o"&gt;(&lt;/span&gt;module_name&lt;span class="o"&gt;)&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/app/app.py"&lt;/span&gt;, line &lt;span class="m"&gt;5&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    import pydevd_pycharm
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"&lt;/span&gt;, line &lt;span class="m"&gt;3&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from pydevd import settrace
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;41&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from _pydevd_bundle import pydevd_utils
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"&lt;/span&gt;, line &lt;span class="m"&gt;24&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; &amp;lt;module&amp;gt;
+    from _pydevd_asyncio_util.pydevd_asyncio_utils import eval_async_expression_in_context
+ModuleNotFoundError: No module named &lt;span class="s1"&gt;'_pydevd_asyncio_util'&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;There seems to be an issue with all 223.*.* versions. The solution is to use the 222.*.* version.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;You might face &lt;code&gt;ConnectionRefused&lt;/code&gt; error when running the docker container.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1758&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;_locked_settrace
-&lt;span class="w"&gt;    &lt;/span&gt;debugger.connect&lt;span class="o"&gt;(&lt;/span&gt;host,&lt;span class="w"&gt; &lt;/span&gt;port&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# Note: connect can raise error.&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;660&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;connect
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;start_client&lt;span class="o"&gt;(&lt;/span&gt;host,&lt;span class="w"&gt; &lt;/span&gt;port&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;File&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;line&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;463&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;start_client
-&lt;span class="w"&gt;    &lt;/span&gt;s.connect&lt;span class="o"&gt;((&lt;/span&gt;host,&lt;span class="w"&gt; &lt;/span&gt;port&lt;span class="o"&gt;))&lt;/span&gt;
-ConnectionRefusedError:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Errno&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;111&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Connection&lt;span class="w"&gt; &lt;/span&gt;refused
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;1758&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; _locked_settrace
+    debugger.connect&lt;span class="o"&gt;(&lt;/span&gt;host, port&lt;span class="o"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# Note: connect can raise error.&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/pydevd.py"&lt;/span&gt;, line &lt;span class="m"&gt;660&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; connect
+    &lt;span class="nv"&gt;s&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; start_client&lt;span class="o"&gt;(&lt;/span&gt;host, port&lt;span class="o"&gt;)&lt;/span&gt;
+  File &lt;span class="s2"&gt;"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"&lt;/span&gt;, line &lt;span class="m"&gt;463&lt;/span&gt;, &lt;span class="k"&gt;in&lt;/span&gt; start_client
+    s.connect&lt;span class="o"&gt;((&lt;/span&gt;host, port&lt;span class="o"&gt;))&lt;/span&gt;
+ConnectionRefusedError: &lt;span class="o"&gt;[&lt;/span&gt;Errno &lt;span class="m"&gt;111&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; Connection refused
+&lt;/pre&gt;
 &lt;p&gt;Ensure that you have started the Remote Debug configuration in PyCharm before running the docker container.&lt;/p&gt;</description><category>debugging</category><category>docker</category><category>python</category><guid>https://avilpage.com/2023/06/pycharm-debug-python-app-in-docker.html</guid><pubDate>Sun, 11 Jun 2023 15:36:04 GMT</pubDate></item><item><title>Change Kafka Log Directory &amp; Format It</title><link>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;139&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5198&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;139&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;5198&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;registerBroker:&lt;span class="w"&gt; &lt;/span&gt;unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;processing&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;NotControllerException.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; registerBroker: unable to start processing because of NotControllerException. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;RaftManager&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Had&lt;span class="w"&gt; &lt;/span&gt;an&lt;span class="w"&gt; &lt;/span&gt;error&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;cleaning&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.errors.OffsetOutOfRangeException:&lt;span class="w"&gt; &lt;/span&gt;Cannot&lt;span class="w"&gt; &lt;/span&gt;increment&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927939&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;partition&lt;span class="w"&gt; &lt;/span&gt;__cluster_metadata-0&lt;span class="w"&gt; &lt;/span&gt;since&lt;span class="w"&gt; &lt;/span&gt;it&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;larger&lt;span class="w"&gt; &lt;/span&gt;than&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;high&lt;span class="w"&gt; &lt;/span&gt;watermark&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;294&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;137&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
-java.lang.RuntimeException:&lt;span class="w"&gt; &lt;/span&gt;Cant&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;new&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;-memory&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;there&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;already&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;RaftManager &lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; Had an error during log cleaning &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to &lt;span class="m"&gt;927939&lt;/span&gt; of partition __cluster_metadata-0 since it is larger than the high watermark &lt;span class="m"&gt;926507&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;294&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;137&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+java.lang.RuntimeException: Cant create a new &lt;span class="k"&gt;in&lt;/span&gt;-memory snapshot at epoch &lt;span class="m"&gt;926507&lt;/span&gt; because there is already a snapshot with epoch &lt;span class="m"&gt;927938&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;startup.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception during startup. &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
 &lt;h4&gt;Debugging&lt;/h4&gt;
 &lt;p&gt;I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.&lt;/p&gt;
 &lt;h4&gt;Solution&lt;/h4&gt;
 &lt;p&gt;I create a new temporary directory and set the log directory to that.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs
+&lt;pre class="code literal-block"&gt;$ mkdir /tmp/kafka-logs
 
 &lt;span class="c1"&gt;# inside server.properties&lt;/span&gt;
 log.dirs&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kafka-logs
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;When I started the Kafka server, it failed.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-server-start&lt;span class="w"&gt; &lt;/span&gt;server.properties
+&lt;pre class="code literal-block"&gt;$ kafka-server-start server.properties
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.KafkaException:&lt;span class="w"&gt; &lt;/span&gt;No&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;found&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/tmp/&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;have&lt;span class="w"&gt; &lt;/span&gt;you&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;directory?&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.KafkaException: No &lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt; found &lt;span class="k"&gt;in&lt;/span&gt; /tmp/ &lt;span class="o"&gt;(&lt;/span&gt;have you run &lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt; to format the directory?&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;I ran the &lt;code&gt;kafka-storage&lt;/code&gt; script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;~/homebrew/var/lib/kraft-combined-logs/meta.properties&lt;span class="w"&gt; &lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
 &lt;span class="c1"&gt;#&lt;/span&gt;
 &lt;span class="c1"&gt;#Thu Oct 20 11:48:12 IST 2022&lt;/span&gt;
 cluster.id&lt;span class="o"&gt;=&lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
 node.id&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;      
+&lt;/pre&gt;
 &lt;p&gt;Now, we can format the new directory.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-storage&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="w"&gt; &lt;/span&gt;server.properties&lt;span class="w"&gt; &lt;/span&gt;--cluster-id&lt;span class="w"&gt; &lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
+&lt;pre class="code literal-block"&gt;$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
 
-Formatting&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs/&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;metadata.version&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
-&lt;/pre&gt;&lt;/div&gt;
-
+Formatting /tmp/kafka-logs/ with metadata.version &lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
+&lt;/pre&gt;
 &lt;p&gt;After changing log directory, Kafka has started working.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-start-server&lt;span class="w"&gt; &lt;/span&gt;/path/to/server.properties
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ kafka-start-server /path/to/server.properties
+&lt;/pre&gt;
 &lt;p&gt;Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.&lt;/p&gt;</description><category>debugging</category><category>kafka</category><category>message-broker</category><guid>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</guid><pubDate>Sat, 24 Dec 2022 06:49:41 GMT</pubDate></item><item><title>A Short Guide To Debugging PostgreSQL Triggers</title><link>https://avilpage.com/2019/04/how-to-debug-postgres-triggers.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://www.postgresql.org/docs/9.1/sql-createtrigger.html"&gt;PostgreSQL triggers&lt;/a&gt; will associate a &lt;code&gt;function&lt;/code&gt; to a table for an event. If multiple triggers of the same kind are defined for the same event, they will be executed in alphabetical order by name.&lt;/p&gt;
 &lt;p&gt;In this article, we will see how to debug PostgreSQL triggers.&lt;/p&gt;
 &lt;h4&gt;Triggers&lt;/h4&gt;
 &lt;p&gt;First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;triggers&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;triggers&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;We can also use &lt;code&gt;EXPLAIN&lt;/code&gt; to show triggers that are executed for an event by running relevant queries.&lt;/p&gt;
 &lt;h4&gt;PostgreSQL Logging&lt;/h4&gt;
 &lt;p&gt;After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;all&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;queries&lt;/span&gt;
-&lt;span class="n"&gt;log_statement&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'all'&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="n"&gt;let&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;all&lt;/span&gt; &lt;span class="n"&gt;queries&lt;/span&gt;
+&lt;span class="n"&gt;log_statement&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'all'&lt;/span&gt;
 
-&lt;span class="o"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;level&lt;/span&gt;
-&lt;span class="n"&gt;client_min_messages&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="o"&gt;#&lt;/span&gt; &lt;span class="k"&gt;set&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt; &lt;span class="k"&gt;to&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt; &lt;span class="k"&gt;level&lt;/span&gt;
+&lt;span class="n"&gt;client_min_messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;log&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Restart PostgreSQL to reflect configuration changes.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Linux&lt;/span&gt;
-sudo&lt;span class="w"&gt; &lt;/span&gt;service&lt;span class="w"&gt; &lt;/span&gt;postgres&lt;span class="w"&gt; &lt;/span&gt;restart
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Linux&lt;/span&gt;
+sudo service postgres restart
 
 &lt;span class="c1"&gt;# Mac&lt;/span&gt;
-brew&lt;span class="w"&gt; &lt;/span&gt;services&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;postgres
-&lt;/pre&gt;&lt;/div&gt;
-
+brew services restart postgres
+&lt;/pre&gt;
 &lt;p&gt;Tail the logs and check if queries are executing correctly with appropriate values.&lt;/p&gt;
 &lt;h4&gt;Triggers Logging&lt;/h4&gt;
 &lt;p&gt;After enabling logging for PostgreSQL, we can &lt;a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html"&gt;raise messages/errors in triggers&lt;/a&gt; so that we can see if any unexpected things are happening at any point in the trigger.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'Updating row with ID: %'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;division_by_zero&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="n"&gt;RAISE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;WARNING&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'Unable to delete record'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="s1"&gt;'Updating row with ID: %'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;division_by_zero&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;RAISE&lt;/span&gt; &lt;span class="n"&gt;WARNING&lt;/span&gt; &lt;span class="s1"&gt;'Unable to delete record'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.&lt;/p&gt;
 &lt;h4&gt;SQL/PostgreSQL Gotchas&lt;/h4&gt;
 &lt;p&gt;Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.&lt;/p&gt;

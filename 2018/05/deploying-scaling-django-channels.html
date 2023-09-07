@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    15 min read
+                    12 min read
             </p>
 
             <p class="dateline">
@@ -168,69 +168,67 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>We will be using systemd to create and manage processes instead of depending on third party process managers like supervisor or circus. We will be using ansible for managing deployments. If you don't want to use ansible, you can just replace template variables in the following files with actual values.</p>
 <h4>Nginx Setup</h4>
 <p>Nginx will be routing requests to WSGI server and ASGI server based on URL. Here is nginx configuration for server.</p>
-<div class="code"><pre class="code literal-block"><span class="n">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">listen</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}}:</span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="n">server_name</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="n">www</span><span class="o">.</span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}};</span>
+<pre class="code literal-block"><span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">80</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">$</span><span class="n">request_uri</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">301</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">$</span><span class="n">request_uri</span><span class="p">;</span>
 <span class="p">}</span>
 
 
-<span class="n">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">listen</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}}:</span><span class="mi">443</span><span class="w"> </span><span class="n">ssl</span><span class="p">;</span>
-<span class="w">    </span><span class="n">server_name</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="n">www</span><span class="o">.</span><span class="p">{{</span><span class="w"> </span><span class="n">server_name</span><span class="w"> </span><span class="p">}};</span>
+<span class="n">server</span> <span class="p">{</span>
+    <span class="n">listen</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}:</span><span class="mi">443</span> <span class="n">ssl</span><span class="p">;</span>
+    <span class="n">server_name</span> <span class="p">{{</span> <span class="n">server_name</span> <span class="p">}}</span> <span class="n">www</span><span class="o">.</span><span class="p">{{</span> <span class="n">server_name</span> <span class="p">}};</span>
 
-<span class="w">    </span><span class="n">ssl_certificate</span><span class="w">     </span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">crt</span><span class="p">;</span>
-<span class="w">    </span><span class="n">ssl_certificate_key</span><span class="w"> </span><span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
+    <span class="n">ssl_certificate</span>     <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">crt</span><span class="p">;</span>
+    <span class="n">ssl_certificate_key</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">certs</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">key</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">access_log</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
-<span class="w">    </span><span class="n">error_log</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+    <span class="n">access_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+    <span class="n">error_log</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
 
-<span class="w">    </span><span class="n">location</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">proxy_pass</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span><span class="w"> </span><span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="o">$</span><span class="n">http_host</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span><span class="w"> </span><span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_redirect</span><span class="w"> </span><span class="n">off</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+    <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">8000</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">http_host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span> <span class="n">off</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="w">    </span><span class="n">location</span><span class="w"> </span><span class="o">/</span><span class="n">ws</span><span class="o">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">proxy_pass</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_http_version</span><span class="w"> </span><span class="mf">1.1</span><span class="p">;</span>
+    <span class="n">location</span> <span class="o">/</span><span class="n">ws</span><span class="o">/</span> <span class="p">{</span>
+            <span class="n">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
+            <span class="n">proxy_http_version</span> <span class="mf">1.1</span><span class="p">;</span>
 
-<span class="w">            </span><span class="n">proxy_read_timeout</span><span class="w"> </span><span class="mi">86400</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_redirect</span><span class="w">     </span><span class="n">off</span><span class="p">;</span>
+            <span class="n">proxy_read_timeout</span> <span class="mi">86400</span><span class="p">;</span>
+            <span class="n">proxy_redirect</span>     <span class="n">off</span><span class="p">;</span>
 
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">Upgrade</span><span class="w"> </span><span class="o">$</span><span class="n">http_upgrade</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="s2">"upgrade"</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="o">$</span><span class="n">host</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span><span class="w"> </span><span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span><span class="w"> </span><span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
-<span class="w">            </span><span class="n">proxy_set_header</span><span class="w"> </span><span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Host</span><span class="w"> </span><span class="o">$</span><span class="n">server_name</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+            <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> <span class="o">$</span><span class="n">http_upgrade</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">"upgrade"</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="o">$</span><span class="n">host</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Real</span><span class="o">-</span><span class="n">IP</span> <span class="o">$</span><span class="n">remote_addr</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="o">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
+            <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Host</span> <span class="o">$</span><span class="n">server_name</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="w">    </span><span class="n">location</span><span class="w"> </span><span class="o">/</span><span class="k">static</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">alias</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">project_root</span><span class="w"> </span><span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+    <span class="n">location</span> <span class="o">/</span><span class="k">static</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="w">    </span><span class="n">location</span><span class="w">  </span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">alias</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">project_root</span><span class="w"> </span><span class="p">}}</span><span class="o">//</span><span class="k">static</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">//</span><span class="k">static</span><span class="o">/</span><span class="n">img</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="w">    </span><span class="n">location</span><span class="w">  </span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">alias</span><span class="w"> </span><span class="p">{{</span><span class="w"> </span><span class="n">project_root</span><span class="w"> </span><span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="n">txt</span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
+    <span class="n">location</span>  <span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="p">{</span>
+        <span class="n">alias</span> <span class="p">{{</span> <span class="n">project_root</span> <span class="p">}}</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="n">txt</span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">;</span>
+    <span class="p">}</span>
 
 <span class="p">}</span>
-</pre></div>
-
+</pre>
 <h4>WSGI Server Setup</h4>
 <p>We will use gunicorn for wsgi server. We can run gunicorn with</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>gunicorn<span class="w"> </span>avilpage.wsgi<span class="w"> </span>--bind<span class="w"> </span><span class="m">0</span>.0.0.0:8000<span class="w"> </span>--log-level<span class="w"> </span>error<span class="w"> </span>--log-file<span class="o">=</span>-<span class="w"> </span>--settings<span class="w"> </span>avilpage.production_settings
-</pre></div>
-
+<pre class="code literal-block">$ gunicorn avilpage.wsgi --bind <span class="m">0</span>.0.0.0:8000 --log-level error --log-file<span class="o">=</span>- --settings avilpage.production_settings
+</pre>
 <p>We can create a systemd unit file to make it as a service.</p>
-<div class="code"><pre class="code literal-block"><span class="k">[Unit]</span>
+<pre class="code literal-block"><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">gunicorn</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -252,19 +250,16 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre></div>
-
+</pre>
 <p>Whenever server restarts, systemd will automatically start gunicorn service. We can also restart gunicorn manually with</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>service<span class="w"> </span>gunicorn<span class="w"> </span>restart
-</pre></div>
-
+<pre class="code literal-block">$ sudo service gunicorn restart
+</pre>
 <h4>ASGI Server Setup</h4>
 <p>We will use daphne for ASGI server and it can be started with</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>daphne<span class="w"> </span>avilpage.asgi:application<span class="w"> </span>--bind<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">9000</span><span class="w"> </span>--verbosity<span class="w"> </span><span class="m">1</span>
-</pre></div>
-
+<pre class="code literal-block">$ daphne avilpage.asgi:application --bind <span class="m">0</span>.0.0.0 --port <span class="m">9000</span> --verbosity <span class="m">1</span>
+</pre>
 <p>We can create a systemd unit file like the previous one to create a service.</p>
-<div class="code"><pre class="code literal-block"><span class="k">[Unit]</span>
+<pre class="code literal-block"><span class="k">[Unit]</span>
 <span class="na">Description</span><span class="o">=</span><span class="s">daphne daemon</span>
 <span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
 
@@ -284,29 +279,24 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="k">[Install]</span>
 <span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
-</pre></div>
-
+</pre>
 <h4>Deployment</h4>
 <p>Here is <a href="https://github.com/ChillarAnand/eddie/blob/master/ubuntu/config/playbooks/django_setup.yml">an ansible playbook</a> which is used to deploy these config files to our server. To run the playbook on server <code>avilpage.com</code>, execute</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>avilpage.com,<span class="w"> </span>django_setup.yml
-</pre></div>
-
+<pre class="code literal-block">$ ansible-playbook -i avilpage.com, django_setup.yml
+</pre>
 <h4>Scaling</h4>
 <p>Now that we have deployed channels to production, we can do performance test to see how our server performs under load.</p>
 <p>For WebSockets, we can use <a href="https://www.npmjs.com/package/thor">Thor</a> to run performance test.</p>
-<div class="code"><pre class="code literal-block">thor<span class="w"> </span>-C<span class="w"> </span><span class="m">100</span><span class="w"> </span>-A<span class="w"> </span><span class="m">1000</span><span class="w"> </span>wss://avilpage.com/ws/books/
-</pre></div>
-
+<pre class="code literal-block">thor -C <span class="m">100</span> -A <span class="m">1000</span> wss://avilpage.com/ws/books/
+</pre>
 <p>Our server is able to handle <code>100 requests per second</code> with a <code>latency of 800ms</code>. This is good enough for low traffic website.</p>
 <p>To improve performance, we can use unix sockets instead of rip/port for gunicorn and daphne. Also, daphne has support for multiprocessing using <a href="#">shared file descriptors</a>. Unfortunately, it doesn't work as expected. As <a href="https://github.com/django/daphne/issues/182#issuecomment-387507887">mentioned here</a>, we can use systemd templates and spawn multiple daphne process.</p>
 <p>An alternate way is to use <a href="https://pypi.org/project/uvicorn/">uvicorn</a> to start multiple workers. Install uvicorn using pip</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>uvicorn
-</pre></div>
-
+<pre class="code literal-block">$ pip install uvicorn
+</pre>
 <p>Start uvicorn ASGI server with</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>uvicorn<span class="w"> </span>avilpage.asgi<span class="w"> </span>--log-level<span class="w"> </span>critical<span class="w"> </span>--workers<span class="w"> </span><span class="m">4</span>
-</pre></div>
-
+<pre class="code literal-block">$ uvicorn avilpage.asgi --log-level critical --workers <span class="m">4</span>
+</pre>
 <p>This will spin up 4 workers which should be able to handle more load. If this performance is not sufficient, we have to setup a load balancer and spin up multiple servers(just like scaling any other web application).</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

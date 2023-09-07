@@ -13,6 +13,8 @@
 
 ### 2023
 
+[Stock Markets #2 - Covered Calls Live Trades](/covered-call-live-trades.html)
+
 [Best Bhagavad Gita Slokas in Telugu](/best-bhagavad-gita-slokas-telugu.html)
 
 
@@ -36,4 +38,8 @@
 
 [Never Do Poor Mans Covered Call In Indian Stock Market](/p/poor-mans-covered-call-india.html)
 
-[Instant WhatsApp](/p/instant-whatsapp.html)
+<!-- [Instant WhatsApp](/p/instant-whatsapp.html) -->
+
+
+<br />
+<br />

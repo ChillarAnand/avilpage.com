@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about dicom)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/dicom.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 19 Mar 2023 11:48:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering DICOM - #3 Setup Modality Worklist SCP</title><link>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about dicom)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/dicom.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 07 Sep 2023 02:56:46 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering DICOM - #3 Setup Modality Worklist SCP</title><link>https://avilpage.com/2022/07/dicom-modality-worklist-scp.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In the earlier article, we have learnt how to setup DICOM for digging deeper into DICOM protocol. In this article, let us learn how to setup a modality worklist(WML) SCP. Modalities can send C-FIND queries to this SCP and retrieve worklist information&lt;/p&gt;
 &lt;h4&gt;Using Orthanc Worklist Plugin&lt;/h4&gt;
 &lt;p&gt;Orthanc server has worklist plugin&lt;sup id="fnref:owp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:owp"&gt;1&lt;/a&gt;&lt;/sup&gt; which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.&lt;/p&gt;
 &lt;p&gt;Generate default configuration by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;./Orthanc&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="o"&gt;=&lt;/span&gt;config.json
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ ./Orthanc --config&lt;span class="o"&gt;=&lt;/span&gt;config.json
+&lt;/pre&gt;
 &lt;p&gt;In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;  "Plugins" : [
+&lt;pre class="code literal-block"&gt;  "Plugins" : [
     "libModalityWorklists.dylib"
   ],
 
@@ -23,18 +22,15 @@
       "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
       "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
   }
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Once the plugin is enabled, we can use findscu to send C-FIND query.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;findscu&lt;span class="w"&gt; &lt;/span&gt;-W&lt;span class="w"&gt; &lt;/span&gt;-k&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"ScheduledProcedureStepSequence"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;127&lt;/span&gt;.0.0.1&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4242&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ findscu -W -k &lt;span class="s2"&gt;"ScheduledProcedureStepSequence"&lt;/span&gt; &lt;span class="m"&gt;127&lt;/span&gt;.0.0.1 &lt;span class="m"&gt;4242&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will retrieve all worklist files from the server.&lt;/p&gt;
 &lt;h4&gt;Using wlmscpfs&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;dcmtk&lt;/code&gt; &lt;sup id="fnref:dcmtk"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/07/dicom-modality-worklist-scp.html#fn:dcmtk"&gt;2&lt;/a&gt;&lt;/sup&gt; is a collection of utilities for DICOM standard. It has &lt;code&gt;wlmscpfs&lt;/code&gt; application which implements basic Service Class Provider(SCP). We can start the service by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+&lt;/pre&gt;
 &lt;p&gt;Once the service is started modalities can send C-FIND query to this service.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have seen how to setup MWL SCP using Orthanc &amp;amp; wmlscpfs. Now that we have PACS &amp;amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.&lt;/p&gt;
@@ -54,28 +50,26 @@
 &lt;p&gt;There are several Dicom servers like Orthanc, Dicoogle etc. &lt;a href="https://en.wikipedia.org/wiki/Orthanc_(server)"&gt;Orthanc&lt;/a&gt; is a lightweight open source dicom server and is widely used by many Health care organisations.&lt;/p&gt;
 &lt;p&gt;Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.&lt;/p&gt;
 &lt;p&gt;Ensure docker is installed on the machine and then run the following command to start Orthanc server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4242&lt;/span&gt;:4242&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8042&lt;/span&gt;:8042&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;jodogne/orthanc-python
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ docker run -p &lt;span class="m"&gt;4242&lt;/span&gt;:4242 -p &lt;span class="m"&gt;8042&lt;/span&gt;:8042 --rm &lt;span class="se"&gt;\&lt;/span&gt;
+    jodogne/orthanc-python
+&lt;/pre&gt;
 &lt;p&gt;Once the server is started, we can visit &lt;a href="http://localhost:8042"&gt;http://localhost:8042&lt;/a&gt; and explore Orthanc server.&lt;/p&gt;
 &lt;h4&gt;Heroku Deployment&lt;/h4&gt;
 &lt;p&gt;Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.&lt;/p&gt;
 &lt;p&gt;By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.&lt;/p&gt;
 &lt;p&gt;We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /bin/sh&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#! /bin/sh&lt;/span&gt;
 
-&lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-x
+&lt;span class="nb"&gt;set&lt;/span&gt; -x
 
-&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$PORT&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$PORT&lt;/span&gt;
 
-sed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'s/ : 8042/ : '&lt;/span&gt;&lt;span class="nv"&gt;$PORT&lt;/span&gt;&lt;span class="s1"&gt;'/g'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;/etc/orthanc/orthanc.json
+sed &lt;span class="s1"&gt;'s/ : 8042/ : '&lt;/span&gt;&lt;span class="nv"&gt;$PORT&lt;/span&gt;&lt;span class="s1"&gt;'/g'&lt;/span&gt; -i /etc/orthanc/orthanc.json
 
-Orthanc&lt;span class="w"&gt; &lt;/span&gt;/etc/orthanc/
-&lt;/pre&gt;&lt;/div&gt;
-
+Orthanc /etc/orthanc/
+&lt;/pre&gt;
 &lt;p&gt;We can use this shell script as entry point in docker as follows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM jodogne/orthanc-python
+&lt;pre class="code literal-block"&gt;FROM jodogne/orthanc-python
 
 EXPOSE $PORT
 
@@ -83,15 +77,13 @@ WORKDIR /app
 ADD . /app
 
 ENTRYPOINT [ "./run.sh" ]
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;We can create a new app in heroku and we can deploy this container.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;apps:create&lt;span class="w"&gt; &lt;/span&gt;orthanc-demo
+&lt;pre class="code literal-block"&gt;$ heroku apps:create orthanc-demo
 
-$&lt;span class="w"&gt; &lt;/span&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;container:push&lt;span class="w"&gt; &lt;/span&gt;web
-$&lt;span class="w"&gt; &lt;/span&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;container:release&lt;span class="w"&gt; &lt;/span&gt;web
-&lt;/pre&gt;&lt;/div&gt;
-
+$ heroku container:push web
+$ heroku container:release web
+&lt;/pre&gt;
 &lt;p&gt;Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a &lt;a href="https://orthanc-demo.herokuapp.com"&gt;orthanc demo server&lt;/a&gt; running on heroku.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.&lt;/p&gt;</description><category>dicom</category><category>HealthIT</category><guid>https://avilpage.com/2021/03/setup-orthanc-demo-server.html</guid><pubDate>Fri, 26 Mar 2021 00:30:00 GMT</pubDate></item><item><title>Mastering DICOM - #1 Clinical Workflows 101</title><link>https://avilpage.com/2019/12/mastering-dicom-part-1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
