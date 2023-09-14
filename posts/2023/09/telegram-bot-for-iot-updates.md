@@ -92,4 +92,10 @@ $ curl -X POST https://api.telegram.org/bot<API_TOKEN>/sendMessage -d "chat_id=<
 }
 ```
 
-Now, we can use this API to post messages to the group from our IoT devices.
+Here is the message posted by the bot in the group.
+
+<p align="center">
+<img src="/images/telegram-bot-group-message.jpeg" alt="Telegram Bot for IoT Updates" width="200" height="400" />
+</p>
+
+Now, we can use this API to post messages to the group from our IoT devices or from any other devices where `curl` command is available.
