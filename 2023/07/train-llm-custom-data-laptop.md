@@ -5,7 +5,7 @@
 .. tags: python, artificial-intelligence
 .. category: programming
 .. link: 
-.. description: How to train LLM (like ChatGPT, vicuna) with custom documents on the laptop.
+.. description: How to train LLM (like ChatGPT, Vicuna) with custom documents on the laptop.
 .. type: text
 -->
 
