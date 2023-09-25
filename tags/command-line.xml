@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 24 Sep 2023 14:17:15 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>tailscale: Remote SSH Access to Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect your devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 25 Sep 2023 14:42:14 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>tailscale: Remote SSH Access to Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
-&lt;p&gt;We can install tailscale on Raspberry Pi using the following command.&lt;/p&gt;
+&lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ curl -fsSL https://tailscale.com/install.sh &lt;span class="p"&gt;|&lt;/span&gt; sh
 &lt;/pre&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
-&lt;p&gt;Once the installation is done, we can run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This will open a browser window and ask us to login with our email address. Once we login, we can see the device in the tailscale dashboard.&lt;/p&gt;
+&lt;p&gt;Once the installation is done, I run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="tailscale dashboard" src="https://avilpage.com/images/tailscale-pi.png"&gt;&lt;/p&gt;
-&lt;p&gt;We can also use &lt;code&gt;tailscale&lt;/code&gt; command to see status of various devices.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;tailscale&lt;/code&gt; has CLI tool as well and status can be viewed with the following command.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ tailscale status
 &lt;span class="m"&gt;100&lt;/span&gt;.81.13.75   m1                    avilpage@  macOS   -
 &lt;span class="m"&gt;100&lt;/span&gt;.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
 &lt;/pre&gt;
+&lt;p&gt;I also set up a cron job to start tailscale daemon on boot.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ crontab -e
+@reboot tailscale up
+&lt;/pre&gt;
 &lt;h4&gt;Access&lt;/h4&gt;
-&lt;p&gt;Now we can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. We can ssh into the device using the following command.&lt;/p&gt;
+&lt;p&gt;Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. I can ssh into the device using the following command.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ ssh pi@100.81.12.92
+&lt;/pre&gt;
+&lt;p&gt;It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ ssh pi@raspberry3.tailscale.net
 &lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp;amp; Linux as well.&lt;/p&gt;
@@ -26,7 +33,7 @@
 &lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Tailscale"&gt;https://en.wikipedia.org/wiki/Tailscale&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fnref:tailscale" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>command-line</category><category>devops</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Thu, 21 Sep 2023 01:49:54 GMT</pubDate></item><item><title>Periodically Launch an App in Background</title><link>https://avilpage.com/2023/08/periodically-launch-app-background.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.&lt;/p&gt;
+&lt;/div&gt;</description><category>command-line</category><category>devops</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item><item><title>Periodically Launch an App in Background</title><link>https://avilpage.com/2023/08/periodically-launch-app-background.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.&lt;/p&gt;
 &lt;p&gt;I want to ensure that it starts periodically so that I don't miss any notifications for meetings.&lt;/p&gt;
 &lt;p&gt;After trying out various methods, I ended up using &lt;code&gt;open&lt;/code&gt; command with &lt;code&gt;cron&lt;/code&gt; to launch the app every 15 minutes.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ crontab -e
