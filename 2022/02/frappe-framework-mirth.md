@@ -24,7 +24,7 @@ Creating a REST API, listening to a webhook, transforming a data between channel
 
 Due to this integration engines like [Mirth Connect][] are widely used in healthcare.
 
-<img src="/images/mirth-integration-engine.png" />
+<img src="/images/mirth-integration-engine-health.png" />
 
 The above diagram shows usage of integration engine in a healthcare orgainsation.
 
@@ -41,10 +41,6 @@ Users can schedule custom cron jobs, setup emails, enable data transformations a
 One feature Frappe Framework lacks when compared to integration engines is sending/receiving HL7 messages on ad-hoc ports. This feature is not available out of the box. Users need to develop a custom app or use any 3rd party app for it.
 
 [Frappe Healthcare][] is an HIS(Healthcare Information System) built on top of Frappe/ERPNext. If a hospital is using Frappe Healthcare, then there won't be a need to use integration engine as Frappe framework can take care of most of these things.
-
-<img src="/images/frappe-his.png" />
-
-The above diagram shows usage of Frappe Healthcare as HIS in a healthcare orgainsation.
 
 
 ### Conclusion
