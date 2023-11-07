@@ -73,7 +73,85 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/10/guide-to-setting-up-geodjango-on-mac-m1.html" class="u-url">Guide to setting up GeoDjango on Mac M1</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/11/add-column-for-row-count-in-file-manager.html" class="u-url">Add "Line Count" Column in File Manager</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/11/add-column-for-row-count-in-file-manager.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-11-07T02:13:13+05:30" itemprop="datePublished" title="2023-11-07">2023-11-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>While monitoring an ETL pipeline, I browse a lot of files and often need to know how many lines are there in a file. For that, I can switch to that directory from terminal and run <code>wc -l</code> for that.</p>
+<p>To avoid the hassle of switching to the directory and running a command in the terminal, I wrote a simple lua script to show line count column in xplr<sup id="fnref:xplr"><a class="footnote-ref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fn:xplr">1</a></sup> file manager.</p>
+<h4>Failed Attempts</h4>
+<p>Initially I set out to write a Finder<sup id="fnref:finder"><a class="footnote-ref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fn:finder">2</a></sup> plugin to show the line count column. But I couldn't find a way to get the line count of a file in Finder plugin. I have explored other GUI file managers but none of them have a way to show custom columns with line count.</p>
+<p>Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.</p>
+<h4>xplr - line count</h4>
+<p>xplr can be installed via <code>brew</code>. </p>
+<pre class="code literal-block">$ brew install xplr
+
+$ xplr --version
+xplr <span class="m">0</span>.21.3
+</pre>
+<p>xplr reads the default configuration from <code>~/.config/xplr/init.lua</code>. The following configuration shows the line count column in xplr.</p>
+<pre class="code literal-block"><span class="n">version</span> <span class="o">=</span> <span class="s1">'0.21.3'</span>
+
+<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">fmt_simple_column</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+  <span class="kr">return</span> <span class="n">m</span><span class="p">.</span><span class="n">prefix</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">relative_path</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">suffix</span>
+<span class="kr">end</span>
+
+<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">row_count</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">.</span><span class="n">is_file</span> <span class="kr">then</span>
+    <span class="kr">return</span> <span class="s2">"---"</span>
+  <span class="kr">end</span>
+
+  <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">absolute_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span>
+    <span class="kd">local</span> <span class="n">row_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="kr">for</span> <span class="n">_</span> <span class="kr">in</span> <span class="n">file</span><span class="p">:</span><span class="n">lines</span><span class="p">()</span> <span class="kr">do</span>
+      <span class="n">row_count</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="kr">end</span>
+    <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+    <span class="kr">return</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">row_count</span><span class="p">)</span>
+  <span class="kr">end</span>
+<span class="kr">end</span>
+
+
+<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">header</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"  path"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"line_count"</span> <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">row</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.fmt_simple_column"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.row_count"</span> <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">30</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">20</span> <span class="p">},</span>
+<span class="p">}</span>
+</pre>
+<p>This will show a row count on launch.</p>
+<p><img alt="xplr - line count" src="../images/xplr-line-count-column.png"></p>
+<h4>Conclusion</h4>
+<p>xplr is a very powerful file manager, and it is very easy to write lua scripts to create custom columns. I couldn't find a way to sort items based on the custom column. Need to explore more on that.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:xplr">
+<p><a href="https://github.com/sayanarijit/xplr">https://github.com/sayanarijit/xplr</a> <a class="footnote-backref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fnref:xplr" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:finder">
+<p><a href="https://en.wikipedia.org/wiki/Finder_(software)">https://en.wikipedia.org/wiki/Finder_(software)</a> <a class="footnote-backref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fnref:finder" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/10/guide-to-setting-up-geodjango-on-mac-m1.html" class="u-url">Guide to setting up GeoDjango on Mac M1</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -88,63 +166,73 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Ensure you have already installed Postgres on your Mac. </p>
 <h4>Install GeoDjango</h4>
 <p>The default GDAL version available on brew fails to install on Mac M1.</p>
-<pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">brew</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">gdal</span><span class="w"></span>
-<span class="o">==&gt;</span><span class="w"> </span><span class="n">cmake</span><span class="w"> </span><span class="o">--</span><span class="n">build</span><span class="w"> </span><span class="n">build</span><span class="w"></span>
-<span class="k">Last</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">chillaranand</span><span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Logs</span><span class="o">/</span><span class="n">Homebrew</span><span class="o">/</span><span class="n">gdal</span><span class="o">/</span><span class="mf">02.</span><span class="nl">cmake</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="n">Compiling</span><span class="w"> </span><span class="mi">82</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">classes</span><span class="w"></span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">warning</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">options</span><span class="o">]</span><span class="w"> </span><span class="n">bootstrap</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conjunction</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="mi">7</span><span class="w"></span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span><span class="w"></span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Target</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">brew</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">gdal</span>
+<span class="o">==&gt;</span><span class="w"> </span><span class="n">cmake</span><span class="w"> </span><span class="o">--</span><span class="n">build</span><span class="w"> </span><span class="n">build</span>
+<span class="k">Last</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">chillaranand</span><span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Logs</span><span class="o">/</span><span class="n">Homebrew</span><span class="o">/</span><span class="n">gdal</span><span class="o">/</span><span class="mf">02.</span><span class="nl">cmake</span><span class="p">:</span>
+<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="n">Compiling</span><span class="w"> </span><span class="mi">82</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">classes</span>
+<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">warning</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">options</span><span class="o">]</span><span class="w"> </span><span class="n">bootstrap</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conjunction</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="mi">7</span>
+<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span>
+<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Target</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span>
 
-<span class="n">BUILD</span><span class="w"> </span><span class="n">FAILED</span><span class="w"></span>
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="p">.</span><span class="nc">xml</span><span class="err">:</span><span class="mi">25</span><span class="err">:</span><span class="w"> </span><span class="n">Compile</span><span class="w"> </span><span class="n">failed</span><span class="p">;</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">compiler</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">details</span><span class="p">.</span><span class="w"></span>
+<span class="n">BUILD</span><span class="w"> </span><span class="n">FAILED</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="p">.</span><span class="nc">xml</span><span class="err">:</span><span class="mi">25</span><span class="err">:</span><span class="w"> </span><span class="n">Compile</span><span class="w"> </span><span class="n">failed</span><span class="p">;</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">compiler</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">details</span><span class="p">.</span>
 
-<span class="n">Total</span><span class="w"> </span><span class="nc">time</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">seconds</span><span class="w"></span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">swig/java/CMakeFiles/java_binding.dir/build.make:108: swig/java/gdal.jar</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span><span class="w"></span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">CMakeFiles/Makefile2:9108: swig/java/CMakeFiles/java_binding.dir/all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span><span class="w"></span>
-<span class="nl">gmake</span><span class="p">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">Makefile:139: all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
-</pre>
+<span class="n">Total</span><span class="w"> </span><span class="nc">time</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">seconds</span>
+<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">swig/java/CMakeFiles/java_binding.dir/build.make:108: swig/java/gdal.jar</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span>
+<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">CMakeFiles/Makefile2:9108: swig/java/CMakeFiles/java_binding.dir/all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span>
+<span class="nl">gmake</span><span class="p">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">Makefile:139: all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span>
+</pre></div>
+
 <p>We can use conda to install gdal. Create a new environment and install gdal in it.</p>
-<pre class="code literal-block">$ conda create -n geodjango <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
-$ conda install -c conda-forge gdal
-$ pip install django
-$ pip install psycopg2-binary
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>geodjango<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>gdal
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>django
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>psycopg2-binary
+</pre></div>
+
 <p>Once installed, you can check the version using <code>gdalinfo --version</code>.</p>
 <p>Remaining dependencies can be installed via brew.</p>
-<pre class="code literal-block">$ brew install postgresql
-$ brew install postgis
-$ brew install libgeoip
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>postgresql
+$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>postgis
+$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>libgeoip
+</pre></div>
+
 <p>Let's create a new django project and add spatial backends.</p>
-<pre class="code literal-block">$ django-admin startproject geodjango
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>django-admin<span class="w"> </span>startproject<span class="w"> </span>geodjango
+</pre></div>
+
 <p>Add <code>django.contrib.gis</code> to <code>INSTALLED_APPS</code> in <code>settings.py</code>.</p>
-<pre class="code literal-block"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code"><pre class="code literal-block"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="o">...</span><span class="p">,</span>
     <span class="s1">'django.contrib.gis'</span><span class="p">,</span>
 <span class="p">]</span>
-</pre>
+</pre></div>
+
 <p>Add the following to <code>DATABASES</code> in <code>settings.py</code>.</p>
-<pre class="code literal-block"><span class="n">DATABASES</span><span class="p">[</span><span class="s1">'default'</span><span class="p">][</span><span class="s1">'ENGINE'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'django.contrib.gis.db.backends.postgis'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">DATABASES</span><span class="p">[</span><span class="s1">'default'</span><span class="p">][</span><span class="s1">'ENGINE'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'django.contrib.gis.db.backends.postgis'</span>
+</pre></div>
+
 <p>Since we used conda to install gdal, we need to set the path to gdal in our django settings. Run <code>locate libgdal.dylib</code> to find the path to gdal.</p>
-<pre class="code literal-block"><span class="n">GDAL_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgdal.dylib'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">GDAL_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgdal.dylib'</span>
+</pre></div>
+
 <p>Similarly, we need to set <code>GEOS_LIBRARY_PATH</code> as well.</p>
-<pre class="code literal-block"><span class="n">GEOS_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgeos_c.dylib'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">GEOS_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgeos_c.dylib'</span>
+</pre></div>
+
 <p>Now, we can create a new app and add PointField or any other spatial fields to our models.</p>
-<pre class="code literal-block">$ python manage.py startapp places
-</pre>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>startapp<span class="w"> </span>places
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 <span class="k">class</span> <span class="nc">Place</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In this article, we looked at how to set up GeoDjango on Mac M1. We used conda to install gdal and brew to install other dependencies. </p>
     </div>
@@ -163,27 +251,32 @@ $ brew install libgeoip
 <p>Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.</p>
 <h4>Installation</h4>
 <p>I installed tailscale on Raspberry Pi using the following command.</p>
-<pre class="code literal-block">$ curl -fsSL https://tailscale.com/install.sh <span class="p">|</span> sh
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://tailscale.com/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</pre></div>
+
 <h4>Setup</h4>
 <p>Once the installation is done, I run <code>tailscale up</code> to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.</p>
 <p><img alt="tailscale dashboard" src="../images/tailscale-pi.png"></p>
 <p><code>tailscale</code> has CLI tool as well and status can be viewed with the following command.</p>
-<pre class="code literal-block">$ tailscale status
-<span class="m">100</span>.81.13.75   m1                    avilpage@  macOS   -
-<span class="m">100</span>.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>tailscale<span class="w"> </span>status
+<span class="m">100</span>.81.13.75<span class="w">   </span>m1<span class="w">                    </span>avilpage@<span class="w">  </span>macOS<span class="w">   </span>-
+<span class="m">100</span>.12.12.92<span class="w">   </span>rpi1.tailscale.ts.net<span class="w"> </span>avilpage@<span class="w">  </span>linux<span class="w">   </span>offline
+</pre></div>
+
 <p>I also set up a cron job to start tailscale daemon on boot.</p>
-<pre class="code literal-block">$ crontab -e
-@reboot tailscale up
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
+@reboot<span class="w"> </span>tailscale<span class="w"> </span>up
+</pre></div>
+
 <h4>Access</h4>
 <p>Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is <code>100.34.2.23</code>. I can ssh into the device using the following command.</p>
-<pre class="code literal-block">$ ssh pi@100.81.12.92
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>pi@100.81.12.92
+</pre></div>
+
 <p>It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.</p>
-<pre class="code literal-block">$ ssh pi@raspberry3.tailscale.net
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>pi@raspberry3.tailscale.net
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp; Linux as well.</p>
 <div class="footnote">
@@ -213,67 +306,69 @@ $ brew install libgeoip
 <h4>Post Messages to the Group</h4>
 <p>Now, we need to fetch the group id. For this, we can use the following curl API call. </p>
 <p><code>curl</code> is available by default on Mac and Linux terminals. On Windows, we can use <code>curl</code> from command prompt.</p>
-<pre class="code literal-block">$ curl -X GET https://api.telegram.org/bot&lt;API_TOKEN&gt;/getUpdates
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://api.telegram.org/bot&lt;API_TOKEN&gt;/getUpdates
 
 <span class="o">{</span>
-  <span class="s2">"ok"</span>: true,
-  <span class="s2">"result"</span>: <span class="o">[</span>
-    <span class="o">{</span>
-      <span class="s2">"update_id"</span>: <span class="m">733724271</span>,
-      <span class="s2">"message"</span>: <span class="o">{</span>
-        <span class="s2">"message_id"</span>: <span class="m">9</span>,
-        <span class="s2">"from"</span>: <span class="o">{</span>
-          <span class="s2">"id"</span>: <span class="m">1122</span>,
-          <span class="s2">"is_bot"</span>: false,
-          <span class="s2">"username"</span>: <span class="s2">"ChillarAnand"</span>,
-          <span class="s2">"language_code"</span>: <span class="s2">"en"</span>
-        <span class="o">}</span>,
-        <span class="s2">"chat"</span>: <span class="o">{</span>
-          <span class="s2">"id"</span>: -114522,
-          <span class="s2">"title"</span>: <span class="s2">"DailyPythonTips"</span>,
-          <span class="s2">"type"</span>: <span class="s2">"group"</span>,
-          <span class="s2">"all_members_are_administrators"</span>: <span class="nb">true</span>
-        <span class="o">}</span>,
-        <span class="s2">"date"</span>: <span class="m">1694045795</span>,
-        <span class="s2">"text"</span>: <span class="s2">"@DailyPythonTipsBot hi"</span>,
-        <span class="s2">"entities"</span>: <span class="o">[</span>
-          <span class="o">{</span>
-            <span class="s2">"offset"</span>: <span class="m">0</span>,
-            <span class="s2">"length"</span>: <span class="m">19</span>,
-            <span class="s2">"type"</span>: <span class="s2">"mention"</span>
-          <span class="o">}</span>
-        <span class="o">]</span>
-      <span class="o">}</span>
-    <span class="o">}</span>
-  <span class="o">]</span>
+<span class="w">  </span><span class="s2">"ok"</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">"result"</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"update_id"</span>:<span class="w"> </span><span class="m">733724271</span>,
+<span class="w">      </span><span class="s2">"message"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">"message_id"</span>:<span class="w"> </span><span class="m">9</span>,
+<span class="w">        </span><span class="s2">"from"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">          </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">1122</span>,
+<span class="w">          </span><span class="s2">"is_bot"</span>:<span class="w"> </span>false,
+<span class="w">          </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"ChillarAnand"</span>,
+<span class="w">          </span><span class="s2">"language_code"</span>:<span class="w"> </span><span class="s2">"en"</span>
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">"chat"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">          </span><span class="s2">"id"</span>:<span class="w"> </span>-114522,
+<span class="w">          </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">"DailyPythonTips"</span>,
+<span class="w">          </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"group"</span>,
+<span class="w">          </span><span class="s2">"all_members_are_administrators"</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">"date"</span>:<span class="w"> </span><span class="m">1694045795</span>,
+<span class="w">        </span><span class="s2">"text"</span>:<span class="w"> </span><span class="s2">"@DailyPythonTipsBot hi"</span>,
+<span class="w">        </span><span class="s2">"entities"</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">"offset"</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">            </span><span class="s2">"length"</span>:<span class="w"> </span><span class="m">19</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"mention"</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">      </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">]</span>
 <span class="o">}</span>
-</pre>
+</pre></div>
+
 <p>This will return a JSON response with the group id. It sends empty response if there are no recent conversations. </p>
 <p>In that case, send a dummy message to the bot in the group and try again. It should return the group id in the response.</p>
 <p>We can use this group id to post messages to the group.</p>
-<pre class="code literal-block">$ curl -X POST https://api.telegram.org/bot&lt;API_TOKEN&gt;/sendMessage -d <span class="s2">"chat_id=&lt;GROUP_ID&gt;&amp;text=Hello"</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.telegram.org/bot&lt;API_TOKEN&gt;/sendMessage<span class="w"> </span>-d<span class="w"> </span><span class="s2">"chat_id=&lt;GROUP_ID&gt;&amp;text=Hello"</span>
 
 <span class="o">{</span>
-  <span class="s2">"ok"</span>: true,
-  <span class="s2">"result"</span>: <span class="o">{</span>
-    <span class="s2">"message_id"</span>: <span class="m">12</span>,
-    <span class="s2">"from"</span>: <span class="o">{</span>
-      <span class="s2">"id"</span>: <span class="m">3349238234</span>,
-      <span class="s2">"is_bot"</span>: true,
-      <span class="s2">"first_name"</span>: <span class="s2">"DailyPythonTipsBot"</span>,
-      <span class="s2">"username"</span>: <span class="s2">"DailyPythonTipsBot"</span>
-    <span class="o">}</span>,
-    <span class="s2">"chat"</span>: <span class="o">{</span>
-      <span class="s2">"id"</span>: -114522,
-      <span class="s2">"title"</span>: <span class="s2">"DailyPythonTips"</span>,
-      <span class="s2">"type"</span>: <span class="s2">"group"</span>,
-      <span class="s2">"all_members_are_administrators"</span>: <span class="nb">true</span>
-    <span class="o">}</span>,
-    <span class="s2">"date"</span>: <span class="m">1694046381</span>,
-    <span class="s2">"text"</span>: <span class="s2">"Hello"</span>
-  <span class="o">}</span>
+<span class="w">  </span><span class="s2">"ok"</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">"result"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">"message_id"</span>:<span class="w"> </span><span class="m">12</span>,
+<span class="w">    </span><span class="s2">"from"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">3349238234</span>,
+<span class="w">      </span><span class="s2">"is_bot"</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">"first_name"</span>:<span class="w"> </span><span class="s2">"DailyPythonTipsBot"</span>,
+<span class="w">      </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"DailyPythonTipsBot"</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">"chat"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"id"</span>:<span class="w"> </span>-114522,
+<span class="w">      </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">"DailyPythonTips"</span>,
+<span class="w">      </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"group"</span>,
+<span class="w">      </span><span class="s2">"all_members_are_administrators"</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">"date"</span>:<span class="w"> </span><span class="m">1694046381</span>,
+<span class="w">    </span><span class="s2">"text"</span>:<span class="w"> </span><span class="s2">"Hello"</span>
+<span class="w">  </span><span class="o">}</span>
 <span class="o">}</span>
-</pre>
+</pre></div>
+
 <p>Here is the message posted by the bot in the group.</p>
 <p align="center">
 <img src="../images/telegram-bot-group-message.jpeg" alt="Telegram Bot for IoT Updates" width="200" height="400"></p>
@@ -394,41 +489,46 @@ $ brew install libgeoip
 <p>After trying out various methods, I ended up using privateGPT<sup id="fnref:privateGPT"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:privateGPT">2</a></sup> which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.</p>
 <h4>Training</h4>
 <p>First, let's clone the repo, install requirements.txt and download the default model.</p>
-<pre class="code literal-block">$ git clone https://github.com/imartinez/privateGPT
-$ <span class="nb">cd</span> privateGPT
-$ pip3 install -r requirements.txt
-$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/imartinez/privateGPT
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>privateGPT
+$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+$<span class="w"> </span>wget<span class="w"> </span>https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
 
-$ cp example.env .env
-$ cat .env
+$<span class="w"> </span>cp<span class="w"> </span>example.env<span class="w"> </span>.env
+$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>GPT4All
 <span class="nv">MODEL_PATH</span><span class="o">=</span>ggml-gpt4all-j-v1.3-groovy.bin
-</pre>
+</pre></div>
+
 <p>I have sourced all documents and kept them in a folder called <code>docs</code>. Let's ingest(train) the data.</p>
-<pre class="code literal-block">$ cp ~/docs/* source_documents
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cp<span class="w"> </span>~/docs/*<span class="w"> </span>source_documents
 
-$ python ingest.py
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>ingest.py
+</pre></div>
+
 <p>This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.</p>
-<pre class="code literal-block">$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
-<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
-<pre class="code literal-block">$ git clone https://huggingface.co/openlm-research/open_llama_13b
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
 
-$ git clone https://github.com/ggerganov/llama.cpp.git
-$ <span class="nb">cd</span> llama.cpp
-$ python convert.py ../open_llama_13b
-Wrote ../open_llama_13b/ggml-model-f16.bin
-</pre>
+<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://huggingface.co/openlm-research/open_llama_13b
+
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ggerganov/llama.cpp.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>llama.cpp
+$<span class="w"> </span>python<span class="w"> </span>convert.py<span class="w"> </span>../open_llama_13b
+Wrote<span class="w"> </span>../open_llama_13b/ggml-model-f16.bin
+</pre></div>
+
 <p>We can now update the <code>.env</code> file to use the new model and start querying again.</p>
-<pre class="code literal-block">$ cat .env
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>LlamaCpp
 <span class="nv">MODEL_PATH</span><span class="o">=</span>/path/to/ggml-model-f16.bin
 
-$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.</p>
 <div class="footnote">
@@ -653,68 +753,6 @@ $ head a.txt
 <ol>
 <li id="fn:psrecord">
 <p><a href="https://pypi.org/project/psrecord/">https://pypi.org/project/psrecord/</a> <a class="footnote-backref" href="../2023/04/record-resource-usage-per-process.html#fnref:psrecord" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/04/reduce-system-load-with-chatgpt.html" class="u-url">Reducing System Load With ChatGPT</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2023/04/reduce-system-load-with-chatgpt.html" rel="bookmark">
-            <time class="published dt-published" datetime="2023-04-01T07:55:49+05:30" itemprop="datePublished" title="2023-04-01">2023-04-01</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Problem Statement</h4>
-<p>I am using M1 Macbook Air for Python development purposes. Since M1 uses ARM architecture, many Python packages don't have wheels for ARM64/aarch64. confluent-kafka-python is one of them. </p>
-<p>I had to run AMD64 docker container to use confluent-kafka-python. Since it is a cross-architecture container, its CPU usage is too high and performance was too slow.  </p>
-<h4>Solution</h4>
-<p>To reduce system load, I decided to build aarch64 wheels for confluent-kafka-python. I looked at open issues on GitHub and asked maintainers how to build aarch64 wheels. There was no response<sup id="fnref:librdkafka"><a class="footnote-ref" href="../2023/04/reduce-system-load-with-chatgpt.html#fn:librdkafka">1</a></sup> from them.</p>
-<p>As a workaround, I asked ChatGPT<sup id="fnref:chatgpt"><a class="footnote-ref" href="../2023/04/reduce-system-load-with-chatgpt.html#fn:chatgpt">2</a></sup> on how to build confluent-kafka-python aarch64 wheels in a docker container.</p>
-<p align="center">
-<img src="../images/chatgpt-reduce-system-load.png" alt="chatgpt-reduce-system-load"></p>
-
-<p>This initial suggestion didn't work as <code>confluent-kafka-python</code> depends on <code>librdkafka</code> which is a C library. I had to build <code>librdkafka</code> from source for aarch64 and then build <code>confluent-kafka-python</code> from source.</p>
-<p>To build <code>librdkafka</code> from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build <code>librdkafka</code> from the source for aarch64.</p>
-<p>Here is the final snippet:</p>
-<pre class="code literal-block"><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
-
-<span class="n">ARG</span> <span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
-
-<span class="n">RUN</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
-  <span class="n">wget</span> <span class="n">git</span> <span class="n">curl</span> <span class="n">g</span><span class="o">++</span> <span class="n">make</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">client</span> \
-  <span class="n">nano</span> <span class="n">less</span> <span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span> <span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span> \
-  <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">vim</span> <span class="n">tzdata</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
-
-<span class="n">RUN</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
-<span class="n">RUN</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">setuptools</span>
-
-<span class="n">WORKDIR</span> <span class="o">/</span>
-<span class="n">RUN</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">WORKDIR</span> <span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-
-<span class="n">COPY</span> <span class="o">.</span> <span class="o">/</span><span class="n">app</span>
-<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
-<span class="n">RUN</span> <span class="o">./</span><span class="n">configure</span> <span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
-<span class="n">RUN</span> <span class="n">make</span>
-<span class="n">RUN</span> <span class="n">make</span> <span class="n">install</span>
-
-<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">RUN</span> <span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre>
-<h4>Conclusion</h4>
-<p>By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp; environments that we are not familiar with.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:librdkafka">
-<p><a href="https://github.com/confluentinc/librdkafka/issues/3546#issuecomment-1340237177">https://github.com/confluentinc/librdkafka/3546</a> <a class="footnote-backref" href="../2023/04/reduce-system-load-with-chatgpt.html#fnref:librdkafka" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:chatgpt">
-<p><a href="https://en.wikipedia.org/wiki/ChatGPT">https://en.wikipedia.org/wiki/ChatGPT</a> <a class="footnote-backref" href="../2023/04/reduce-system-load-with-chatgpt.html#fnref:chatgpt" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>

@@ -1,29 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 30 Oct 2023 04:13:23 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>tailscale: Remote SSH Access to Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about command-line)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/command-line.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 07 Nov 2023 01:50:20 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Add "Line Count" Column in File Manager</title><link>https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;While monitoring an ETL pipeline, I browse a lot of files and often need to know how many lines are there in a file. For that, I can switch to that directory from terminal and run &lt;code&gt;wc -l&lt;/code&gt; for that.&lt;/p&gt;
+&lt;p&gt;To avoid the hassle of switching to the directory and running a command in the terminal, I wrote a simple lua script to show line count column in xplr&lt;sup id="fnref:xplr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html#fn:xplr"&gt;1&lt;/a&gt;&lt;/sup&gt; file manager.&lt;/p&gt;
+&lt;h4&gt;Failed Attempts&lt;/h4&gt;
+&lt;p&gt;Initially I set out to write a Finder&lt;sup id="fnref:finder"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html#fn:finder"&gt;2&lt;/a&gt;&lt;/sup&gt; plugin to show the line count column. But I couldn't find a way to get the line count of a file in Finder plugin. I have explored other GUI file managers but none of them have a way to show custom columns with line count.&lt;/p&gt;
+&lt;p&gt;Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.&lt;/p&gt;
+&lt;h4&gt;xplr - line count&lt;/h4&gt;
+&lt;p&gt;xplr can be installed via &lt;code&gt;brew&lt;/code&gt;. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install xplr
+
+$ xplr --version
+xplr &lt;span class="m"&gt;0&lt;/span&gt;.21.3
+&lt;/pre&gt;
+&lt;p&gt;xplr reads the default configuration from &lt;code&gt;~/.config/xplr/init.lua&lt;/code&gt;. The following configuration shows the line count column in xplr.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;version&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'0.21.3'&lt;/span&gt;
+
+&lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fmt_simple_column&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;relative_path&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;suffix&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+
+&lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;row_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_file&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"---"&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+
+  &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;io.open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;absolute_path&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"r"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+    &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;row_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="kr"&gt;for&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt; &lt;span class="kr"&gt;in&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;lines&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="kr"&gt;do&lt;/span&gt;
+      &lt;span class="n"&gt;row_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;row_count&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="kr"&gt;end&lt;/span&gt;
+    &lt;span class="n"&gt;file&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;close&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;tostring&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row_count&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+  &lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;span class="kr"&gt;end&lt;/span&gt;
+
+
+&lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;general&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;header&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"  path"&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"line_count"&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;general&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cols&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"custom.fmt_simple_column"&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;format&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"custom.row_count"&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;general&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;col_widths&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;Percentage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;30&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+  &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;Percentage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;This will show a row count on launch.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="xplr - line count" src="https://avilpage.com/images/xplr-line-count-column.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;xplr is a very powerful file manager, and it is very easy to write lua scripts to create custom columns. I couldn't find a way to sort items based on the custom column. Need to explore more on that.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:xplr"&gt;
+&lt;p&gt;&lt;a href="https://github.com/sayanarijit/xplr"&gt;https://github.com/sayanarijit/xplr&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html#fnref:xplr" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:finder"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Finder_(software)"&gt;https://en.wikipedia.org/wiki/Finder_(software)&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html#fnref:finder" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>command-line</category><category>file manager</category><category>lua</category><guid>https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html</guid><pubDate>Mon, 06 Nov 2023 20:43:13 GMT</pubDate></item><item><title>tailscale: Remote SSH Access to Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -fsSL https://tailscale.com/install.sh &lt;span class="p"&gt;|&lt;/span&gt; sh
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-fsSL&lt;span class="w"&gt; &lt;/span&gt;https://tailscale.com/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Once the installation is done, I run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="tailscale dashboard" src="https://avilpage.com/images/tailscale-pi.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tailscale&lt;/code&gt; has CLI tool as well and status can be viewed with the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ tailscale status
-&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75   m1                    avilpage@  macOS   -
-&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;status
+&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75&lt;span class="w"&gt;   &lt;/span&gt;m1&lt;span class="w"&gt;                    &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;macOS&lt;span class="w"&gt;   &lt;/span&gt;-
+&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92&lt;span class="w"&gt;   &lt;/span&gt;rpi1.tailscale.ts.net&lt;span class="w"&gt; &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;linux&lt;span class="w"&gt;   &lt;/span&gt;offline
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;I also set up a cron job to start tailscale daemon on boot.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ crontab -e
-@reboot tailscale up
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+@reboot&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;up
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Access&lt;/h4&gt;
 &lt;p&gt;Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. I can ssh into the device using the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ssh pi@100.81.12.92
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@100.81.12.92
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ssh pi@raspberry3.tailscale.net
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@raspberry3.tailscale.net
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp;amp; Linux as well.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -640,27 +710,4 @@ $ comm -123 domcop majestic --total
 &lt;p&gt;&lt;a href="http://downloads.majestic.com/majestic_million.csv"&gt;http://downloads.majestic.com/majestic_million.csv&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html#fnref:majestic" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>command-line</category><category>data-analysis</category><category>python</category><guid>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</guid><pubDate>Fri, 02 Nov 2018 06:34:58 GMT</pubDate></item><item><title>Linux Performance Analysis In Less Than 10 Seconds</title><link>https://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;If you are using a Linux System or managing a Linux server, you might come across a situation where a process is taking too long to complete. In this article we will see how to track down such performance issues in Linux.&lt;/p&gt;
-&lt;p&gt;Netflix TechBlog has an article on how to &lt;a href="https://medium.com/netflix-techblog/linux-performance-analysis-in-60-000-milliseconds-accc10403c55"&gt;anlyze Linux performance in 60 seconds&lt;/a&gt;. This article  provides 10+ tools to use in order to see the resource usage and pinpoint the bottleneck.&lt;/p&gt;
-&lt;p&gt;It is strenuous to remember all those tools/options and laborious to run all those commands when working on multiple systems.&lt;/p&gt;
-&lt;p&gt;Instead, we can use &lt;a href="http://atoptool.nl/"&gt;atop&lt;/a&gt;, a tool for one stop solution for performance analysis. Here is a comparision of atop with other tools from &lt;a href="https://lwn.net/Articles/387202/"&gt;LWN&lt;/a&gt;.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="https://avilpage.com/images/linux-performance-analysis-tools.png" height="300px" width="600"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;atop shows live &amp;amp; historical data measurement at system level as well as process level. To get the glimpse of system resource(CPU, memory, network, disk) usage install and run atop with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo apt install --yes atop
-
-$ atop
-&lt;/pre&gt;
-&lt;p align="center"&gt;
-&lt;img src="https://avilpage.com/images/atop.png" height="300px" width="600"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;By default, atop shows resources used in the last interval only and sorts them by CPU usage. We can use&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ atop -A -f &lt;span class="m"&gt;4&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;&lt;code&gt;-A&lt;/code&gt; sorts the processes automatically in the order of the most busy system resource.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;-f&lt;/code&gt; shows both active as well as inactive system resources in the ouput.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;4&lt;/code&gt; sets refresh interval to 4 seconds.&lt;/p&gt;
-&lt;p&gt;Just by looking at the output of atop, we get a glimpse of overall system resource usage as well as individual processes resource usage.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</guid><pubDate>Tue, 24 Jul 2018 15:51:21 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>command-line</category><category>data-analysis</category><category>python</category><guid>https://avilpage.com/2018/11/comparision-alexa-majestic-domcorp-top-million-sites.html</guid><pubDate>Fri, 02 Nov 2018 06:34:58 GMT</pubDate></item></channel></rss>
