@@ -2,7 +2,7 @@
 .. title: Mastering HammerSpoon - Excel Automation
 .. slug: excel-automation-with-hammerspoon-on-mac
 .. date: 2023-05-21 18:14:00 UTC+05:30
-.. tags: hammerspoon, automation, mac
+.. tags: hammerspoon, automation, mac, lua
 .. category: 
 .. link:
 .. description: How to automate Excel and other apps with Hammerspoon on Mac
