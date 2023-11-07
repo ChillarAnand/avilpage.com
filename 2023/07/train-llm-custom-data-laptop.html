@@ -150,7 +150,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    4 min read
+                    5 min read
             </p>
 
             <p class="dateline">
@@ -169,41 +169,46 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>After trying out various methods, I ended up using privateGPT<sup id="fnref:privateGPT"><a class="footnote-ref" href="train-llm-custom-data-laptop.html#fn:privateGPT">2</a></sup> which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.</p>
 <h4>Training</h4>
 <p>First, let's clone the repo, install requirements.txt and download the default model.</p>
-<pre class="code literal-block">$ git clone https://github.com/imartinez/privateGPT
-$ <span class="nb">cd</span> privateGPT
-$ pip3 install -r requirements.txt
-$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/imartinez/privateGPT
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>privateGPT
+$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+$<span class="w"> </span>wget<span class="w"> </span>https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
 
-$ cp example.env .env
-$ cat .env
+$<span class="w"> </span>cp<span class="w"> </span>example.env<span class="w"> </span>.env
+$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>GPT4All
 <span class="nv">MODEL_PATH</span><span class="o">=</span>ggml-gpt4all-j-v1.3-groovy.bin
-</pre>
+</pre></div>
+
 <p>I have sourced all documents and kept them in a folder called <code>docs</code>. Let's ingest(train) the data.</p>
-<pre class="code literal-block">$ cp ~/docs/* source_documents
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cp<span class="w"> </span>~/docs/*<span class="w"> </span>source_documents
 
-$ python ingest.py
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>ingest.py
+</pre></div>
+
 <p>This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.</p>
-<pre class="code literal-block">$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
-<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
-<pre class="code literal-block">$ git clone https://huggingface.co/openlm-research/open_llama_13b
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
 
-$ git clone https://github.com/ggerganov/llama.cpp.git
-$ <span class="nb">cd</span> llama.cpp
-$ python convert.py ../open_llama_13b
-Wrote ../open_llama_13b/ggml-model-f16.bin
-</pre>
+<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://huggingface.co/openlm-research/open_llama_13b
+
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ggerganov/llama.cpp.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>llama.cpp
+$<span class="w"> </span>python<span class="w"> </span>convert.py<span class="w"> </span>../open_llama_13b
+Wrote<span class="w"> </span>../open_llama_13b/ggml-model-f16.bin
+</pre></div>
+
 <p>We can now update the <code>.env</code> file to use the new model and start querying again.</p>
-<pre class="code literal-block">$ cat .env
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>LlamaCpp
 <span class="nv">MODEL_PATH</span><span class="o">=</span>/path/to/ggml-model-f16.bin
 
-$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.</p>
 <div class="footnote">
