@@ -1,51 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about artificial-intelligence)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/artificial-intelligence.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 07 Nov 2023 01:39:25 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about artificial-intelligence)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/artificial-intelligence.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 30 Dec 2023 14:01:58 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Train LLMs with Custom Dataset on Laptop</title><link>https://avilpage.com/2023/07/train-llm-custom-data-laptop.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;I want to train a Large Language Model(LLM)&lt;sup id="fnref:LLM"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:LLM"&gt;1&lt;/a&gt;&lt;/sup&gt; with some private documents and query various details.&lt;/p&gt;
 &lt;h4&gt;Journey&lt;/h4&gt;
 &lt;p&gt;There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.&lt;/p&gt;
 &lt;p&gt;After trying out various methods, I ended up using privateGPT&lt;sup id="fnref:privateGPT"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:privateGPT"&gt;2&lt;/a&gt;&lt;/sup&gt; which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.&lt;/p&gt;
 &lt;h4&gt;Training&lt;/h4&gt;
 &lt;p&gt;First, let's clone the repo, install requirements.txt and download the default model.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/imartinez/privateGPT
-$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;privateGPT
-$&lt;span class="w"&gt; &lt;/span&gt;pip3&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
-$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+&lt;pre class="code literal-block"&gt;$ git clone https://github.com/imartinez/privateGPT
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; privateGPT
+$ pip3 install -r requirements.txt
+$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
 
-$&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;example.env&lt;span class="w"&gt; &lt;/span&gt;.env
-$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;.env
+$ cp example.env .env
+$ cat .env
 &lt;span class="nv"&gt;MODEL_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;GPT4All
 &lt;span class="nv"&gt;MODEL_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ggml-gpt4all-j-v1.3-groovy.bin
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;I have sourced all documents and kept them in a folder called &lt;code&gt;docs&lt;/code&gt;. Let's ingest(train) the data.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;~/docs/*&lt;span class="w"&gt; &lt;/span&gt;source_documents
+&lt;pre class="code literal-block"&gt;$ cp ~/docs/* source_documents
 
-$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;ingest.py
-&lt;/pre&gt;&lt;/div&gt;
-
+$ python ingest.py
+&lt;/pre&gt;
 &lt;p&gt;This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;privateGPT.py
-Enter&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;query:&lt;span class="w"&gt; &lt;/span&gt;Summarise&lt;span class="w"&gt; &lt;/span&gt;about&lt;span class="w"&gt; &lt;/span&gt;Gaaliveedu
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+&lt;/pre&gt;
 &lt;p&gt;The default &lt;code&gt;GPT4All-J v1.3-groovy&lt;/code&gt;&lt;sup id="fnref:gpt4all"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:gpt4all"&gt;3&lt;/a&gt;&lt;/sup&gt; model doesn't provide good results. We can easily swap it with &lt;code&gt;LlamaCpp&lt;/code&gt;&lt;sup id="fnref:llama.cpp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp"&gt;4&lt;/a&gt;&lt;/sup&gt;. Lets download the model and convert it.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://huggingface.co/openlm-research/open_llama_13b
+&lt;pre class="code literal-block"&gt;$ git clone https://huggingface.co/openlm-research/open_llama_13b
 
-$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/ggerganov/llama.cpp.git
-$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;llama.cpp
-$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;convert.py&lt;span class="w"&gt; &lt;/span&gt;../open_llama_13b
-Wrote&lt;span class="w"&gt; &lt;/span&gt;../open_llama_13b/ggml-model-f16.bin
-&lt;/pre&gt;&lt;/div&gt;
-
+$ git clone https://github.com/ggerganov/llama.cpp.git
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; llama.cpp
+$ python convert.py ../open_llama_13b
+Wrote ../open_llama_13b/ggml-model-f16.bin
+&lt;/pre&gt;
 &lt;p&gt;We can now update the &lt;code&gt;.env&lt;/code&gt; file to use the new model and start querying again.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;.env
+&lt;pre class="code literal-block"&gt;$ cat .env
 &lt;span class="nv"&gt;MODEL_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;LlamaCpp
 &lt;span class="nv"&gt;MODEL_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/ggml-model-f16.bin
 
-$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;privateGPT.py
-Enter&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;query:&lt;span class="w"&gt; &lt;/span&gt;Summarise&lt;span class="w"&gt; &lt;/span&gt;about&lt;span class="w"&gt; &lt;/span&gt;Gaaliveedu
-&lt;/pre&gt;&lt;/div&gt;
-
+$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+&lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.&lt;/p&gt;
 &lt;div class="footnote"&gt;
