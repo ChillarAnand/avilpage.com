@@ -1,7 +1,7 @@
 <!--
 .. title: Running tests in parallel with pytest & xdist
 .. slug: coverage-reports-with-pytest-xdist
-.. date: 2023-12-30 01:16:31 UTC+05:30
+.. date: 2023-12-30 20:16:31 UTC+05:30
 .. tags: python, testing
 .. category: programming
 .. link: 
