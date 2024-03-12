@@ -74,7 +74,80 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/06/pycharm-debug-python-app-in-docker.html" class="u-url">Remote Debug Docker Container with PyCharm</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/07/train-llm-custom-data-laptop.html" class="u-url">Train LLMs with Custom Dataset on Laptop</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/07/train-llm-custom-data-laptop.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-07-07T04:36:42+05:30" itemprop="datePublished" title="2023-07-07">2023-07-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>I want to train a Large Language Model(LLM)<sup id="fnref:LLM"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:LLM">1</a></sup> with some private documents and query various details.</p>
+<h4>Journey</h4>
+<p>There are open-source available LLMs like Vicuna, LLaMa, etc which can be trained on custom data. However, training these models on custom data is not a trivial task.</p>
+<p>After trying out various methods, I ended up using privateGPT<sup id="fnref:privateGPT"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:privateGPT">2</a></sup> which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.</p>
+<h4>Training</h4>
+<p>First, let's clone the repo, install requirements.txt and download the default model.</p>
+<pre class="code literal-block">$ git clone https://github.com/imartinez/privateGPT
+$ <span class="nb">cd</span> privateGPT
+$ pip3 install -r requirements.txt
+$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+
+$ cp example.env .env
+$ cat .env
+<span class="nv">MODEL_TYPE</span><span class="o">=</span>GPT4All
+<span class="nv">MODEL_PATH</span><span class="o">=</span>ggml-gpt4all-j-v1.3-groovy.bin
+</pre>
+<p>I have sourced all documents and kept them in a folder called <code>docs</code>. Let's ingest(train) the data.</p>
+<pre class="code literal-block">$ cp ~/docs/* source_documents
+
+$ python ingest.py
+</pre>
+<p>This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.</p>
+<pre class="code literal-block">$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+</pre>
+<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
+<pre class="code literal-block">$ git clone https://huggingface.co/openlm-research/open_llama_13b
+
+$ git clone https://github.com/ggerganov/llama.cpp.git
+$ <span class="nb">cd</span> llama.cpp
+$ python convert.py ../open_llama_13b
+Wrote ../open_llama_13b/ggml-model-f16.bin
+</pre>
+<p>We can now update the <code>.env</code> file to use the new model and start querying again.</p>
+<pre class="code literal-block">$ cat .env
+<span class="nv">MODEL_TYPE</span><span class="o">=</span>LlamaCpp
+<span class="nv">MODEL_PATH</span><span class="o">=</span>/path/to/ggml-model-f16.bin
+
+$ python privateGPT.py
+Enter a query: Summarise about Gaaliveedu
+</pre>
+<h4>Conclusion</h4>
+<p>This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:LLM">
+<p><a href="https://en.wikipedia.org/wiki/Large_language_model">https://en.wikipedia.org/wiki/Large_language_model</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:LLM" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:privateGPT">
+<p><a href="https://github.com/imartinez/privateGPT">https://github.com/imartinez/privateGPT</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:privateGPT" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:gpt4all">
+<p><a href="https://github.com/nomic-ai/gpt4all">https://github.com/nomic-ai/gpt4all</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:gpt4all" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:llama.cpp">
+<p><a href="https://github.com/ggerganov/llama.cpp">https://github.com/ggerganov/llama.cpp</a> <a class="footnote-backref" href="../2023/07/train-llm-custom-data-laptop.html#fnref:llama.cpp" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/06/pycharm-debug-python-app-in-docker.html" class="u-url">Remote Debug Docker Container with PyCharm</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
