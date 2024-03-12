@@ -5,7 +5,7 @@
 .. tags: python, automation
 .. category: 
 .. link: 
-.. description: How show line count column in custom file manager in 50 lines of code.
+.. description: How to show line count column in custom file manager in 50 lines of code.
 .. type: text
 -->
 
