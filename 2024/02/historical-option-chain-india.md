@@ -54,8 +54,7 @@ This will archive the option chain data for the stocks & indices on a daily basi
 
 ### Conclusion
 
-Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue[^issue] regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as a best tool to browse the historical option chain data.
-
+Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue[^issue] regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.
 
 
 [^archivebox]: [ArchiveBox](https://github.com/ArchiveBox/ArchiveBox)
