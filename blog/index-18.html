@@ -74,7 +74,76 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/07/train-llm-custom-data-laptop.html" class="u-url">Train LLMs with Custom Dataset on Laptop</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" class="u-url">Rearrange CSV columns alphabetically from CLI</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-04T07:19:54+05:30" itemprop="datePublished" title="2023-08-04">2023-08-04</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>We can use tools like KDiff3 to compare two CSV files. But, it is difficult to identify the diff when the columns are not in the same order.</p>
+<p>For example, look at the below output of 2 simple csv files.</p>
+<p><img alt="kdiff3-csv-compare" src="../images/kdiff3-csv-compare.png"></p>
+<p>Even though it highlights the diff, it is difficult to identify the diff because the columns are not in the same order. Here is the same diff after rearranging the columns alphabetically.</p>
+<p><img alt="kdiff3-csv-compare-sorted" src="../images/kdiff3-csv-compare-sorted.png"></p>
+<p>Now, it is easy to identify the diff.</p>
+<h4>Rearrange CSV columns alphabetically</h4>
+<p>We can write a simple python script using Pandas<sup id="fnref:pandas"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas">1</a></sup> as follows.</p>
+<pre class="code literal-block"><span class="ch">#! /usr/bin/env python3</span>
+
+<span class="sd">"""</span>
+<span class="sd">re-arrange columns in alphabetical order</span>
+<span class="sd">"""</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="k">def</span> <span class="nf">colsort</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">cols</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">input_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">input_file</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">colsort</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre>
+<p>We can use this script as follows.</p>
+<pre class="code literal-block">$ python3 rearrange_csv_columns.py input.csv output.csv
+</pre>
+<p>Instead of writing a script by ourselves, we can use <code>miller</code><sup id="fnref:miller"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller">2</a></sup> tool. Miller can perform various operations on CSV files. We can use <code>sort-within-records</code> to sort the columns.</p>
+<pre class="code literal-block">$ mlr --csv sort-within-records -f input.csv &gt; output.csv
+</pre>
+<h4>Conclusion</h4>
+<p>We can use <code>miller</code> to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:pandas">
+<p><a href="https://pandas.pydata.org/">https://pandas.pydata.org/</a> <a class="footnote-backref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:pandas" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:miller">
+<p><a href="https://github.com/johnkerl/miller">https://github.com/johnkerl/miller</a> <a class="footnote-backref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fnref:miller" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/07/train-llm-custom-data-laptop.html" class="u-url">Train LLMs with Custom Dataset on Laptop</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
