@@ -74,7 +74,34 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" class="u-url">Rearrange CSV columns alphabetically from CLI</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/periodically-launch-app-background.html" class="u-url">Periodically Launch an App in Background</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/08/periodically-launch-app-background.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-23T19:03:49+05:30" itemprop="datePublished" title="2023-08-23">2023-08-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.</p>
+<p>I want to ensure that it starts periodically so that I don't miss any notifications for meetings.</p>
+<p>After trying out various methods, I ended up using <code>open</code> command with <code>cron</code> to launch the app every 15 minutes.</p>
+<pre class="code literal-block">$ crontab -e
+</pre>
+<pre class="code literal-block">*/15 * * * * /usr/bin/open -a <span class="s2">"Microsoft Outlook"</span>
+</pre>
+<p>This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. </p>
+<p>To avoid this, I passed <code>-g</code> option to run it in background.</p>
+<pre class="code literal-block">$ crontab -e
+</pre>
+<pre class="code literal-block">*/15 * * * * /usr/bin/open -g -a <span class="s2">"Microsoft Outlook"</span>
+</pre>
+<p>This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.</p>
+<p>This will ensure that I don't miss any meetings, even if I close outlook accidentally.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/rearrange-csv-columns-alphabetically-cli.html" class="u-url">Rearrange CSV columns alphabetically from CLI</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
