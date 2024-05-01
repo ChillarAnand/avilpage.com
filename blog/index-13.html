@@ -91,7 +91,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Use Management Commands</h4>
 <p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
 <p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
 <span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
 
 <span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
@@ -106,11 +106,12 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
             <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
 <h4>Link Data Migrations &amp; Schema Migrations</h4>
 <p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
@@ -124,17 +125,19 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
     <span class="p">]</span>
-</pre>
+</pre></div>
+
 <h4>Watch Out For DB Queries</h4>
 <p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
 <p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
 <p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
-<pre class="code literal-block"><span class="c1"># instead of</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># instead of</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># use</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>
@@ -153,19 +156,21 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <p>In the previous article, we have learnt where to start with <a href="../2018/12/django-bottleneck-performance-scaling.html">performance optimization in django application</a> and find out which APIs to optimize first. In this article, we will learn how to optimize those selected APIs from the application.</p>
 <h4>Profling APIs With django-silk</h4>
 <p><a href="https://pypi.org/project/django-silk/">django-silk</a> provides <code>silk_profile</code> function which can be used to profile selected view or a snippet of code. Let's take a slow view to profile and see the results.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">silk.profiling.profiler</span> <span class="kn">import</span> <span class="n">silk_profile</span>
 
 
 <span class="nd">@silk_profile</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">slow_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">'data'</span><span class="p">:</span> <span class="s1">'slow_response'</span><span class="p">})</span>
-</pre>
+</pre></div>
+
 <p>We need to add relevant silk settings to django settings so that required profile data files are generated and stored in specified locations.</p>
-<pre class="code literal-block"><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="code"><pre class="code literal-block"><span class="n">SILKY_PYTHON_PROFILER</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_BINARY</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SILKY_PYTHON_PROFILER_RESULT_PATH</span> <span class="o">=</span> <span class="s1">'/tmp/'</span>
-</pre>
+</pre></div>
+
 <p>Once the above view is loaded, we can see the profile information in silk profiling page.</p>
 <p>In profile page, silk shows a profile graph and highlights the path where more time is taken.</p>
 <p align="center">
@@ -178,16 +183,19 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>By looking at the above data, we can see most of the time is spent is <code>time.sleep</code> in our view.</p>
 <h4>Profling APIs With django-extensions</h4>
 <p>If you don't want to use silk, an alternate way to profile django views is to use <code>runprofileserver</code> command provided by <a href="https://pypi.org/project/django-extensions/">django-extensions</a> package. Install django-extensions package and then start server with the following command.</p>
-<pre class="code literal-block">$ ./manage.py runprofileserver --use-cprofile --nostatic --prof-path /tmp/prof/
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>./manage.py<span class="w"> </span>runprofileserver<span class="w"> </span>--use-cprofile<span class="w"> </span>--nostatic<span class="w"> </span>--prof-path<span class="w"> </span>/tmp/prof/
+</pre></div>
+
 <p>This command starts runserver with profiling tools enabled. For each request made to the server, it will save a corresponding <code>.prof</code> profile data file in <code>/tmp/prof/</code> folder.</p>
 <p>After profile data is generated, we can use profile data viewing tools like <a href="https://pypi.org/project/snakeviz/">snakeviz</a>, <a href="https://pypi.org/project/cprofilev/">cprofilev</a> visualize or browse the profile data.</p>
 <p>Install snakeviz using pip</p>
-<pre class="code literal-block">$ pip install snakeviz
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>snakeviz
+</pre></div>
+
 <p>Open the profile data file using snakeviz.</p>
-<pre class="code literal-block">$ snakeviz /tmp/prof/api.book.list.4212ms.1566922008.prof
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>snakeviz<span class="w"> </span>/tmp/prof/api.book.list.4212ms.1566922008.prof
+</pre></div>
+
 <p>It shows icicles graph view and  table view of profile data of that view.</p>
 <p align="center">
 <img src="../images/django-profiling3.png"></p>
@@ -214,7 +222,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <img src="../images/aws-s3-bucket-version1.png"></p>
 
 <p>We can do the same with Python boto3 library.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -230,11 +238,12 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="c1"># disable versioning</span>
 <span class="n">versioning</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <h4>Retrieving Objects</h4>
 <p>Once versioning is enabled, we can store multiple versions of an object by uploading an object multiple times with the same key.</p>
 <p>We can write a simple script to generate a text file with a random text and upload it to S3.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">string</span>
 
 <span class="kn">import</span> <span class="nn">boto3</span>
@@ -248,14 +257,15 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="n">s3</span><span class="o">.</span><span class="n">upload_file</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>If this script is executed multiple times, the same file gets overridden with a different version id with the same key in the bucket.</p>
 <p>We can see all the versions of the file from the bucket by selecting the file and then clicking drop-down at <code>Latest version</code>.</p>
 <p align="center">
 <img src="../images/aws-s3-bucket-version2.png"></p>
 
 <p>We can write a script to retrieve and show contents of all the versions of the test.txt file with the following script.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">boto3</span>
 
 
 <span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">'avilpage'</span>
@@ -274,7 +284,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">'Body'</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Object versioning is useful to protect data from unintended overwrites. In this article, we learnt how to change bucket versioning, upload multiple versions of same file and retrieving all versions of the file using AWS web console as well as boto3.</p>
     </div>
@@ -315,12 +326,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>When debugging an issue on some other page like <a href="../2019/05/environment-bookmarklet-web-development-tips.html">https://avilpage.com/validate/books/?name=darwin&amp;year=2019</a>, which has URL path and query param, switching between enviroment becomes tedious. To switch to local environment, we have to manually replace the hostname with localhost.</p>
 <p>To avoid this, we can use a bookmarklet to switch the hosts. A <a href="https://en.wikipedia.org/wiki/Bookmarklet">bookmarklet</a> is a bookmark which contains a JavaScript code snippet in its URL. This code snippet will be executed when the bookmarklet is clicked.</p>
 <p>Lets create a bookmarklet to replace host in the URL with <a href="http://localhost:8000">http://localhost:8000</a>. Create new bookmark called <code>To Local</code> and in the URL add the following snippet.</p>
-<pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://localhost:8000"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span><span class="w"> </span><span class="p">}())</span>
+</pre></div>
+
 <p>If we click on <code>To Local</code> bookmarklet, it will redirect the current active page to localhost URL.</p>
 <p>We can create one more bookmarklet to switch to production. Create a bookmarklet called <code>To Production</code> and add the following snippet in the URL.</p>
-<pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> <span class="p">}())</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nx">javascript</span><span class="o">:</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">"http://avilpage.com"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span><span class="w"> </span><span class="p">}())</span>
+</pre></div>
+
 <p>We can create similar bookmarklets to switch to other environments. Now, switching between environments on any page is as easy as clicking a button.</p>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2019/04/how-to-debug-postgres-triggers.html" class="u-url">A Short Guide To Debugging PostgreSQL Triggers</a></h1>
@@ -339,31 +352,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this article, we will see how to debug PostgreSQL triggers.</p>
 <h4>Triggers</h4>
 <p>First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
-<pre class="code literal-block"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre></div>
+
 <p>We can also use <code>EXPLAIN</code> to show triggers that are executed for an event by running relevant queries.</p>
 <h4>PostgreSQL Logging</h4>
 <p>After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.</p>
-<pre class="code literal-block"><span class="o">#</span> <span class="n">let</span> <span class="n">the</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
-<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
+<div class="code"><pre class="code literal-block"><span class="o">#</span><span class="w"> </span><span class="n">let</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">queries</span>
+<span class="n">log_statement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'all'</span>
 
-<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
-<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
-</pre>
+<span class="o">#</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">level</span>
+<span class="n">client_min_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">log</span>
+</pre></div>
+
 <p>Restart PostgreSQL to reflect configuration changes.</p>
-<pre class="code literal-block"><span class="c1"># Linux</span>
-sudo service postgres restart
+<div class="code"><pre class="code literal-block"><span class="c1"># Linux</span>
+sudo<span class="w"> </span>service<span class="w"> </span>postgres<span class="w"> </span>restart
 
 <span class="c1"># Mac</span>
-brew services restart postgres
-</pre>
+brew<span class="w"> </span>services<span class="w"> </span>restart<span class="w"> </span>postgres
+</pre></div>
+
 <p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
 <h4>Triggers Logging</h4>
 <p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
-<pre class="code literal-block"><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
-<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
-<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to delete record'</span><span class="p">;</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">RAISE</span><span class="w"> </span><span class="s1">'Updating row with ID: %'</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span><span class="w"> </span><span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span><span class="w"> </span><span class="n">WARNING</span><span class="w"> </span><span class="s1">'Unable to delete record'</span><span class="p">;</span>
+</pre></div>
+
 <p>This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
 <h4>SQL/PostgreSQL Gotchas</h4>
 <p>Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.</p>
@@ -434,9 +451,10 @@ brew services restart postgres
 
 <p>But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.</p>
 <p>Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In <code>Test</code> section of postman, add these lines.</p>
-<pre class="code literal-block"><span class="kd">var</span> <span class="nx">xsrfCookie</span> <span class="o">=</span> <span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
-<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span> <span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="kd">var</span><span class="w"> </span><span class="nx">xsrfCookie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">postman</span><span class="p">.</span><span class="nx">getResponseCookie</span><span class="p">(</span><span class="s2">"csrftoken"</span><span class="p">);</span>
+<span class="nx">postman</span><span class="p">.</span><span class="nx">setEnvironmentVariable</span><span class="p">(</span><span class="s1">'csrftoken'</span><span class="p">,</span><span class="w"> </span><span class="nx">xsrfCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</pre></div>
+
 <p>This extracts csrf token and sets it to an environment variable called <code>csrftoken</code> in the current environment.</p>
 <p align="center">
 <img src="../images/django-csrf-postman3.png"></p>
@@ -465,7 +483,7 @@ brew services restart postgres
 <p>In this article, we will see how to use <a href="https://packaging.python.org/key_projects/#pip">pip</a> to install Python packages hosted on GitLab, GitHub, Bitbucket or any other services.</p>
 <h4>Packaging</h4>
 <p>To package python project, we need to create <code>setup.py</code> file which is build script for setuptools. Below is a sample setup file to create a package named <code>library</code>.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">setuptools</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">setuptools</span>
 
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"README.md"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
@@ -486,21 +504,24 @@ brew services restart postgres
         <span class="s2">"Operating System :: OS Independent"</span><span class="p">,</span>
     <span class="p">],</span>
 <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Python provides <a href="https://packaging.python.org/tutorials/packaging-projects/">detailed packaging documentation</a> on structuring and building the package.</p>
 <h4>Installation</h4>
 <p>Once module(s) is packaged and pushed to hosting service, it can be installed with pip.</p>
-<pre class="code literal-block"><span class="c1"># using https</span>
-$ pip install git+https://github.com/chillaranand/library.git
+<div class="code"><pre class="code literal-block"><span class="c1"># using https</span>
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/chillaranand/library.git
 
 <span class="c1"># using ssh</span>
-pip install git+ssh://git@github.com/chillaranand/library.git
-</pre>
-<p>This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.</p>
-<pre class="code literal-block">$ <span class="nb">export</span> <span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
+pip<span class="w"> </span>install<span class="w"> </span>git+ssh://git@github.com/chillaranand/library.git
+</pre></div>
 
-$ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chillaranand/library.git
-</pre>
+<p>This usually requires authentication with usersname/password or ssh key. This setup works for developement machines. To use it in CI/CD pipelines or as a dependency, we can use tokens to simplify installation.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>foobar
+
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chillaranand/library.git
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to package python code and install private packages with pip. This makes it easy to manage dependencies or install packages on multiple machines.</p>
     </div>
@@ -520,10 +541,11 @@ $ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chill
 <p>In this article we will profile a django webapp, find high-impact performance bottlenecks and then start optimization them to yield better performance.</p>
 <h4>Profiling</h4>
 <p><a href="https://github.com/jazzband/django-silk">django-silk</a> is an open source profiling tool which intercepts and stores HTTP requests data. Install it with pip.</p>
-<pre class="code literal-block">pip install django-silk
-</pre>
+<div class="code"><pre class="code literal-block">pip<span class="w"> </span>install<span class="w"> </span>django-silk
+</pre></div>
+
 <p>Add <code>silk</code> to installed apps and include silk middleware in django settings.</p>
-<pre class="code literal-block"><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+<div class="code"><pre class="code literal-block"><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="o">...</span>
     <span class="s1">'silk.middleware.SilkyMiddleware'</span><span class="p">,</span>
     <span class="o">...</span>
@@ -533,52 +555,57 @@ $ pip install git+https://<span class="nv">$GITHUB_TOKEN</span>@github.com/chill
     <span class="o">...</span>
     <span class="s1">'silk'</span>
 <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Run migrations so that Silk can create required database tables to store profile data.</p>
-<pre class="code literal-block">$ python manage.py makemigrations
-$ python manage.py migrate
-$ python manage.py collectstatic
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>makemigrations
+$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>migrate
+$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>collectstatic
+</pre></div>
+
 <p>Include silk urls in root urlconf to view the profile data.</p>
-<pre class="code literal-block"><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="p">[</span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^silk/'</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s1">'silk.urls'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'silk'</span><span class="p">))]</span>
+</pre></div>
+
 <p>On silk requests page(<a href="../2018/12/django-bottleneck-performance-scaling.html">http://host/silk/requests/</a>), we can see all requests and sort them by overall time or time spent in database.</p>
 <p align="center">
 <img src="../images/django-bottlenecks.png"></p>
 
 <h4>High Impact Bottlenecks</h4>
 <p>Silk creates <code>silk_request</code> table which contains information about the requests processed by django.</p>
-<pre class="code literal-block"><span class="err">$</span> <span class="n">pgcli</span>
+<div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">pgcli</span>
 
-<span class="n">library</span><span class="o">&gt;</span> <span class="err">\</span><span class="n">d</span> <span class="n">silk_request</span><span class="p">;</span>
+<span class="n">library</span><span class="o">&gt;</span><span class="w"> </span><span class="err">\</span><span class="n">d</span><span class="w"> </span><span class="n">silk_request</span><span class="p">;</span>
 
 <span class="o">+</span><span class="c1">--------------------+--------------------------+-------------+</span>
-<span class="o">|</span> <span class="k">Column</span>             <span class="o">|</span> <span class="k">Type</span>                     <span class="o">|</span> <span class="n">Modifiers</span>   <span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="k">Column</span><span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="k">Type</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="n">Modifiers</span><span class="w">   </span><span class="o">|</span>
 <span class="o">|</span><span class="c1">--------------------+--------------------------+-------------|</span>
-<span class="o">|</span> <span class="n">id</span>                 <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>    <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
-<span class="o">|</span> <span class="n">path</span>               <span class="o">|</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">190</span><span class="p">)</span>   <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
-<span class="o">|</span> <span class="n">time_taken</span>         <span class="o">|</span> <span class="n">double</span> <span class="k">precision</span>         <span class="o">|</span>  <span class="k">not</span> <span class="k">null</span>   <span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="nb">character</span><span class="w"> </span><span class="nb">varying</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w">   </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">path</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="nb">character</span><span class="w"> </span><span class="nb">varying</span><span class="p">(</span><span class="mi">190</span><span class="p">)</span><span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w">   </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">time_taken</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="n">double</span><span class="w"> </span><span class="k">precision</span><span class="w">         </span><span class="o">|</span><span class="w">  </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w">   </span><span class="o">|</span>
 <span class="p">...</span>
-</pre>
+</pre></div>
+
 <p>We can group these requests data by <code>path</code>, calculate number of requests, average time taken and impact factor of each path. Since we are considering response time and traffic, impact factor will be product of average response time and number of requests for that path.</p>
-<pre class="code literal-block"><span class="n">library</span><span class="o">&gt;</span> <span class="k">SELECT</span>
-     <span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span> <span class="n">round</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span> <span class="o">*</span> <span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="o">/</span><span class="k">max</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="o">*</span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span> <span class="n">over</span> <span class="p">()::</span><span class="nb">NUMERIC</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">impact</span>
- <span class="k">FROM</span>
-     <span class="p">(</span><span class="k">select</span> <span class="n">path</span><span class="p">,</span> <span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">time_taken</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="k">as</span> <span class="n">avg_time</span><span class="p">,</span> <span class="k">count</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="k">count</span> <span class="k">from</span> <span class="n">silk_request</span> <span class="k">group</span> <span class="k">by</span> <span class="n">PATH</span><span class="p">)</span>
-     <span class="n">s</span>
- <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">impact</span> <span class="k">DESC</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="n">library</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span>
+<span class="w">     </span><span class="n">s</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="o">/</span><span class="k">max</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">avg_time</span><span class="o">*</span><span class="n">s</span><span class="p">.</span><span class="k">count</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="p">()::</span><span class="nb">NUMERIC</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">impact</span>
+<span class="w"> </span><span class="k">FROM</span>
+<span class="w">     </span><span class="p">(</span><span class="k">select</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="k">avg</span><span class="p">(</span><span class="n">time_taken</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_time</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">count</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">silk_request</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">PATH</span><span class="p">)</span>
+<span class="w">     </span><span class="n">s</span>
+<span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">impact</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
 
 <span class="o">+</span><span class="c1">-------------------------+------------+---------+----------+</span>
-<span class="o">|</span> <span class="n">path</span>                    <span class="o">|</span> <span class="n">avg_time</span>   <span class="o">|</span> <span class="k">count</span>   <span class="o">|</span> <span class="n">impact</span>   <span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">path</span><span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">avg_time</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">impact</span><span class="w">   </span><span class="o">|</span>
 <span class="o">|</span><span class="c1">-------------------------+------------+---------+----------|</span>
-<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="n">book</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">239</span><span class="p">.</span><span class="mi">90</span>     <span class="o">|</span> <span class="mi">1400</span>    <span class="o">|</span> <span class="mi">1</span><span class="p">.</span><span class="mi">00</span>     <span class="o">|</span>
-<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="k">data</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">94</span><span class="p">.</span><span class="mi">81</span>      <span class="o">|</span> <span class="mi">1900</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">54</span>     <span class="o">|</span>
-<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span>                 <span class="o">|</span> <span class="mi">152</span><span class="p">.</span><span class="mi">49</span>     <span class="o">|</span> <span class="mi">900</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">41</span>     <span class="o">|</span>
-<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">login</span><span class="o">/</span>           <span class="o">|</span> <span class="mi">307</span><span class="p">.</span><span class="mi">03</span>     <span class="o">|</span> <span class="mi">400</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">37</span>     <span class="o">|</span>
-<span class="o">|</span> <span class="o">/</span>                       <span class="o">|</span> <span class="mi">106</span><span class="p">.</span><span class="mi">51</span>     <span class="o">|</span> <span class="mi">1000</span>    <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">32</span>     <span class="o">|</span>
-<span class="o">|</span> <span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="k">user</span><span class="o">/</span>       <span class="o">|</span> <span class="mi">494</span><span class="p">.</span><span class="mi">11</span>     <span class="o">|</span> <span class="mi">200</span>     <span class="o">|</span> <span class="mi">0</span><span class="p">.</span><span class="mi">29</span>     <span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">239</span><span class="p">.</span><span class="mi">90</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">1400</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">00</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">book</span><span class="o">/</span><span class="k">data</span><span class="o">/</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">94</span><span class="p">.</span><span class="mi">81</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">1900</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">54</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="mi">152</span><span class="p">.</span><span class="mi">49</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">900</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">41</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">login</span><span class="o">/</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="mi">307</span><span class="p">.</span><span class="mi">03</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">400</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">37</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="mi">106</span><span class="p">.</span><span class="mi">51</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">1000</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">32</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="o">/</span><span class="n">point</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="k">user</span><span class="o">/</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">494</span><span class="p">.</span><span class="mi">11</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">200</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">29</span><span class="w">     </span><span class="o">|</span>
 <span class="p">...</span>
-</pre>
+</pre></div>
+
 <p>We can see <code>/point/book/book/</code> has highest impact even though it is neighter most visited nor slowest view. Optimizing this view first yields in overall better performance of webapp.</p>
 <h4>Conclusion</h4>
 <p>In this article, we learnt how to profile django webapp and identify bottlenecks to improve performance. In the next article, we wil learn how to optimize these bottlenecks by taking an in-depth look at them.</p>

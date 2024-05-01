@@ -152,7 +152,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    7 min read
+                    9 min read
             </p>
 
             <p class="dateline">
@@ -168,65 +168,69 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.</p>
 <h4>Deployment To k8s</h4>
 <p>From version 3.8, NextGen has started providing official docker images for Connect<sup id="fnref:nc"><a class="footnote-ref" href="deploy-mirth-to-kubernetes.html#fn:nc">1</a></sup>. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.</p>
-<pre class="code literal-block"><span class="nv">$docker</span> run -p <span class="m">8080</span>:8080 -p <span class="m">8443</span>:8443 nextgenhealthcare/connect
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">$docker</span><span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>-p<span class="w"> </span><span class="m">8443</span>:8443<span class="w"> </span>nextgenhealthcare/connect
+</pre></div>
+
 <p>We can use this docker image and create a k8s deployment to start a container.</p>
-<pre class="code literal-block"><span class="o">---</span>
-<span class="nv">apiVersion</span>: <span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
-<span class="nv">kind</span>: <span class="nv">Deployment</span>
+<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<span class="nv">apiVersion</span>:<span class="w"> </span><span class="nv">apps</span><span class="o">/</span><span class="nv">v1beta1</span>
+<span class="nv">kind</span>:<span class="w"> </span><span class="nv">Deployment</span>
 <span class="nv">metadata</span>:
-  <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
-  <span class="nv">namespace</span>: <span class="nv">default</span>
+<span class="w">  </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+<span class="w">  </span><span class="nv">namespace</span>:<span class="w"> </span><span class="nv">default</span>
 <span class="nv">spec</span>:
-  <span class="nv">template</span>:
-    <span class="nv">spec</span>:
-      <span class="nv">containers</span>:
-      <span class="o">-</span> <span class="nv">name</span>: <span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
-        <span class="nv">image</span>: <span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">nextgenhealthcare</span><span class="o">/</span><span class="k">connect</span>
-        <span class="nv">ports</span>:
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">http</span>
-          <span class="nv">containerPort</span>: <span class="mi">8080</span>
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">https</span>
-          <span class="nv">containerPort</span>: <span class="mi">8443</span>
-        <span class="o">-</span> <span class="nv">name</span>: <span class="nv">hl7</span><span class="o">-</span><span class="nv">test</span>
-          <span class="nv">containerPort</span>: <span class="mi">9001</span>
-        <span class="nv">env</span>:
-          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE</span>
-            <span class="nv">value</span>: <span class="nv">postgres</span>
-          <span class="o">-</span> <span class="nv">name</span>: <span class="nv">DATABASE_URL</span>
-            <span class="nv">value</span>: <span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
-</pre>
+<span class="w">  </span><span class="nv">template</span>:
+<span class="w">    </span><span class="nv">spec</span>:
+<span class="w">      </span><span class="nv">containers</span>:
+<span class="w">      </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">mirth</span><span class="o">-</span><span class="k">connect</span>
+<span class="w">        </span><span class="nv">image</span>:<span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">nextgenhealthcare</span><span class="o">/</span><span class="k">connect</span>
+<span class="w">        </span><span class="nv">ports</span>:
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">http</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">8080</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">https</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">8443</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">hl7</span><span class="o">-</span><span class="nv">test</span>
+<span class="w">          </span><span class="nv">containerPort</span>:<span class="w"> </span><span class="mi">9001</span>
+<span class="w">        </span><span class="nv">env</span>:
+<span class="w">          </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">DATABASE</span>
+<span class="w">            </span><span class="nv">value</span>:<span class="w"> </span><span class="nv">postgres</span>
+<span class="w">          </span><span class="o">-</span><span class="w"> </span><span class="nv">name</span>:<span class="w"> </span><span class="nv">DATABASE_URL</span>
+<span class="w">            </span><span class="nv">value</span>:<span class="w"> </span><span class="nv">jdbc</span>:<span class="nv">postgresql</span>:<span class="o">//</span><span class="nv">avilpage</span>.<span class="nv">com</span>:<span class="mi">5432</span><span class="o">/</span><span class="nv">mirth_db</span>
+</pre></div>
+
 <p>This deployment file can be applied on a cluster using <code>kubectl</code>.</p>
-<pre class="code literal-block">$ kubectl apply -f connect-deployment.yaml
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>connect-deployment.yaml
+</pre></div>
+
 <p>To access this container, we can create a service to expose this deployment to public.</p>
-<pre class="code literal-block"><span class="o">---</span>
-<span class="n">apiVersion</span><span class="p">:</span> <span class="n">v1</span>
-<span class="n">kind</span><span class="p">:</span> <span class="n">Service</span>
+<div class="code"><pre class="code literal-block"><span class="o">---</span>
+<span class="n">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="n">v1</span>
+<span class="n">kind</span><span class="p">:</span><span class="w"> </span><span class="n">Service</span>
 <span class="n">metadata</span><span class="p">:</span>
-  <span class="n">name</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
-  <span class="n">annotations</span><span class="p">:</span>
-    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span> <span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span>
-    <span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span> <span class="s2">"443"</span>
-    <span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span> <span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span>
+<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+<span class="w">  </span><span class="n">annotations</span><span class="p">:</span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="p">:</span><span class="w"> </span><span class="n">arn</span><span class="p">:</span><span class="n">aws</span><span class="p">:</span><span class="n">acm</span><span class="p">:</span><span class="n">ap</span><span class="o">-</span><span class="n">south</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">foo</span>
+<span class="w">    </span><span class="n">service</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">aws</span><span class="o">-</span><span class="nb">load</span><span class="o">-</span><span class="n">balancer</span><span class="o">-</span><span class="n">ssl</span><span class="o">-</span><span class="n">ports</span><span class="p">:</span><span class="w"> </span><span class="s2">"443"</span>
+<span class="w">    </span><span class="n">external</span><span class="o">-</span><span class="n">dns</span><span class="o">.</span><span class="n">alpha</span><span class="o">.</span><span class="n">kubernetes</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">hostname</span><span class="p">:</span><span class="w"> </span><span class="n">connect</span><span class="o">.</span><span class="n">avilpage</span><span class="o">.</span><span class="n">com</span>
 <span class="n">spec</span><span class="p">:</span>
-  <span class="n">type</span><span class="p">:</span> <span class="n">LoadBalancer</span>
-  <span class="n">selector</span><span class="p">:</span>
-    <span class="n">app</span><span class="p">:</span> <span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
-  <span class="n">ports</span><span class="p">:</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">http</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">80</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8080</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">https</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">443</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">8443</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-    <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">hl7</span><span class="o">-</span><span class="n">test</span>
-      <span class="n">port</span><span class="p">:</span> <span class="mi">9001</span>
-      <span class="n">targetPort</span><span class="p">:</span> <span class="mi">9001</span>
-      <span class="n">protocol</span><span class="p">:</span> <span class="n">TCP</span>
-</pre>
+<span class="w">  </span><span class="n">type</span><span class="p">:</span><span class="w"> </span><span class="n">LoadBalancer</span>
+<span class="w">  </span><span class="n">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="n">app</span><span class="p">:</span><span class="w"> </span><span class="n">mirth</span><span class="o">-</span><span class="n">connect</span>
+<span class="w">  </span><span class="n">ports</span><span class="p">:</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">http</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8080</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">https</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">443</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">8443</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">hl7</span><span class="o">-</span><span class="n">test</span>
+<span class="w">      </span><span class="n">port</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span>
+<span class="w">      </span><span class="n">targetPort</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span>
+<span class="w">      </span><span class="n">protocol</span><span class="p">:</span><span class="w"> </span><span class="n">TCP</span>
+</pre></div>
+
 <p>This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.</p>
 <p>Once Mirth Connect is up &amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.</p>
 <h4>Conclusion</h4>

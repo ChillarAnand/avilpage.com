@@ -18,6 +18,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="canonical" href="https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
 <link rel="prev" href="../03/the-strange-case-of-mac-and-linux.html" title="The Strange Case of Dr. Linux and Mr. Mac" type="text/html">
+<link rel="next" href="how-to-setup-ftp-server-on-mac-os.html" title="Setup FTP server on Mac OS X" type="text/html">
 <meta property="og:site_name" content="Avil Page">
 <meta property="og:title" content="Timestamp to Relative Time - Kibana Scripted fields">
 <meta property="og:url" content="https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html">
@@ -150,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    5 min read
             </p>
 
             <p class="dateline">
@@ -167,22 +168,23 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.</p>
 <p><img alt="kibana-relative-time" src="../../images/kibana-relative-time1.png"></p>
 <p>Go to <code>Stack Management</code> -&gt; <code>Index Patterns</code> -&gt; <code>Create index pattern</code> -&gt; Select the index pattern -&gt; <code>Scripted fields</code>, click on <code>Add scripted field</code>, add the below script.</p>
-<pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span>
 
-<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span><span class="w"></span>
-<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span><span class="w"></span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span><span class="w"></span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span><span class="w"></span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span><span class="w"></span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span><span class="w"></span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span><span class="w"></span>
-<span class="err">}</span><span class="w"></span>
-</pre>
+<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span>
+<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span>
+<span class="err">}</span>
+</pre></div>
+
 <p>Once the field is saved, we can go back to <code>Discover</code> and see the new field in the logs. We can toggle the visibility of the <code>Relative Time</code> field to see the relative time.</p>
 <p><img alt="kibana-relative-time" src="../../images/kibana-relative-time2.png"></p>
 <h4>Conclusion</h4>
@@ -196,6 +198,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <ul class="pager hidden-print">
 <li class="previous">
                 <a href="../03/the-strange-case-of-mac-and-linux.html" rel="prev" title="The Strange Case of Dr. Linux and Mr. Mac">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="how-to-setup-ftp-server-on-mac-os.html" rel="next" title="Setup FTP server on Mac OS X">Next post</a>
             </li>
         </ul></nav></aside><div class="full-article-footer">
             <div class="article-footer">

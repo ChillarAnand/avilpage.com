@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about automation)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/automation.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 07 Apr 2024 09:24:57 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Cross Platform File Explorer in 50 lines of code</title><link>https://avilpage.com/2024/01/cross-platform-file-explorer-in-50-lines-of-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In an earlier post, I wrote about why I need a &lt;a href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html"&gt;"line count" column in file explorer&lt;/a&gt; and how I wrote a Lua script to see it in xplr file manager.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about automation)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/automation.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 30 Apr 2024 14:54:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Cross Platform File Explorer in 50 lines of code</title><link>https://avilpage.com/2024/01/cross-platform-file-explorer-in-50-lines-of-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In an earlier post, I wrote about why I need a &lt;a href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html"&gt;"line count" column in file explorer&lt;/a&gt; and how I wrote a Lua script to see it in xplr file manager.&lt;/p&gt;
 &lt;p&gt;xplr has only terminal interface. It is hard for non-developers to use it. I wanted a small team to use this feature so that it will save several hours of their time. So I decided to write a cross-platform GUI app.&lt;/p&gt;
 &lt;h4&gt;GUI app&lt;/h4&gt;
 &lt;p&gt;Since I am familiar with PySimpleGUI, I decided to write a simple file explorer using it. &lt;/p&gt;
@@ -18,67 +18,69 @@
 &lt;h4&gt;Post Messages to the Group&lt;/h4&gt;
 &lt;p&gt;Now, we need to fetch the group id. For this, we can use the following curl API call. &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;curl&lt;/code&gt; is available by default on Mac and Linux terminals. On Windows, we can use &lt;code&gt;curl&lt;/code&gt; from command prompt.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X GET https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/getUpdates
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/getUpdates
 
 &lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="s2"&gt;"ok"&lt;/span&gt;: true,
-  &lt;span class="s2"&gt;"result"&lt;/span&gt;: &lt;span class="o"&gt;[&lt;/span&gt;
-    &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"update_id"&lt;/span&gt;: &lt;span class="m"&gt;733724271&lt;/span&gt;,
-      &lt;span class="s2"&gt;"message"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-        &lt;span class="s2"&gt;"message_id"&lt;/span&gt;: &lt;span class="m"&gt;9&lt;/span&gt;,
-        &lt;span class="s2"&gt;"from"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-          &lt;span class="s2"&gt;"id"&lt;/span&gt;: &lt;span class="m"&gt;1122&lt;/span&gt;,
-          &lt;span class="s2"&gt;"is_bot"&lt;/span&gt;: false,
-          &lt;span class="s2"&gt;"username"&lt;/span&gt;: &lt;span class="s2"&gt;"ChillarAnand"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"language_code"&lt;/span&gt;: &lt;span class="s2"&gt;"en"&lt;/span&gt;
-        &lt;span class="o"&gt;}&lt;/span&gt;,
-        &lt;span class="s2"&gt;"chat"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-          &lt;span class="s2"&gt;"id"&lt;/span&gt;: -114522,
-          &lt;span class="s2"&gt;"title"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"group"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;: &lt;span class="nb"&gt;true&lt;/span&gt;
-        &lt;span class="o"&gt;}&lt;/span&gt;,
-        &lt;span class="s2"&gt;"date"&lt;/span&gt;: &lt;span class="m"&gt;1694045795&lt;/span&gt;,
-        &lt;span class="s2"&gt;"text"&lt;/span&gt;: &lt;span class="s2"&gt;"@DailyPythonTipsBot hi"&lt;/span&gt;,
-        &lt;span class="s2"&gt;"entities"&lt;/span&gt;: &lt;span class="o"&gt;[&lt;/span&gt;
-          &lt;span class="o"&gt;{&lt;/span&gt;
-            &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="m"&gt;0&lt;/span&gt;,
-            &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="m"&gt;19&lt;/span&gt;,
-            &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"mention"&lt;/span&gt;
-          &lt;span class="o"&gt;}&lt;/span&gt;
-        &lt;span class="o"&gt;]&lt;/span&gt;
-      &lt;span class="o"&gt;}&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;
-  &lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s2"&gt;"ok"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;true,
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s2"&gt;"result"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"update_id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;733724271&lt;/span&gt;,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"message"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"message_id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;,
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"from"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1122&lt;/span&gt;,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"is_bot"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;false,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"ChillarAnand"&lt;/span&gt;,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"language_code"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"en"&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;,
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"chat"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;-114522,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"title"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"type"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"group"&lt;/span&gt;,
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;,
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"date"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1694045795&lt;/span&gt;,
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"text"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"@DailyPythonTipsBot hi"&lt;/span&gt;,
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"entities"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;"offset"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;,
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;"length"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;19&lt;/span&gt;,
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="s2"&gt;"type"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"mention"&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will return a JSON response with the group id. It sends empty response if there are no recent conversations. &lt;/p&gt;
 &lt;p&gt;In that case, send a dummy message to the bot in the group and try again. It should return the group id in the response.&lt;/p&gt;
 &lt;p&gt;We can use this group id to post messages to the group.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X POST https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/sendMessage -d &lt;span class="s2"&gt;"chat_id=&amp;lt;GROUP_ID&amp;gt;&amp;amp;text=Hello"&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/sendMessage&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"chat_id=&amp;lt;GROUP_ID&amp;gt;&amp;amp;text=Hello"&lt;/span&gt;
 
 &lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="s2"&gt;"ok"&lt;/span&gt;: true,
-  &lt;span class="s2"&gt;"result"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-    &lt;span class="s2"&gt;"message_id"&lt;/span&gt;: &lt;span class="m"&gt;12&lt;/span&gt;,
-    &lt;span class="s2"&gt;"from"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"id"&lt;/span&gt;: &lt;span class="m"&gt;3349238234&lt;/span&gt;,
-      &lt;span class="s2"&gt;"is_bot"&lt;/span&gt;: true,
-      &lt;span class="s2"&gt;"first_name"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"username"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;,
-    &lt;span class="s2"&gt;"chat"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"id"&lt;/span&gt;: -114522,
-      &lt;span class="s2"&gt;"title"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"group"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;: &lt;span class="nb"&gt;true&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;,
-    &lt;span class="s2"&gt;"date"&lt;/span&gt;: &lt;span class="m"&gt;1694046381&lt;/span&gt;,
-    &lt;span class="s2"&gt;"text"&lt;/span&gt;: &lt;span class="s2"&gt;"Hello"&lt;/span&gt;
-  &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s2"&gt;"ok"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;true,
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s2"&gt;"result"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"message_id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;,
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"from"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3349238234&lt;/span&gt;,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"is_bot"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;true,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"first_name"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;,
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"chat"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;-114522,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"title"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"type"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"group"&lt;/span&gt;,
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;,
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"date"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1694046381&lt;/span&gt;,
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"text"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Hello"&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is the message posted by the bot in the group.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/telegram-bot-group-message.jpeg" alt="Telegram Bot for IoT Updates" width="200" height="400"&gt;
@@ -87,16 +89,20 @@
 &lt;p&gt;Now, we can use this API to post messages to the group from our IoT devices or from any other devices where &lt;code&gt;curl&lt;/code&gt; command is available.&lt;/p&gt;</description><category>automation</category><guid>https://avilpage.com/2023/09/telegram-bot-for-iot-updates.html</guid><pubDate>Mon, 04 Sep 2023 13:14:32 GMT</pubDate></item><item><title>Periodically Launch an App in Background</title><link>https://avilpage.com/2023/08/periodically-launch-app-background.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.&lt;/p&gt;
 &lt;p&gt;I want to ensure that it starts periodically so that I don't miss any notifications for meetings.&lt;/p&gt;
 &lt;p&gt;After trying out various methods, I ended up using &lt;code&gt;open&lt;/code&gt; command with &lt;code&gt;cron&lt;/code&gt; to launch the app every 15 minutes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ crontab -e
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;*/15&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;/usr/bin/open&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. &lt;/p&gt;
 &lt;p&gt;To avoid this, I passed &lt;code&gt;-g&lt;/code&gt; option to run it in background.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ crontab -e
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;*/15 * * * * /usr/bin/open -g -a &lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;*/15&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;/usr/bin/open&lt;span class="w"&gt; &lt;/span&gt;-g&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Microsoft Outlook"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.&lt;/p&gt;
 &lt;p&gt;This will ensure that I don't miss any meetings, even if I close outlook accidentally.&lt;/p&gt;</description><category>automation</category><category>command-line</category><category>macbook</category><guid>https://avilpage.com/2023/08/periodically-launch-app-background.html</guid><pubDate>Wed, 23 Aug 2023 13:33:49 GMT</pubDate></item><item><title>Mastering HammerSpoon - Excel Automation</title><link>https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Recently, I have been using Excel a lot. When opening a new Excel file, I have to do the following:&lt;/p&gt;
@@ -110,11 +116,12 @@
 &lt;h4&gt;HammerSpoon&lt;/h4&gt;
 &lt;p&gt;Hammerspoon&lt;sup id="fnref:hammerspoon"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon"&gt;1&lt;/a&gt;&lt;/sup&gt; is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our keybindings.&lt;/p&gt;
 &lt;p&gt;First, let's install Hammerspoon using Homebrew.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install hammerspoon
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;hammerspoon
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can write our automation script in &lt;code&gt;~/.hammerspoon/init.lua&lt;/code&gt; file. Let us see how we can automate the above tasks.&lt;/p&gt;
 &lt;h4&gt;Automating Excel&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;-- excel&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;-- excel&lt;/span&gt;
 &lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;excel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;appObject&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
    &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focusedWindow&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
    &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;win&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
@@ -137,7 +144,8 @@
       &lt;span class="kr"&gt;end&lt;/span&gt;
    &lt;span class="kr"&gt;end&lt;/span&gt;
 &lt;span class="kr"&gt;end&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This script will watch for application events and when Excel is launched or activated, it will call the &lt;code&gt;excel&lt;/code&gt; function. &lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;excel&lt;/code&gt; function will maximize the window, select all columns and fit them to it's width, apply filters to all columns.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Free top row&lt;/code&gt; option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.&lt;/p&gt;
@@ -169,8 +177,9 @@
 &lt;p&gt;For Workflow receives current, select &lt;code&gt;files or folders&lt;/code&gt; and then select &lt;code&gt;in Finder&lt;/code&gt;. &lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/mac-finder-quick-action2.png" alt="mac-finder-quick-action"&gt;&lt;/p&gt;
 &lt;p&gt;Then select pass input &lt;code&gt;as agruments&lt;/code&gt; and in the script section let us add the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;/path/to/kdiff3 &lt;span class="nv"&gt;$1&lt;/span&gt; &lt;span class="nv"&gt;$2&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;/path/to/kdiff3&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;$2&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After adding the command, save this Quick Action. &lt;/p&gt;
 &lt;p&gt;Now if we relaunch Finder app and then select multiple directories, and right click we can see &lt;code&gt;Compare with KDiff3&lt;/code&gt; in quick actions.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/mac-finder-kdiff3-quick-action.png" alt="mac-finder-kdiff3"&gt;&lt;/p&gt;
@@ -202,9 +211,10 @@
 
 &lt;p&gt;But this token has to be manually changed when it expires. This process becomes tedious to do it on an expiration basis.&lt;/p&gt;
 &lt;p&gt;Instead, we can use Postman scripting feature to extract token from cookie and set it to an environment variable. In &lt;code&gt;Test&lt;/code&gt; section of postman, add these lines.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getResponseCookie&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"csrftoken"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;setEnvironmentVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'csrftoken'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;xsrfCookie&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;xsrfCookie&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getResponseCookie&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"csrftoken"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="nx"&gt;postman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;setEnvironmentVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'csrftoken'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;xsrfCookie&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This extracts csrf token and sets it to an environment variable called &lt;code&gt;csrftoken&lt;/code&gt; in the current environment.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/django-csrf-postman3.png"&gt;
@@ -218,22 +228,26 @@
 &lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;</description><category>automation</category><category>django</category><category>python</category><guid>https://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>https://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;celery worker -l info -A foo --autoreload
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo&lt;span class="w"&gt; &lt;/span&gt;--autoreload
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Unfortunately, it doesn't work as expected and &lt;a href="https://github.com/celery/celery/issues/1658"&gt;it is deprecated&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://pypi.python.org/pypi/watchdog"&gt;Watchdog&lt;/a&gt; provides Python API and shell utilities to monitor file system events. We can install it with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;pip install watchdog
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;watchdog
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Watchdog provides &lt;code&gt;watchmedo&lt;/code&gt; a shell utilitiy to perform actions based on file events. It has &lt;code&gt;auto-restart&lt;/code&gt; subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;watchmedo auto-restart -- celery worker -l info -A foo
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo&lt;span class="w"&gt; &lt;/span&gt;auto-restart&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;watchmedo auto-restart -d . -p &lt;span class="s1"&gt;'*.py'&lt;/span&gt; -- celery worker -l info -A foo
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo&lt;span class="w"&gt; &lt;/span&gt;auto-restart&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'*.py'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes.&lt;/p&gt;
 &lt;p&gt;The same functionality can be used to reload celery workers. Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;shlex&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;subprocess&lt;/span&gt;
 
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.core.management.base&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseCommand&lt;/span&gt;
@@ -252,25 +266,28 @@
     &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
         &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Starting celery worker with autoreload...'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
         &lt;span class="n"&gt;autoreload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>https://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item><item><title>Provisioning Laptop(s) With Ansible</title><link>https://avilpage.com/2017/03/provisioning-laptop-ansible.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.&lt;/p&gt;
 &lt;h3&gt;Why Ansible?&lt;/h3&gt;
 &lt;p&gt;Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.&lt;/p&gt;
 &lt;h3&gt;Writing A Playbook&lt;/h3&gt;
 &lt;p&gt;You should check out Ansible documentation to get familiar with ansible and &lt;a href="https://docs.ansible.com/ansible/playbooks.html"&gt;writing playbooks&lt;/a&gt;. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;hosts&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;all&lt;/span&gt;
-&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;True&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;hosts&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;
+&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;True&lt;/span&gt;
 
 &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-  &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;redis&lt;/span&gt;
-    &lt;span class="n"&gt;apt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;update_cache&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;apt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;update_cache&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is &lt;a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml"&gt;a playbook&lt;/a&gt; which I use to configure my laptop. As the playbook needs to run locally, just run&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;ansible-playbook laptop-setup.yml -i localhost, -c local
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ansible-playbook laptop-setup.yml -i localhost, -c local
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h3&gt;Bootstrap Script&lt;/h3&gt;
 &lt;p&gt;To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt update --yes
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo apt update --yes
 sudo apt install --yes python python-pip
 
 sudo apt install --yes libssl-dev
@@ -279,8 +296,10 @@ sudo -H pip install ansible
 wget -c https://path/to/playbook.yml
 
 sudo ansible-playbook setup.yml -i localhost, -c local
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now, to provision a laptop, just run the bootstrap script.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sh -c "$(wget https://path/to/bootstrap_script.sh"
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sh -c "$(wget https://path/to/bootstrap_script.sh"
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.&lt;/p&gt;</description><category>automation</category><category>linux</category><guid>https://avilpage.com/2017/03/provisioning-laptop-ansible.html</guid><pubDate>Sat, 11 Mar 2017 14:16:32 GMT</pubDate></item><item><title>Auto Convert &amp; Upload Books To Kindle</title><link>https://avilpage.com/2016/02/auto-convert-upload-books-to-kindle.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;I have ebooks in various formats like pdf, epub, mobi e.t.c. If I want to read books in laptop, I could use ebook reader like &lt;a href="https://github.com/kovidgoyal/calibre" style="box-sizing: border-box; color: #4078c0; text-decoration: none;"&gt;Calibre&lt;/a&gt; which can open supports most of the formats.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;If I have to read them on Kindle paperwhite, it becomes a problem as it supports only few formats. So whenever I get an ebook, I have to convert it to mobi format and send it to kindle.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;I can connect kindle to laptop via USB cable and I can copy books. I can also send books to &lt;a href="http://www.amazon.com/gp/sendtokindle/email" style="box-sizing: border-box; color: #4078c0; text-decoration: none;"&gt;kindle via email&lt;/a&gt;.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;I found an &lt;a href="https://ifttt.com/recipes/168186-drop-ebooks-and-documents-into-dropbox-folder-to-send-to-kindle-via-gmail-as-azw-ebook" style="box-sizing: border-box; color: #4078c0; text-decoration: none;"&gt;IFTTT recipe&lt;/a&gt;, to automate all this process. I just need to create a folder to store all the books in dropbox. Then use IFTTT recipe to link dropbox folder which has books and gmail to send books to kindle email.&lt;/div&gt;&lt;div style="box-sizing: border-box; color: #333333; font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif; font-size: 16px; line-height: 25.6px; margin-bottom: 16px;"&gt;Now when I move required books into dropbox folder in my laptop, they will automatically appear in my kinde.&lt;/div&gt;&lt;/div&gt;</description><category>automation</category><category>books</category><guid>https://avilpage.com/2016/02/auto-convert-upload-books-to-kindle.html</guid><pubDate>Sun, 28 Feb 2016 10:32:00 GMT</pubDate></item></channel></rss>
