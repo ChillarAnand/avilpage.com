@@ -74,7 +74,146 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/periodically-launch-app-background.html" class="u-url">Periodically Launch an App in Background</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html" class="u-url">tailscale: Remote SSH Access to Pi or Any Device</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-09-25T07:19:54+05:30" itemprop="datePublished" title="2023-09-25">2023-09-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale<sup id="fnref:tailscale"><a class="footnote-ref" href="../2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale">1</a></sup>.</p>
+<p>Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.</p>
+<h4>Installation</h4>
+<p>I installed tailscale on Raspberry Pi using the following command.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://tailscale.com/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</pre></div>
+
+<h4>Setup</h4>
+<p>Once the installation is done, I run <code>tailscale up</code> to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.</p>
+<p><img alt="tailscale dashboard" src="../images/tailscale-pi.png"></p>
+<p><code>tailscale</code> has CLI tool as well and status can be viewed with the following command.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>tailscale<span class="w"> </span>status
+<span class="m">100</span>.81.13.75<span class="w">   </span>m1<span class="w">                    </span>avilpage@<span class="w">  </span>macOS<span class="w">   </span>-
+<span class="m">100</span>.12.12.92<span class="w">   </span>rpi1.tailscale.ts.net<span class="w"> </span>avilpage@<span class="w">  </span>linux<span class="w">   </span>offline
+</pre></div>
+
+<p>I also set up a cron job to start tailscale daemon on boot.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
+@reboot<span class="w"> </span>tailscale<span class="w"> </span>up
+</pre></div>
+
+<h4>Access</h4>
+<p>Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is <code>100.34.2.23</code>. I can ssh into the device using the following command.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>pi@100.81.12.92
+</pre></div>
+
+<p>It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>pi@raspberry3.tailscale.net
+</pre></div>
+
+<h4>Conclusion</h4>
+<p>Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp; Linux as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:tailscale">
+<p><a href="https://en.wikipedia.org/wiki/Tailscale">https://en.wikipedia.org/wiki/Tailscale</a> <a class="footnote-backref" href="../2023/09/tailscale-remote-ssh-raspberry-pi.html#fnref:tailscale" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/09/telegram-bot-for-iot-updates.html" class="u-url">Create Telegram Bot To Post Messages to Group</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/09/telegram-bot-for-iot-updates.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-09-04T18:44:32+05:30" itemprop="datePublished" title="2023-09-04">2023-09-04</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Recently I had to create a Telegram bot again to post updates to a group based on IoT events. This post is just a reference for future.</p>
+<h4>Create a Telegram Bot</h4>
+<p>First, create a bot using BotFather in the Telegram app and get the API token. Then, create a group and add the bot to the group. This will give the bot access to the group.</p>
+<h4>Post Messages to the Group</h4>
+<p>Now, we need to fetch the group id. For this, we can use the following curl API call. </p>
+<p><code>curl</code> is available by default on Mac and Linux terminals. On Windows, we can use <code>curl</code> from command prompt.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://api.telegram.org/bot&lt;API_TOKEN&gt;/getUpdates
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">"ok"</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">"result"</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"update_id"</span>:<span class="w"> </span><span class="m">733724271</span>,
+<span class="w">      </span><span class="s2">"message"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">"message_id"</span>:<span class="w"> </span><span class="m">9</span>,
+<span class="w">        </span><span class="s2">"from"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">          </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">1122</span>,
+<span class="w">          </span><span class="s2">"is_bot"</span>:<span class="w"> </span>false,
+<span class="w">          </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"ChillarAnand"</span>,
+<span class="w">          </span><span class="s2">"language_code"</span>:<span class="w"> </span><span class="s2">"en"</span>
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">"chat"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">          </span><span class="s2">"id"</span>:<span class="w"> </span>-114522,
+<span class="w">          </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">"DailyPythonTips"</span>,
+<span class="w">          </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"group"</span>,
+<span class="w">          </span><span class="s2">"all_members_are_administrators"</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">"date"</span>:<span class="w"> </span><span class="m">1694045795</span>,
+<span class="w">        </span><span class="s2">"text"</span>:<span class="w"> </span><span class="s2">"@DailyPythonTipsBot hi"</span>,
+<span class="w">        </span><span class="s2">"entities"</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">"offset"</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">            </span><span class="s2">"length"</span>:<span class="w"> </span><span class="m">19</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"mention"</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">      </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>This will return a JSON response with the group id. It sends empty response if there are no recent conversations. </p>
+<p>In that case, send a dummy message to the bot in the group and try again. It should return the group id in the response.</p>
+<p>We can use this group id to post messages to the group.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.telegram.org/bot&lt;API_TOKEN&gt;/sendMessage<span class="w"> </span>-d<span class="w"> </span><span class="s2">"chat_id=&lt;GROUP_ID&gt;&amp;text=Hello"</span>
+
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">"ok"</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">"result"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">"message_id"</span>:<span class="w"> </span><span class="m">12</span>,
+<span class="w">    </span><span class="s2">"from"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"id"</span>:<span class="w"> </span><span class="m">3349238234</span>,
+<span class="w">      </span><span class="s2">"is_bot"</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">"first_name"</span>:<span class="w"> </span><span class="s2">"DailyPythonTipsBot"</span>,
+<span class="w">      </span><span class="s2">"username"</span>:<span class="w"> </span><span class="s2">"DailyPythonTipsBot"</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">"chat"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">"id"</span>:<span class="w"> </span>-114522,
+<span class="w">      </span><span class="s2">"title"</span>:<span class="w"> </span><span class="s2">"DailyPythonTips"</span>,
+<span class="w">      </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"group"</span>,
+<span class="w">      </span><span class="s2">"all_members_are_administrators"</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="s2">"date"</span>:<span class="w"> </span><span class="m">1694046381</span>,
+<span class="w">    </span><span class="s2">"text"</span>:<span class="w"> </span><span class="s2">"Hello"</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>Here is the message posted by the bot in the group.</p>
+<p align="center">
+<img src="../images/telegram-bot-group-message.jpeg" alt="Telegram Bot for IoT Updates" width="200" height="400"></p>
+
+<p>Now, we can use this API to post messages to the group from our IoT devices or from any other devices where <code>curl</code> command is available.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/08/periodically-launch-app-background.html" class="u-url">Periodically Launch an App in Background</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -88,16 +227,20 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <p>I recently started using Outlook app on my Mac. If the app is closed, it won't send any notifications. When I accidentally close the app, until I re-open it, I won't get any notifications.</p>
 <p>I want to ensure that it starts periodically so that I don't miss any notifications for meetings.</p>
 <p>After trying out various methods, I ended up using <code>open</code> command with <code>cron</code> to launch the app every 15 minutes.</p>
-<pre class="code literal-block">$ crontab -e
-</pre>
-<pre class="code literal-block">*/15 * * * * /usr/bin/open -a <span class="s2">"Microsoft Outlook"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
+</pre></div>
+
+<div class="code"><pre class="code literal-block">*/15<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span><span class="s2">"Microsoft Outlook"</span>
+</pre></div>
+
 <p>This will launch the app every 15 minutes. This is inconvenient as it will bring Outlook to foreground every 15 minutes. </p>
 <p>To avoid this, I passed <code>-g</code> option to run it in background.</p>
-<pre class="code literal-block">$ crontab -e
-</pre>
-<pre class="code literal-block">*/15 * * * * /usr/bin/open -g -a <span class="s2">"Microsoft Outlook"</span>
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
+</pre></div>
+
+<div class="code"><pre class="code literal-block">*/15<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/bin/open<span class="w"> </span>-g<span class="w"> </span>-a<span class="w"> </span><span class="s2">"Microsoft Outlook"</span>
+</pre></div>
+
 <p>This silently launches the app in background without causing any disturbance. Since the app is running the background, it will send notifications for any meetings.</p>
 <p>This will ensure that I don't miss any meetings, even if I close outlook accidentally.</p>
     </div>
@@ -120,7 +263,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Now, it is easy to identify the diff.</p>
 <h4>Rearrange CSV columns alphabetically</h4>
 <p>We can write a simple python script using Pandas<sup id="fnref:pandas"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:pandas">1</a></sup> as follows.</p>
-<pre class="code literal-block"><span class="ch">#! /usr/bin/env python3</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /usr/bin/env python3</span>
 
 <span class="sd">"""</span>
 <span class="sd">re-arrange columns in alphabetical order</span>
@@ -149,13 +292,16 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>We can use this script as follows.</p>
-<pre class="code literal-block">$ python3 rearrange_csv_columns.py input.csv output.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python3<span class="w"> </span>rearrange_csv_columns.py<span class="w"> </span>input.csv<span class="w"> </span>output.csv
+</pre></div>
+
 <p>Instead of writing a script by ourselves, we can use <code>miller</code><sup id="fnref:miller"><a class="footnote-ref" href="../2023/08/rearrange-csv-columns-alphabetically-cli.html#fn:miller">2</a></sup> tool. Miller can perform various operations on CSV files. We can use <code>sort-within-records</code> to sort the columns.</p>
-<pre class="code literal-block">$ mlr --csv sort-within-records -f input.csv &gt; output.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>mlr<span class="w"> </span>--csv<span class="w"> </span>sort-within-records<span class="w"> </span>-f<span class="w"> </span>input.csv<span class="w"> </span>&gt;<span class="w"> </span>output.csv
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>We can use <code>miller</code> to sort the columns in a CSV file. This will help us to identify the diff easily when comparing two CSV files.</p>
 <div class="footnote">
@@ -188,41 +334,46 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>After trying out various methods, I ended up using privateGPT<sup id="fnref:privateGPT"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:privateGPT">2</a></sup> which is quite easy to train on custom documents. There is no need to format or clean up the data as privateGPT can directly consume documents in many formats like txt, html, epub, pdf, etc.</p>
 <h4>Training</h4>
 <p>First, let's clone the repo, install requirements.txt and download the default model.</p>
-<pre class="code literal-block">$ git clone https://github.com/imartinez/privateGPT
-$ <span class="nb">cd</span> privateGPT
-$ pip3 install -r requirements.txt
-$ wget https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/imartinez/privateGPT
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>privateGPT
+$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+$<span class="w"> </span>wget<span class="w"> </span>https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin
 
-$ cp example.env .env
-$ cat .env
+$<span class="w"> </span>cp<span class="w"> </span>example.env<span class="w"> </span>.env
+$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>GPT4All
 <span class="nv">MODEL_PATH</span><span class="o">=</span>ggml-gpt4all-j-v1.3-groovy.bin
-</pre>
+</pre></div>
+
 <p>I have sourced all documents and kept them in a folder called <code>docs</code>. Let's ingest(train) the data.</p>
-<pre class="code literal-block">$ cp ~/docs/* source_documents
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cp<span class="w"> </span>~/docs/*<span class="w"> </span>source_documents
 
-$ python ingest.py
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>ingest.py
+</pre></div>
+
 <p>This will take a while depending on the number of documents we have. Once the ingestion is done, we can start querying the model.</p>
-<pre class="code literal-block">$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
-<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
-<pre class="code literal-block">$ git clone https://huggingface.co/openlm-research/open_llama_13b
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
 
-$ git clone https://github.com/ggerganov/llama.cpp.git
-$ <span class="nb">cd</span> llama.cpp
-$ python convert.py ../open_llama_13b
-Wrote ../open_llama_13b/ggml-model-f16.bin
-</pre>
+<p>The default <code>GPT4All-J v1.3-groovy</code><sup id="fnref:gpt4all"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:gpt4all">3</a></sup> model doesn't provide good results. We can easily swap it with <code>LlamaCpp</code><sup id="fnref:llama.cpp"><a class="footnote-ref" href="../2023/07/train-llm-custom-data-laptop.html#fn:llama.cpp">4</a></sup>. Lets download the model and convert it.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://huggingface.co/openlm-research/open_llama_13b
+
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ggerganov/llama.cpp.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>llama.cpp
+$<span class="w"> </span>python<span class="w"> </span>convert.py<span class="w"> </span>../open_llama_13b
+Wrote<span class="w"> </span>../open_llama_13b/ggml-model-f16.bin
+</pre></div>
+
 <p>We can now update the <code>.env</code> file to use the new model and start querying again.</p>
-<pre class="code literal-block">$ cat .env
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>.env
 <span class="nv">MODEL_TYPE</span><span class="o">=</span>LlamaCpp
 <span class="nv">MODEL_PATH</span><span class="o">=</span>/path/to/ggml-model-f16.bin
 
-$ python privateGPT.py
-Enter a query: Summarise about Gaaliveedu
-</pre>
+$<span class="w"> </span>python<span class="w"> </span>privateGPT.py
+Enter<span class="w"> </span>a<span class="w"> </span>query:<span class="w"> </span>Summarise<span class="w"> </span>about<span class="w"> </span>Gaaliveedu
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>This makes it easy to build domain-specific LLMs and use them for various tasks. I have used this to build a chatbot for my internal docs and it is working well.</p>
 <div class="footnote">
@@ -260,14 +411,16 @@ Enter a query: Summarise about Gaaliveedu
 <ul>
 <li>Install the <code>pydevd-pycharm</code> package in the Docker image.</li>
 </ul>
-<pre class="code literal-block"><span class="k">RUN</span> pip install <span class="s1">'pydevd-pycharm~=222.4554.11'</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'pydevd-pycharm~=222.4554.11'</span>
+</pre></div>
+
 <ul>
 <li>Add the following lines to the Python script that you want to debug.</li>
 </ul>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pydevd_pycharm</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">pydevd_pycharm</span>
 <span class="n">pydevd_pycharm</span><span class="o">.</span><span class="n">settrace</span><span class="p">(</span><span class="s1">'host.docker.internal'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">stdoutToServer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stderrToServer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <ul>
 <li>Create a new Python Remote Debug configuration in PyCharm with the following settings.</li>
 </ul>
@@ -280,40 +433,43 @@ Enter a query: Summarise about Gaaliveedu
 <p>Run the Docker container with the following command or let a shell script or another package run the container.</p>
 </li>
 </ul>
-<pre class="code literal-block">$ docker build . -t flask_web
-$ docker run --rm flask_web
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>flask_web
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>flask_web
+</pre></div>
+
 <h4>Explanation</h4>
 <p>The <code>pydevd-pycharm</code> package is a Python debugger that can be used to debug a Python application running inside a Docker container. The <code>pydevd_pycharm.settrace()</code> function is used to connect the debugger to the PyCharm IDE. The <code>host.docker.internal</code> is the hostname of the host machine from inside the Docker container. The <code>port</code> is the port number that is used to connect to the PyCharm IDE. The <code>stdoutToServer</code> and <code>stderrToServer</code> are used to redirect the standard output and standard error to the PyCharm IDE.</p>
 <h4>Gotchas</h4>
 <ul>
 <li>You might face the following error depending on the version of the <code>pydevd-pycharm</code> package.</li>
 </ul>
-<pre class="code literal-block">Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/flask/cli.py"</span>, line <span class="m">218</span>, <span class="k">in</span> locate_app
-    __import__<span class="o">(</span>module_name<span class="o">)</span>
-  File <span class="s2">"/app/app.py"</span>, line <span class="m">5</span>, <span class="k">in</span> &lt;module&gt;
-    import pydevd_pycharm
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"</span>, line <span class="m">3</span>, <span class="k">in</span> &lt;module&gt;
-    from pydevd import settrace
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">41</span>, <span class="k">in</span> &lt;module&gt;
-    from _pydevd_bundle import pydevd_utils
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"</span>, line <span class="m">24</span>, <span class="k">in</span> &lt;module&gt;
-    from _pydevd_asyncio_util.pydevd_asyncio_utils import eval_async_expression_in_context
-ModuleNotFoundError: No module named <span class="s1">'_pydevd_asyncio_util'</span>
-</pre>
+<div class="code"><pre class="code literal-block">Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/flask/cli.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">218</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>locate_app
+<span class="w">    </span>__import__<span class="o">(</span>module_name<span class="o">)</span>
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/app/app.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">5</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+<span class="w">    </span>import<span class="w"> </span>pydevd_pycharm
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+<span class="w">    </span>from<span class="w"> </span>pydevd<span class="w"> </span>import<span class="w"> </span>settrace
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">41</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+<span class="w">    </span>from<span class="w"> </span>_pydevd_bundle<span class="w"> </span>import<span class="w"> </span>pydevd_utils
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">24</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+<span class="w">    </span>from<span class="w"> </span>_pydevd_asyncio_util.pydevd_asyncio_utils<span class="w"> </span>import<span class="w"> </span>eval_async_expression_in_context
+ModuleNotFoundError:<span class="w"> </span>No<span class="w"> </span>module<span class="w"> </span>named<span class="w"> </span><span class="s1">'_pydevd_asyncio_util'</span>
+</pre></div>
+
 <p>There seems to be an issue with all 223.*.* versions. The solution is to use the 222.*.* version.</p>
 <ul>
 <li>You might face <code>ConnectionRefused</code> error when running the docker container.</li>
 </ul>
-<pre class="code literal-block">  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">1758</span>, <span class="k">in</span> _locked_settrace
-    debugger.connect<span class="o">(</span>host, port<span class="o">)</span>  <span class="c1"># Note: connect can raise error.</span>
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">660</span>, <span class="k">in</span> connect
-    <span class="nv">s</span> <span class="o">=</span> start_client<span class="o">(</span>host, port<span class="o">)</span>
-  File <span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"</span>, line <span class="m">463</span>, <span class="k">in</span> start_client
-    s.connect<span class="o">((</span>host, port<span class="o">))</span>
-ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span><span class="o">]</span> Connection refused
-</pre>
+<div class="code"><pre class="code literal-block"><span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1758</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>_locked_settrace
+<span class="w">    </span>debugger.connect<span class="o">(</span>host,<span class="w"> </span>port<span class="o">)</span><span class="w">  </span><span class="c1"># Note: connect can raise error.</span>
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">660</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>connect
+<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>start_client<span class="o">(</span>host,<span class="w"> </span>port<span class="o">)</span>
+<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">463</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>start_client
+<span class="w">    </span>s.connect<span class="o">((</span>host,<span class="w"> </span>port<span class="o">))</span>
+ConnectionRefusedError:<span class="w"> </span><span class="o">[</span>Errno<span class="w"> </span><span class="m">111</span><span class="o">]</span><span class="w"> </span>Connection<span class="w"> </span>refused
+</pre></div>
+
 <p>Ensure that you have started the Remote Debug configuration in PyCharm before running the docker container.</p>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/05/excel-automation-with-hammerspoon-on-mac.html" class="u-url">Mastering HammerSpoon - Excel Automation</a></h1>
@@ -339,11 +495,12 @@ ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span>
 <h4>HammerSpoon</h4>
 <p>Hammerspoon<sup id="fnref:hammerspoon"><a class="footnote-ref" href="../2023/05/excel-automation-with-hammerspoon-on-mac.html#fn:hammerspoon">1</a></sup> is a powerful automation tool for macOS. It allows you to write Lua scripts to automate various tasks and make our keybindings.</p>
 <p>First, let's install Hammerspoon using Homebrew.</p>
-<pre class="code literal-block">$ brew install hammerspoon
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>hammerspoon
+</pre></div>
+
 <p>We can write our automation script in <code>~/.hammerspoon/init.lua</code> file. Let us see how we can automate the above tasks.</p>
 <h4>Automating Excel</h4>
-<pre class="code literal-block"><span class="c1">-- excel</span>
+<div class="code"><pre class="code literal-block"><span class="c1">-- excel</span>
 <span class="kr">function</span> <span class="nf">excel</span><span class="p">(</span><span class="n">appObject</span><span class="p">)</span>
    <span class="kd">local</span> <span class="n">win</span> <span class="o">=</span> <span class="n">hs</span><span class="p">.</span><span class="n">window</span><span class="p">.</span><span class="n">focusedWindow</span><span class="p">()</span>
    <span class="kr">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">win</span><span class="p">)</span> <span class="kr">then</span>
@@ -366,7 +523,8 @@ ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span>
       <span class="kr">end</span>
    <span class="kr">end</span>
 <span class="kr">end</span>
-</pre>
+</pre></div>
+
 <p>This script will watch for application events and when Excel is launched or activated, it will call the <code>excel</code> function. </p>
 <p>The <code>excel</code> function will maximize the window, select all columns and fit them to it's width, apply filters to all columns.</p>
 <p><code>Free top row</code> option is not available in the standard menu. So, I have added it to the quick access toolbar and click it via mouse event.</p>
@@ -400,42 +558,47 @@ ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span>
     </header><div class="e-content entry-content">
     <h4>Introduction</h4>
 <p>On Linux &amp; Mac, we can use an inbuilt <code>top</code> command line tool to monitor the resource usage of a single process in real time. </p>
-<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
-$ top -p <span class="m">1234</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$<span class="w"> </span>top<span class="w"> </span>-p<span class="w"> </span><span class="m">1234</span>
 
 <span class="c1"># On Mac, for a given pid</span>
-$ top -pid <span class="m">1234</span>
-</pre>
+$<span class="w"> </span>top<span class="w"> </span>-pid<span class="w"> </span><span class="m">1234</span>
+</pre></div>
+
 <p>In this article, we will see how to record and plot resource usage of a single process using <code>top</code> and a Python package called psrecord<sup id="fnref:psrecord"><a class="footnote-ref" href="../2023/04/record-resource-usage-per-process.html#fn:psrecord">1</a></sup>.</p>
 <h4>Record Resource Usage</h4>
 <p>In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use <code>top</code> to log resource usage into a text file. </p>
-<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
-$ top -p <span class="m">1234</span> -b -d <span class="m">1</span> &gt; top.log
+<div class="code"><pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$<span class="w"> </span>top<span class="w"> </span>-p<span class="w"> </span><span class="m">1234</span><span class="w"> </span>-b<span class="w"> </span>-d<span class="w"> </span><span class="m">1</span><span class="w"> </span>&gt;<span class="w"> </span>top.log
 
 <span class="c1"># On Mac, for a given pid</span>
-$ top -l <span class="m">0</span> -s <span class="m">1</span> -pid <span class="m">32515</span> <span class="p">|</span> awk <span class="s1">'NR%13==0; fflush(stdout)'</span> &gt; top.log
-</pre>
+$<span class="w"> </span>top<span class="w"> </span>-l<span class="w"> </span><span class="m">0</span><span class="w"> </span>-s<span class="w"> </span><span class="m">1</span><span class="w"> </span>-pid<span class="w"> </span><span class="m">32515</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'NR%13==0; fflush(stdout)'</span><span class="w"> </span>&gt;<span class="w"> </span>top.log
+</pre></div>
+
 <p>Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like <code>gnuplot</code> or <code>matplotlib</code>.</p>
 <p>Instead of using <code>top</code> command, we can use <code>psrecord</code> to record the resource usage of a process. <code>psrecord</code> is a Python package that can be installed all using <code>pip</code>. </p>
-<pre class="code literal-block">$ python -m pip install psrecord
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>psrecord
+</pre></div>
+
 <p>Once installed, we can use <code>psrecord</code> to record the resource usage of a process. </p>
-<pre class="code literal-block"><span class="c1"># record resource usage of a process with pid 1234</span>
-$ psrecord <span class="m">1234</span> --log top.log
+<div class="code"><pre class="code literal-block"><span class="c1"># record resource usage of a process with pid 1234</span>
+$<span class="w"> </span>psrecord<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--log<span class="w"> </span>top.log
 
 <span class="c1"># start and record resource usage of a process</span>
-$ psrecord python script.py --plot graph.png
-</pre>
+$<span class="w"> </span>psrecord<span class="w"> </span>python<span class="w"> </span>script.py<span class="w"> </span>--plot<span class="w"> </span>graph.png
+</pre></div>
+
 <p>We can view the raw data in the log file.</p>
-<pre class="code literal-block"><span class="c1"># view raw data</span>
-$ head top.log
-$ head a.txt
+<div class="code"><pre class="code literal-block"><span class="c1"># view raw data</span>
+$<span class="w"> </span>head<span class="w"> </span>top.log
+$<span class="w"> </span>head<span class="w"> </span>a.txt
 <span class="c1"># Elapsed time   CPU (%)     Real (MB)   Virtual (MB)</span>
-       <span class="m">0</span>.000        <span class="m">0</span>.000        <span class="m">5</span>.000   <span class="m">399461</span>.438
-       <span class="m">0</span>.000       <span class="m">93</span>.700        <span class="m">5</span>.000   <span class="m">399461</span>.438
-       <span class="m">0</span>.000       <span class="m">96</span>.300        <span class="m">5</span>.000   <span class="m">399461</span>.438
-       <span class="m">0</span>.000       <span class="m">91</span>.900        <span class="m">5</span>.000   <span class="m">399461</span>.438
-</pre>
+<span class="w">       </span><span class="m">0</span>.000<span class="w">        </span><span class="m">0</span>.000<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
+<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">93</span>.700<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
+<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">96</span>.300<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
+<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">91</span>.900<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
+</pre></div>
+
 <p>Here is the generated graph.</p>
 <p align="center">
 <img src="../images/single-proc-resource.png" alt="single-proc-resource"></p>
@@ -474,31 +637,32 @@ $ head a.txt
 <p>This initial suggestion didn't work as <code>confluent-kafka-python</code> depends on <code>librdkafka</code> which is a C library. I had to build <code>librdkafka</code> from source for aarch64 and then build <code>confluent-kafka-python</code> from source.</p>
 <p>To build <code>librdkafka</code> from the source, I again asked ChatGPT. After making minor changes to the snippet suggested by ChatGPT, I was able to build <code>librdkafka</code> from the source for aarch64.</p>
 <p>Here is the final snippet:</p>
-<pre class="code literal-block"><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
+<div class="code"><pre class="code literal-block"><span class="n">FROM</span><span class="w"> </span><span class="n">ubuntu</span><span class="p">:</span><span class="mf">22.04</span>
 
-<span class="n">ARG</span> <span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
+<span class="n">ARG</span><span class="w"> </span><span class="n">DEBIAN_FRONTEND</span><span class="o">=</span><span class="n">noninteractive</span>
 
-<span class="n">RUN</span> <span class="n">apt</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
-  <span class="n">wget</span> <span class="n">git</span> <span class="n">curl</span> <span class="n">g</span><span class="o">++</span> <span class="n">make</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">client</span> \
-  <span class="n">nano</span> <span class="n">less</span> <span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span> <span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span> \
-  <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">vim</span> <span class="n">tzdata</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span>\
+<span class="w">  </span><span class="n">wget</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="n">g</span><span class="o">++</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">postgresql</span><span class="o">-</span><span class="n">client</span><span class="w"> </span>\
+<span class="w">  </span><span class="n">nano</span><span class="w"> </span><span class="n">less</span><span class="w"> </span><span class="n">shared</span><span class="o">-</span><span class="n">mime</span><span class="o">-</span><span class="n">info</span><span class="w"> </span><span class="n">openjdk</span><span class="o">-</span><span class="mi">17</span><span class="o">-</span><span class="n">jre</span><span class="o">-</span><span class="n">headless</span><span class="w"> </span>\
+<span class="w">  </span><span class="n">libpq</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">tzdata</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
 
-<span class="n">RUN</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
-<span class="n">RUN</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">setuptools</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">apt</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="o">-</span><span class="n">y</span><span class="w"> </span><span class="n">python3</span><span class="o">-</span><span class="n">pip</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">setuptools</span>
 
-<span class="n">WORKDIR</span> <span class="o">/</span>
-<span class="n">RUN</span> <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">WORKDIR</span> <span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">confluentinc</span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">WORKDIR</span><span class="w"> </span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
 
-<span class="n">COPY</span> <span class="o">.</span> <span class="o">/</span><span class="n">app</span>
-<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
-<span class="n">RUN</span> <span class="o">./</span><span class="n">configure</span> <span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
-<span class="n">RUN</span> <span class="n">make</span>
-<span class="n">RUN</span> <span class="n">make</span> <span class="n">install</span>
+<span class="n">COPY</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">/</span><span class="n">app</span>
+<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">app</span>
+<span class="n">RUN</span><span class="w"> </span><span class="o">./</span><span class="n">configure</span><span class="w"> </span><span class="o">--</span><span class="n">arch</span><span class="o">=</span><span class="n">aarch64</span><span class="w"> </span><span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">make</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">install</span>
 
-<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
-<span class="n">RUN</span> <span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre>
+<span class="n">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">confluent</span><span class="o">-</span><span class="n">kafka</span><span class="o">-</span><span class="n">python</span>
+<span class="n">RUN</span><span class="w"> </span><span class="n">python3</span><span class="w"> </span><span class="n">setup</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">install</span>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>By running native containers, I was able to reduce the system load by ~50%. With ChatGPT, it is easy to build/tweak programs in languages &amp; environments that we are not familiar with.</p>
 <div class="footnote">
@@ -537,8 +701,9 @@ $ head a.txt
 <p>For Workflow receives current, select <code>files or folders</code> and then select <code>in Finder</code>. </p>
 <p><img src="../images/mac-finder-quick-action2.png" alt="mac-finder-quick-action"></p>
 <p>Then select pass input <code>as agruments</code> and in the script section let us add the following command.</p>
-<pre class="code literal-block">/path/to/kdiff3 <span class="nv">$1</span> <span class="nv">$2</span>
-</pre>
+<div class="code"><pre class="code literal-block">/path/to/kdiff3<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="nv">$2</span>
+</pre></div>
+
 <p>After adding the command, save this Quick Action. </p>
 <p>Now if we relaunch Finder app and then select multiple directories, and right click we can see <code>Compare with KDiff3</code> in quick actions.</p>
 <p><img src="../images/mac-finder-kdiff3-quick-action.png" alt="mac-finder-kdiff3"></p>

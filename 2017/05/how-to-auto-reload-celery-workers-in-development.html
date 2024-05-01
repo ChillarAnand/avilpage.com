@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    3 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -164,22 +164,26 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p>We can pass <code>--autoreload</code> option when starting celery worker. This will restart worker when codebase changes.</p>
-<pre class="code literal-block">celery worker -l info -A foo --autoreload
-</pre>
+<div class="code"><pre class="code literal-block">celery<span class="w"> </span>worker<span class="w"> </span>-l<span class="w"> </span>info<span class="w"> </span>-A<span class="w"> </span>foo<span class="w"> </span>--autoreload
+</pre></div>
+
 <p>Unfortunately, it doesn't work as expected and <a href="https://github.com/celery/celery/issues/1658">it is deprecated</a>.</p>
 <p>During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.</p>
 <p><a href="https://pypi.python.org/pypi/watchdog">Watchdog</a> provides Python API and shell utilities to monitor file system events. We can install it with</p>
-<pre class="code literal-block">pip install watchdog
-</pre>
+<div class="code"><pre class="code literal-block">pip<span class="w"> </span>install<span class="w"> </span>watchdog
+</pre></div>
+
 <p>Watchdog provides <code>watchmedo</code> a shell utilitiy to perform actions based on file events. It has <code>auto-restart</code> subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.</p>
-<pre class="code literal-block">watchmedo auto-restart -- celery worker -l info -A foo
-</pre>
+<div class="code"><pre class="code literal-block">watchmedo<span class="w"> </span>auto-restart<span class="w"> </span>--<span class="w"> </span>celery<span class="w"> </span>worker<span class="w"> </span>-l<span class="w"> </span>info<span class="w"> </span>-A<span class="w"> </span>foo
+</pre></div>
+
 <p>By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.</p>
-<pre class="code literal-block">watchmedo auto-restart -d . -p <span class="s1">'*.py'</span> -- celery worker -l info -A foo
-</pre>
+<div class="code"><pre class="code literal-block">watchmedo<span class="w"> </span>auto-restart<span class="w"> </span>-d<span class="w"> </span>.<span class="w"> </span>-p<span class="w"> </span><span class="s1">'*.py'</span><span class="w"> </span>--<span class="w"> </span>celery<span class="w"> </span>worker<span class="w"> </span>-l<span class="w"> </span>info<span class="w"> </span>-A<span class="w"> </span>foo
+</pre></div>
+
 <p>If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by <code>runserver</code> to restart WSGI server when code changes.</p>
 <p>The same functionality can be used to reload celery workers. Create a seperate management command called <code>celery</code>. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">shlex</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">shlex</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
 <span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
@@ -198,7 +202,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'Starting celery worker with autoreload...'</span><span class="p">)</span>
         <span class="n">autoreload</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">restart_celery</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Now you can run celery worker with <code>python manage.py celery</code> which will start a celery worker and autoreload it when codebase changes.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

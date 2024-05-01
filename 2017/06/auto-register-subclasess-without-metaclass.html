@@ -164,7 +164,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <p>In registry pattern, a <code>registry</code> maintains global association from keys to objects, so that objects can be reached from anywhere by simple identifier. This is useful for doing reverse lookups.</p>
 <p>When building a registry, programmers have to explicitly register each object with registry. Manually building a registry is error prone and it is tedious if there are too many objects to register. It is better to auto register objects if possible.</p>
 <p>A commonly used approach is to use inheritance as an organizing mechanism. Create <a href="https://python-3-patterns-idioms-test.readthedocs.io/en/latest/Metaprogramming.html#example-self-registration-of-subclasses">a meta class which will auto register</a> classes and then create base class with this meta class.</p>
-<pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="code"><pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">target_class</span><span class="p">):</span>
@@ -190,18 +190,21 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
     <span class="k">pass</span>
-</pre>
+</pre></div>
+
 <p>Now whenever you subclass <code>BaseClass</code>, it gets registered in the global registry. In the above example, <code>Foo</code>, <code>Bar</code> gets registered automatically.</p>
 <p>Eventhough it solves registration problem, it is hard to understand the code unless you know how metaclasses work.</p>
 <p>A simple alternative for this is to use <code>__subclasses__()</code> to get subclasess and register them.</p>
-<pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">BaseClass</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()}</span>
+</pre></div>
+
 <p>This will work only for direct subclasses and won't with indirect subclasses like this.</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">Baz</span><span class="p">(</span><span class="n">Bar</span><span class="p">):</span>
     <span class="k">pass</span>
-</pre>
+</pre></div>
+
 <p>To solve this, we can use a function to recursively retrieve all subclasses of a class.</p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">subclasses</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">registry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">registry</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
@@ -217,16 +220,18 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 
 <span class="n">REGISTRY</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span> <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">)}</span>
-</pre>
+</pre></div>
+
 <p><a href="https://www.python.org/dev/peps/pep-0487/">PEP 487</a> provides <code>__init_subclass__</code> hook in class body  to customize class creation without the use of metaclass. We can our registration logic in this <code>__init_subclass__</code> hook.</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">BaseClass</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registry</span><span class="p">:</span>
             <span class="n">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>This is available only in Python 3.6+. For older versions, we have to use the recursive function to get all subclasess. This code is easier to understand than metaclass example.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

@@ -150,7 +150,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    2 min read
+                    3 min read
             </p>
 
             <p class="dateline">
@@ -168,26 +168,28 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>There are several Dicom servers like Orthanc, Dicoogle etc. <a href="https://en.wikipedia.org/wiki/Orthanc_(server)">Orthanc</a> is a lightweight open source dicom server and is widely used by many Health care organisations.</p>
 <p>Sébastien Jodogne, original author of Orthanc maintains docker images. We can use these images to run Orthanc server locally.</p>
 <p>Ensure docker is installed on the machine and then run the following command to start Orthanc server.</p>
-<pre class="code literal-block">$ docker run -p <span class="m">4242</span>:4242 -p <span class="m">8042</span>:8042 --rm <span class="se">\</span>
-    jodogne/orthanc-python
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">4242</span>:4242<span class="w"> </span>-p<span class="w"> </span><span class="m">8042</span>:8042<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>jodogne/orthanc-python
+</pre></div>
+
 <p>Once the server is started, we can visit <a href="http://localhost:8042">http://localhost:8042</a> and explore Orthanc server.</p>
 <h4>Heroku Deployment</h4>
 <p>Heroku is PAAS platform which supports docker deployments. Lets deploy Orthac server to Heroku for testing.</p>
 <p>By default, Orthanc server runs on 8042 port as defined in the config file. Heroku dynamically assigns port for the deployed process.</p>
 <p>We can write a shell script which will read port number from environment variable, replace it in Orthanc configuration file and then start Orthanc server.</p>
-<pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
 
-<span class="nb">set</span> -x
+<span class="nb">set</span><span class="w"> </span>-x
 
-<span class="nb">echo</span> <span class="nv">$PORT</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$PORT</span>
 
-sed <span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span> -i /etc/orthanc/orthanc.json
+sed<span class="w"> </span><span class="s1">'s/ : 8042/ : '</span><span class="nv">$PORT</span><span class="s1">'/g'</span><span class="w"> </span>-i<span class="w"> </span>/etc/orthanc/orthanc.json
 
-Orthanc /etc/orthanc/
-</pre>
+Orthanc<span class="w"> </span>/etc/orthanc/
+</pre></div>
+
 <p>We can use this shell script as entry point in docker as follows.</p>
-<pre class="code literal-block">FROM jodogne/orthanc-python
+<div class="code"><pre class="code literal-block">FROM jodogne/orthanc-python
 
 EXPOSE $PORT
 
@@ -195,13 +197,15 @@ WORKDIR /app
 ADD . /app
 
 ENTRYPOINT [ "./run.sh" ]
-</pre>
-<p>We can create a new app in heroku and we can deploy this container.</p>
-<pre class="code literal-block">$ heroku apps:create orthanc-demo
+</pre></div>
 
-$ heroku container:push web
-$ heroku container:release web
-</pre>
+<p>We can create a new app in heroku and we can deploy this container.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>heroku<span class="w"> </span>apps:create<span class="w"> </span>orthanc-demo
+
+$<span class="w"> </span>heroku<span class="w"> </span>container:push<span class="w"> </span>web
+$<span class="w"> </span>heroku<span class="w"> </span>container:release<span class="w"> </span>web
+</pre></div>
+
 <p>Once the deployment is completed, we can access our app from the endpoint provided by heroku. Here is a <a href="https://orthanc-demo.herokuapp.com">orthanc demo server</a> running on heroku.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have learnt how to setup Orthanc server and deployed it to Heroku. In the next article, let dig deeper into dicom protocol by upload/accessing dicom files to the server.</p>

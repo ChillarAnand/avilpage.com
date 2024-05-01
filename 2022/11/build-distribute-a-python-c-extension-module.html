@@ -150,7 +150,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    8 min read
+                    9 min read
             </p>
 
             <p class="dateline">
@@ -168,69 +168,73 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Building a C extension module</h4>
 <p>Let's start by creating a simple C extension module called <code>maths</code>. In this, we will create a <code>square</code> function that takes a number and returns its square.</p>
 <p>First, create a directory called <code>maths</code> and create a file called <code>maths.c</code> inside it. This is where we will write our C code.</p>
-<pre class="code literal-block"><span class="cp">#include</span> <span class="cpf">&lt;Python.h&gt;</span><span class="cp"></span>
+<div class="code"><pre class="code literal-block"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;Python.h&gt;</span>
 
 
-<span class="kt">int</span> <span class="nf">square</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">num</span> <span class="o">*</span> <span class="n">num</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">num</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num</span><span class="p">;</span>
 <span class="p">}</span>
 
 
-<span class="k">static</span> <span class="n">PyObject</span> <span class="o">*</span><span class="nf">py_square</span><span class="p">(</span><span class="n">PyObject</span> <span class="o">*</span><span class="n">self</span><span class="p">,</span> <span class="n">PyObject</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">n_num</span><span class="p">,</span> <span class="n">result</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">PyArg_ParseTuple</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s">"i"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">n_num</span><span class="p">))</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="n">result</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="n">n_num</span><span class="p">);</span>
+<span class="k">static</span><span class="w"> </span><span class="n">PyObject</span><span class="w"> </span><span class="o">*</span><span class="nf">py_square</span><span class="p">(</span><span class="n">PyObject</span><span class="w"> </span><span class="o">*</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">PyObject</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">n_num</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">PyArg_ParseTuple</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="s">"i"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n_num</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">square</span><span class="p">(</span><span class="n">n_num</span><span class="p">);</span>
 
-  <span class="k">return</span> <span class="n">Py_BuildValue</span><span class="p">(</span><span class="s">"i"</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Py_BuildValue</span><span class="p">(</span><span class="s">"i"</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
 <span class="p">}</span>
 
 
-<span class="k">static</span> <span class="n">PyMethodDef</span> <span class="n">mathsMethods</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span><span class="s">"square"</span><span class="p">,</span> <span class="n">py_square</span><span class="p">,</span> <span class="n">METH_VARARGS</span><span class="p">,</span> <span class="s">"Function for calculating square in C"</span><span class="p">},</span>
-  <span class="p">{</span><span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">}</span>
+<span class="k">static</span><span class="w"> </span><span class="n">PyMethodDef</span><span class="w"> </span><span class="n">mathsMethods</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="s">"square"</span><span class="p">,</span><span class="w"> </span><span class="n">py_square</span><span class="p">,</span><span class="w"> </span><span class="n">METH_VARARGS</span><span class="p">,</span><span class="w"> </span><span class="s">"Function for calculating square in C"</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">}</span>
 <span class="p">};</span>
 
 
-<span class="k">static</span> <span class="k">struct</span> <span class="nc">PyModuleDef</span> <span class="n">maths</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="n">PyModuleDef_HEAD_INIT</span><span class="p">,</span>
-  <span class="s">"maths"</span><span class="p">,</span>
-  <span class="s">"Custom maths module"</span><span class="p">,</span>
-  <span class="mi">-1</span><span class="p">,</span>
-  <span class="n">mathsMethods</span>
+<span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">PyModuleDef</span><span class="w"> </span><span class="n">maths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">PyModuleDef_HEAD_INIT</span><span class="p">,</span>
+<span class="w">  </span><span class="s">"maths"</span><span class="p">,</span>
+<span class="w">  </span><span class="s">"Custom maths module"</span><span class="p">,</span>
+<span class="w">  </span><span class="mi">-1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">mathsMethods</span>
 <span class="p">};</span>
 
 
-<span class="n">PyMODINIT_FUNC</span> <span class="nf">PyInit_maths</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="n">PyMODINIT_FUNC</span><span class="w"> </span><span class="nf">PyInit_maths</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="k">return</span> <span class="n">PyModule_Create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">maths</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">PyModule_Create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">maths</span><span class="p">);</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>We need to create a <code>setup.py</code> file to build our module. This file tells Python how to build our module.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">Extension</span>
 
 <span class="n">setup</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">"maths"</span><span class="p">,</span>
     <span class="n">version</span><span class="o">=</span><span class="s2">"0.1"</span><span class="p">,</span>
     <span class="n">ext_modules</span><span class="o">=</span><span class="p">[</span><span class="n">Extension</span><span class="p">(</span><span class="s2">"maths"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"maths.c"</span><span class="p">])]</span>
 <span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Now, we can build our module by running <code>python setup.py build</code>. This will create a <code>build</code> directory with a <code>lib</code> directory inside it.
 This <code>lib</code> directory contains our compiled module. We can import this module in Python and use it.</p>
-<pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">maths</span>
+<div class="code"><pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">maths</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">maths</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="mi">25</span>
-</pre>
+</pre></div>
+
 <p>Instead of testing our module by importing it in Python, we can also test it by running <code>python setup.py test</code>. This will run the tests in the <code>test</code> directory. We can create a <code>test</code> directory and create a file called <code>test_maths.py</code> inside it. This is where we will write our tests.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">unittest</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">unittest</span>
 
 <span class="kn">import</span> <span class="nn">maths</span>
 
 <span class="k">class</span> <span class="nc">TestMaths</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_square</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">maths</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">25</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <h4>Distributing a C extension module</h4>
 <p>Now that we have built our module, we can distribute it. We can distribute it as a source distribution or a binary distribution. A source distribution is a zip file that contains the source code of our module. We can distribute our module as a source distribution by running <code>python setup.py sdist</code>. This will create a <code>dist</code> directory with a zip file inside it. This zip file contains our source code.</p>
 <p>However, source distribution of C extension modules is not recommended. This is because the user needs to have a C compiler installed on their machine to build the module. Most users just want to <code>pip install</code> the module and use it. So, we need to distribute our module as a binary distribution.</p>

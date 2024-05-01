@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    8 min read
+                    10 min read
             </p>
 
             <p class="dateline">
@@ -173,69 +173,79 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <h4>Introduction</h4>
 <p>Kubernetes(k8s)<sup id="fnref:k8s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k8s">1</a></sup> is an open-source system for managing large scale containerized applications. K3s<sup id="fnref:k3s"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:k3s">2</a></sup> is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.</p>
-<pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">sfL</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="k">get</span><span class="p">.</span><span class="n">k3s</span><span class="p">.</span><span class="n">io</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sh</span><span class="w"> </span><span class="o">-</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">curl</span><span class="w"> </span><span class="o">-</span><span class="n">sfL</span><span class="w"> </span><span class="nl">https</span><span class="p">:</span><span class="o">//</span><span class="k">get</span><span class="p">.</span><span class="n">k3s</span><span class="p">.</span><span class="n">io</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sh</span><span class="w"> </span><span class="o">-</span>
 
-<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w">  </span><span class="n">Can</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">systemd</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">openrc</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">supervisor</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k3s</span><span class="w"></span>
-</pre>
+<span class="o">[</span><span class="n">ERROR</span><span class="o">]</span><span class="w">  </span><span class="n">Can</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">find</span><span class="w"> </span><span class="n">systemd</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">openrc</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">supervisor</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k3s</span>
+</pre></div>
+
 <p>To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass<sup id="fnref:multipass"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:multipass">3</a></sup>. In this article, lets see how to setup K3s on Mac using multipass</p>
 <h4>K3s Setup</h4>
 <p>Install multipass with brew by running the following command.</p>
-<pre class="code literal-block">$ brew install --cask multipass
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>multipass
+</pre></div>
+
 <p>Once it is installed, spin up a new VM by specifying memory and disk space.</p>
-<pre class="code literal-block">$ multipass launch --name k3s --mem 4G --disk 40G
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>launch<span class="w"> </span>--name<span class="w"> </span>k3s<span class="w"> </span>--mem<span class="w"> </span>4G<span class="w"> </span>--disk<span class="w"> </span>40G
+</pre></div>
+
 <p>Once VM is launched, we can see VM details.</p>
-<pre class="code literal-block">$ multipass info k3s
-Name:           k3s
-State:          Running
-IPv4:           <span class="m">192</span>.168.64.4
-                <span class="m">10</span>.42.0.0
-                <span class="m">10</span>.42.0.1
-Release:        Ubuntu <span class="m">22</span>.04.1 LTS
-Image hash:     78b5ca0da456 <span class="o">(</span>Ubuntu <span class="m">22</span>.04 LTS<span class="o">)</span>
-Load:           <span class="m">1</span>.34 <span class="m">2</span>.10 <span class="m">1</span>.70
-Disk usage:     <span class="m">3</span>.7G out of <span class="m">38</span>.6G
-Memory usage:   <span class="m">1</span>.2G out of <span class="m">3</span>.8G
-Mounts:         /Users/chillaranand/test/k8s <span class="o">=</span>&gt; ~/k8s
-                    UID map: <span class="m">503</span>:default
-                    GID map: <span class="m">20</span>:default
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>info<span class="w"> </span>k3s
+Name:<span class="w">           </span>k3s
+State:<span class="w">          </span>Running
+IPv4:<span class="w">           </span><span class="m">192</span>.168.64.4
+<span class="w">                </span><span class="m">10</span>.42.0.0
+<span class="w">                </span><span class="m">10</span>.42.0.1
+Release:<span class="w">        </span>Ubuntu<span class="w"> </span><span class="m">22</span>.04.1<span class="w"> </span>LTS
+Image<span class="w"> </span>hash:<span class="w">     </span>78b5ca0da456<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">22</span>.04<span class="w"> </span>LTS<span class="o">)</span>
+Load:<span class="w">           </span><span class="m">1</span>.34<span class="w"> </span><span class="m">2</span>.10<span class="w"> </span><span class="m">1</span>.70
+Disk<span class="w"> </span>usage:<span class="w">     </span><span class="m">3</span>.7G<span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">38</span>.6G
+Memory<span class="w"> </span>usage:<span class="w">   </span><span class="m">1</span>.2G<span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">3</span>.8G
+Mounts:<span class="w">         </span>/Users/chillaranand/test/k8s<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>~/k8s
+<span class="w">                    </span>UID<span class="w"> </span>map:<span class="w"> </span><span class="m">503</span>:default
+<span class="w">                    </span>GID<span class="w"> </span>map:<span class="w"> </span><span class="m">20</span>:default
+</pre></div>
+
 <p>We can even mount Mac directories on the VM.</p>
-<pre class="code literal-block">$ multipass mount ~/test/k8s k3s:~/k8s
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>mount<span class="w"> </span>~/test/k8s<span class="w"> </span>k3s:~/k8s
+</pre></div>
+
 <p>This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.</p>
 <p>Now, we can install k3s by running the install script inside the VM.</p>
-<pre class="code literal-block">$ multipass shell k3s
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>shell<span class="w"> </span>k3s
 
-ubuntu@k3s:~$ curl -sfL https://get.k3s.io <span class="p">|</span> sh -
-</pre>
+ubuntu@k3s:~$<span class="w"> </span>curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-
+</pre></div>
+
 <p>This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.</p>
 <p>By default, k3s config file will be located at <code>/etc/rancher/k3s/k3s.yaml</code>. With this config file, we can use Lens<sup id="fnref:lens"><a class="footnote-ref" href="local-kubernetes-with-k3s-on-mac.html#fn:lens">4</a></sup> to manage k8s cluster.</p>
 <p align="center">
 <img src="../../images/k8s-mac-m1.jpg"></p>
 
 <p>Lets find out IP of the VM &amp; k8s token so that we can spin up a new VM and add it to this cluster.</p>
-<pre class="code literal-block"><span class="c1"># get token &amp; ip of k3s</span>
-<span class="o">$</span> <span class="n">multipass</span> <span class="n">exec</span> <span class="n">k3s</span> <span class="n">sudo</span> <span class="n">cat</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">rancher</span><span class="o">/</span><span class="n">k3s</span><span class="o">/</span><span class="n">server</span><span class="o">/</span><span class="n">node</span><span class="o">-</span><span class="n">token</span>
-<span class="o">$</span> <span class="n">multipass</span> <span class="n">info</span> <span class="n">k3s</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">-</span><span class="n">i</span> <span class="n">ip</span>
-</pre>
-<pre class="code literal-block">$ multipass launch --name k3s-worker --mem 2G --disk 20G
+<div class="code"><pre class="code literal-block"><span class="c1"># get token &amp; ip of k3s</span>
+<span class="o">$</span><span class="w"> </span><span class="n">multipass</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="n">k3s</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">rancher</span><span class="o">/</span><span class="n">k3s</span><span class="o">/</span><span class="n">server</span><span class="o">/</span><span class="n">node</span><span class="o">-</span><span class="n">token</span>
+<span class="o">$</span><span class="w"> </span><span class="n">multipass</span><span class="w"> </span><span class="n">info</span><span class="w"> </span><span class="n">k3s</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">ip</span>
+</pre></div>
 
-$ multipass shell k3s-worker
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>launch<span class="w"> </span>--name<span class="w"> </span>k3s-worker<span class="w"> </span>--mem<span class="w"> </span>2G<span class="w"> </span>--disk<span class="w"> </span>20G
 
-ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io <span class="p">|</span> <span class="nv">K3S_URL</span><span class="o">=</span>https://192.168.64.4:6443 <span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="s2">"hs48af...947fh4::server:3tfkwjd...4jed73"</span> sh -
-</pre>
+$<span class="w"> </span>multipass<span class="w"> </span>shell<span class="w"> </span>k3s-worker
+
+ubuntu@k3s-worker:~$<span class="w"> </span>curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">K3S_URL</span><span class="o">=</span>https://192.168.64.4:6443<span class="w"> </span><span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="s2">"hs48af...947fh4::server:3tfkwjd...4jed73"</span><span class="w"> </span>sh<span class="w"> </span>-
+</pre></div>
+
 <p>We can verify if the node is added correctly from k3s VM.</p>
-<pre class="code literal-block"><span class="n">ubuntu</span><span class="nv">@k3s</span><span class="err">:</span><span class="o">~</span><span class="err">$</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">nodes</span><span class="w"></span>
-<span class="n">NAME</span><span class="w">         </span><span class="n">STATUS</span><span class="w">   </span><span class="n">ROLES</span><span class="w">                  </span><span class="n">AGE</span><span class="w">     </span><span class="n">VERSION</span><span class="w"></span>
-<span class="n">k3s</span><span class="w">          </span><span class="n">Ready</span><span class="w">    </span><span class="n">control</span><span class="o">-</span><span class="n">plane</span><span class="p">,</span><span class="n">master</span><span class="w">   </span><span class="mi">15</span><span class="n">h</span><span class="w">     </span><span class="n">v1</span><span class="mf">.24.6</span><span class="o">+</span><span class="n">k3s1</span><span class="w"></span>
-<span class="n">k3s</span><span class="o">-</span><span class="n">worker</span><span class="w">   </span><span class="n">Ready</span><span class="w">    </span><span class="o">&lt;</span><span class="k">none</span><span class="o">&gt;</span><span class="w">                 </span><span class="mi">7</span><span class="n">m15s</span><span class="w">   </span><span class="n">v1</span><span class="mf">.24.6</span><span class="o">+</span><span class="n">k3s1</span><span class="w"></span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="n">ubuntu</span><span class="nv">@k3s</span><span class="err">:</span><span class="o">~</span><span class="err">$</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">nodes</span>
+<span class="n">NAME</span><span class="w">         </span><span class="n">STATUS</span><span class="w">   </span><span class="n">ROLES</span><span class="w">                  </span><span class="n">AGE</span><span class="w">     </span><span class="n">VERSION</span>
+<span class="n">k3s</span><span class="w">          </span><span class="n">Ready</span><span class="w">    </span><span class="n">control</span><span class="o">-</span><span class="n">plane</span><span class="p">,</span><span class="n">master</span><span class="w">   </span><span class="mi">15</span><span class="n">h</span><span class="w">     </span><span class="n">v1</span><span class="mf">.24.6</span><span class="o">+</span><span class="n">k3s1</span>
+<span class="n">k3s</span><span class="o">-</span><span class="n">worker</span><span class="w">   </span><span class="n">Ready</span><span class="w">    </span><span class="o">&lt;</span><span class="k">none</span><span class="o">&gt;</span><span class="w">                 </span><span class="mi">7</span><span class="n">m15s</span><span class="w">   </span><span class="n">v1</span><span class="mf">.24.6</span><span class="o">+</span><span class="n">k3s1</span>
+</pre></div>
+
 <p>Once we are done with experimenting k3s, we can delete the VMs.</p>
-<pre class="code literal-block">$ multipass delete k3s k3s-worker
-$ multipass purge
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>multipass<span class="w"> </span>delete<span class="w"> </span>k3s<span class="w"> </span>k3s-worker
+$<span class="w"> </span>multipass<span class="w"> </span>purge
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.</p>
 <p>Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.</p>

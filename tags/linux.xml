@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about linux)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 07 Apr 2024 09:24:57 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>The Strange Case of Dr. Linux and Mr. Mac</title><link>https://avilpage.com/2024/03/the-strange-case-of-mac-and-linux.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Few days back, some of the tests started failing on CI server. When I tried to run the tests locally, they were passing.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about linux)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/linux.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 30 Apr 2024 14:54:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>The Strange Case of Dr. Linux and Mr. Mac</title><link>https://avilpage.com/2024/03/the-strange-case-of-mac-and-linux.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Few days back, some of the tests started failing on CI server. When I tried to run the tests locally, they were passing.&lt;/p&gt;
 &lt;p&gt;After debugging for a while, I found that the tests were failing because of the case sensitivity of the file system. One of the developer was using Linux and had committed 2 files with the same name but different case(&lt;code&gt;config.json&lt;/code&gt;, &lt;code&gt;Config.json&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;Linux file system is case-sensitive. So these 2 files will be shown as 2 different files.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="linux-file-system" src="https://avilpage.com/images/linux-git-case-sensitive.png"&gt;&lt;/p&gt;
@@ -10,42 +10,47 @@
 &lt;p&gt;&lt;img alt="case-sensitive-volume" src="https://avilpage.com/images/mac-case-sensitive-volume.png"&gt;&lt;/p&gt;
 &lt;p&gt;We have to be aware of these differences when working on a project with developers using different OS.&lt;/p&gt;</description><category>git</category><category>linux</category><category>macbook</category><guid>https://avilpage.com/2024/03/the-strange-case-of-mac-and-linux.html</guid><pubDate>Sat, 30 Mar 2024 04:23:53 GMT</pubDate></item><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -pid &lt;span class="m"&gt;1234&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In this article, we will see how to record and plot resource usage of a single process using &lt;code&gt;top&lt;/code&gt; and a Python package called psrecord&lt;sup id="fnref:psrecord"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fn:psrecord"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;h4&gt;Record Resource Usage&lt;/h4&gt;
 &lt;p&gt;In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use &lt;code&gt;top&lt;/code&gt; to log resource usage into a text file. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt; -b -d &lt;span class="m"&gt;1&lt;/span&gt; &amp;gt; top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -l &lt;span class="m"&gt;0&lt;/span&gt; -s &lt;span class="m"&gt;1&lt;/span&gt; -pid &lt;span class="m"&gt;32515&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt; &amp;gt; top.log
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32515&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like &lt;code&gt;gnuplot&lt;/code&gt; or &lt;code&gt;matplotlib&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Instead of using &lt;code&gt;top&lt;/code&gt; command, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;code&gt;psrecord&lt;/code&gt; is a Python package that can be installed all using &lt;code&gt;pip&lt;/code&gt;. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python -m pip install psrecord
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;psrecord
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once installed, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
-$ psrecord &lt;span class="m"&gt;1234&lt;/span&gt; --log top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--log&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# start and record resource usage of a process&lt;/span&gt;
-$ psrecord python script.py --plot graph.png
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;script.py&lt;span class="w"&gt; &lt;/span&gt;--plot&lt;span class="w"&gt; &lt;/span&gt;graph.png
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can view the raw data in the log file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
-$ head top.log
-$ head a.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;top.log
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;a.txt
 &lt;span class="c1"&gt;# Elapsed time   CPU (%)     Real (MB)   Virtual (MB)&lt;/span&gt;
-       &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;93&lt;/span&gt;.700        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;96&lt;/span&gt;.300        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;91&lt;/span&gt;.900        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;/pre&gt;
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;93&lt;/span&gt;.700&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;96&lt;/span&gt;.300&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;91&lt;/span&gt;.900&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is the generated graph.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/single-proc-resource.png" alt="single-proc-resource"&gt;
@@ -61,69 +66,80 @@ $ head a.txt
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>devops</category><category>linux</category><category>mac</category><guid>https://avilpage.com/2023/04/record-resource-usage-per-process.html</guid><pubDate>Fri, 14 Apr 2023 00:48:37 GMT</pubDate></item><item><title>Pipe tail output into column</title><link>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;code&gt;column&lt;/code&gt; command-line utility formats its input into multiple columns and aligns it nicely. It is useful for formatting output of csv files, or other commands. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ cat users.csv
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;users.csv
 id,user,active
-&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
-&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
+&lt;span class="m"&gt;1&lt;/span&gt;,John&lt;span class="w"&gt; &lt;/span&gt;Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will&lt;span class="w"&gt; &lt;/span&gt;Smith,false
 
-$ column -s, -t &amp;lt; users.csv
-id  user        active
-&lt;span class="m"&gt;1&lt;/span&gt;   John Doe    &lt;span class="nb"&gt;true&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;   Will Smith  &lt;span class="nb"&gt;false&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;column&lt;span class="w"&gt; &lt;/span&gt;-s,&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="w"&gt; &lt;/span&gt;users.csv
+id&lt;span class="w"&gt;  &lt;/span&gt;user&lt;span class="w"&gt;        &lt;/span&gt;active
+&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;John&lt;span class="w"&gt; &lt;/span&gt;Doe&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;Will&lt;span class="w"&gt; &lt;/span&gt;Smith&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nb"&gt;false&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;code&gt;tail&lt;/code&gt; command-line utility prints the last 10 lines of a file. It can be used with &lt;code&gt;-f&lt;/code&gt; option to follow the file as it grows.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ tail -f users.csv
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tail&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;users.csv
 id,user,active
-&lt;span class="m"&gt;1&lt;/span&gt;,John Doe,true
-&lt;span class="m"&gt;2&lt;/span&gt;,Will Smith,false
-&lt;/pre&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;,John&lt;span class="w"&gt; &lt;/span&gt;Doe,true
+&lt;span class="m"&gt;2&lt;/span&gt;,Will&lt;span class="w"&gt; &lt;/span&gt;Smith,false
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To format the output of &lt;code&gt;tail -f&lt;/code&gt; command, we can't use &lt;code&gt;column&lt;/code&gt; command directly. &lt;code&gt;column&lt;/code&gt; command can't produce output until it receives all the input. It needs all the input beforehand to calculate the column widths. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ tail -f users.csv &lt;span class="p"&gt;|&lt;/span&gt; column -s, -t
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tail&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;users.csv&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;column&lt;span class="w"&gt; &lt;/span&gt;-s,&lt;span class="w"&gt; &lt;/span&gt;-t
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;So, the above command won't work. &lt;/p&gt;
 &lt;p&gt;As the goal is to follow the output of the file, we can use &lt;code&gt;watch&lt;/code&gt; command for this. &lt;code&gt;watch&lt;/code&gt; command executes a command periodically, and displays its output. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"tail -n 20 users.csv | column -s, -t"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;watch&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"tail -n 20 users.csv | column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This command will fetch the last 20 lines of the file, pipe it to column command, and display the output. It will repeat the command every 1 second.&lt;/p&gt;
 &lt;p&gt;As the file grows beyond 20 lines, the headers will be truncated. To preserve the headers, we can use &lt;code&gt;head&lt;/code&gt; command in addition to &lt;code&gt;tail&lt;/code&gt; command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ watch -n &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="s2"&gt;"(head -n1 &amp;amp;&amp;amp; tail -n20) &amp;lt; users.csv| column -s, -t"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;watch&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"(head -n1 &amp;amp;&amp;amp; tail -n20) &amp;lt; users.csv| column -s, -t"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This command will print the first line of the file, and then the last 20 lines of the file. The output will be piped to &lt;code&gt;column&lt;/code&gt; command, and displayed.&lt;/p&gt;
 &lt;p&gt;Here is a screenshot of the output of a demo csv.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="pipe tail output to column" src="https://avilpage.com/images/pipe-tail-output-into-column.png"&gt;&lt;/p&gt;
 &lt;p&gt;This makes it easy to watch the output of a file as it grows.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2023/01/pipe-tail-output-into-column.html</guid><pubDate>Mon, 02 Jan 2023 00:56:28 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ uname -mp
-arm64 arm
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
+arm64&lt;span class="w"&gt; &lt;/span&gt;arm
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Let's run the same command on a device using Intel x86 processor.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ uname -mp
-x86_64 x86_64
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
+x86_64&lt;span class="w"&gt; &lt;/span&gt;x86_64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Many popular docker images&lt;sup id="fnref:dhub"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:dhub"&gt;1&lt;/a&gt;&lt;/sup&gt; doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Lima&lt;sup id="fnref:lima"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:lima"&gt;2&lt;/a&gt;&lt;/sup&gt; can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp;amp; ARM64 VM and install k3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:k3s"&gt;3&lt;/a&gt;&lt;/sup&gt; in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install lima
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;lima
 
-$ limactl start linux_arm64
-$ limactl start linux_amd64
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
+$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;When starting a VM, we can edit &lt;code&gt;arch&lt;/code&gt; parameter in the configuration. Once VM starts, we can see the details by running &lt;code&gt;limactl list&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ limactl list
-NAME                ARCH
-linux_amd64         x86_64
-linux_arm64         aarch64
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;list
+NAME&lt;span class="w"&gt;                &lt;/span&gt;ARCH
+linux_amd64&lt;span class="w"&gt;         &lt;/span&gt;x86_64
+linux_arm64&lt;span class="w"&gt;         &lt;/span&gt;aarch64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Lets login to each VM &amp;amp; install k3s.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
 
-$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
 
-$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
+
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arch-arm-docker.png"&gt;
@@ -133,9 +149,10 @@ $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
 &lt;h4&gt;Fast Mode&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;lima&lt;/code&gt; provides &lt;code&gt;fast-mode&lt;/code&gt; option for cross architecture VMs which will speed up the performance.&lt;/p&gt;
 &lt;p&gt;For that, we need to log in to VMs and install emulators.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
-$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;containerd
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;nerdctl&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--privileged&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;tonistiigi/binfmt&lt;span class="w"&gt; &lt;/span&gt;--install&lt;span class="w"&gt; &lt;/span&gt;all
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.&lt;/p&gt;
@@ -161,95 +178,104 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 &lt;/p&gt;
 
 &lt;p&gt;atop shows live &amp;amp; historical data measurement at system level as well as process level. To get the glimpse of system resource(CPU, memory, network, disk) usage install and run atop with&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo apt install --yes atop
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--yes&lt;span class="w"&gt; &lt;/span&gt;atop
 
-$ atop
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;atop
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/atop.png" height="300px" width="600"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;By default, atop shows resources used in the last interval only and sorts them by CPU usage. We can use&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ atop -A -f &lt;span class="m"&gt;4&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;atop&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;code&gt;-A&lt;/code&gt; sorts the processes automatically in the order of the most busy system resource.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;-f&lt;/code&gt; shows both active as well as inactive system resources in the ouput.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;4&lt;/code&gt; sets refresh interval to 4 seconds.&lt;/p&gt;
 &lt;p&gt;Just by looking at the output of atop, we get a glimpse of overall system resource usage as well as individual processes resource usage.&lt;/p&gt;</description><category>command-line</category><category>linux</category><guid>https://avilpage.com/2018/07/linux-performance-analysis-in-seconds.html</guid><pubDate>Tue, 24 Jul 2018 15:51:21 GMT</pubDate></item><item><title>Bluetooth Serial Communication Between Linux &amp; Android</title><link>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with other devices or with other bluetooth modules like HC-05 or HM-10.&lt;/p&gt;
 &lt;p&gt;In this article, we will learn how to send data between laptop and android bluetooth.&lt;/p&gt;
 &lt;p&gt;First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;asus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DESKTOP&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;C4ECO3K&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;athene&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;65&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;D&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;OnePlus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;61&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Lenovo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;VIBE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;K5&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Plus&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;AC&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;C3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;CE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;EF&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Galaxy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;J2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;35&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;71&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;B3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;05&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;asus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DESKTOP&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;C4ECO3K&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;athene&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;65&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;D&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;OnePlus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;61&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Lenovo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;VIBE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;K5&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Plus&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;AC&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;C3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;CE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;EF&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Galaxy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;J2&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;35&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;71&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;B3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;05&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Changing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;succeeded&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Changing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;succeeded&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="k"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;
+&lt;span class="k"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Discovery&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;started&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Discovering&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;66&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Discovery&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;started&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Discovering&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;66&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Attempting&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Paired&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Pairing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;
+&lt;span class="n"&gt;Attempting&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Paired&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;span class="n"&gt;Pairing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To communicate with paired devices, we will use &lt;a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols"&gt;RFCOMM protocol&lt;/a&gt;. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.&lt;/p&gt;
 &lt;p&gt;From ubuntu, lets open a port for communication.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;rfcomm&lt;span class="w"&gt; &lt;/span&gt;listen&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;From Android, we have to connect to ubuntu. For this, we can use &lt;a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;amp;hl=en"&gt;Roboremo&lt;/a&gt; app which supports RFCOMM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
-Waiting &lt;span class="k"&gt;for&lt;/span&gt; connection on channel &lt;span class="m"&gt;3&lt;/span&gt;
-Connection from &lt;span class="m"&gt;88&lt;/span&gt;:79:7E:7B:4C:87 to /dev/rfcomm0
-Press CTRL-C &lt;span class="k"&gt;for&lt;/span&gt; hangup
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;rfcomm&lt;span class="w"&gt; &lt;/span&gt;listen&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+Waiting&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;connection&lt;span class="w"&gt; &lt;/span&gt;on&lt;span class="w"&gt; &lt;/span&gt;channel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+Connection&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;88&lt;/span&gt;:79:7E:7B:4C:87&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+Press&lt;span class="w"&gt; &lt;/span&gt;CTRL-C&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;hangup
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the connection is established, we can communicate between devices.&lt;/p&gt;
 &lt;p&gt;In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
-$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'hello from ubuntu'&lt;/span&gt; &amp;gt; /dev/rfcomm0
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'hello from ubuntu'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can see the received messages on Android&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arduino-ubuntu-bluetooth.jpg"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;We can also send messages from android and read from ubuntu.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
-$ cat /dev/rfcomm0
-hello from android
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+hello&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;android
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;</description><category>android</category><category>bluetooth</category><category>command-line</category><category>linux</category><guid>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item><item><title>Provisioning Laptop(s) With Ansible</title><link>https://avilpage.com/2017/03/provisioning-laptop-ansible.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Setting up a new laptop manually takes a lot of time and there is a good chance of forgetting tweaks made to configuration files. It is good idea to automate it via a shell script or using configuration management tools like Ansible. It also makes easy to sync configuration across multiple systems.&lt;/p&gt;
 &lt;h3&gt;Why Ansible?&lt;/h3&gt;
 &lt;p&gt;Ansible is lightweight and provides only a thin layer of abstraction. It connects to hosts via ssh and pushes changes. So, there is no need to setup anything on remote hosts.&lt;/p&gt;
 &lt;h3&gt;Writing A Playbook&lt;/h3&gt;
 &lt;p&gt;You should check out Ansible documentation to get familiar with ansible and &lt;a href="https://docs.ansible.com/ansible/playbooks.html"&gt;writing playbooks&lt;/a&gt;. Ansible uses yaml format for playbooks and it's human readable. Here is a simple playbook to install redis on ubuntu server.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;hosts&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;all&lt;/span&gt;
-&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;True&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;hosts&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;all&lt;/span&gt;
+&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;True&lt;/span&gt;
 
 &lt;span class="n"&gt;tasks&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
-  &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;redis&lt;/span&gt;
-    &lt;span class="n"&gt;apt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;update_cache&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;apt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;redis&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;update_cache&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is &lt;a href="https://github.com/ChillarAnand/01/blob/master/ubuntu/config/playbooks/ubuntu.yml"&gt;a playbook&lt;/a&gt; which I use to configure my laptop. As the playbook needs to run locally, just run&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;ansible-playbook laptop-setup.yml -i localhost, -c local
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ansible-playbook laptop-setup.yml -i localhost, -c local
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h3&gt;Bootstrap Script&lt;/h3&gt;
 &lt;p&gt;To automate provisioning, a bootstrap script is required to make sure python, ansible are installed, to download and execute playbook on the system.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt update --yes
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo apt update --yes
 sudo apt install --yes python python-pip
 
 sudo apt install --yes libssl-dev
@@ -258,27 +284,30 @@ sudo -H pip install ansible
 wget -c https://path/to/playbook.yml
 
 sudo ansible-playbook setup.yml -i localhost, -c local
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now, to provision a laptop, just run the bootstrap script.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sh -c "$(wget https://path/to/bootstrap_script.sh"
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sh -c "$(wget https://path/to/bootstrap_script.sh"
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;You can use a git repo to track changes in playbook and bootstrap script. If you are using multiple laptops, running bootstrap script on them will make sure everything is synced across them.&lt;/p&gt;</description><category>automation</category><category>linux</category><guid>https://avilpage.com/2017/03/provisioning-laptop-ansible.html</guid><pubDate>Sat, 11 Mar 2017 14:16:32 GMT</pubDate></item><item><title>Detecting USB Events In Ubuntu With Python</title><link>https://avilpage.com/2016/09/detecting-device-events-in-ubuntu-with-python.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Udev"&gt;udev&lt;/a&gt; is responsible for managing devices on Linux. It provides &lt;code&gt;udevadm&lt;/code&gt;, a CLI utility to monitor and control devices.&lt;/p&gt;
 &lt;p&gt;If we run &lt;code&gt;udevadm monitor&lt;/code&gt; on terminal and connect a USB drive or hard disk or a mobile via USB to your computer, it will show that kernel has detected the device and it will send a signal to udev about it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;→ udevadm monitor
-monitor will print the received events &lt;span class="k"&gt;for&lt;/span&gt;:
-UDEV - the event which udev sends out after rule processing
-KERNEL - the kernel uevent
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;→&lt;span class="w"&gt; &lt;/span&gt;udevadm&lt;span class="w"&gt; &lt;/span&gt;monitor
+monitor&lt;span class="w"&gt; &lt;/span&gt;will&lt;span class="w"&gt; &lt;/span&gt;print&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;received&lt;span class="w"&gt; &lt;/span&gt;events&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;:
+UDEV&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;event&lt;span class="w"&gt; &lt;/span&gt;which&lt;span class="w"&gt; &lt;/span&gt;udev&lt;span class="w"&gt; &lt;/span&gt;sends&lt;span class="w"&gt; &lt;/span&gt;out&lt;span class="w"&gt; &lt;/span&gt;after&lt;span class="w"&gt; &lt;/span&gt;rule&lt;span class="w"&gt; &lt;/span&gt;processing
+KERNEL&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;kernel&lt;span class="w"&gt; &lt;/span&gt;uevent
 
-KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.899091&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.899774&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.902553&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-UDEV  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.911201&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-UDEV  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.936453&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-UDEV  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4337&lt;/span&gt;.947174&lt;span class="o"&gt;]&lt;/span&gt; add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 &lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.899091&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.899774&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+KERNEL&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.902553&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+UDEV&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.911201&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+UDEV&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4336&lt;/span&gt;.936453&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+UDEV&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4337&lt;/span&gt;.947174&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt;      &lt;/span&gt;/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;usb&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;a href="https://pypi.python.org/pypi/pyudev"&gt;Pyudev&lt;/a&gt;, a third party package provides python bindings for udev. It can be installed with &lt;code&gt;pip install pyudev&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;With this we can create a simple monitor to detect USB events.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pyudev&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pyudev&lt;/span&gt;
 
 &lt;span class="n"&gt;context&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pyudev&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Context&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="n"&gt;monitor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pyudev&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Monitor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;from_netlink&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -288,30 +317,36 @@ UDEV  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;4337&lt;/span&gt
     &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;device&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;action&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'add'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
         &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'&lt;/span&gt;&lt;span class="si"&gt;{}&lt;/span&gt;&lt;span class="s1"&gt; connected'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;device&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
         &lt;span class="c1"&gt;# do something&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Save this to a file say monitor.py and run it with &lt;code&gt;python monitor.py&lt;/code&gt; and connect a mobile or pendrive and it will show something like this.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;Device&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; connected
-Device&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; connected
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;Device&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;connected
+Device&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;connected
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here we are just detecting &lt;code&gt;add&lt;/code&gt; event. Similary we can detect other events like &lt;code&gt;delete&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;This is useful for automatically running shell scripts once the device gets plugged or unplugged.&lt;/p&gt;</description><category>linux</category><category>python</category><category>usb</category><guid>https://avilpage.com/2016/09/detecting-device-events-in-ubuntu-with-python.html</guid><pubDate>Fri, 02 Sep 2016 13:24:38 GMT</pubDate></item><item><title>WD My Cloud NAS Setup On Linux</title><link>https://avilpage.com/2015/03/wd-my-cloud-nas-setup-on-ubuntu.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;I recently bought a WD My Cloud NAS&lt;sup id="fnref:nas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2015/03/wd-my-cloud-nas-setup-on-ubuntu.html#fn:nas"&gt;1&lt;/a&gt;&lt;/sup&gt; device to store my personal data. I wanted to set it up on my Ubuntu machine. For WD My Cloud, there is no official support for Ubuntu or any other Linux distros. But setting up it is quite easy.&lt;/p&gt;
 &lt;h4&gt;NAS Setup&lt;/h4&gt;
 &lt;p&gt;Make sure You have connected power adapter &amp;amp; LAN cables to it. If You open Your router config, You will see WD My cloud in client list. Make note of its IP address. If You want, You can assign a static IP also in the router settings.&lt;/p&gt;
 &lt;p&gt;Next step is to install NFS client package. NFS(Network File System) allows a system to share directories and files with others over a network. By using NFS, users and programs can access files on remote systems almost as if they were local files. So, update your packages &amp;amp; install &lt;code&gt;nfs-common&lt;/code&gt; package.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo apt-get update
-$ sudo apt-get install nfs-common
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;update
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;nfs-common
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now we can list folders which are available to mount using &lt;code&gt;showmount&lt;/code&gt; command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ showmount -e &amp;lt;ip-address&amp;gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;showmount&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;ip-address&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Create an empty folder to mount any of the folder you wanted and mount it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo mount -o rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt; &amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt; &amp;lt;path-to-mount&amp;gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;mount&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path-to-mount&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now You can start moving data into/out of WD My Cloud.&lt;/p&gt;
 &lt;p&gt;If You want to mount it automatically on boot, add following line to &lt;code&gt;/etc/fstab&lt;/code&gt; file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt; &amp;lt;path-to-mount&amp;gt; nfs rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;nfs&lt;span class="w"&gt; &lt;/span&gt;rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Even though there is no official support for Ubuntu, WD My Cloud works pretty well with Ubuntu and other Linux distros. &lt;/p&gt;
 &lt;div class="footnote"&gt;

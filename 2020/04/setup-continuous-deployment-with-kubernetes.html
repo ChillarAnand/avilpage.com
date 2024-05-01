@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    3 min read
+                    6 min read
             </p>
 
             <p class="dateline">
@@ -166,89 +166,95 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <p>In this article, let us see how to set up a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
 <h4>Prerequisites</h4>
 <p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
-<pre class="code literal-block">$ kubectl cluster-info
-$ kubectl config get-contexts
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>cluster-info
+$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>get-contexts
+</pre></div>
+
 <p>You should know how to manually deploy your application to kubernetes.</p>
-<pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
-$ docker push chillaranand/library
+<div class="code"><pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
+$<span class="w"> </span>docker<span class="w"> </span>push<span class="w"> </span>chillaranand/library
 
 <span class="c1"># deploy latest image to k8s</span>
-$ kubectl apply -f app/deployment.yaml
-$ kubectl apply -f app/service.yaml
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>app/deployment.yaml
+$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>app/service.yaml
+</pre></div>
+
 <h4>Skaffold</h4>
 <p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
 <p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
-<pre class="code literal-block">$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
-$ chmod +x skaffold
-$ sudo mv skaffold /usr/local/bin
-</pre>
-<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
-<pre class="code literal-block">$ skaffold init
-Configuration skaffold.yaml was written
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-Lo<span class="w"> </span>skaffold<span class="w"> </span>https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>skaffold
+$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>skaffold<span class="w"> </span>/usr/local/bin
+</pre></div>
 
-$ cat skaffold.yaml
-apiVersion: skaffold/v2beta1
-kind: Config
+<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>skaffold<span class="w"> </span>init
+Configuration<span class="w"> </span>skaffold.yaml<span class="w"> </span>was<span class="w"> </span>written
+
+$<span class="w"> </span>cat<span class="w"> </span>skaffold.yaml
+apiVersion:<span class="w"> </span>skaffold/v2beta1
+kind:<span class="w"> </span>Config
 metadata:
-  name: library
+<span class="w">  </span>name:<span class="w"> </span>library
 build:
-  artifacts:
-  - image: docker.io/chillaranand/library
+<span class="w">  </span>artifacts:
+<span class="w">  </span>-<span class="w"> </span>image:<span class="w"> </span>docker.io/chillaranand/library
 deploy:
-  kubectl:
-    manifests:
-    - kubernetes/deployment.yaml
-    - kubernetes/service.yaml
-</pre>
+<span class="w">  </span>kubectl:
+<span class="w">    </span>manifests:
+<span class="w">    </span>-<span class="w"> </span>kubernetes/deployment.yaml
+<span class="w">    </span>-<span class="w"> </span>kubernetes/service.yaml
+</pre></div>
+
 <p>To deploy latest changes to your cluster, run</p>
-<pre class="code literal-block">$ skaffold run
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>skaffold<span class="w"> </span>run
+</pre></div>
+
 <p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
 <h4>CircleCI Workflow</h4>
-<pre class="code literal-block">version: <span class="m">2</span>.1
+<div class="code"><pre class="code literal-block">version:<span class="w"> </span><span class="m">2</span>.1
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.19
-  kubernetes: circleci/kubernetes@0.11.0
+<span class="w">  </span>aws-cli:<span class="w"> </span>circleci/aws-cli@0.1.19
+<span class="w">  </span>kubernetes:<span class="w"> </span>circleci/kubernetes@0.11.0
 
 commands:
-  kubernetes-deploy:
+<span class="w">  </span>kubernetes-deploy:
 
-    steps:
-      - setup_remote_docker
+<span class="w">    </span>steps:
+<span class="w">      </span>-<span class="w"> </span>setup_remote_docker
 
-      - aws-cli/setup:
-          profile-name: default
+<span class="w">      </span>-<span class="w"> </span>aws-cli/setup:
+<span class="w">          </span>profile-name:<span class="w"> </span>default
 
-      - kubernetes/install-kubectl:
-          kubectl-version: v1.15.10
+<span class="w">      </span>-<span class="w"> </span>kubernetes/install-kubectl:
+<span class="w">          </span>kubectl-version:<span class="w"> </span>v1.15.10
 
-      - checkout
+<span class="w">      </span>-<span class="w"> </span>checkout
 
-      - run:
-          name: container registry log <span class="k">in</span>
-          command: <span class="p">|</span>
-            sudo <span class="k">$(</span>aws ecr get-login --region ap-south-1 --no-include-email<span class="k">)</span>
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>container<span class="w"> </span>registry<span class="w"> </span>log<span class="w"> </span><span class="k">in</span>
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>sudo<span class="w"> </span><span class="k">$(</span>aws<span class="w"> </span>ecr<span class="w"> </span>get-login<span class="w"> </span>--region<span class="w"> </span>ap-south-1<span class="w"> </span>--no-include-email<span class="k">)</span>
 
-      - run:
-          name: install skaffold
-          command: <span class="p">|</span>
-            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-            chmod +x skaffold
-            sudo mv skaffold /usr/local/bin
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>install<span class="w"> </span>skaffold
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>curl<span class="w"> </span>-Lo<span class="w"> </span>skaffold<span class="w"> </span>https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+<span class="w">            </span>chmod<span class="w"> </span>+x<span class="w"> </span>skaffold
+<span class="w">            </span>sudo<span class="w"> </span>mv<span class="w"> </span>skaffold<span class="w"> </span>/usr/local/bin
 
-      - run:
-          name: update kube config to connect to the required cluster
-          command: <span class="p">|</span>
-            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>update<span class="w"> </span>kube<span class="w"> </span>config<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>required<span class="w"> </span>cluster
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>aws<span class="w"> </span>eks<span class="w"> </span>--region<span class="w"> </span>ap-south-1<span class="w"> </span>update-kubeconfig<span class="w"> </span>--name<span class="w"> </span>demo-cluster
 
-      - run:
-          name: deploy to k8s
-          command: <span class="p">|</span>
-            skaffold run
-</pre>
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>deploy<span class="w"> </span>to<span class="w"> </span>k8s
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>skaffold<span class="w"> </span>run
+</pre></div>
+
 <p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
 <p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a separate environment is created for it.</p>
 <p>Remaining steps are self explainatory.</p>
