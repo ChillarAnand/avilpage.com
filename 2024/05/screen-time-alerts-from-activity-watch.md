@@ -9,11 +9,19 @@
 .. type: text
 -->
 
+
 ### Introduction
 
-![Activity Watch](/images/activity-watch-alerts.png)
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/41A0r2H-EXs" allowfullscreen>
+</iframe>
+</div>
+
+<br />
 
 Activity Watch[^activity_watch] is a cross-platform open-source time-tracking tool that helps us to track time spent on applications and websites.
+
+![Activity Watch](/images/activity-watch-alerts.png)
 
 At the moment, Activity Watch doesn't have any feature to show screen time alerts. In this post, we will see how to show screen time alerts using Activity Watch.
 
