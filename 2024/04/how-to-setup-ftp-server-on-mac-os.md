@@ -9,6 +9,13 @@
 .. type: text
 -->
 
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/WmmB-6MXRYc" allowfullscreen>
+</iframe>
+</div>
+
+<br />
+
 On Linux & Mac OS X, Python comes pre-installed. On Windows, we can install it from Windows store or from [https://python.org](https://python.org) website.
 
 We can verify the Python version using the below command.
