@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    8 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -165,54 +165,48 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <h4>Problem Statement</h4>
 <p>On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.</p>
-<div class="code"><pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,217<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">139</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">5198</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+<pre class="code literal-block"><span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,217<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">139</span> <span class="k">in</span> <span class="m">5198</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">11</span>:57:06,536<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>registerBroker:<span class="w"> </span>unable<span class="w"> </span>to<span class="w"> </span>start<span class="w"> </span>processing<span class="w"> </span>because<span class="w"> </span>of<span class="w"> </span>NotControllerException.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">11</span>:57:06,536<span class="o">]</span> ERROR <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> registerBroker: unable to start processing because of NotControllerException. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:35,834<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span><span class="o">[</span>RaftManager<span class="w"> </span><span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>Had<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>during<span class="w"> </span>log<span class="w"> </span>cleaning<span class="w"> </span><span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
-org.apache.kafka.common.errors.OffsetOutOfRangeException:<span class="w"> </span>Cannot<span class="w"> </span>increment<span class="w"> </span>the<span class="w"> </span>log<span class="w"> </span>start<span class="w"> </span>offset<span class="w"> </span>to<span class="w"> </span><span class="m">927939</span><span class="w"> </span>of<span class="w"> </span>partition<span class="w"> </span>__cluster_metadata-0<span class="w"> </span>since<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>larger<span class="w"> </span>than<span class="w"> </span>the<span class="w"> </span>high<span class="w"> </span>watermark<span class="w"> </span><span class="m">926507</span>
-<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,035<span class="o">]</span><span class="w"> </span>WARN<span class="w"> </span><span class="o">[</span>Controller<span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>writeNoOpRecord:<span class="w"> </span>failed<span class="w"> </span>with<span class="w"> </span>unknown<span class="w"> </span>server<span class="w"> </span>exception<span class="w"> </span>RuntimeException<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">294</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">137</span><span class="w"> </span>us.<span class="w">  </span>Renouncing<span class="w"> </span>leadership<span class="w"> </span>and<span class="w"> </span>reverting<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>committed<span class="w"> </span>offset<span class="w"> </span><span class="m">927938</span>.<span class="w"> </span><span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
-java.lang.RuntimeException:<span class="w"> </span>Cant<span class="w"> </span>create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span><span class="k">in</span>-memory<span class="w"> </span>snapshot<span class="w"> </span>at<span class="w"> </span>epoch<span class="w"> </span><span class="m">926507</span><span class="w"> </span>because<span class="w"> </span>there<span class="w"> </span>is<span class="w"> </span>already<span class="w"> </span>a<span class="w"> </span>snapshot<span class="w"> </span>with<span class="w"> </span>epoch<span class="w"> </span><span class="m">927938</span>
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:35,834<span class="o">]</span> ERROR <span class="o">[</span>RaftManager <span class="nv">nodeId</span><span class="o">=</span><span class="m">1</span><span class="o">]</span> Had an error during log cleaning <span class="o">(</span>org.apache.kafka.raft.KafkaRaftClient<span class="o">)</span>
+org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to <span class="m">927939</span> of partition __cluster_metadata-0 since it is larger than the high watermark <span class="m">926507</span>
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,035<span class="o">]</span> WARN <span class="o">[</span>Controller <span class="m">1</span><span class="o">]</span> writeNoOpRecord: failed with unknown server exception RuntimeException at epoch <span class="m">294</span> <span class="k">in</span> <span class="m">137</span> us.  Renouncing leadership and reverting to the last committed offset <span class="m">927938</span>. <span class="o">(</span>org.apache.kafka.controller.QuorumController<span class="o">)</span>
+java.lang.RuntimeException: Cant create a new <span class="k">in</span>-memory snapshot at epoch <span class="m">926507</span> because there is already a snapshot with epoch <span class="m">927938</span>
 
-<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:23:36,252<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span>during<span class="w"> </span>startup.<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
-</pre></div>
-
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:23:36,252<span class="o">]</span> ERROR Exiting Kafka due to fatal exception during startup. <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+</pre>
 <h4>Debugging</h4>
 <p>I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.</p>
 <h4>Solution</h4>
 <p>I create a new temporary directory and set the log directory to that.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>mkdir<span class="w"> </span>/tmp/kafka-logs
+<pre class="code literal-block">$ mkdir /tmp/kafka-logs
 
 <span class="c1"># inside server.properties</span>
 log.dirs<span class="o">=</span>/tmp/kafka-logs
-</pre></div>
-
+</pre>
 <p>When I started the Kafka server, it failed.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-server-start<span class="w"> </span>server.properties
+<pre class="code literal-block">$ kafka-server-start server.properties
 
-<span class="o">[</span><span class="m">2022</span>-12-23<span class="w"> </span><span class="m">12</span>:30:50,018<span class="o">]</span><span class="w"> </span>ERROR<span class="w"> </span>Exiting<span class="w"> </span>Kafka<span class="w"> </span>due<span class="w"> </span>to<span class="w"> </span>fatal<span class="w"> </span>exception<span class="w"> </span><span class="o">(</span>kafka.Kafka$<span class="o">)</span>
-org.apache.kafka.common.KafkaException:<span class="w"> </span>No<span class="w"> </span><span class="sb">`</span>meta.properties<span class="sb">`</span><span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>/tmp/<span class="w"> </span><span class="o">(</span>have<span class="w"> </span>you<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>kafka-storage.sh<span class="sb">`</span><span class="w"> </span>to<span class="w"> </span>format<span class="w"> </span>the<span class="w"> </span>directory?<span class="o">)</span>
-</pre></div>
-
+<span class="o">[</span><span class="m">2022</span>-12-23 <span class="m">12</span>:30:50,018<span class="o">]</span> ERROR Exiting Kafka due to fatal exception <span class="o">(</span>kafka.Kafka$<span class="o">)</span>
+org.apache.kafka.common.KafkaException: No <span class="sb">`</span>meta.properties<span class="sb">`</span> found <span class="k">in</span> /tmp/ <span class="o">(</span>have you run <span class="sb">`</span>kafka-storage.sh<span class="sb">`</span> to format the directory?<span class="o">)</span>
+</pre>
 <p>I ran the <code>kafka-storage</code> script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>~/homebrew/var/lib/kraft-combined-logs/meta.properties<span class="w"> </span>
+<pre class="code literal-block">$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
 <span class="c1">#</span>
 <span class="c1">#Thu Oct 20 11:48:12 IST 2022</span>
 cluster.id<span class="o">=</span>5MB5lq-XT-6JzQqJeIuhWQ
 node.id<span class="o">=</span><span class="m">1</span>
-<span class="nv">version</span><span class="o">=</span><span class="m">1</span><span class="w">      </span>
-</pre></div>
-
+<span class="nv">version</span><span class="o">=</span><span class="m">1</span>      
+</pre>
 <p>Now, we can format the new directory.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-storage<span class="w"> </span>format<span class="w"> </span>--config<span class="w"> </span>server.properties<span class="w"> </span>--cluster-id<span class="w"> </span>5MB5lq-XT-6JzQqJeIuhWQ
+<pre class="code literal-block">$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
 
-Formatting<span class="w"> </span>/tmp/kafka-logs/<span class="w"> </span>with<span class="w"> </span>metadata.version<span class="w"> </span><span class="m">3</span>.3-IV3.
-</pre></div>
-
+Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3.
+</pre>
 <p>After changing log directory, Kafka has started working.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>kafka-start-server<span class="w"> </span>/path/to/server.properties
-</pre></div>
-
+<pre class="code literal-block">$ kafka-start-server /path/to/server.properties
+</pre>
 <p>Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">

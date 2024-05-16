@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    4 min read
+                    3 min read
             </p>
 
             <p class="dateline">
@@ -168,35 +168,31 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this article, we will see how to debug PostgreSQL triggers.</p>
 <h4>Triggers</h4>
 <p>First, ensure triggers are enabled on the required tables for INSERT/UPDATE/DELETE events. We can check available triggers by running the following query.</p>
-<div class="code"><pre class="code literal-block"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
-</pre></div>
-
+<pre class="code literal-block"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">triggers</span><span class="p">;</span>
+</pre>
 <p>We can also use <code>EXPLAIN</code> to show triggers that are executed for an event by running relevant queries.</p>
 <h4>PostgreSQL Logging</h4>
 <p>After ensuring triggers are applied correctly, set the logging level for postgresql server and client in postgres.conf file.</p>
-<div class="code"><pre class="code literal-block"><span class="o">#</span><span class="w"> </span><span class="n">let</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">all</span><span class="w"> </span><span class="n">queries</span>
-<span class="n">log_statement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'all'</span>
+<pre class="code literal-block"><span class="o">#</span> <span class="n">let</span> <span class="n">the</span> <span class="n">server</span> <span class="n">log</span> <span class="k">all</span> <span class="n">queries</span>
+<span class="n">log_statement</span> <span class="o">=</span> <span class="s1">'all'</span>
 
-<span class="o">#</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">level</span>
-<span class="n">client_min_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">log</span>
-</pre></div>
-
+<span class="o">#</span> <span class="k">set</span> <span class="n">client</span> <span class="n">message</span> <span class="k">to</span> <span class="n">log</span> <span class="k">level</span>
+<span class="n">client_min_messages</span> <span class="o">=</span> <span class="n">log</span>
+</pre>
 <p>Restart PostgreSQL to reflect configuration changes.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># Linux</span>
-sudo<span class="w"> </span>service<span class="w"> </span>postgres<span class="w"> </span>restart
+<pre class="code literal-block"><span class="c1"># Linux</span>
+sudo service postgres restart
 
 <span class="c1"># Mac</span>
-brew<span class="w"> </span>services<span class="w"> </span>restart<span class="w"> </span>postgres
-</pre></div>
-
+brew services restart postgres
+</pre>
 <p>Tail the logs and check if queries are executing correctly with appropriate values.</p>
 <h4>Triggers Logging</h4>
 <p>After enabling logging for PostgreSQL, we can <a href="https://www.postgresql.org/docs/9.0/plpgsql-errors-and-messages.html">raise messages/errors in triggers</a> so that we can see if any unexpected things are happening at any point in the trigger.</p>
-<div class="code"><pre class="code literal-block"><span class="n">RAISE</span><span class="w"> </span><span class="s1">'Updating row with ID: %'</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">division_by_zero</span><span class="p">;</span>
-<span class="n">RAISE</span><span class="w"> </span><span class="n">WARNING</span><span class="w"> </span><span class="s1">'Unable to delete record'</span><span class="p">;</span>
-</pre></div>
-
+<pre class="code literal-block"><span class="n">RAISE</span> <span class="s1">'Updating row with ID: %'</span><span class="p">,</span> <span class="n">id</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">division_by_zero</span><span class="p">;</span>
+<span class="n">RAISE</span> <span class="n">WARNING</span> <span class="s1">'Unable to delete record'</span><span class="p">;</span>
+</pre>
 <p>This ensures triggers are executing as expected and if there are any warnings/errors, it will log a message.</p>
 <h4>SQL/PostgreSQL Gotchas</h4>
 <p>Even though queries and triggers are executing correctly, we might not see the desired result because of the potentially surprising behavior of PostgreSQL. There are some scenarios where PostgreSQL seems to be not working at first but it actually is the expected behavior.</p>
