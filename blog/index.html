@@ -16,7 +16,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../rss.xml">
 <link rel="canonical" href="https://avilpage.com/blog/">
-<link rel="next" href="index-18.html" type="text/html">
+<link rel="next" href="index-19.html" type="text/html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><style>
 
  h1 {
@@ -73,7 +73,91 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/screen-time-alerts-from-activity-watch.html" class="u-url">Screen Time Alerts from Activity Watch</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" class="u-url">Automating Zscaler Connectivity on macOS</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-05-14T07:49:53+05:30" itemprop="datePublished" title="2024-05-14">2024-05-14</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.</p>
+<h4>Automating Zscaler Connectivity</h4>
+<p>Once Zscaler is installed on macOS, if we search for <code>LaunchAgents</code> &amp; <code>LaunchDaemons</code> directories, we can find the Zscaler plist files. </p>
+<pre class="code literal-block">$ sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span>
+/Library/LaunchAgents/com.zscaler.tray.plist
+
+
+$ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span>
+/Library/LaunchDaemons/com.zscaler.service.plist
+/Library/LaunchDaemons/com.zscaler.tunnel.plist
+/Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
+</pre>
+<p>To connect to Zscaler, we can load these services.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+</pre>
+<p>To disconnect from Zscaler, we can unload all of them.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+</pre>
+<p>To automatically toggle the connectivity, we can create a shell script.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">fi</span>
+</pre>
+<p>Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Required parameters:</span>
+<span class="c1"># @raycast.schemaVersion 1</span>
+<span class="c1"># @raycast.title toggle zscaler</span>
+<span class="c1"># @raycast.mode silent</span>
+
+<span class="c1"># Optional parameters:</span>
+<span class="c1"># @raycast.icon ☁️</span>
+
+<span class="c1"># Documentation:</span>
+<span class="c1"># @raycast.author chillaranand</span>
+<span class="c1"># @raycast.authorURL https://avilpage.com/</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">fi</span>
+</pre>
+<p>Save this script to a folder. From <code>Raycast Settings</code> -&gt; <code>Extensions</code> -&gt; <code>Add Script Directory</code>, we can select this folder, and the script will be available in Raycast. </p>
+<p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect2.png"></p>
+<p>We can assign a shortcut key to the script for quick access.</p>
+<p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect.png"></p>
+<h4>Conclusion</h4>
+<p>Even though Zscaler does not provide a command-line interface, we can automate the connectivity using the above scripts.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/screen-time-alerts-from-activity-watch.html" class="u-url">Screen Time Alerts from Activity Watch</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -218,23 +302,22 @@ Python <span class="m">3</span>.11.6
 <p>Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.</p>
 <p><img alt="kibana-relative-time" src="../images/kibana-relative-time1.png"></p>
 <p>Go to <code>Stack Management</code> -&gt; <code>Index Patterns</code> -&gt; <code>Create index pattern</code> -&gt; Select the index pattern -&gt; <code>Scripted fields</code>, click on <code>Add scripted field</code>, add the below script.</p>
-<div class="code"><pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span>
+<pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span><span class="w"></span>
 
-<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span>
-<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span>
-<span class="err">}</span>
-</pre></div>
-
+<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span><span class="w"></span>
+<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"></span>
+</pre>
 <p>Once the field is saved, we can go back to <code>Discover</code> and see the new field in the logs. We can toggle the visibility of the <code>Relative Time</code> field to see the relative time.</p>
 <p><img alt="kibana-relative-time" src="../images/kibana-relative-time2.png"></p>
 <h4>Conclusion</h4>
@@ -278,27 +361,23 @@ Python <span class="m">3</span>.11.6
 <h4>ArchiveBox</h4>
 <p>ArchiveBox<sup id="fnref:archivebox"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:archivebox">1</a></sup> is a tool to archive web pages. It can be used to archive the option chain data for the stocks &amp; indices.</p>
 <p>Let's install ArchiveBox.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>archivebox
-$<span class="w"> </span>mkdir<span class="w"> </span>option_chain
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>option_chain
-$<span class="w"> </span>archivebox<span class="w"> </span>init
-$<span class="w"> </span>archivebox<span class="w"> </span>setup
-</pre></div>
-
+<pre class="code literal-block">$ pip install archivebox
+$ mkdir option_chain
+$ <span class="nb">cd</span> option_chain
+$ archivebox init
+$ archivebox setup
+</pre>
 <p>We can start the server(defaults to https://localhost:8000) and add URLs manually to archive them.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>server
-</pre></div>
-
+<pre class="code literal-block">$ archivebox server
+</pre>
 <p><img alt="historical-option-chain" src="../images/historical-option-chain.png"></p>
 <p>There are 180+ stocks in FNO segment &amp; 6 indices with weekly expiry. We can write a simple Python script to generate all combinations of URLs for the option chain data and archive them using ArchiveBox.</p>
 <p>Once URLs is generated, we can use the following command to archive them.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>add<span class="w"> </span>--input-file<span class="w"> </span>urls.txt
-</pre></div>
-
+<pre class="code literal-block">$ archivebox add --input-file urls.txt
+</pre>
 <p>These URLs will be archived and stored in the <code>archive</code> directory. Since we want to archive the data regularly, we can use a schedule to archive daily.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>schedule<span class="w"> </span>--every<span class="o">=</span>day<span class="w"> </span>--depth<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="s1">'{{url}}'</span>
-</pre></div>
-
+<pre class="code literal-block">$ archivebox schedule --every<span class="o">=</span>day --depth<span class="o">=</span><span class="m">0</span> <span class="s1">'{{url}}'</span>
+</pre>
 <p>This will archive the option chain data for the stocks &amp; indices on a daily basis.</p>
 <h4>Conclusion</h4>
 <p>Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue<sup id="fnref:issue"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:issue">2</a></sup> regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.</p>
@@ -354,11 +433,10 @@ $<span class="w"> </span>archivebox<span class="w"> </span>setup
 <p>When using <code>pytest</code> as test runner, <code>pytest-xdist</code> &amp; <code>pytest-parallel</code> plugins makes it easy to run tests concurrently or in parallel.</p>
 <p><code>pytest-parallel</code> works better if tests are independent of each other. If tests are dependent on each other, <code>pytest-xdist</code> is a better choice.</p>
 <p>If there are parameterised tests, pytest-xdist will fail as the order of the tests is not guaranteed.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>pytest<span class="w"> </span>-n<span class="w"> </span>auto<span class="w"> </span>tests/
+<pre class="code literal-block">$ pytest -n auto tests/
 
-Different<span class="w"> </span>tests<span class="w"> </span>were<span class="w"> </span>collected<span class="w"> </span>between<span class="w"> </span>gw0<span class="w"> </span>and<span class="w"> </span>gw1.<span class="w"> </span>The<span class="w"> </span>difference<span class="w"> </span>is:<span class="w"> </span>...
-</pre></div>
-
+Different tests were collected between gw0 and gw1. The difference is: ...
+</pre>
 <p>To fix this, we have to make sure that the parameterised tests are executed in the same order on all workers. It can be achieved by sorting the parameterised tests by their name.</p>
 <p>Alternatively, we can use <code>pytest-randomly</code> plugin to order the tests.</p>
     </div>
@@ -418,14 +496,13 @@ Different<span class="w"> </span>tests<span class="w"> </span>were<span class="w
 <p>Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.</p>
 <h4>xplr - line count</h4>
 <p>xplr can be installed via <code>brew</code>. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>xplr
+<pre class="code literal-block">$ brew install xplr
 
-$<span class="w"> </span>xplr<span class="w"> </span>--version
-xplr<span class="w"> </span><span class="m">0</span>.21.3
-</pre></div>
-
+$ xplr --version
+xplr <span class="m">0</span>.21.3
+</pre>
 <p>xplr reads the default configuration from <code>~/.config/xplr/init.lua</code>. The following configuration shows the line count column in xplr.</p>
-<div class="code"><pre class="code literal-block"><span class="n">version</span> <span class="o">=</span> <span class="s1">'0.21.3'</span>
+<pre class="code literal-block"><span class="n">version</span> <span class="o">=</span> <span class="s1">'0.21.3'</span>
 
 <span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">fmt_simple_column</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
   <span class="kr">return</span> <span class="n">m</span><span class="p">.</span><span class="n">prefix</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">relative_path</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">suffix</span>
@@ -462,8 +539,7 @@ xplr<span class="w"> </span><span class="m">0</span>.21.3
   <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">30</span> <span class="p">},</span>
   <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">20</span> <span class="p">},</span>
 <span class="p">}</span>
-</pre></div>
-
+</pre>
 <p>This will show a row count on launch.</p>
 <p><img alt="xplr - line count" src="../images/xplr-line-count-column.png"></p>
 <h4>Conclusion</h4>
@@ -480,95 +556,10 @@ xplr<span class="w"> </span><span class="m">0</span>.21.3
 </ol>
 </div>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/10/guide-to-setting-up-geodjango-on-mac-m1.html" class="u-url">Guide to setting up GeoDjango on Mac M1</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2023/10/guide-to-setting-up-geodjango-on-mac-m1.html" rel="bookmark">
-            <time class="published dt-published" datetime="2023-10-30T08:59:23+05:30" itemprop="datePublished" title="2023-10-30">2023-10-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>There are a lot of guides on setting up GeoDjango and PostGIS. But most of them are outdated and doesn't work on Mac M1. In this article, let us look at how to set up GeoDjango on Mac M1/M2.</p>
-<p>Ensure you have already installed Postgres on your Mac. </p>
-<h4>Install GeoDjango</h4>
-<p>The default GDAL version available on brew fails to install on Mac M1.</p>
-<div class="code"><pre class="code literal-block"><span class="err">$</span><span class="w"> </span><span class="n">brew</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">gdal</span>
-<span class="o">==&gt;</span><span class="w"> </span><span class="n">cmake</span><span class="w"> </span><span class="o">--</span><span class="n">build</span><span class="w"> </span><span class="n">build</span>
-<span class="k">Last</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">chillaranand</span><span class="o">/</span><span class="n">Library</span><span class="o">/</span><span class="n">Logs</span><span class="o">/</span><span class="n">Homebrew</span><span class="o">/</span><span class="n">gdal</span><span class="o">/</span><span class="mf">02.</span><span class="nl">cmake</span><span class="p">:</span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="n">Compiling</span><span class="w"> </span><span class="mi">82</span><span class="w"> </span><span class="n">source</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">classes</span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">warning</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">options</span><span class="o">]</span><span class="w"> </span><span class="n">bootstrap</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">path</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">conjunction</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="mi">7</span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Source</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span>
-<span class="w">    </span><span class="o">[</span><span class="n">javac</span><span class="o">]</span><span class="w"> </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="n">Target</span><span class="w"> </span><span class="k">option</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">longer</span><span class="w"> </span><span class="n">supported</span><span class="p">.</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">later</span><span class="p">.</span>
-
-<span class="n">BUILD</span><span class="w"> </span><span class="n">FAILED</span>
-<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mi">20231029</span><span class="o">-</span><span class="mi">31808</span><span class="o">-</span><span class="mi">1</span><span class="n">wl9085</span><span class="o">/</span><span class="n">gdal</span><span class="o">-</span><span class="mf">3.7.2</span><span class="o">/</span><span class="n">swig</span><span class="o">/</span><span class="n">java</span><span class="o">/</span><span class="n">build</span><span class="p">.</span><span class="nc">xml</span><span class="err">:</span><span class="mi">25</span><span class="err">:</span><span class="w"> </span><span class="n">Compile</span><span class="w"> </span><span class="n">failed</span><span class="p">;</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">compiler</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">details</span><span class="p">.</span>
-
-<span class="n">Total</span><span class="w"> </span><span class="nc">time</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">seconds</span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">swig/java/CMakeFiles/java_binding.dir/build.make:108: swig/java/gdal.jar</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">1</span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">CMakeFiles/Makefile2:9108: swig/java/CMakeFiles/java_binding.dir/all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span>
-<span class="n">gmake</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="err">:</span><span class="w"> </span><span class="n">Leaving</span><span class="w"> </span><span class="n">directory</span><span class="w"> </span><span class="s1">'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'</span>
-<span class="nl">gmake</span><span class="p">:</span><span class="w"> </span><span class="o">***</span><span class="w"> </span><span class="o">[</span><span class="n">Makefile:139: all</span><span class="o">]</span><span class="w"> </span><span class="n">Error</span><span class="w"> </span><span class="mi">2</span>
-</pre></div>
-
-<p>We can use conda to install gdal. Create a new environment and install gdal in it.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>geodjango<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
-$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>gdal
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>django
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>psycopg2-binary
-</pre></div>
-
-<p>Once installed, you can check the version using <code>gdalinfo --version</code>.</p>
-<p>Remaining dependencies can be installed via brew.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>postgresql
-$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>postgis
-$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>libgeoip
-</pre></div>
-
-<p>Let's create a new django project and add spatial backends.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>django-admin<span class="w"> </span>startproject<span class="w"> </span>geodjango
-</pre></div>
-
-<p>Add <code>django.contrib.gis</code> to <code>INSTALLED_APPS</code> in <code>settings.py</code>.</p>
-<div class="code"><pre class="code literal-block"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="o">...</span><span class="p">,</span>
-    <span class="s1">'django.contrib.gis'</span><span class="p">,</span>
-<span class="p">]</span>
-</pre></div>
-
-<p>Add the following to <code>DATABASES</code> in <code>settings.py</code>.</p>
-<div class="code"><pre class="code literal-block"><span class="n">DATABASES</span><span class="p">[</span><span class="s1">'default'</span><span class="p">][</span><span class="s1">'ENGINE'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'django.contrib.gis.db.backends.postgis'</span>
-</pre></div>
-
-<p>Since we used conda to install gdal, we need to set the path to gdal in our django settings. Run <code>locate libgdal.dylib</code> to find the path to gdal.</p>
-<div class="code"><pre class="code literal-block"><span class="n">GDAL_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgdal.dylib'</span>
-</pre></div>
-
-<p>Similarly, we need to set <code>GEOS_LIBRARY_PATH</code> as well.</p>
-<div class="code"><pre class="code literal-block"><span class="n">GEOS_LIBRARY_PATH</span> <span class="o">=</span> <span class="s1">'/opt/homebrew/anaconda3/envs/geodjango/lib/libgeos_c.dylib'</span>
-</pre></div>
-
-<p>Now, we can create a new app and add PointField or any other spatial fields to our models.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>startapp<span class="w"> </span>places
-</pre></div>
-
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.gis.db</span> <span class="kn">import</span> <span class="n">models</span>
-
-<span class="k">class</span> <span class="nc">Place</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-    <span class="n">location</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PointField</span><span class="p">()</span>
-</pre></div>
-
-<h4>Conclusion</h4>
-<p>In this article, we looked at how to set up GeoDjango on Mac M1. We used conda to install gdal and brew to install other dependencies. </p>
-    </div>
     </article>
 </div>
         <ul class="pager postindexpager clearfix">
-<li class="next"><a href="index-18.html" rel="next">Older posts</a></li>
+<li class="next"><a href="index-19.html" rel="next">Older posts</a></li>
         </ul>
 <!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
 

@@ -1,5 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 01 May 2024 05:50:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Screen Time Alerts from Activity Watch</title><link>https://avilpage.com/2024/05/screen-time-alerts-from-activity-watch.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 15 May 2024 23:50:44 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Automating Zscaler Connectivity on macOS</title><link>https://avilpage.com/2024/05/managing-zscaler-connectivity-from-command-line.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.&lt;/p&gt;
+&lt;h4&gt;Automating Zscaler Connectivity&lt;/h4&gt;
+&lt;p&gt;Once Zscaler is installed on macOS, if we search for &lt;code&gt;LaunchAgents&lt;/code&gt; &amp;amp; &lt;code&gt;LaunchDaemons&lt;/code&gt; directories, we can find the Zscaler plist files. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt;
+/Library/LaunchAgents/com.zscaler.tray.plist
+
+
+$ sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt;
+/Library/LaunchDaemons/com.zscaler.service.plist
+/Library/LaunchDaemons/com.zscaler.tunnel.plist
+/Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
+&lt;/pre&gt;
+&lt;p&gt;To connect to Zscaler, we can load these services.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+
+/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;To disconnect from Zscaler, we can unload all of them.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+
+sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;To automatically toggle the connectivity, we can create a shell script.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[[&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;pgrep -x Zscaler&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="o"&gt;]]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"Disconnecting from Zscaler"&lt;/span&gt;
+    sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+    sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;
+    &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"Connecting to Zscaler"&lt;/span&gt;
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+    sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="ch"&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Required parameters:&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.schemaVersion 1&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.title toggle zscaler&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.mode silent&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Optional parameters:&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.icon ☁️&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Documentation:&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.author chillaranand&lt;/span&gt;
+&lt;span class="c1"&gt;# @raycast.authorURL https://avilpage.com/&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[[&lt;/span&gt; &lt;span class="k"&gt;$(&lt;/span&gt;pgrep -x Zscaler&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="o"&gt;]]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"Disconnecting from Zscaler"&lt;/span&gt;
+    sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+    sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl unload &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;
+    &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"Connecting to Zscaler"&lt;/span&gt;
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+    sudo find /Library/LaunchDaemons -name &lt;span class="s1"&gt;'*zscaler*'&lt;/span&gt; -exec launchctl load &lt;span class="o"&gt;{}&lt;/span&gt; &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Save this script to a folder. From &lt;code&gt;Raycast Settings&lt;/code&gt; -&amp;gt; &lt;code&gt;Extensions&lt;/code&gt; -&amp;gt; &lt;code&gt;Add Script Directory&lt;/code&gt;, we can select this folder, and the script will be available in Raycast. &lt;/p&gt;
+&lt;p&gt;&lt;img alt="raycast-connect-toggle" src="https://avilpage.com/images/automate-zscaler-connect2.png"&gt;&lt;/p&gt;
+&lt;p&gt;We can assign a shortcut key to the script for quick access.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="raycast-connect-toggle" src="https://avilpage.com/images/automate-zscaler-connect.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Even though Zscaler does not provide a command-line interface, we can automate the connectivity using the above scripts.&lt;/p&gt;</description><category>automation</category><category>macos</category><guid>https://avilpage.com/2024/05/managing-zscaler-connectivity-from-command-line.html</guid><pubDate>Tue, 14 May 2024 02:19:53 GMT</pubDate></item><item><title>Screen Time Alerts from Activity Watch</title><link>https://avilpage.com/2024/05/screen-time-alerts-from-activity-watch.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;div class="embed-responsive embed-responsive-16by9"&gt;
 &lt;iframe class="embed-responsive-item" src="https://www.youtube.com/embed/41A0r2H-EXs" allowfullscreen&gt;
 &lt;/iframe&gt;
@@ -107,23 +178,22 @@ Python &lt;span class="m"&gt;3&lt;/span&gt;.11.6
 &lt;p&gt;Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time1.png"&gt;&lt;/p&gt;
 &lt;p&gt;Go to &lt;code&gt;Stack Management&lt;/code&gt; -&amp;gt; &lt;code&gt;Index Patterns&lt;/code&gt; -&amp;gt; &lt;code&gt;Create index pattern&lt;/code&gt; -&amp;gt; Select the index pattern -&amp;gt; &lt;code&gt;Scripted fields&lt;/code&gt;, click on &lt;code&gt;Add scripted field&lt;/code&gt;, add the below script.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Once the field is saved, we can go back to &lt;code&gt;Discover&lt;/code&gt; and see the new field in the logs. We can toggle the visibility of the &lt;code&gt;Relative Time&lt;/code&gt; field to see the relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -141,27 +211,23 @@ Python &lt;span class="m"&gt;3&lt;/span&gt;.11.6
 &lt;h4&gt;ArchiveBox&lt;/h4&gt;
 &lt;p&gt;ArchiveBox&lt;sup id="fnref:archivebox"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/02/historical-option-chain-india.html#fn:archivebox"&gt;1&lt;/a&gt;&lt;/sup&gt; is a tool to archive web pages. It can be used to archive the option chain data for the stocks &amp;amp; indices.&lt;/p&gt;
 &lt;p&gt;Let's install ArchiveBox.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;archivebox
-$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;option_chain
-$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;option_chain
-$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;init
-$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;setup
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ pip install archivebox
+$ mkdir option_chain
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; option_chain
+$ archivebox init
+$ archivebox setup
+&lt;/pre&gt;
 &lt;p&gt;We can start the server(defaults to https://localhost:8000) and add URLs manually to archive them.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;server
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox server
+&lt;/pre&gt;
 &lt;p&gt;&lt;img alt="historical-option-chain" src="https://avilpage.com/images/historical-option-chain.png"&gt;&lt;/p&gt;
 &lt;p&gt;There are 180+ stocks in FNO segment &amp;amp; 6 indices with weekly expiry. We can write a simple Python script to generate all combinations of URLs for the option chain data and archive them using ArchiveBox.&lt;/p&gt;
 &lt;p&gt;Once URLs is generated, we can use the following command to archive them.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;--input-file&lt;span class="w"&gt; &lt;/span&gt;urls.txt
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox add --input-file urls.txt
+&lt;/pre&gt;
 &lt;p&gt;These URLs will be archived and stored in the &lt;code&gt;archive&lt;/code&gt; directory. Since we want to archive the data regularly, we can use a schedule to archive daily.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;schedule&lt;span class="w"&gt; &lt;/span&gt;--every&lt;span class="o"&gt;=&lt;/span&gt;day&lt;span class="w"&gt; &lt;/span&gt;--depth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{{url}}'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox schedule --every&lt;span class="o"&gt;=&lt;/span&gt;day --depth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="s1"&gt;'{{url}}'&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will archive the option chain data for the stocks &amp;amp; indices on a daily basis.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue&lt;sup id="fnref:issue"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/02/historical-option-chain-india.html#fn:issue"&gt;2&lt;/a&gt;&lt;/sup&gt; regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.&lt;/p&gt;
@@ -191,11 +257,10 @@ $&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;When using &lt;code&gt;pytest&lt;/code&gt; as test runner, &lt;code&gt;pytest-xdist&lt;/code&gt; &amp;amp; &lt;code&gt;pytest-parallel&lt;/code&gt; plugins makes it easy to run tests concurrently or in parallel.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;pytest-parallel&lt;/code&gt; works better if tests are independent of each other. If tests are dependent on each other, &lt;code&gt;pytest-xdist&lt;/code&gt; is a better choice.&lt;/p&gt;
 &lt;p&gt;If there are parameterised tests, pytest-xdist will fail as the order of the tests is not guaranteed.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pytest&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;auto&lt;span class="w"&gt; &lt;/span&gt;tests/
+&lt;pre class="code literal-block"&gt;$ pytest -n auto tests/
 
-Different&lt;span class="w"&gt; &lt;/span&gt;tests&lt;span class="w"&gt; &lt;/span&gt;were&lt;span class="w"&gt; &lt;/span&gt;collected&lt;span class="w"&gt; &lt;/span&gt;between&lt;span class="w"&gt; &lt;/span&gt;gw0&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;gw1.&lt;span class="w"&gt; &lt;/span&gt;The&lt;span class="w"&gt; &lt;/span&gt;difference&lt;span class="w"&gt; &lt;/span&gt;is:&lt;span class="w"&gt; &lt;/span&gt;...
-&lt;/pre&gt;&lt;/div&gt;
-
+Different tests were collected between gw0 and gw1. The difference is: ...
+&lt;/pre&gt;
 &lt;p&gt;To fix this, we have to make sure that the parameterised tests are executed in the same order on all workers. It can be achieved by sorting the parameterised tests by their name.&lt;/p&gt;
 &lt;p&gt;Alternatively, we can use &lt;code&gt;pytest-randomly&lt;/code&gt; plugin to order the tests.&lt;/p&gt;</description><category>python</category><category>testing</category><guid>https://avilpage.com/2023/12/coverage-reports-with-pytest-xdist.html</guid><pubDate>Sat, 30 Dec 2023 14:46:31 GMT</pubDate></item><item><title>Remap F4 to Raycast, Alfred (cmd + space)</title><link>https://avilpage.com/2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img src="https://avilpage.com/images/map-f4-raycast-alfred.png"&gt;&lt;/p&gt;
 &lt;p&gt;On Mac keyboard, there is &lt;code&gt;F4&lt;/code&gt; key which opens Spotlight&lt;sup id="fnref:spotlight"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html#fn:spotlight"&gt;1&lt;/a&gt;&lt;/sup&gt; by default. I use Raycast&lt;sup id="fnref:raycast"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html#fn:raycast"&gt;2&lt;/a&gt;&lt;/sup&gt; a lot instead of Spotlight and wanted to remap &lt;code&gt;F4&lt;/code&gt; to Raycast. &lt;/p&gt;
@@ -229,14 +294,13 @@ Different&lt;span class="w"&gt; &lt;/span&gt;tests&lt;span class="w"&gt; &lt;/sp
 &lt;p&gt;Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.&lt;/p&gt;
 &lt;h4&gt;xplr - line count&lt;/h4&gt;
 &lt;p&gt;xplr can be installed via &lt;code&gt;brew&lt;/code&gt;. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;xplr
+&lt;pre class="code literal-block"&gt;$ brew install xplr
 
-$&lt;span class="w"&gt; &lt;/span&gt;xplr&lt;span class="w"&gt; &lt;/span&gt;--version
-xplr&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.21.3
-&lt;/pre&gt;&lt;/div&gt;
-
+$ xplr --version
+xplr &lt;span class="m"&gt;0&lt;/span&gt;.21.3
+&lt;/pre&gt;
 &lt;p&gt;xplr reads the default configuration from &lt;code&gt;~/.config/xplr/init.lua&lt;/code&gt;. The following configuration shows the line count column in xplr.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;version&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'0.21.3'&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;version&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'0.21.3'&lt;/span&gt;
 
 &lt;span class="n"&gt;xplr&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;custom&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fmt_simple_column&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
   &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;relative_path&lt;/span&gt; &lt;span class="o"&gt;..&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;suffix&lt;/span&gt;
@@ -273,8 +337,7 @@ xplr&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.21.
   &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;Percentage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;30&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
   &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;Percentage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;This will show a row count on launch.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="xplr - line count" src="https://avilpage.com/images/xplr-line-count-column.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -289,76 +352,4 @@ xplr&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.21.
 &lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Finder_(software)"&gt;https://en.wikipedia.org/wiki/Finder_(software)&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html#fnref:finder" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>command-line</category><category>file manager</category><category>lua</category><guid>https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html</guid><pubDate>Mon, 06 Nov 2023 20:43:13 GMT</pubDate></item><item><title>Guide to setting up GeoDjango on Mac M1</title><link>https://avilpage.com/2023/10/guide-to-setting-up-geodjango-on-mac-m1.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;There are a lot of guides on setting up GeoDjango and PostGIS. But most of them are outdated and doesn't work on Mac M1. In this article, let us look at how to set up GeoDjango on Mac M1/M2.&lt;/p&gt;
-&lt;p&gt;Ensure you have already installed Postgres on your Mac. &lt;/p&gt;
-&lt;h4&gt;Install GeoDjango&lt;/h4&gt;
-&lt;p&gt;The default GDAL version available on brew fails to install on Mac M1.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;brew&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;
-&lt;span class="o"&gt;==&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cmake&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;
-&lt;span class="k"&gt;Last&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lines&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Users&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;chillaranand&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Library&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Logs&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Homebrew&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;02.&lt;/span&gt;&lt;span class="nl"&gt;cmake&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;javac&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Compiling&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;82&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;files&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;20231029&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;31808&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="n"&gt;wl9085&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;3.7.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;swig&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;java&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;classes&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;javac&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;warning&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bootstrap&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;path&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;conjunction&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;javac&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;option&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;no&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;longer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supported&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;Use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;later&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;javac&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Target&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;option&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;is&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;no&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;longer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supported&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;Use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;later&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-
-&lt;span class="n"&gt;BUILD&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;FAILED&lt;/span&gt;
-&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;20231029&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;31808&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="n"&gt;wl9085&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gdal&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mf"&gt;3.7.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;swig&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;java&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;build&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;xml&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Compile&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;failed&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;see&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;the&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;compiler&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;output&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;details&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-
-&lt;span class="n"&gt;Total&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;time&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;seconds&lt;/span&gt;
-&lt;span class="n"&gt;gmake&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;***&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;swig/java/CMakeFiles/java_binding.dir/build.make:108: swig/java/gdal.jar&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;gmake&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;2&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Leaving&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'&lt;/span&gt;
-&lt;span class="n"&gt;gmake&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;***&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CMakeFiles/Makefile2:9108: swig/java/CMakeFiles/java_binding.dir/all&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;
-&lt;span class="n"&gt;gmake&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Leaving&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;directory&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'/private/tmp/gdal-20231029-31808-1wl9085/gdal-3.7.2/build'&lt;/span&gt;
-&lt;span class="nl"&gt;gmake&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;***&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Makefile:139: all&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Error&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can use conda to install gdal. Create a new environment and install gdal in it.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;geodjango&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;python&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.9
-$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;conda-forge&lt;span class="w"&gt; &lt;/span&gt;gdal
-$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;django
-$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;psycopg2-binary
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Once installed, you can check the version using &lt;code&gt;gdalinfo --version&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Remaining dependencies can be installed via brew.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;postgresql
-$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;postgis
-$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;libgeoip
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let's create a new django project and add spatial backends.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;django-admin&lt;span class="w"&gt; &lt;/span&gt;startproject&lt;span class="w"&gt; &lt;/span&gt;geodjango
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Add &lt;code&gt;django.contrib.gis&lt;/code&gt; to &lt;code&gt;INSTALLED_APPS&lt;/code&gt; in &lt;code&gt;settings.py&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;INSTALLED_APPS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-    &lt;span class="o"&gt;...&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="s1"&gt;'django.contrib.gis'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Add the following to &lt;code&gt;DATABASES&lt;/code&gt; in &lt;code&gt;settings.py&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;DATABASES&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'default'&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s1"&gt;'ENGINE'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'django.contrib.gis.db.backends.postgis'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Since we used conda to install gdal, we need to set the path to gdal in our django settings. Run &lt;code&gt;locate libgdal.dylib&lt;/code&gt; to find the path to gdal.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;GDAL_LIBRARY_PATH&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'/opt/homebrew/anaconda3/envs/geodjango/lib/libgdal.dylib'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Similarly, we need to set &lt;code&gt;GEOS_LIBRARY_PATH&lt;/code&gt; as well.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;GEOS_LIBRARY_PATH&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'/opt/homebrew/anaconda3/envs/geodjango/lib/libgeos_c.dylib'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Now, we can create a new app and add PointField or any other spatial fields to our models.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;manage.py&lt;span class="w"&gt; &lt;/span&gt;startapp&lt;span class="w"&gt; &lt;/span&gt;places
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib.gis.db&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;models&lt;/span&gt;
-
-&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Place&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Model&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-    &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CharField&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;max_length&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;PointField&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article, we looked at how to set up GeoDjango on Mac M1. We used conda to install gdal and brew to install other dependencies. &lt;/p&gt;</description><category>django</category><category>macbook</category><guid>https://avilpage.com/2023/10/guide-to-setting-up-geodjango-on-mac-m1.html</guid><pubDate>Mon, 30 Oct 2023 03:29:23 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>command-line</category><category>file manager</category><category>lua</category><guid>https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html</guid><pubDate>Mon, 06 Nov 2023 20:43:13 GMT</pubDate></item></channel></rss>

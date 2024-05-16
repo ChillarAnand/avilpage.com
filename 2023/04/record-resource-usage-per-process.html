@@ -151,7 +151,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    5 min read
+                    3 min read
             </p>
 
             <p class="dateline">
@@ -165,47 +165,42 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <h4>Introduction</h4>
 <p>On Linux &amp; Mac, we can use an inbuilt <code>top</code> command line tool to monitor the resource usage of a single process in real time. </p>
-<div class="code"><pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
-$<span class="w"> </span>top<span class="w"> </span>-p<span class="w"> </span><span class="m">1234</span>
+<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$ top -p <span class="m">1234</span>
 
 <span class="c1"># On Mac, for a given pid</span>
-$<span class="w"> </span>top<span class="w"> </span>-pid<span class="w"> </span><span class="m">1234</span>
-</pre></div>
-
+$ top -pid <span class="m">1234</span>
+</pre>
 <p>In this article, we will see how to record and plot resource usage of a single process using <code>top</code> and a Python package called psrecord<sup id="fnref:psrecord"><a class="footnote-ref" href="record-resource-usage-per-process.html#fn:psrecord">1</a></sup>.</p>
 <h4>Record Resource Usage</h4>
 <p>In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use <code>top</code> to log resource usage into a text file. </p>
-<div class="code"><pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
-$<span class="w"> </span>top<span class="w"> </span>-p<span class="w"> </span><span class="m">1234</span><span class="w"> </span>-b<span class="w"> </span>-d<span class="w"> </span><span class="m">1</span><span class="w"> </span>&gt;<span class="w"> </span>top.log
+<pre class="code literal-block"><span class="c1"># On Linux, for a given pid</span>
+$ top -p <span class="m">1234</span> -b -d <span class="m">1</span> &gt; top.log
 
 <span class="c1"># On Mac, for a given pid</span>
-$<span class="w"> </span>top<span class="w"> </span>-l<span class="w"> </span><span class="m">0</span><span class="w"> </span>-s<span class="w"> </span><span class="m">1</span><span class="w"> </span>-pid<span class="w"> </span><span class="m">32515</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'NR%13==0; fflush(stdout)'</span><span class="w"> </span>&gt;<span class="w"> </span>top.log
-</pre></div>
-
+$ top -l <span class="m">0</span> -s <span class="m">1</span> -pid <span class="m">32515</span> <span class="p">|</span> awk <span class="s1">'NR%13==0; fflush(stdout)'</span> &gt; top.log
+</pre>
 <p>Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like <code>gnuplot</code> or <code>matplotlib</code>.</p>
 <p>Instead of using <code>top</code> command, we can use <code>psrecord</code> to record the resource usage of a process. <code>psrecord</code> is a Python package that can be installed all using <code>pip</code>. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>psrecord
-</pre></div>
-
+<pre class="code literal-block">$ python -m pip install psrecord
+</pre>
 <p>Once installed, we can use <code>psrecord</code> to record the resource usage of a process. </p>
-<div class="code"><pre class="code literal-block"><span class="c1"># record resource usage of a process with pid 1234</span>
-$<span class="w"> </span>psrecord<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--log<span class="w"> </span>top.log
+<pre class="code literal-block"><span class="c1"># record resource usage of a process with pid 1234</span>
+$ psrecord <span class="m">1234</span> --log top.log
 
 <span class="c1"># start and record resource usage of a process</span>
-$<span class="w"> </span>psrecord<span class="w"> </span>python<span class="w"> </span>script.py<span class="w"> </span>--plot<span class="w"> </span>graph.png
-</pre></div>
-
+$ psrecord python script.py --plot graph.png
+</pre>
 <p>We can view the raw data in the log file.</p>
-<div class="code"><pre class="code literal-block"><span class="c1"># view raw data</span>
-$<span class="w"> </span>head<span class="w"> </span>top.log
-$<span class="w"> </span>head<span class="w"> </span>a.txt
+<pre class="code literal-block"><span class="c1"># view raw data</span>
+$ head top.log
+$ head a.txt
 <span class="c1"># Elapsed time   CPU (%)     Real (MB)   Virtual (MB)</span>
-<span class="w">       </span><span class="m">0</span>.000<span class="w">        </span><span class="m">0</span>.000<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
-<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">93</span>.700<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
-<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">96</span>.300<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
-<span class="w">       </span><span class="m">0</span>.000<span class="w">       </span><span class="m">91</span>.900<span class="w">        </span><span class="m">5</span>.000<span class="w">   </span><span class="m">399461</span>.438
-</pre></div>
-
+       <span class="m">0</span>.000        <span class="m">0</span>.000        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">93</span>.700        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">96</span>.300        <span class="m">5</span>.000   <span class="m">399461</span>.438
+       <span class="m">0</span>.000       <span class="m">91</span>.900        <span class="m">5</span>.000   <span class="m">399461</span>.438
+</pre>
 <p>Here is the generated graph.</p>
 <p align="center">
 <img src="../../images/single-proc-resource.png" alt="single-proc-resource"></p>

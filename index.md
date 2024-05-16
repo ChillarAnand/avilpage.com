@@ -32,9 +32,9 @@
 
 #### Background
 
-I am from Gaaliveedu, Andhra Pradesh, India. I have completed B. Tech from S. V. University, Tirupati.
+With 8+ years of experience in full-stack software & hardware development, I have primarily worked on Healthcare & Finance domains.
 
-After that I have moved to Bangalore & started working as a software engineer.
+With a keen focus on business outcomes, I identify & solve the right problems with simple solutions. 
 
 I spend a lot of time using & promoting open source software. Most of my [personal projects](/projects.html) are open
 source.
@@ -46,5 +46,3 @@ source.
 You can use [this form](https://forms.gle/Hre4z4aLqJA5zYWe6) to reach out for any queries or suggestions. I will get back to you as soon as possible.
 
 If you want to reach out on other platforms, you can use the links at the bottom.
-
-

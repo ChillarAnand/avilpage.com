@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about trading)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/trading.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 30 Apr 2024 14:54:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Archiving Option Chain Data</title><link>https://avilpage.com/2024/02/historical-option-chain-india.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;BSE &amp;amp; NSE are the prominent exchanges in India, and they provide option chain data for the stocks &amp;amp; indices listed in their exchange.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about trading)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/trading.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 15 May 2024 23:39:10 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Archiving Option Chain Data</title><link>https://avilpage.com/2024/02/historical-option-chain-india.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;BSE &amp;amp; NSE are the prominent exchanges in India, and they provide option chain data for the stocks &amp;amp; indices listed in their exchange.&lt;/p&gt;
 &lt;p&gt;The option chain data is available for the current date. But it is not available for the past dates. This is a problem for traders who want to analyze the historical option chain data.&lt;/p&gt;
 &lt;h4&gt;ArchiveBox&lt;/h4&gt;
 &lt;p&gt;ArchiveBox&lt;sup id="fnref:archivebox"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/02/historical-option-chain-india.html#fn:archivebox"&gt;1&lt;/a&gt;&lt;/sup&gt; is a tool to archive web pages. It can be used to archive the option chain data for the stocks &amp;amp; indices.&lt;/p&gt;
 &lt;p&gt;Let's install ArchiveBox.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;archivebox
-$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;option_chain
-$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;option_chain
-$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;init
-$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;setup
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ pip install archivebox
+$ mkdir option_chain
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; option_chain
+$ archivebox init
+$ archivebox setup
+&lt;/pre&gt;
 &lt;p&gt;We can start the server(defaults to https://localhost:8000) and add URLs manually to archive them.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;server
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox server
+&lt;/pre&gt;
 &lt;p&gt;&lt;img alt="historical-option-chain" src="https://avilpage.com/images/historical-option-chain.png"&gt;&lt;/p&gt;
 &lt;p&gt;There are 180+ stocks in FNO segment &amp;amp; 6 indices with weekly expiry. We can write a simple Python script to generate all combinations of URLs for the option chain data and archive them using ArchiveBox.&lt;/p&gt;
 &lt;p&gt;Once URLs is generated, we can use the following command to archive them.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;--input-file&lt;span class="w"&gt; &lt;/span&gt;urls.txt
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox add --input-file urls.txt
+&lt;/pre&gt;
 &lt;p&gt;These URLs will be archived and stored in the &lt;code&gt;archive&lt;/code&gt; directory. Since we want to archive the data regularly, we can use a schedule to archive daily.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&gt;schedule&lt;span class="w"&gt; &lt;/span&gt;--every&lt;span class="o"&gt;=&lt;/span&gt;day&lt;span class="w"&gt; &lt;/span&gt;--depth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{{url}}'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ archivebox schedule --every&lt;span class="o"&gt;=&lt;/span&gt;day --depth&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="s1"&gt;'{{url}}'&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;This will archive the option chain data for the stocks &amp;amp; indices on a daily basis.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue&lt;sup id="fnref:issue"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/02/historical-option-chain-india.html#fn:issue"&gt;2&lt;/a&gt;&lt;/sup&gt; regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.&lt;/p&gt;
@@ -95,7 +91,7 @@ $&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&
 &lt;h4&gt;Renko chart - Price movement&lt;/h4&gt;
 &lt;p&gt;First one is based on price movement. In this, we will divide the price movement of current duration by brick size to get the bricks.&lt;/p&gt;
 &lt;p&gt;Once bricks are obtained, we need to assign the brick colors based on the direction of price movement and then plot rectangles for each available brick.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.patches&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Rectangle&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
 
@@ -144,8 +140,7 @@ $&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&
 
 &lt;span class="n"&gt;bricks&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'bricks'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s1"&gt;'bricks'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;
 &lt;span class="n"&gt;plot_renko&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bricks&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;brick_size&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Here is a sample renko chart plotted using the above code.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/python-renko3.png"&gt;
@@ -153,12 +148,11 @@ $&lt;span class="w"&gt; &lt;/span&gt;archivebox&lt;span class="w"&gt; &lt;/span&
 
 &lt;h4&gt;Renko chart - Period close&lt;/h4&gt;
 &lt;p&gt;In this bricks are calculated based on the close price of the instrument. Calculation of bricks is sligtly complex compared to price movement chart. I have created a seperate package called &lt;a href="https://pypi.python.org/pypi/stocktrends"&gt;stocktrends&lt;/a&gt; which has this calculation.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;stocktrends&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Renko&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;stocktrends&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Renko&lt;/span&gt;
 
 &lt;span class="n"&gt;renko&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Renko&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="n"&gt;renko&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;brick_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
 &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;renko&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_ohlc_data&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;This will give OHLC data for the renko chart. Now we can use this values to plot the charts as mentioned above.&lt;/p&gt;</description><category>python</category><category>technical-analysis</category><category>trading</category><guid>https://avilpage.com/2018/01/how-to-plot-renko-charts-with-python.html</guid><pubDate>Wed, 10 Jan 2018 09:27:23 GMT</pubDate></item></channel></rss>

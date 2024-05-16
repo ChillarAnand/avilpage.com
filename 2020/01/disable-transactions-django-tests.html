@@ -166,17 +166,16 @@ In this article, we will see where these atomic blocks create probl">
 <p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
 <h4>Select for update</h4>
 <p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
         <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
         <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
 <h4>Threads</h4>
 <p>Let us take a view which uses threads to get data from database.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
@@ -189,10 +188,9 @@ In this article, we will see where these atomic blocks create probl">
             <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
 
@@ -200,21 +198,19 @@ In this article, we will see where these atomic blocks create probl">
         <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
 <h4>Transaction Test Case</h4>
 <p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
 
 <span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
-</pre></div>
-
+</pre>
 <p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
 <p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="o">...</span>
 
 <span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
@@ -222,12 +218,11 @@ In this article, we will see where these atomic blocks create probl">
 
 <span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="o">...</span>
-</pre></div>
-
+</pre>
 <p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
 <p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
 <p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
-<div class="code"><pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
@@ -241,8 +236,7 @@ In this article, we will see where these atomic blocks create probl">
 
     <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
 <h4>Conclusion</h4>
 <p>Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.</p>
