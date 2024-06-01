@@ -1,5 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 15 May 2024 23:39:10 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Timestamp to Relative Time - Kibana Scripted fields</title><link>https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When browsing logs in Kibana, there will be a timestamp stamp field on the left for all the docs. It is difficult to read &amp;amp; comprehend the timestamp in the logs. It would be better if we can convert the timestamp to a human-readable relative time like &lt;code&gt;5 minutes ago&lt;/code&gt;, &lt;code&gt;1 hour ago&lt;/code&gt;, etc.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sat, 01 Jun 2024 13:30:29 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>macOS - Log &amp; track historical CPU, RAM usage</title><link>https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-grafana.png"&gt;&lt;/p&gt;
+&lt;p&gt;In macOS, we can use inbuilt &lt;code&gt;Activity Monitor&lt;/code&gt; or third party apps like &lt;code&gt;Stats&lt;/code&gt; to check the live CPU/RAM usage. But, we can't track the historical CPU &amp;amp; memory usage. &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;atop&lt;/code&gt; can track the historical CPU &amp;amp; memory usage. But, they are not available for macOS.&lt;/p&gt;
+&lt;h4&gt;Netdata&lt;/h4&gt;
+&lt;p&gt;Netdata&lt;sup id="fnref:Netdata"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:Netdata"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open source observability tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data. &lt;/p&gt;
+&lt;p&gt;Unfortunately, it is not stable on macOS. I tried installing it on multiple macbooks, but it didn't work. I raised an issue&lt;sup id="fnref:netdata_issue"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:netdata_issue"&gt;2&lt;/a&gt;&lt;/sup&gt; on their GitHub repository and the team mentioned that macOS is a low priority for them.&lt;/p&gt;
+&lt;h4&gt;Glances&lt;/h4&gt;
+&lt;p&gt;Glances&lt;sup id="fnref:Glances"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances"&gt;3&lt;/a&gt;&lt;/sup&gt; is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.&lt;/p&gt;
+&lt;p&gt;We can install it using Brew or pip.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install glances
+
+$ pip install glances
+&lt;/pre&gt;
+&lt;p&gt;Once it is installed, we can monitor the resource usage using the below command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ glances
+&lt;/pre&gt;
+&lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-glances.png"&gt;&lt;/p&gt;
+&lt;p&gt;Glances can log historical data to a file using the below command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ glances --export-csv /tmp/glances.csv
+&lt;/pre&gt;
+&lt;p&gt;In addition to that, it can log data to services like influxdb, prometheus, etc.&lt;/p&gt;
+&lt;p&gt;Let's install influxdb and export stats to it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
+
+$ python -m pip install influxdb-client
+
+$ cat glances.conf
+&lt;span class="o"&gt;[&lt;/span&gt;influxdb&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;localhost
+&lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;8086&lt;/span&gt;
+&lt;span class="nv"&gt;protocol&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;http
+&lt;span class="nv"&gt;org&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;avilpage
+&lt;span class="nv"&gt;bucket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;glances
+&lt;span class="nv"&gt;token&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;secret_token
+
+$ glances --export-influxdb -C glances.conf
+&lt;/pre&gt;
+&lt;p&gt;We can view stats in the influxdb from Data Explorer web UI at &lt;a href="http://localhost:8086"&gt;http://localhost:8086&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-influxdb.png"&gt;&lt;/p&gt;
+&lt;p&gt;Glances provides a prebuilt Grafana dashboard&lt;sup id="fnref:grafana_dashboard"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard"&gt;4&lt;/a&gt;&lt;/sup&gt; that we can import to visualize the stats. &lt;/p&gt;
+&lt;p&gt;From Grafana -&amp;gt; Dashboard -&amp;gt; Import, we can import the dashboard using the above URL.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-grafana.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In addition to InfluxDB, Glances can export data to ~20 services. So far, it is the best tool to log, track and view historical CPU, RAM, network and disk usage in macOS. The same method works for Linux and Windows as well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:Netdata"&gt;
+&lt;p&gt;&lt;a href="https://github.com/netdata/netdata"&gt;https://github.com/netdata/netdata&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fnref:Netdata" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:netdata_issue"&gt;
+&lt;p&gt;&lt;a href="https://github.com/netdata/netdata/issues/16696"&gt;https://github.com/netdata/netdata/issues/16696&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fnref:netdata_issue" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:Glances"&gt;
+&lt;p&gt;&lt;a href="https://github.com/nicolargo/glances"&gt;https://github.com/niolargo/glances&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fnref:Glances" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:grafana_dashboard"&gt;
+&lt;p&gt;&lt;a href="https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana"&gt;https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fnref:grafana_dashboard" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>macbook</category><category>python</category><guid>https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html</guid><pubDate>Fri, 31 May 2024 20:18:02 GMT</pubDate></item><item><title>Timestamp to Relative Time - Kibana Scripted fields</title><link>https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When browsing logs in Kibana, there will be a timestamp stamp field on the left for all the docs. It is difficult to read &amp;amp; comprehend the timestamp in the logs. It would be better if we can convert the timestamp to a human-readable relative time like &lt;code&gt;5 minutes ago&lt;/code&gt;, &lt;code&gt;1 hour ago&lt;/code&gt;, etc.&lt;/p&gt;
 &lt;h4&gt;Kibana Scripted Fields&lt;/h4&gt;
 &lt;p&gt;Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time1.png"&gt;&lt;/p&gt;
@@ -594,94 +655,4 @@ $ kubectl logs -f -l&lt;span class="o"&gt;=&lt;/span&gt;pod/hello-world
 &lt;p&gt;&lt;a href="https://github.com/databricks/click"&gt;click&lt;/a&gt; - Interactive controller for k8s.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://github.com/lensapp/lens"&gt;lens&lt;/a&gt; - Stand alone corss platform k8s IDE.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item><item><title>Continuous Deployment To Kubernetes With Skaffold</title><link>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In this article, let us see how to set up a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.&lt;/p&gt;
-&lt;h4&gt;Prerequisites&lt;/h4&gt;
-&lt;p&gt;You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl cluster-info
-$ kubectl config get-contexts
-&lt;/pre&gt;
-&lt;p&gt;You should know how to manually deploy your application to kubernetes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# push latest docker image to container registry&lt;/span&gt;
-$ docker push chillaranand/library
-
-&lt;span class="c1"&gt;# deploy latest image to k8s&lt;/span&gt;
-$ kubectl apply -f app/deployment.yaml
-$ kubectl apply -f app/service.yaml
-&lt;/pre&gt;
-&lt;h4&gt;Skaffold&lt;/h4&gt;
-&lt;p&gt;&lt;a href="https://github.com/GoogleContainerTools/skaffold"&gt;Skaffold&lt;/a&gt; is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.&lt;/p&gt;
-&lt;p&gt;Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
-$ chmod +x skaffold
-$ sudo mv skaffold /usr/local/bin
-&lt;/pre&gt;
-&lt;p&gt;Inside your project root, run &lt;code&gt;init&lt;/code&gt; command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ skaffold init
-Configuration skaffold.yaml was written
-
-$ cat skaffold.yaml
-apiVersion: skaffold/v2beta1
-kind: Config
-metadata:
-  name: library
-build:
-  artifacts:
-  - image: docker.io/chillaranand/library
-deploy:
-  kubectl:
-    manifests:
-    - kubernetes/deployment.yaml
-    - kubernetes/service.yaml
-&lt;/pre&gt;
-&lt;p&gt;To deploy latest changes to your cluster, run&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ skaffold run
-&lt;/pre&gt;
-&lt;p&gt;This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.&lt;/p&gt;
-&lt;h4&gt;CircleCI Workflow&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;version: &lt;span class="m"&gt;2&lt;/span&gt;.1
-
-orbs:
-  aws-cli: circleci/aws-cli@0.1.19
-  kubernetes: circleci/kubernetes@0.11.0
-
-commands:
-  kubernetes-deploy:
-
-    steps:
-      - setup_remote_docker
-
-      - aws-cli/setup:
-          profile-name: default
-
-      - kubernetes/install-kubectl:
-          kubectl-version: v1.15.10
-
-      - checkout
-
-      - run:
-          name: container registry log &lt;span class="k"&gt;in&lt;/span&gt;
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            sudo &lt;span class="k"&gt;$(&lt;/span&gt;aws ecr get-login --region ap-south-1 --no-include-email&lt;span class="k"&gt;)&lt;/span&gt;
-
-      - run:
-          name: install skaffold
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-            chmod +x skaffold
-            sudo mv skaffold /usr/local/bin
-
-      - run:
-          name: update kube config to connect to the required cluster
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
-
-      - run:
-          name: deploy to k8s
-          command: &lt;span class="p"&gt;|&lt;/span&gt;
-            skaffold run
-&lt;/pre&gt;
-&lt;p&gt;CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.&lt;/p&gt;
-&lt;p&gt;Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify &lt;code&gt;setup_remote_docker&lt;/code&gt; key so that a separate environment is created for it.&lt;/p&gt;
-&lt;p&gt;Remaining steps are self explainatory.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Here we have seen how to set up CD to kubernetes in CircleCI. If we want to set up this another CI like Jenkins or Travis, instead of using orbs, we have to use system package mangers like apt-get to install them. All others steps will remain same.&lt;/p&gt;</description><category>aws</category><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/04/setup-continuous-deployment-with-kubernetes.html</guid><pubDate>Thu, 30 Apr 2020 11:15:36 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In this article we have seen some useful methods as well as some tools to improve productivity with kubectl. If you spend a lot of time interacting with kubernetes cluster, it is important to notice your workflows and find better tools or ways to improve productivity.&lt;/p&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2020/05/tips-on-improving-kubectl-productivity.html</guid><pubDate>Sun, 31 May 2020 13:12:00 GMT</pubDate></item></channel></rss>
