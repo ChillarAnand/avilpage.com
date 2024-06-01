@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to log, track and view historical CPU, RAM, network and disk usage in macOS. ">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>macOS - Log &amp; track historical CPU, RAM usage | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="../05/managing-zscaler-connectivity-from-command-line.html" title="Automating Zscaler Connectivity on macOS" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="macOS - Log &amp; track historical CPU, RAM usage">
+<meta property="og:url" content="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html">
+<meta property="og:description" content="How to log, track and view historical CPU, RAM, network and disk usage in macOS. ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-06-01T01:48:02+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="macbook">
+<meta property="article:tag" content="python">
+<style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Tech</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">macOS - Log &amp; track historical CPU, RAM usage</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card">
+                <span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+                </span>
+            </p>
+
+            <p class="dateline">
+                    4 min read
+            </p>
+
+            <p class="dateline">
+                <a href="#" rel="bookmark">
+                    <time class="published dt-published" datetime="2024-06-01T01:48:02+05:30" itemprop="datePublished" title="2024-06-01">2024-06-01</time></a>
+            </p>
+            
+        </div>
+
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+            <p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-grafana.png"></p>
+<p>In macOS, we can use inbuilt <code>Activity Monitor</code> or third party apps like <code>Stats</code> to check the live CPU/RAM usage. But, we can't track the historical CPU &amp; memory usage. <code>sar</code>, <code>atop</code> can track the historical CPU &amp; memory usage. But, they are not available for macOS.</p>
+<h4>Netdata</h4>
+<p>Netdata<sup id="fnref:Netdata"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:Netdata">1</a></sup> is an open source observability tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data. </p>
+<p>Unfortunately, it is not stable on macOS. I tried installing it on multiple macbooks, but it didn't work. I raised an issue<sup id="fnref:netdata_issue"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:netdata_issue">2</a></sup> on their GitHub repository and the team mentioned that macOS is a low priority for them.</p>
+<h4>Glances</h4>
+<p>Glances<sup id="fnref:Glances"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:Glances">3</a></sup> is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.</p>
+<p>We can install it using Brew or pip.</p>
+<pre class="code literal-block">$ brew install glances
+
+$ pip install glances
+</pre>
+<p>Once it is installed, we can monitor the resource usage using the below command.</p>
+<pre class="code literal-block">$ glances
+</pre>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-glances.png"></p>
+<p>Glances can log historical data to a file using the below command.</p>
+<pre class="code literal-block">$ glances --export-csv /tmp/glances.csv
+</pre>
+<p>In addition to that, it can log data to services like influxdb, prometheus, etc.</p>
+<p>Let's install influxdb and export stats to it.</p>
+<pre class="code literal-block">$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
+
+$ python -m pip install influxdb-client
+
+$ cat glances.conf
+<span class="o">[</span>influxdb<span class="o">]</span>
+<span class="nv">host</span><span class="o">=</span>localhost
+<span class="nv">port</span><span class="o">=</span><span class="m">8086</span>
+<span class="nv">protocol</span><span class="o">=</span>http
+<span class="nv">org</span><span class="o">=</span>avilpage
+<span class="nv">bucket</span><span class="o">=</span>glances
+<span class="nv">token</span><span class="o">=</span>secret_token
+
+$ glances --export-influxdb -C glances.conf
+</pre>
+<p>We can view stats in the influxdb from Data Explorer web UI at <a href="http://localhost:8086">http://localhost:8086</a>.</p>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-influxdb.png"></p>
+<p>Glances provides a prebuilt Grafana dashboard<sup id="fnref:grafana_dashboard"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard">4</a></sup> that we can import to visualize the stats. </p>
+<p>From Grafana -&gt; Dashboard -&gt; Import, we can import the dashboard using the above URL.</p>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-grafana.png"></p>
+<h4>Conclusion</h4>
+<p>In addition to InfluxDB, Glances can export data to ~20 services. So far, it is the best tool to log, track and view historical CPU, RAM, network and disk usage in macOS. The same method works for Linux and Windows as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:Netdata">
+<p><a href="https://github.com/netdata/netdata">https://github.com/netdata/netdata</a> <a class="footnote-backref" href="macos-log-track-cpu-ram-usage.html#fnref:Netdata" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:netdata_issue">
+<p><a href="https://github.com/netdata/netdata/issues/16696">https://github.com/netdata/netdata/issues/16696</a> <a class="footnote-backref" href="macos-log-track-cpu-ram-usage.html#fnref:netdata_issue" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:Glances">
+<p><a href="https://github.com/nicolargo/glances">https://github.com/niolargo/glances</a> <a class="footnote-backref" href="macos-log-track-cpu-ram-usage.html#fnref:Glances" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:grafana_dashboard">
+<p><a href="https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana">https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana</a> <a class="footnote-backref" href="macos-log-track-cpu-ram-usage.html#fnref:grafana_dashboard" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/macbook.html" rel="tag">macbook</a></li>
+            <li><a class="tag p-category" href="../../tags/python.html" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../05/managing-zscaler-connectivity-from-command-line.html" rel="prev" title="Automating Zscaler Connectivity on macOS">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    <b>Chillar Anand</b>
+                    <br>
+                    A blog about python, careers &amp; life.
+                    <br>
+                    To contact me, <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">send a message here</a>.
+                </p>
+
+            </div>
+        </div>
+
+        
+    </article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

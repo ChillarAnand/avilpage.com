@@ -70,7 +70,81 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" class="u-url">Automating Zscaler Connectivity on macOS</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/06/macos-log-track-cpu-ram-usage.html" class="u-url">macOS - Log &amp; track historical CPU, RAM usage</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/06/macos-log-track-cpu-ram-usage.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-06-01T01:48:02+05:30" itemprop="datePublished" title="2024-06-01">2024-06-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-grafana.png"></p>
+<p>In macOS, we can use inbuilt <code>Activity Monitor</code> or third party apps like <code>Stats</code> to check the live CPU/RAM usage. But, we can't track the historical CPU &amp; memory usage. <code>sar</code>, <code>atop</code> can track the historical CPU &amp; memory usage. But, they are not available for macOS.</p>
+<h4>Netdata</h4>
+<p>Netdata<sup id="fnref:Netdata"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:Netdata">1</a></sup> is an open source observability tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data. </p>
+<p>Unfortunately, it is not stable on macOS. I tried installing it on multiple macbooks, but it didn't work. I raised an issue<sup id="fnref:netdata_issue"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:netdata_issue">2</a></sup> on their GitHub repository and the team mentioned that macOS is a low priority for them.</p>
+<h4>Glances</h4>
+<p>Glances<sup id="fnref:Glances"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances">3</a></sup> is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.</p>
+<p>We can install it using Brew or pip.</p>
+<pre class="code literal-block">$ brew install glances
+
+$ pip install glances
+</pre>
+<p>Once it is installed, we can monitor the resource usage using the below command.</p>
+<pre class="code literal-block">$ glances
+</pre>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-glances.png"></p>
+<p>Glances can log historical data to a file using the below command.</p>
+<pre class="code literal-block">$ glances --export-csv /tmp/glances.csv
+</pre>
+<p>In addition to that, it can log data to services like influxdb, prometheus, etc.</p>
+<p>Let's install influxdb and export stats to it.</p>
+<pre class="code literal-block">$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
+
+$ python -m pip install influxdb-client
+
+$ cat glances.conf
+<span class="o">[</span>influxdb<span class="o">]</span>
+<span class="nv">host</span><span class="o">=</span>localhost
+<span class="nv">port</span><span class="o">=</span><span class="m">8086</span>
+<span class="nv">protocol</span><span class="o">=</span>http
+<span class="nv">org</span><span class="o">=</span>avilpage
+<span class="nv">bucket</span><span class="o">=</span>glances
+<span class="nv">token</span><span class="o">=</span>secret_token
+
+$ glances --export-influxdb -C glances.conf
+</pre>
+<p>We can view stats in the influxdb from Data Explorer web UI at <a href="http://localhost:8086">http://localhost:8086</a>.</p>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-influxdb.png"></p>
+<p>Glances provides a prebuilt Grafana dashboard<sup id="fnref:grafana_dashboard"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard">4</a></sup> that we can import to visualize the stats. </p>
+<p>From Grafana -&gt; Dashboard -&gt; Import, we can import the dashboard using the above URL.</p>
+<p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-grafana.png"></p>
+<h4>Conclusion</h4>
+<p>In addition to InfluxDB, Glances can export data to ~20 services. So far, it is the best tool to log, track and view historical CPU, RAM, network and disk usage in macOS. The same method works for Linux and Windows as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:Netdata">
+<p><a href="https://github.com/netdata/netdata">https://github.com/netdata/netdata</a> <a class="footnote-backref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fnref:Netdata" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:netdata_issue">
+<p><a href="https://github.com/netdata/netdata/issues/16696">https://github.com/netdata/netdata/issues/16696</a> <a class="footnote-backref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fnref:netdata_issue" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:Glances">
+<p><a href="https://github.com/nicolargo/glances">https://github.com/niolargo/glances</a> <a class="footnote-backref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fnref:Glances" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:grafana_dashboard">
+<p><a href="https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana">https://glances.readthedocs.io/en/latest/gw/influxdb.html#grafana</a> <a class="footnote-backref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fnref:grafana_dashboard" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" class="u-url">Automating Zscaler Connectivity on macOS</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -471,84 +545,6 @@ Different tests were collected between gw0 and gw1. The difference is: ...
 </li>
 <li id="fn:f4">
 <p><a href="https://ke-complex-modifications.pqrs.org/#f4_to_cmd_space">https://ke-complex-modifications.pqrs.org/#f4_to_cmd_space</a> <a class="footnote-backref" href="../2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html#fnref:f4" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/11/add-column-for-row-count-in-file-manager.html" class="u-url">Add "Line Count" Column in File Manager</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2023/11/add-column-for-row-count-in-file-manager.html" rel="bookmark">
-            <time class="published dt-published" datetime="2023-11-07T02:13:13+05:30" itemprop="datePublished" title="2023-11-07">2023-11-07</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>While monitoring an ETL pipeline, I browse a lot of files and often need to know how many lines are there in a file. For that, I can switch to that directory from terminal and run <code>wc -l</code> for that.</p>
-<p>To avoid the hassle of switching to the directory and running a command in the terminal, I wrote a simple lua script to show line count column in xplr<sup id="fnref:xplr"><a class="footnote-ref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fn:xplr">1</a></sup> file manager.</p>
-<h4>Failed Attempts</h4>
-<p>Initially I set out to write a Finder<sup id="fnref:finder"><a class="footnote-ref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fn:finder">2</a></sup> plugin to show the line count column. But I couldn't find a way to get the line count of a file in Finder plugin. I have explored other GUI file managers but none of them have a way to show custom columns with line count.</p>
-<p>Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.</p>
-<h4>xplr - line count</h4>
-<p>xplr can be installed via <code>brew</code>. </p>
-<pre class="code literal-block">$ brew install xplr
-
-$ xplr --version
-xplr <span class="m">0</span>.21.3
-</pre>
-<p>xplr reads the default configuration from <code>~/.config/xplr/init.lua</code>. The following configuration shows the line count column in xplr.</p>
-<pre class="code literal-block"><span class="n">version</span> <span class="o">=</span> <span class="s1">'0.21.3'</span>
-
-<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">fmt_simple_column</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">m</span><span class="p">.</span><span class="n">prefix</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">relative_path</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">suffix</span>
-<span class="kr">end</span>
-
-<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">row_count</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">.</span><span class="n">is_file</span> <span class="kr">then</span>
-    <span class="kr">return</span> <span class="s2">"---"</span>
-  <span class="kr">end</span>
-
-  <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">absolute_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span>
-    <span class="kd">local</span> <span class="n">row_count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="kr">for</span> <span class="n">_</span> <span class="kr">in</span> <span class="n">file</span><span class="p">:</span><span class="n">lines</span><span class="p">()</span> <span class="kr">do</span>
-      <span class="n">row_count</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="kr">end</span>
-    <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="kr">return</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">row_count</span><span class="p">)</span>
-  <span class="kr">end</span>
-<span class="kr">end</span>
-
-
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">header</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"  path"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"line_count"</span> <span class="p">},</span>
-<span class="p">}</span>
-
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">row</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.fmt_simple_column"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.row_count"</span> <span class="p">},</span>
-<span class="p">}</span>
-
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">30</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">20</span> <span class="p">},</span>
-<span class="p">}</span>
-</pre>
-<p>This will show a row count on launch.</p>
-<p><img alt="xplr - line count" src="../images/xplr-line-count-column.png"></p>
-<h4>Conclusion</h4>
-<p>xplr is a very powerful file manager, and it is very easy to write lua scripts to create custom columns. I couldn't find a way to sort items based on the custom column. Need to explore more on that.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:xplr">
-<p><a href="https://github.com/sayanarijit/xplr">https://github.com/sayanarijit/xplr</a> <a class="footnote-backref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fnref:xplr" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:finder">
-<p><a href="https://en.wikipedia.org/wiki/Finder_(software)">https://en.wikipedia.org/wiki/Finder_(software)</a> <a class="footnote-backref" href="../2023/11/add-column-for-row-count-in-file-manager.html#fnref:finder" title="Jump back to footnote 2 in the text">↩</a></p>
 </li>
 </ol>
 </div>
