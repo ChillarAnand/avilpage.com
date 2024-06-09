@@ -23,7 +23,18 @@ Here are some of the talks I have given at various conferences and events.
 <br />
 
 
-### Supercharge Your Shell For Python Development @BangPypers
+### Hot moduel reloading in Python @ Foss United Bangalore
+
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/7SnkgiI8-PU" allowfullscreen>
+</iframe>
+</div>
+
+<br />
+<br />
+
+
+### Supercharge Your Shell For Python Development @ BangPypers
 
 <div class="embed-responsive embed-responsive-16by9">
 <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/lvmJ0tWCjFA" allowfullscreen>
@@ -32,6 +43,8 @@ Here are some of the talks I have given at various conferences and events.
 
 <br />
 <br />
+
+
 
 
 #### [Django Gotchas!](http://chillaranand.github.io/django-gotcha/) @BangaloreDjangoUserGroup

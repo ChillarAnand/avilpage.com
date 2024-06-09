@@ -1223,7 +1223,8 @@ for label in labels:
         ))
 
 CUSTOM_REDIRECTIONS = [
-    ('/p/projects.html', '/projects.html')
+        ('/p/projects.html', '/projects.html'),
+        ('/p/talks.html', '/talks.html'),
 ]
 
 REDIRECTIONS = CUSTOM_REDIRECTIONS + LABEL_REDIRECTIONS
