@@ -165,10 +165,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <p>Exporting multiple requests with this interface becomes tedious. Instead we can save all requests to a file and write a python script to export them.</p>
 <p>Start mitmproxy with this command so that all request flows are appended to <code>requests.mitm</code> file for later use.</p>
-<pre class="code literal-block">$ mitmproxy -w +requests.mitm
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>mitmproxy<span class="w"> </span>-w<span class="w"> </span>+requests.mitm
+</pre></div>
+
 <p>Here is a python script to parse this dump file and print request URLs.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">mitmproxy.io</span> <span class="kn">import</span> <span class="n">FlowReader</span>
 
 
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">'requests.mitm'</span>
@@ -178,9 +179,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
     <span class="k">for</span> <span class="n">flow</span> <span class="ow">in</span> <span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p><code>flow.request</code> object has more attributes to provide information about the request.</p>
-<pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">31</span><span class="p">]:</span> <span class="nb">dir</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">31</span><span class="p">]:</span>
 <span class="p">[</span><span class="o">...</span>
  <span class="s1">'host'</span><span class="p">,</span>
@@ -192,9 +194,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
  <span class="s1">'raw_content'</span><span class="p">,</span>
  <span class="o">...</span>
  <span class="s1">'wrap'</span><span class="p">]</span>
-</pre>
+</pre></div>
+
 <p>We can use the mitmproxy export utilities to transform mitm flows to other formats.</p>
-<pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
+<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">32</span><span class="p">]:</span> <span class="n">flow</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">stream</span><span class="p">())</span>
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">33</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">mitmproxy.addons</span> <span class="kn">import</span> <span class="n">export</span>
 
@@ -206,7 +209,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="n">export</span><span class="o">.</span><span class="n">httpie_command</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">36</span><span class="p">]:</span> <span class="s2">"http GET http://mitm.it/favicon.ico 'Host:mitm.it' 'Proxy-Connection:keep-alive' 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' 'DNT:1' 'Accept:image/webp,image/apng,image/*,*/*;q=0.8' 'Referer:http://mitm.it/' 'Accept-Encoding:gzip, deflate' 'Accept-Language:en-US,en;q=0.9,ms;q=0.8,te;q=0.7' 'content-length:0'"</span>
-</pre>
+</pre></div>
+
 <p>With these utilities we can transform mitmproxy request flow to curl command or any other custom form to fit our needs.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
