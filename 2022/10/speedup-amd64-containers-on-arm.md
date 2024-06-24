@@ -91,12 +91,10 @@ After that we can restart the VMs and monitor the resource consumption. On an av
 
 ### Conclusion
 
-In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross architecture containers on Linux as well.
+In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross-architecture containers on Linux as well.
 
 
 
 [^dhub]: [https://hub.docker.com/search?q=&page=10](https://hub.docker.com/search?q=&page=10)
 
 [^lima]: [https://github.com/lima-vm/lima](https://github.com/lima-vm/lima)
-
-[^k3s]: [Install k3s on Mac M1](/2022/10/local-kubernetes-with-k3s-on-mac.html)

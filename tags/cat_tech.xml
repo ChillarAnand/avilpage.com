@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tech)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_tech.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 15 May 2024 23:39:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Local Kubernetes Cluster with K3s on MacBook M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tech)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_tech.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Jun 2024 13:48:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Local Kubernetes Cluster with K3s on MacBook M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; This article is outdated. I wrote an updated article on &lt;a href="https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html"&gt;setting up k8s anywhere with single command&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;br&gt;&lt;/p&gt;
 &lt;div class="embed-responsive embed-responsive-16by9"&gt;
@@ -9,43 +9,49 @@
 
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
 &lt;h4&gt;K3s Setup&lt;/h4&gt;
 &lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--cask&lt;span class="w"&gt; &lt;/span&gt;multipass
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;launch&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="w"&gt; &lt;/span&gt;k3s&lt;span class="w"&gt; &lt;/span&gt;--mem&lt;span class="w"&gt; &lt;/span&gt;4G&lt;span class="w"&gt; &lt;/span&gt;--disk&lt;span class="w"&gt; &lt;/span&gt;40G
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass info k3s
-Name:           k3s
-State:          Running
-IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
-                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
-                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
-Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
-Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
-Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
-Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
-Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
-Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
-                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
-                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;k3s
+Name:&lt;span class="w"&gt;           &lt;/span&gt;k3s
+State:&lt;span class="w"&gt;          &lt;/span&gt;Running
+IPv4:&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
+Release:&lt;span class="w"&gt;        &lt;/span&gt;Ubuntu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.04.1&lt;span class="w"&gt; &lt;/span&gt;LTS
+Image&lt;span class="w"&gt; &lt;/span&gt;hash:&lt;span class="w"&gt;     &lt;/span&gt;78b5ca0da456&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;Ubuntu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.04&lt;span class="w"&gt; &lt;/span&gt;LTS&lt;span class="o"&gt;)&lt;/span&gt;
+Load:&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.34&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.10&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.70
+Disk&lt;span class="w"&gt; &lt;/span&gt;usage:&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.7G&lt;span class="w"&gt; &lt;/span&gt;out&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;38&lt;/span&gt;.6G
+Memory&lt;span class="w"&gt; &lt;/span&gt;usage:&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.2G&lt;span class="w"&gt; &lt;/span&gt;out&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.8G
+Mounts:&lt;span class="w"&gt;         &lt;/span&gt;/Users/chillaranand/test/k8s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;~/k8s
+&lt;span class="w"&gt;                    &lt;/span&gt;UID&lt;span class="w"&gt; &lt;/span&gt;map:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;503&lt;/span&gt;:default
+&lt;span class="w"&gt;                    &lt;/span&gt;GID&lt;span class="w"&gt; &lt;/span&gt;map:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;:default
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;mount&lt;span class="w"&gt; &lt;/span&gt;~/test/k8s&lt;span class="w"&gt; &lt;/span&gt;k3s:~/k8s
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
 &lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass shell k3s
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;k3s
 
-ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
+ubuntu@k3s:~$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
 &lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -53,26 +59,30 @@ ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; 
 &lt;/p&gt;
 
 &lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;grep&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-$ multipass shell k3s-worker
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;launch&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="w"&gt; &lt;/span&gt;k3s-worker&lt;span class="w"&gt; &lt;/span&gt;--mem&lt;span class="w"&gt; &lt;/span&gt;2G&lt;span class="w"&gt; &lt;/span&gt;--disk&lt;span class="w"&gt; &lt;/span&gt;20G
 
-ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;k3s-worker
+
+ubuntu@k3s-worker:~$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;
+&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
-$ multipass purge
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;delete&lt;span class="w"&gt; &lt;/span&gt;k3s&lt;span class="w"&gt; &lt;/span&gt;k3s-worker
+$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;purge
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
 &lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
@@ -109,21 +119,24 @@ $ multipass purge
 &lt;/p&gt;
 
 &lt;p&gt;We can download this file to system by running the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ adb pull -p /storage/emulated/0/Download/magisk_patched-25200_cU1ws.img .
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;adb&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;/storage/emulated/0/Download/magisk_patched-25200_cU1ws.img&lt;span class="w"&gt; &lt;/span&gt;.
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now we need to download patched vbmeta file. This is available in XDA&lt;sup id="fnref:xda"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/09/how-to-root-redmi-9-prime-lancelot.html#fn:xda"&gt;4&lt;/a&gt;&lt;/sup&gt; forum. Click &lt;a href="https://forum.xda-developers.com/attachments/vbmeta_redmi9-img.5082027/"&gt;this link&lt;/a&gt; to download it.&lt;/p&gt;
 &lt;p&gt;Once we have both patched files, we can reboot the device in fastboot mode by using the following commands.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ adb devices
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;adb&lt;span class="w"&gt; &lt;/span&gt;devices
 
-$ adb reboot bootloader
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;adb&lt;span class="w"&gt; &lt;/span&gt;reboot&lt;span class="w"&gt; &lt;/span&gt;bootloader
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;When the device is in fastboot mode, run the following commands to root it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ fastboot --disable-verity --disable-verification flash vbmeta vbmeta_redmi9.img
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;fastboot&lt;span class="w"&gt; &lt;/span&gt;--disable-verity&lt;span class="w"&gt; &lt;/span&gt;--disable-verification&lt;span class="w"&gt; &lt;/span&gt;flash&lt;span class="w"&gt; &lt;/span&gt;vbmeta&lt;span class="w"&gt; &lt;/span&gt;vbmeta_redmi9.img
 
-$ fastboot flash boot magisk_patched-25200_cU1ws.img
+$&lt;span class="w"&gt; &lt;/span&gt;fastboot&lt;span class="w"&gt; &lt;/span&gt;flash&lt;span class="w"&gt; &lt;/span&gt;boot&lt;span class="w"&gt; &lt;/span&gt;magisk_patched-25200_cU1ws.img
 
-$ fastboot reboot
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;fastboot&lt;span class="w"&gt; &lt;/span&gt;reboot
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the deivce is rebooted, we can install root checker app and verify that the device is rooted successfully.&lt;/p&gt;
 &lt;h4&gt;Final Thoughts&lt;/h4&gt;
 &lt;p&gt;When we buy a Mac or PC(Linux/Windows), it is rooted by default. For Linux/Mac, we can run programs as sudo. For windows, we can just run a program as an administrator. There are no extra steps to root/jailbreak these devices.&lt;/p&gt;
@@ -214,71 +227,77 @@ $ fastboot reboot
 &lt;h4&gt;Aliases&lt;/h4&gt;
 &lt;p&gt;Aliases in general improve the productivity when using a shell.&lt;/p&gt;
 &lt;p&gt;kubectl provides shortcuts for commands. For example,&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# instead of running full command&lt;/span&gt;
-$ kubectl get services
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# instead of running full command&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;services
 
 &lt;span class="c1"&gt;# we can use short hand version&lt;/span&gt;
-$ kubectl get svc
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;svc
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It also provides completion for commands.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# enable completion for zsh&lt;/span&gt;
-$ &lt;span class="nb"&gt;source&lt;/span&gt; &amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;kubectl completion zsh&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# enable completion for zsh&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="o"&gt;(&lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;completion&lt;span class="w"&gt; &lt;/span&gt;zsh&lt;span class="o"&gt;)&lt;/span&gt;
 
 &lt;span class="c1"&gt;# type `kubectl ` and hit `&amp;lt;TAB&amp;gt;` will show possible options&lt;/span&gt;
-$ kubectl
-annotate       attach         cluster-info
-api-resources  auth           completion
-api-versions   autoscale      config
-apply          certificate    convert
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl
+annotate&lt;span class="w"&gt;       &lt;/span&gt;attach&lt;span class="w"&gt;         &lt;/span&gt;cluster-info
+api-resources&lt;span class="w"&gt;  &lt;/span&gt;auth&lt;span class="w"&gt;           &lt;/span&gt;completion
+api-versions&lt;span class="w"&gt;   &lt;/span&gt;autoscale&lt;span class="w"&gt;      &lt;/span&gt;config
+apply&lt;span class="w"&gt;          &lt;/span&gt;certificate&lt;span class="w"&gt;    &lt;/span&gt;convert
 
 &lt;span class="c1"&gt;# type `kubectl g`, and hit `&amp;lt;TAB&amp;gt;` will show possible options&lt;/span&gt;
-$ kubectl get
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Even though completions are helpful, setting up up aliases for most commanly used commands will save a lot of time.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;k&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl'&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;k&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl'&lt;/span&gt;
 
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kdp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl describe pod'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kgp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get pods'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kgpa&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get pods --all-namespaces'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;ket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl exec -it'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;wkgp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'watch -n1 kubectl getp pods'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kdp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl describe pod'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kgp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get pods'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kgpa&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get pods --all-namespaces'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;ket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl exec -it'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;wkgp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'watch -n1 kubectl getp pods'&lt;/span&gt;
 
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kga&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get all'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kgaa&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get all --all-namespaces'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kga&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get all'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kgaa&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl get all --all-namespaces'&lt;/span&gt;
 
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kaf&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl apply -f'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kaf&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl apply -f'&lt;/span&gt;
 
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kcgc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl config get-contexts'&lt;/span&gt;
-&lt;span class="nb"&gt;alias&lt;/span&gt; &lt;span class="nv"&gt;kccc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl config current-context'&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kcgc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl config get-contexts'&lt;/span&gt;
+&lt;span class="nb"&gt;alias&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;kccc&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'kubectl config current-context'&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If you don't write your own aliases, there is &lt;a href="https://github.com/ahmetb/kubectl-aliases"&gt;kubectl-aliases&lt;/a&gt; which provides exhuastive list of aliases. We can source this file in rc file and start using them.&lt;/p&gt;
 &lt;h4&gt;Use Functions&lt;/h4&gt;
 &lt;p&gt;Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.&lt;/p&gt;
 &lt;p&gt;For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;kp&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
-    kubectl -n kubernetes-dashboard describe secret &lt;span class="k"&gt;$(&lt;/span&gt;kubectl -n kubernetes-dashboard get secret &lt;span class="p"&gt;|&lt;/span&gt; grep admin-user &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'{print $1}'&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; grep &lt;span class="s1"&gt;'token:'&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'{print $2}'&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; pbcopy
-    open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
-    kubectl proxy
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;kp&lt;span class="o"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;kubernetes-dashboard&lt;span class="w"&gt; &lt;/span&gt;describe&lt;span class="w"&gt; &lt;/span&gt;secret&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;kubernetes-dashboard&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;secret&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;admin-user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{print $1}'&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'token:'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{print $2}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pbcopy
+&lt;span class="w"&gt;    &lt;/span&gt;open&lt;span class="w"&gt; &lt;/span&gt;http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+&lt;span class="w"&gt;    &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;proxy
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now from the shell, when we run &lt;code&gt;kp&lt;/code&gt;, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.&lt;/p&gt;
 &lt;h4&gt;Use Labels&lt;/h4&gt;
 &lt;p&gt;To describe a pod or tail logs from a pod, we can use pod names.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl get pods
-NAME                             READY   STATUS
-hello-world-79d794c659-tpfv2     &lt;span class="m"&gt;1&lt;/span&gt;/1     Running
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;pods
+NAME&lt;span class="w"&gt;                             &lt;/span&gt;READY&lt;span class="w"&gt;   &lt;/span&gt;STATUS
+hello-world-79d794c659-tpfv2&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;/1&lt;span class="w"&gt;     &lt;/span&gt;Running
 
 
-$ kubectl describe pod hello-world-79d794c659-tpfv2
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;describe&lt;span class="w"&gt; &lt;/span&gt;pod&lt;span class="w"&gt; &lt;/span&gt;hello-world-79d794c659-tpfv2
 
-$ kubectl logs -f pod/hello-world-79d794c659-tpfv2
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;logs&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;pod/hello-world-79d794c659-tpfv2
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;When the app gets updated, the name of pod also updates. If your shell has auto completion feature, it will autocomplete to previous name.&lt;/p&gt;
 &lt;p&gt;So, instead of using pod name, we can use pod labels as mentioned below.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl describe pod -l&lt;span class="o"&gt;=&lt;/span&gt;hello-world
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;describe&lt;span class="w"&gt; &lt;/span&gt;pod&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="o"&gt;=&lt;/span&gt;hello-world
 
-$ kubectl logs -f -l&lt;span class="o"&gt;=&lt;/span&gt;pod/hello-world
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;logs&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="o"&gt;=&lt;/span&gt;pod/hello-world
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We run the command once and next time shell will show autocomplete and we can use that directly.&lt;/p&gt;
 &lt;h4&gt;Kubectl Tools&lt;/h4&gt;
 &lt;p&gt;k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.&lt;/p&gt;
@@ -332,14 +351,17 @@ Image Credit:
 &lt;/div&gt;</description><category>careers</category><guid>https://avilpage.com/2020/04/work-from-home-tips.html</guid><pubDate>Tue, 31 Mar 2020 13:09:58 GMT</pubDate></item><item><title>How To Install Custom ROMs In Xiamo MiPad?</title><link>https://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Mi Pad and other Xiamo devices has Mi UI OS which is a dual boot system. A major problem with this system is it has only ~600 MB of space in 1st partition. Because of this, we cannot install some custom ROMs as they need more space. In this article we will see how to merge both partitions to get more free space and install any custom ROM.&lt;/p&gt;
 &lt;h3&gt;Install TWRP&lt;/h3&gt;
 &lt;p&gt;Dowload latest recovery from &lt;a href="https://twrp.me/"&gt;twrp.me&lt;/a&gt;. Copy it to android device or push it to android using adb.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;adb push -p twrp-3.1.1-0-mocha.img /sdcard/
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;adb&lt;span class="w"&gt; &lt;/span&gt;push&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;twrp-3.1.1-0-mocha.img&lt;span class="w"&gt; &lt;/span&gt;/sdcard/
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now put the device into fastboot mode by pressing &lt;strong&gt;Volume down&lt;/strong&gt; &amp;amp; &lt;strong&gt;Power&lt;/strong&gt; button simultanesouly when you switch it on. When in fastboot mode, flash the downloaded recovery file&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo fastboot flash recovery twrp-3.1.1-0-mocha.img
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;fastboot&lt;span class="w"&gt; &lt;/span&gt;flash&lt;span class="w"&gt; &lt;/span&gt;recovery&lt;span class="w"&gt; &lt;/span&gt;twrp-3.1.1-0-mocha.img
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now we can go to recovery mode using adb.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;adb reboot recovery
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;adb reboot recovery
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h3&gt;Merge partitions&lt;/h3&gt;
 &lt;p&gt;Before installing custom ROM, we need to merge partitions so that we will have enough space to install ROM. If you are familiar with &lt;a href="https://www.gnu.org/software/parted/"&gt;parted&lt;/a&gt; command, you can directly merge the partitions from terminal in TWRP recovery.&lt;/p&gt;
 &lt;p&gt;There is also a script which you can flash to do the partition. You can read &lt;a href="http://en.miui.com/thread-118294-1-1.html"&gt;this guide&lt;/a&gt; on mi forum for more information.&lt;/p&gt;
@@ -352,60 +374,65 @@ Image Credit:
 &lt;p&gt;After partitions are merged, it is straight forward to install any custom ROM. Download a custom ROM like lineage or RR, push it to device and then install it from TWRP. After reboot, you will see the custom ROM booting.&lt;/p&gt;</description><category>android</category><guid>https://avilpage.com/2017/11/how-to-install-custom-roms-in-mipad.html</guid><pubDate>Sun, 19 Nov 2017 10:39:27 GMT</pubDate></item><item><title>Bluetooth Serial Communication Between Linux &amp; Android</title><link>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Most laptops and smart phones(Android/iPhone) have builtin Bluetooth modules. We can use this bluetooth module to communicate with other devices or with other bluetooth modules like HC-05 or HM-10.&lt;/p&gt;
 &lt;p&gt;In this article, we will learn how to send data between laptop and android bluetooth.&lt;/p&gt;
 &lt;p&gt;First, we need to pair with a bluetooth device to send information. From Ubuntu, we can pair to a Bluetooth device from Bluetooth settings. Alternatively, we can also use CLI to do the same.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;asus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DESKTOP&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;C4ECO3K&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;athene&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;65&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;D&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;OnePlus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;61&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Lenovo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;VIBE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;K5&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Plus&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;AC&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;C3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;CE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;EF&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Galaxy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;J2&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;35&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;71&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;B3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;05&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bluetoothctl&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;asus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DESKTOP&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;C4ECO3K&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;athene&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;65&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;D&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;OnePlus&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;61&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Lenovo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;VIBE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;K5&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Plus&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;AC&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;C3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;A0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;CE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;EF&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Galaxy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;J2&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;NEW&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;98&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;35&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;71&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;02&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;B3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;HC&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;05&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Changing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;succeeded&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Changing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;power&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;succeeded&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;registered&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="k"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;
+&lt;span class="k"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Discovery&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;started&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Discovering&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;66&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;on&lt;/span&gt;
+&lt;span class="n"&gt;Discovery&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;started&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Controller&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="nl"&gt;A&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;D7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;99&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="n"&gt;AC&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Discovering&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;94&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;E9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;BB&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nl"&gt;F8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;RSSI&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;66&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Attempting&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Paired&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;Pairing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;bluetooth&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;
+&lt;span class="n"&gt;Attempting&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pair&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;with&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;CHG&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Device&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;88&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;79&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;E&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="nl"&gt;B&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="nl"&gt;C&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;87&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;Paired&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;yes&lt;/span&gt;
+&lt;span class="n"&gt;Pairing&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;successful&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To communicate with paired devices, we will use &lt;a href="https://en.wikipedia.org/wiki/List_of_Bluetooth_protocols"&gt;RFCOMM protocol&lt;/a&gt;. RFCOMM is just a serial port emulation and provides reliable data tranfer like TCP.&lt;/p&gt;
 &lt;p&gt;From ubuntu, lets open a port for communication.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;rfcomm&lt;span class="w"&gt; &lt;/span&gt;listen&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;From Android, we have to connect to ubuntu. For this, we can use &lt;a href="https://play.google.com/store/apps/details?id=com.hardcodedjoy.roboremofree&amp;amp;hl=en"&gt;Roboremo&lt;/a&gt; app which supports RFCOMM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo rfcomm listen /dev/rfcomm0 &lt;span class="m"&gt;3&lt;/span&gt;
-Waiting &lt;span class="k"&gt;for&lt;/span&gt; connection on channel &lt;span class="m"&gt;3&lt;/span&gt;
-Connection from &lt;span class="m"&gt;88&lt;/span&gt;:79:7E:7B:4C:87 to /dev/rfcomm0
-Press CTRL-C &lt;span class="k"&gt;for&lt;/span&gt; hangup
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;rfcomm&lt;span class="w"&gt; &lt;/span&gt;listen&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+Waiting&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;connection&lt;span class="w"&gt; &lt;/span&gt;on&lt;span class="w"&gt; &lt;/span&gt;channel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+Connection&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;88&lt;/span&gt;:79:7E:7B:4C:87&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+Press&lt;span class="w"&gt; &lt;/span&gt;CTRL-C&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;hangup
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the connection is established, we can communicate between devices.&lt;/p&gt;
 &lt;p&gt;In Unix like systems, OS provides a device file as an interface for device driver. To send and read messages from Linux or Mac is as easy as reading and writing to a file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
-$ &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'hello from ubuntu'&lt;/span&gt; &amp;gt; /dev/rfcomm0
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to send message to bluetooth&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'hello from ubuntu'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can see the received messages on Android&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arduino-ubuntu-bluetooth.jpg"&gt;
 &lt;/p&gt;
 
 &lt;p&gt;We can also send messages from android and read from ubuntu.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
-$ cat /dev/rfcomm0
-hello from android
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# to read messages from bluetooth&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;/dev/rfcomm0
+hello&lt;span class="w"&gt; &lt;/span&gt;from&lt;span class="w"&gt; &lt;/span&gt;android
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This way, we can communicate with any bluetooth module using a laptop or a smart phone.&lt;/p&gt;</description><category>android</category><category>bluetooth</category><category>command-line</category><category>linux</category><guid>https://avilpage.com/2017/10/bluetooth-communication-between-ubuntu-android.html</guid><pubDate>Tue, 03 Oct 2017 14:53:04 GMT</pubDate></item><item><title>Auto Completion For Custom Search Engines In Chrome</title><link>https://avilpage.com/2016/06/auto-completion-for-custom-search.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
     &lt;div dir="ltr" style="text-align: left;" trbidi="on"&gt;
       &lt;span style="font-size: 16px; font-weight: normal; line-height: 25.6px;"&gt;If we have to search for a video on YouTube or a product on Amazon, we will open
@@ -478,19 +505,23 @@ hello from android
 &lt;h4&gt;NAS Setup&lt;/h4&gt;
 &lt;p&gt;Make sure You have connected power adapter &amp;amp; LAN cables to it. If You open Your router config, You will see WD My cloud in client list. Make note of its IP address. If You want, You can assign a static IP also in the router settings.&lt;/p&gt;
 &lt;p&gt;Next step is to install NFS client package. NFS(Network File System) allows a system to share directories and files with others over a network. By using NFS, users and programs can access files on remote systems almost as if they were local files. So, update your packages &amp;amp; install &lt;code&gt;nfs-common&lt;/code&gt; package.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo apt-get update
-$ sudo apt-get install nfs-common
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;update
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt-get&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;nfs-common
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now we can list folders which are available to mount using &lt;code&gt;showmount&lt;/code&gt; command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ showmount -e &amp;lt;ip-address&amp;gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;showmount&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;ip-address&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Create an empty folder to mount any of the folder you wanted and mount it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo mount -o rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt; &amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt; &amp;lt;path-to-mount&amp;gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;mount&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path-to-mount&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now You can start moving data into/out of WD My Cloud.&lt;/p&gt;
 &lt;p&gt;If You want to mount it automatically on boot, add following line to &lt;code&gt;/etc/fstab&lt;/code&gt; file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt; &amp;lt;path-to-mount&amp;gt; nfs rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&amp;lt;ip&amp;gt;:&amp;lt;folder-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;path-to-mount&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;nfs&lt;span class="w"&gt; &lt;/span&gt;rw,soft,intr,nfsvers&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Even though there is no official support for Ubuntu, WD My Cloud works pretty well with Ubuntu and other Linux distros. &lt;/p&gt;
 &lt;div class="footnote"&gt;

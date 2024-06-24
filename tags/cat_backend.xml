@@ -1,48 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about backend)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_backend.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 15 May 2024 23:39:08 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Change Kafka Log Directory &amp; Format It</title><link>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about backend)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_backend.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Jun 2024 13:48:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Change Kafka Log Directory &amp; Format It</title><link>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;On my local Mac, I was using Kafka to pass messages between various applications. Due to some reason, when I tried to start Kafka recently, it was failing to start and here are the relevant error logs.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;139&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;5198&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,217&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;139&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5198&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; registerBroker: unable to start processing because of NotControllerException. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;:57:06,536&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;registerBroker:&lt;span class="w"&gt; &lt;/span&gt;unable&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;processing&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;NotControllerException.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt; ERROR &lt;span class="o"&gt;[&lt;/span&gt;RaftManager &lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; Had an error during log cleaning &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.errors.OffsetOutOfRangeException: Cannot increment the log start offset to &lt;span class="m"&gt;927939&lt;/span&gt; of partition __cluster_metadata-0 since it is larger than the high watermark &lt;span class="m"&gt;926507&lt;/span&gt;
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt; WARN &lt;span class="o"&gt;[&lt;/span&gt;Controller &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt; writeNoOpRecord: failed with unknown server exception RuntimeException at epoch &lt;span class="m"&gt;294&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;137&lt;/span&gt; us.  Renouncing leadership and reverting to the last committed offset &lt;span class="m"&gt;927938&lt;/span&gt;. &lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
-java.lang.RuntimeException: Cant create a new &lt;span class="k"&gt;in&lt;/span&gt;-memory snapshot at epoch &lt;span class="m"&gt;926507&lt;/span&gt; because there is already a snapshot with epoch &lt;span class="m"&gt;927938&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:35,834&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;RaftManager&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;nodeId&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Had&lt;span class="w"&gt; &lt;/span&gt;an&lt;span class="w"&gt; &lt;/span&gt;error&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;cleaning&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.raft.KafkaRaftClient&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.errors.OffsetOutOfRangeException:&lt;span class="w"&gt; &lt;/span&gt;Cannot&lt;span class="w"&gt; &lt;/span&gt;increment&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;log&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927939&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;partition&lt;span class="w"&gt; &lt;/span&gt;__cluster_metadata-0&lt;span class="w"&gt; &lt;/span&gt;since&lt;span class="w"&gt; &lt;/span&gt;it&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;larger&lt;span class="w"&gt; &lt;/span&gt;than&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;high&lt;span class="w"&gt; &lt;/span&gt;watermark&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,035&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;WARN&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Controller&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;writeNoOpRecord:&lt;span class="w"&gt; &lt;/span&gt;failed&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;unknown&lt;span class="w"&gt; &lt;/span&gt;server&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;RuntimeException&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;294&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;137&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;us.&lt;span class="w"&gt;  &lt;/span&gt;Renouncing&lt;span class="w"&gt; &lt;/span&gt;leadership&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;reverting&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;last&lt;span class="w"&gt; &lt;/span&gt;committed&lt;span class="w"&gt; &lt;/span&gt;offset&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;org.apache.kafka.controller.QuorumController&lt;span class="o"&gt;)&lt;/span&gt;
+java.lang.RuntimeException:&lt;span class="w"&gt; &lt;/span&gt;Cant&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;new&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;-memory&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;at&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;926507&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;because&lt;span class="w"&gt; &lt;/span&gt;there&lt;span class="w"&gt; &lt;/span&gt;is&lt;span class="w"&gt; &lt;/span&gt;already&lt;span class="w"&gt; &lt;/span&gt;a&lt;span class="w"&gt; &lt;/span&gt;snapshot&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;epoch&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;927938&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception during startup. &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:23:36,252&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;during&lt;span class="w"&gt; &lt;/span&gt;startup.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Debugging&lt;/h4&gt;
 &lt;p&gt;I tried to figure out the exact root cause. After multiple failed attempts, I decided to change the log directory temporarily and go ahead for now.&lt;/p&gt;
 &lt;h4&gt;Solution&lt;/h4&gt;
 &lt;p&gt;I create a new temporary directory and set the log directory to that.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ mkdir /tmp/kafka-logs
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs
 
 &lt;span class="c1"&gt;# inside server.properties&lt;/span&gt;
 log.dirs&lt;span class="o"&gt;=&lt;/span&gt;/tmp/kafka-logs
-&lt;/pre&gt;
-&lt;p&gt;When I started the Kafka server, it failed.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kafka-server-start server.properties
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23 &lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt; ERROR Exiting Kafka due to fatal exception &lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
-org.apache.kafka.common.KafkaException: No &lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt; found &lt;span class="k"&gt;in&lt;/span&gt; /tmp/ &lt;span class="o"&gt;(&lt;/span&gt;have you run &lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt; to format the directory?&lt;span class="o"&gt;)&lt;/span&gt;
-&lt;/pre&gt;
+&lt;p&gt;When I started the Kafka server, it failed.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-server-start&lt;span class="w"&gt; &lt;/span&gt;server.properties
+
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2022&lt;/span&gt;-12-23&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:30:50,018&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;ERROR&lt;span class="w"&gt; &lt;/span&gt;Exiting&lt;span class="w"&gt; &lt;/span&gt;Kafka&lt;span class="w"&gt; &lt;/span&gt;due&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;fatal&lt;span class="w"&gt; &lt;/span&gt;exception&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;kafka.Kafka$&lt;span class="o"&gt;)&lt;/span&gt;
+org.apache.kafka.common.KafkaException:&lt;span class="w"&gt; &lt;/span&gt;No&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;meta.properties&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;found&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/tmp/&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;have&lt;span class="w"&gt; &lt;/span&gt;you&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;kafka-storage.sh&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;the&lt;span class="w"&gt; &lt;/span&gt;directory?&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;I ran the &lt;code&gt;kafka-storage&lt;/code&gt; script to format the directory. First, we need to get the cluster-id. Since we already know the old kafa-logs directory, we can get the cluster-id from there.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ cat ~/homebrew/var/lib/kraft-combined-logs/meta.properties 
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;~/homebrew/var/lib/kraft-combined-logs/meta.properties&lt;span class="w"&gt; &lt;/span&gt;
 &lt;span class="c1"&gt;#&lt;/span&gt;
 &lt;span class="c1"&gt;#Thu Oct 20 11:48:12 IST 2022&lt;/span&gt;
 cluster.id&lt;span class="o"&gt;=&lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
 node.id&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;      
-&lt;/pre&gt;
-&lt;p&gt;Now, we can format the new directory.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kafka-storage format --config server.properties --cluster-id 5MB5lq-XT-6JzQqJeIuhWQ
+&lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;      &lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-Formatting /tmp/kafka-logs/ with metadata.version &lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
-&lt;/pre&gt;
+&lt;p&gt;Now, we can format the new directory.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-storage&lt;span class="w"&gt; &lt;/span&gt;format&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="w"&gt; &lt;/span&gt;server.properties&lt;span class="w"&gt; &lt;/span&gt;--cluster-id&lt;span class="w"&gt; &lt;/span&gt;5MB5lq-XT-6JzQqJeIuhWQ
+
+Formatting&lt;span class="w"&gt; &lt;/span&gt;/tmp/kafka-logs/&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;metadata.version&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.3-IV3.
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After changing log directory, Kafka has started working.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kafka-start-server /path/to/server.properties
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kafka-start-server&lt;span class="w"&gt; &lt;/span&gt;/path/to/server.properties
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Since I have changed log directory all older messages are lost. Since I am doing this on my local machine, it is fine. Need to revisit it to debug further.&lt;/p&gt;</description><category>debugging</category><category>kafka</category><category>message-broker</category><guid>https://avilpage.com/2022/12/change-kafka-log-dir-format.html</guid><pubDate>Sat, 24 Dec 2022 06:49:41 GMT</pubDate></item><item><title>Hands-on RabbitMQ Tutorial</title><link>https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;A short hands-on guide to get started with RabbitMQ for people who are in a hurry.&lt;/p&gt;
 &lt;h4&gt;What is RabbitMQ?&lt;/h4&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-overview.png" alt="RabbitMQ"&gt;&lt;/p&gt;
@@ -57,8 +63,9 @@ Formatting /tmp/kafka-logs/ with metadata.version &lt;span class="m"&gt;3&lt;/sp
 &lt;p&gt;&lt;b&gt;Binding&lt;/b&gt;: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.&lt;/p&gt;
 &lt;h4&gt;RabbitMQ Setup&lt;/h4&gt;
 &lt;p&gt;We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker run --rm --name&lt;span class="o"&gt;=&lt;/span&gt;rabbitmq -p &lt;span class="m"&gt;15672&lt;/span&gt;:15672 -p &lt;span class="m"&gt;5672&lt;/span&gt;:5672 rabbitmq:3-management
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="o"&gt;=&lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15672&lt;/span&gt;:15672&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5672&lt;/span&gt;:5672&lt;span class="w"&gt; &lt;/span&gt;rabbitmq:3-management
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This image has rabbitmq management plugin enabled. We can access the management UI at &lt;a href="http://localhost:15672"&gt;http://localhost:15672&lt;/a&gt;. The default username and password are both &lt;code&gt;guest&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;It also has &lt;code&gt;rabbitmqadmin&lt;/code&gt; command line tool installed, which can manage RabbitMQ. &lt;/p&gt;
 &lt;h4&gt;Passing Messages from UI&lt;/h4&gt;
@@ -68,32 +75,40 @@ Formatting /tmp/kafka-logs/ with metadata.version &lt;span class="m"&gt;3&lt;/sp
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-publish.png" alt="RabbitMQ Publish"&gt;&lt;/p&gt;
 &lt;h4&gt;Passing Messages from CLI&lt;/h4&gt;
 &lt;p&gt;Instead of using web UI, we can use &lt;code&gt;rabbitmqadmin&lt;/code&gt; CLI tool&lt;sup id="fnref:rabbitmq-cli"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli"&gt;2&lt;/a&gt;&lt;/sup&gt; to send and receive messages. Let's create a topic exchange and a queue. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin &lt;span class="nb"&gt;declare&lt;/span&gt; exchange &lt;span class="nv"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;direct &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;exchange&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;direct&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
 &lt;span class="c1"&gt;# =&amp;gt; exchange declared&lt;/span&gt;
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin &lt;span class="nb"&gt;declare&lt;/span&gt; queue &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;declare&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;queue&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
 &lt;span class="c1"&gt;# =&amp;gt; queue declared&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Let's publish a message to the exchange:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin publish &lt;span class="nv"&gt;routing_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders &lt;span class="nv"&gt;payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'dummy message'&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;publish&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;routing_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'dummy message'&lt;/span&gt;
 &lt;span class="c1"&gt;# =&amp;gt; Message published&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker &lt;span class="nb"&gt;exec&lt;/span&gt; rabbitmq rabbitmqadmin get &lt;span class="nv"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;rabbitmq&lt;span class="w"&gt; &lt;/span&gt;rabbitmqadmin&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;orders
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src="https://avilpage.com/images/rabbitmq-get-message.png" alt="RabbitMQ CLI"&gt;&lt;/p&gt;
 &lt;h4&gt;Passing Messages from REST API&lt;/h4&gt;
 &lt;p&gt;We can also use REST API to send and receive messages. Let's create a new exchange and queue:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X PUT -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"type":"direct"}'&lt;/span&gt; http://localhost:15672/api/exchanges/%2f/orders
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X PUT -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"type":"topic", "durable": true}'&lt;/span&gt; http://localhost:15672/api/queues/%2f/orders
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"direct"}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;PUT&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"type":"topic", "durable": true}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can publish a message to the exchange:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X POST -H &lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt; -d &lt;span class="s1"&gt;'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'&lt;/span&gt; http://localhost:15672/api/exchanges/%2f/orders/publish
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"content-type:application/json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/exchanges/%2f/orders/publish
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To receive messages from the queue, we can use the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-u&lt;span class="w"&gt; &lt;/span&gt;guest:guest&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;http://localhost:15672/api/queues/%2f/orders/get
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -131,81 +146,93 @@ It is introduced to remove dependency on ZooKeeper.&lt;/p&gt;
 &lt;p&gt;We can use cp-all-in-one&lt;sup id="fnref:cp-all-in-one"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one"&gt;2&lt;/a&gt;&lt;/sup&gt; docker compose files to run Apache Kafka locally. This image contains all the
 components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
 Proxy, Confluent Control Center, and others.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ git clone https://github.com/confluentinc/cp-all-in-one
-$ &lt;span class="nb"&gt;cd&lt;/span&gt; cp-all-in-one/cp-all-in-one
-$ docker-compose up
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/confluentinc/cp-all-in-one
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cp-all-in-one/cp-all-in-one
+$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;up
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Confluent Control Center is a web UI to manage and monitor Apache Kafka.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/kafka-control-center.png" alt="Kafka Control Center"&gt;&lt;/p&gt;
 &lt;p&gt;We can visit it &lt;a href="http://localhost:9021"&gt;http://localhost:9021&lt;/a&gt; and monitor the cluster from this UI.&lt;/p&gt;
 &lt;h4&gt;Producing and Consuming Messages&lt;/h4&gt;
 &lt;p&gt;Kafka stores messages in topics. A topic is a category or feed name to which messages are published/consumed.&lt;/p&gt;
 &lt;p&gt;Let us create a topic called &lt;code&gt;test&lt;/code&gt; with &lt;code&gt;kafka-topics&lt;/code&gt; command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-topics --bootstrap-server localhost:9092 --topic &lt;span class="nb"&gt;test&lt;/span&gt; --create 
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--create&lt;span class="w"&gt; &lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will create a topic called &lt;code&gt;test&lt;/code&gt; with a single partition and a replication factor of 1. In multi-node cluster, we
 can use &lt;code&gt;--replication-factor&lt;/code&gt;, &lt;code&gt;--partitions&lt;/code&gt; to specify the number of replicas/partitions for the topic.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-topics --bootstrap-server localhost:9092 --topic &lt;span class="nb"&gt;test&lt;/span&gt; --partitions &lt;span class="m"&gt;3&lt;/span&gt; --replication-factor &lt;span class="m"&gt;2&lt;/span&gt; --create --if-not-exists
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--partitions&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--replication-factor&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--create&lt;span class="w"&gt; &lt;/span&gt;--if-not-exists
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To produce messages to a topic named &lt;code&gt;test&lt;/code&gt;, we can use &lt;code&gt;kafka-console-producer&lt;/code&gt; and add messages to the topic:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-console-producer --broker-list localhost:9092 --topic &lt;span class="nb"&gt;test&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-console-producer&lt;span class="w"&gt; &lt;/span&gt;--broker-list&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;
 
-&amp;gt;order received
-&amp;gt;order updated
-&amp;gt;order shipped
-&amp;gt;order delivered
-&amp;gt;&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;received
+&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;updated
+&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;shipped
+&amp;gt;order&lt;span class="w"&gt; &lt;/span&gt;delivered
+&amp;gt;&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To consume messages from the same topic:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-console-consumer --bootstrap-server localhost:9092 --topic &lt;span class="nb"&gt;test&lt;/span&gt; --from-beginning
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-console-consumer&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--from-beginning
 
-order received
-order updated
-order shipped
-order delivered
-&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+order&lt;span class="w"&gt; &lt;/span&gt;received
+order&lt;span class="w"&gt; &lt;/span&gt;updated
+order&lt;span class="w"&gt; &lt;/span&gt;shipped
+order&lt;span class="w"&gt; &lt;/span&gt;delivered
+&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"completed"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Since we have not defined schema for the messages, Kafka will store the messages as byte arrays. We can explicitly define the schema for the messages using Confluent Schema Registry if required.&lt;/p&gt;
 &lt;p&gt;We can list all the topics in cluster using &lt;code&gt;kafka-topics&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-topics --bootstrap-server localhost:9092 --list
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--list
 
 default_ksql_processing_log
 docker-connect-configs
 docker-connect-offsets
 docker-connect-status
 &lt;span class="nb"&gt;test&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;To show details of a topic:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-topics --bootstrap-server localhost:9092 --describe --topic &lt;span class="nb"&gt;test&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-Topic: &lt;span class="nb"&gt;test&lt;/span&gt; TopicId: 7CckqkXsQXCNY0MNHYRv2w PartitionCount: &lt;span class="m"&gt;1&lt;/span&gt;   ReplicationFactor: &lt;span class="m"&gt;1&lt;/span&gt;    Configs: 
-    Topic: &lt;span class="nb"&gt;test&lt;/span&gt; Partition: &lt;span class="m"&gt;0&lt;/span&gt;    Leader: &lt;span class="m"&gt;1&lt;/span&gt;   Replicas: &lt;span class="m"&gt;1&lt;/span&gt; Isr: &lt;span class="m"&gt;1&lt;/span&gt;  Offline:         
-&lt;/pre&gt;
+&lt;p&gt;To show details of a topic:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--describe&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;
+
+Topic:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;TopicId:&lt;span class="w"&gt; &lt;/span&gt;7CckqkXsQXCNY0MNHYRv2w&lt;span class="w"&gt; &lt;/span&gt;PartitionCount:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;ReplicationFactor:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;Configs:&lt;span class="w"&gt; &lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;Topic:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Partition:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;Leader:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;Replicas:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Isr:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;Offline:&lt;span class="w"&gt;         &lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;By default all messages are stored in the topic for 7 days. We can change this retention period using &lt;code&gt;retention.ms&lt;/code&gt; configuration:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-topics --bootstrap-server localhost:9092 --alter --topic &lt;span class="nb"&gt;test&lt;/span&gt; --config retention.ms&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;10000&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-topics&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--alter&lt;span class="w"&gt; &lt;/span&gt;--topic&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;test&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--config&lt;span class="w"&gt; &lt;/span&gt;retention.ms&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;10000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To see all the available consumer groups, we can use &lt;code&gt;kafka-consumer-groups&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ docker-compose &lt;span class="nb"&gt;exec&lt;/span&gt; broker kafka-consumer-groups --bootstrap-server localhost:9092 --list
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker-compose&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;broker&lt;span class="w"&gt; &lt;/span&gt;kafka-consumer-groups&lt;span class="w"&gt; &lt;/span&gt;--bootstrap-server&lt;span class="w"&gt; &lt;/span&gt;localhost:9092&lt;span class="w"&gt; &lt;/span&gt;--list
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Kafka Rest Proxy&lt;/h4&gt;
 &lt;p&gt;Kafka Rest Proxy&lt;sup id="fnref:kafka rest proxy"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy"&gt;3&lt;/a&gt;&lt;/sup&gt; is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
 and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
 protocol or clients.&lt;/p&gt;
 &lt;p&gt;To produce messages to a &lt;code&gt;test&lt;/code&gt; topic with curl:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X POST -H &lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.json.v2+json"&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    --data &lt;span class="s1"&gt;'{"records":[{"value":{"status": "completed"}}]}'&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.json.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;--data&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"records":[{"value":{"status": "completed"}}]}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To consume messages from the same topic:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X GET -H &lt;span class="s2"&gt;"Accept: application/vnd.kafka.json.v2+json"&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;GET&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Accept: application/vnd.kafka.json.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/topics/test"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can dynamically configure Kafka cluster settings as well.&lt;/p&gt;
 &lt;p&gt;To change log level of various components of Kafka cluster using Kafka Rest Proxy.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X POST -H &lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.v2+json"&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    --data &lt;span class="s1"&gt;'{"log4j.logger.kafka.server":"DEBUG"}'&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="s2"&gt;"http://localhost:8082/config"&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-X&lt;span class="w"&gt; &lt;/span&gt;POST&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"Content-Type: application/vnd.kafka.v2+json"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;--data&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'{"log4j.logger.kafka.server":"DEBUG"}'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:8082/config"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can update the log level of various components of Kafka cluster and check the logs.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how to install Apache Kafka locally using Docker. We have also seen how to produce and consume messages using Kafka console commands and Kafka Rest Proxy.&lt;/p&gt;
