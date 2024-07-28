@@ -47,10 +47,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <div class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="navbar-nav mr-auto">
 <li class="nav-item">
-<a href="../top-10.html" class="nav-link">Top 10</a>
+<a href="../archive.html" class="nav-link">Archive</a>
                 </li>
 <li class="nav-item">
-<a href="../archive.html" class="nav-link">Tech</a>
+<a href="../top-10.html" class="nav-link">Top 10</a>
                 </li>
 <li class="nav-item">
 <a href="../rss.xml" class="nav-link">RSS</a>
@@ -71,7 +71,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html" class="u-url">Remap F4 to Raycast, Alfred (cmd + space)</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/01/cross-platform-file-explorer-in-50-lines-of-code.html" class="u-url">Cross Platform File Explorer in 50 lines of code</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/01/cross-platform-file-explorer-in-50-lines-of-code.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-01-27T17:59:05+05:30" itemprop="datePublished" title="2024-01-27">2024-01-27</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>In an earlier post, I wrote about why I need a <a href="../2023/11/add-column-for-row-count-in-file-manager.html">"line count" column in file explorer</a> and how I wrote a Lua script to see it in xplr file manager.</p>
+<p>xplr has only terminal interface. It is hard for non-developers to use it. I wanted a small team to use this feature so that it will save several hours of their time. So I decided to write a cross-platform GUI app.</p>
+<h4>GUI app</h4>
+<p>Since I am familiar with PySimpleGUI, I decided to write a simple file explorer using it. </p>
+<p><img alt="Cross Platform File Explorer" src="../images/lc_file_explorer.png"></p>
+<p>As seen in the above screenshot, the file explorer has a "Line Count" column. It is a simple Python script with ~50 lines of code. </p>
+<p>The project is open source and source code is available at <a href="https://github.com/avilpage/lcfileexplorer">github.com/AvilPage/LCFileExplorer</a>.</p>
+<h4>Cross Platform</h4>
+<p>A new user can't directly run this Python script on his machine unless Python is already installed. Even if Python is installed, he has to install the required packages and run it. This requires technical expertise.</p>
+<p>To make it easy for non-tech users to run this program, I decided to use <a href="https://www.pyinstaller.org/">PyInstaller</a> to create a single executable file for each platform.</p>
+<p>I created a GitHub action to build the executable files for Windows, Linux, and macOS. The action is triggered on every push to the master branch. This will generate <code>.exe</code> file for Windows, <code>.AppImage</code> file for Linux, and <code>.dmg</code> file for macOS. The executable files are uploaded to the artifacts.</p>
+<h4>Conclusion</h4>
+<p>It is easy to create a cross-platform GUI app using Python and PySimpleGUI. It is also easy to distribute the apps built with Python using pyinstaller.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/12/coverage-reports-with-pytest-xdist.html" class="u-url">Running tests in parallel with pytest &amp; xdist</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/12/coverage-reports-with-pytest-xdist.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-12-30T20:16:31+05:30" itemprop="datePublished" title="2023-12-30">2023-12-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>When tests are taking too long to run, an easy way to speed them up is to run them in parallel.</p>
+<p>When using <code>pytest</code> as test runner, <code>pytest-xdist</code> &amp; <code>pytest-parallel</code> plugins makes it easy to run tests concurrently or in parallel.</p>
+<p><code>pytest-parallel</code> works better if tests are independent of each other. If tests are dependent on each other, <code>pytest-xdist</code> is a better choice.</p>
+<p>If there are parameterised tests, pytest-xdist will fail as the order of the tests is not guaranteed.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pytest<span class="w"> </span>-n<span class="w"> </span>auto<span class="w"> </span>tests/
+
+Different<span class="w"> </span>tests<span class="w"> </span>were<span class="w"> </span>collected<span class="w"> </span>between<span class="w"> </span>gw0<span class="w"> </span>and<span class="w"> </span>gw1.<span class="w"> </span>The<span class="w"> </span>difference<span class="w"> </span>is:<span class="w"> </span>...
+</pre></div>
+
+<p>To fix this, we have to make sure that the parameterised tests are executed in the same order on all workers. It can be achieved by sorting the parameterised tests by their name.</p>
+<p>Alternatively, we can use <code>pytest-randomly</code> plugin to order the tests.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/11/remap-f4-to-raycast-alfred-cmd-%2B-space.html" class="u-url">Remap F4 to Raycast, Alfred (cmd + space)</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
