@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to speed up kraken2 classification process">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering kraken2 - Part 2 - Performance Optimisation | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="mastering-kraken2-initial-runs.html" title="Mastering Kraken2 - Part 1 - Initial Runs" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Mastering kraken2 - Part 2 - Performance Optimisation">
+<meta property="og:url" content="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html">
+<meta property="og:description" content="How to speed up kraken2 classification process">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-07-28T10:51:30+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="kraken2">
+<meta property="article:tag" content="metagenomics">
+<style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Archive</a>
+                </li>
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Mastering kraken2 - Part 2 - Performance Optimisation</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card">
+                <span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+                </span>
+            </p>
+
+            <p class="dateline">
+                    11 min read
+            </p>
+
+            <p class="dateline">
+                <a href="#" rel="bookmark">
+                    <time class="published dt-published" datetime="2024-07-28T10:51:30+05:30" itemprop="datePublished" title="2024-07-28">2024-07-28</time></a>
+            </p>
+            
+        </div>
+
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+            <h4>Mastering Kraken2</h4>
+<p><a href="mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a></p>
+<p>Part 2 - Performance Optimisation (this post)</p>
+<p>Part 3 - Custom Indices (upcoming)</p>
+<h4>Introduction</h4>
+<p>In the previous post, we learned how to set up kraken2<sup id="fnref:k2"><a class="footnote-ref" href="mastering-kraken2-performance-optimisation.html#fn:k2">1</a></sup>, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.</p>
+<h4>Increasing RAM</h4>
+<p>Kraken2 standard database is ~80GB in size. It is recommended to have at least db size RAM to run kraken2 efficiently<sup id="fnref:ksr"><a class="footnote-ref" href="mastering-kraken2-performance-optimisation.html#fn:ksr">2</a></sup>. Let's use 128GB RAM machine and run kraken2 with ERR10359977<sup id="fnref:err"><a class="footnote-ref" href="mastering-kraken2-performance-optimisation.html#fn:err">3</a></sup> sample.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
+Loading database information... <span class="k">done</span>.
+<span class="m">95064</span> sequences <span class="o">(</span><span class="m">14</span>.35 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">2</span>.142s <span class="o">(</span><span class="m">2662</span>.9 Kseq/m, <span class="m">402</span>.02 Mbp/m<span class="o">)</span>.
+  <span class="m">94816</span> sequences classified <span class="o">(</span><span class="m">99</span>.74%<span class="o">)</span>
+  <span class="m">248</span> sequences unclassified <span class="o">(</span><span class="m">0</span>.26%<span class="o">)</span>
+kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt;   <span class="m">1</span>.68s user <span class="m">152</span>.19s system <span class="m">35</span>% cpu <span class="m">7</span>:17.55 total
+</pre>
+<p>Now the time taken has come down from 40 minutes to 7 minutes. The classification speed has also increased from 0.19 Mbp/m to 402.02 Mbp/m.</p>
+<p>The previous sample had only a few reads, and the speed is not a good indicator. Let's run kraken2 with a larger sample.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
+Loading database information... <span class="k">done</span>.
+Processed <span class="m">14980000</span> sequences <span class="o">(</span><span class="m">2972330207</span> bp<span class="o">)</span> ...
+<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">797</span>.424s <span class="o">(</span><span class="m">1288</span>.2 Kseq/m, <span class="m">255</span>.61 Mbp/m<span class="o">)</span>.
+  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2 --db k2_standard --report report.txt --paired &gt; output.txt  <span class="m">526</span>.39s user <span class="m">308</span>.24s system <span class="m">68</span>% cpu <span class="m">20</span>:23.86 total
+</pre>
+<p>This took almost 20 minutes to classify ~3 Gbp of data. Out of 20 minutes, 13 minutes was spent in classification. The remaining time in loading the db into memory.</p>
+<p>Let's use k2_plusPF<sup id="fnref:k2p"><a class="footnote-ref" href="mastering-kraken2-performance-optimisation.html#fn:k2p">4</a></sup> db, which is twice the size of k2_standard and run kraken2.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_plusfp --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
+Loading database information...done.
+<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">755</span>.290s <span class="o">(</span><span class="m">1360</span>.1 Kseq/m, <span class="m">269</span>.87 Mbp/m<span class="o">)</span>.
+  <span class="m">9903824</span> sequences classified <span class="o">(</span><span class="m">57</span>.85%<span class="o">)</span>
+  <span class="m">7217421</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.15%<span class="o">)</span>
+kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &gt;   <span class="m">509</span>.71s user <span class="m">509</span>.51s system <span class="m">55</span>% cpu <span class="m">30</span>:35.49 total
+</pre>
+<p>This took ~30 minutes to complete, but the classification took only 13 minutes similar to k2_standard. The remaining time was spent in loading the db into memory.</p>
+<h4>Preloading db into RAM</h4>
+<p>We can use vmtouch<sup id="fnref:vmt"><a class="footnote-ref" href="mastering-kraken2-performance-optimisation.html#fn:vmt">5</a></sup> to preload db into RAM. kraken2 provides <code>--memory-mapping</code> option to use preloaded db. </p>
+<pre class="code literal-block">$ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
+           Files: <span class="m">3</span>
+     Directories: <span class="m">0</span>
+   Touched Pages: <span class="m">20382075</span> <span class="o">(</span>77G<span class="o">)</span>
+         Elapsed: <span class="m">434</span>.77 seconds
+</pre>
+<p>Now, let's run kraken2 with <code>--memory-mapping</code> option.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
+Loading database information... <span class="k">done</span>.
+<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">532</span>.486s <span class="o">(</span><span class="m">1929</span>.2 Kseq/m, <span class="m">382</span>.79 Mbp/m<span class="o">)</span>.
+  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+  kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz   &gt;  <span class="m">424</span>.20s user <span class="m">11</span>.76s system <span class="m">81</span>% cpu <span class="m">8</span>:54.98 total
+</pre>
+<p>Now the classification took only ~10 minutes.</p>
+<h4>Multi threading</h4>
+<p>kraken2 supports multiple threads. I am using a machine with 40 threads.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz --memory-mapping --threads <span class="m">32</span> &gt; output.txt
+Loading database information... <span class="k">done</span>.
+<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">71</span>.675s <span class="o">(</span><span class="m">14332</span>.5 Kseq/m, <span class="m">2843</span>.81 Mbp/m<span class="o">)</span>.
+  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz      <span class="m">556</span>.58s user <span class="m">22</span>.85s system <span class="m">762</span>% cpu <span class="m">1</span>:16.02 total
+</pre>
+<p>With 32 threads, the classification took only 1 minute. Beyond 32 threads, the classification time did not decrease significantly.</p>
+<h4>Optimising input files</h4>
+<p>So far we have used gzipped input files. Let's use unzipped input files and run kraken2.</p>
+<pre class="code literal-block">$ gunzip SRR6915097_1.fastq.gz
+$ gunzip SRR6915097_2.fastq.gz
+
+$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq SRR6915097_2.fastq --memory-mapping --threads <span class="m">30</span> &gt; output.txt
+Loading database information... <span class="k">done</span>.
+<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">34</span>.809s <span class="o">(</span><span class="m">29512</span>.0 Kseq/m, <span class="m">5855</span>.68 Mbp/m<span class="o">)</span>.
+  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq    <span class="m">30</span>   <span class="m">565</span>.03s user <span class="m">17</span>.12s system <span class="m">1530</span>% cpu <span class="m">38</span>.047 total
+</pre>
+<p>Now the classification time has come down to 40 seconds.</p>
+<p>Since the input fastq files are paired, interleaving the files also takes time. Lets interleave the files and run kraken2.</p>
+<p>To interleave the files, lets use <code>seqfu</code> tool.</p>
+<pre class="code literal-block">$ conda install -y -c conda-forge -c bioconda <span class="s2">"seqfu&gt;1.10"</span>
+
+$ seqfu interleave -1 SRR6915097_1.fastq.gz -2 SRR6915097_2.fastq.gz &gt; SRR6915097.fastq
+
+$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq --threads <span class="m">32</span> &gt; output.txt
+Loading database information... <span class="k">done</span>.
+<span class="m">34242490</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">20</span>.199s <span class="o">(</span><span class="m">101714</span>.1 Kseq/m, <span class="m">10090</span>.91 Mbp/m<span class="o">)</span>.
+  <span class="m">17983321</span> sequences classified <span class="o">(</span><span class="m">52</span>.52%<span class="o">)</span>
+  <span class="m">16259169</span> sequences unclassified <span class="o">(</span><span class="m">47</span>.48%<span class="o">)</span>
+kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <span class="m">32</span>  <span class="m">618</span>.96s user <span class="m">18</span>.24s system <span class="m">2653</span>% cpu <span class="m">24</span>.013 total
+</pre>
+<p>Now the classification time has come down to 24 seconds. </p>
+<h4>Conclusion</h4>
+<p>In terms of classification speed, we have come a long way from 0.1 Mbp/m to 1200 Mbp/m. In the next post, we will learn how to optimise the creation of custom indices.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:k2">
+<p><a href="https://ccb.jhu.edu/software/kraken2/">Kraken2</a> <a class="footnote-backref" href="mastering-kraken2-performance-optimisation.html#fnref:k2" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ksr">
+<p><a href="https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#system-requirements">Kraken System Requirements</a> <a class="footnote-backref" href="mastering-kraken2-performance-optimisation.html#fnref:ksr" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:err">
+<p><a href="ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz">ERR10359977.fastq.gz</a> <a class="footnote-backref" href="mastering-kraken2-performance-optimisation.html#fnref:err" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:k2p">
+<p><a href="https://benlangmead.github.io/aws-indexes/k2">Genomic Index Zone - k2</a> <a class="footnote-backref" href="mastering-kraken2-performance-optimisation.html#fnref:k2p" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:vmt">
+<p><a href="https://hoytech.com/vmtouch/">https://hoytech.com/vmtouch/</a> <a class="footnote-backref" href="mastering-kraken2-performance-optimisation.html#fnref:vmt" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/kraken2.html" rel="tag">kraken2</a></li>
+            <li><a class="tag p-category" href="../../tags/metagenomics.html" rel="tag">metagenomics</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="mastering-kraken2-initial-runs.html" rel="prev" title="Mastering Kraken2 - Part 1 - Initial Runs">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    <b>Chillar Anand</b>
+                    <br>
+                    A blog about python, careers &amp; life.
+                    <br>
+                    To contact me, <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">send a message here</a>.
+                </p>
+
+            </div>
+        </div>
+
+        
+    </article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

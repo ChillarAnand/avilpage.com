@@ -40,7 +40,7 @@ Now, we can access the headlamp UI at [http://localhost:8080](http://).
 
 ### Conclusion
 
-If you are looking for an open source alternative to Lens, headlamp is a good choice. It provides a similar UI & features as Lens and it is accessible via mobile devices as well. 
+If you are looking for an open source alternative to Lens, headlamp is a good choice. It provides a similar UI & features as Lens, and it is accessible via mobile devices as well. 
 
 
 [^headlamp]: [https://headlamp.dev/](https://headlamp.dev/)

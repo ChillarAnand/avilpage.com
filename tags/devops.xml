@@ -1,5 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Jun 2024 13:48:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Headlamp - k8s Lens open source alternative</title><link>https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative.png"&gt;&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 28 Jul 2024 07:36:39 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Part 2 - Performance Optimisation (this post)&lt;/p&gt;
+&lt;p&gt;Part 3 - Custom Indices (upcoming)&lt;/p&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;In the previous post, we learned how to set up kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt;, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.&lt;/p&gt;
+&lt;h4&gt;Increasing RAM&lt;/h4&gt;
+&lt;p&gt;Kraken2 standard database is ~80GB in size. It is recommended to have at least db size RAM to run kraken2 efficiently&lt;sup id="fnref:ksr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:ksr"&gt;2&lt;/a&gt;&lt;/sup&gt;. Let's use 128GB RAM machine and run kraken2 with ERR10359977&lt;sup id="fnref:err"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:err"&gt;3&lt;/a&gt;&lt;/sup&gt; sample.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;95064&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;.142s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2662&lt;/span&gt;.9 Kseq/m, &lt;span class="m"&gt;402&lt;/span&gt;.02 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;94816&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.74%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;248&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.26%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt;   &lt;span class="m"&gt;1&lt;/span&gt;.68s user &lt;span class="m"&gt;152&lt;/span&gt;.19s system &lt;span class="m"&gt;35&lt;/span&gt;% cpu &lt;span class="m"&gt;7&lt;/span&gt;:17.55 total
+&lt;/pre&gt;
+&lt;p&gt;Now the time taken has come down from 40 minutes to 7 minutes. The classification speed has also increased from 0.19 Mbp/m to 402.02 Mbp/m.&lt;/p&gt;
+&lt;p&gt;The previous sample had only a few reads, and the speed is not a good indicator. Let's run kraken2 with a larger sample.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+Processed &lt;span class="m"&gt;14980000&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2972330207&lt;/span&gt; bp&lt;span class="o"&gt;)&lt;/span&gt; ...
+&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;797&lt;/span&gt;.424s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1288&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;255&lt;/span&gt;.61 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_standard --report report.txt --paired &amp;gt; output.txt  &lt;span class="m"&gt;526&lt;/span&gt;.39s user &lt;span class="m"&gt;308&lt;/span&gt;.24s system &lt;span class="m"&gt;68&lt;/span&gt;% cpu &lt;span class="m"&gt;20&lt;/span&gt;:23.86 total
+&lt;/pre&gt;
+&lt;p&gt;This took almost 20 minutes to classify ~3 Gbp of data. Out of 20 minutes, 13 minutes was spent in classification. The remaining time in loading the db into memory.&lt;/p&gt;
+&lt;p&gt;Let's use k2_plusPF&lt;sup id="fnref:k2p"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2p"&gt;4&lt;/a&gt;&lt;/sup&gt; db, which is twice the size of k2_standard and run kraken2.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_plusfp --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+Loading database information...done.
+&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;755&lt;/span&gt;.290s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1360&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;269&lt;/span&gt;.87 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;9903824&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.85%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;7217421&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.15%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &amp;gt;   &lt;span class="m"&gt;509&lt;/span&gt;.71s user &lt;span class="m"&gt;509&lt;/span&gt;.51s system &lt;span class="m"&gt;55&lt;/span&gt;% cpu &lt;span class="m"&gt;30&lt;/span&gt;:35.49 total
+&lt;/pre&gt;
+&lt;p&gt;This took ~30 minutes to complete, but the classification took only 13 minutes similar to k2_standard. The remaining time was spent in loading the db into memory.&lt;/p&gt;
+&lt;h4&gt;Preloading db into RAM&lt;/h4&gt;
+&lt;p&gt;We can use vmtouch&lt;sup id="fnref:vmt"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:vmt"&gt;5&lt;/a&gt;&lt;/sup&gt; to preload db into RAM. kraken2 provides &lt;code&gt;--memory-mapping&lt;/code&gt; option to use preloaded db. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
+           Files: &lt;span class="m"&gt;3&lt;/span&gt;
+     Directories: &lt;span class="m"&gt;0&lt;/span&gt;
+   Touched Pages: &lt;span class="m"&gt;20382075&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
+         Elapsed: &lt;span class="m"&gt;434&lt;/span&gt;.77 seconds
+&lt;/pre&gt;
+&lt;p&gt;Now, let's run kraken2 with &lt;code&gt;--memory-mapping&lt;/code&gt; option.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;532&lt;/span&gt;.486s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1929&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;382&lt;/span&gt;.79 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+  kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz   &amp;gt;  &lt;span class="m"&gt;424&lt;/span&gt;.20s user &lt;span class="m"&gt;11&lt;/span&gt;.76s system &lt;span class="m"&gt;81&lt;/span&gt;% cpu &lt;span class="m"&gt;8&lt;/span&gt;:54.98 total
+&lt;/pre&gt;
+&lt;p&gt;Now the classification took only ~10 minutes.&lt;/p&gt;
+&lt;h4&gt;Multi threading&lt;/h4&gt;
+&lt;p&gt;kraken2 supports multiple threads. I am using a machine with 40 threads.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz --memory-mapping --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;71&lt;/span&gt;.675s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14332&lt;/span&gt;.5 Kseq/m, &lt;span class="m"&gt;2843&lt;/span&gt;.81 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz      &lt;span class="m"&gt;556&lt;/span&gt;.58s user &lt;span class="m"&gt;22&lt;/span&gt;.85s system &lt;span class="m"&gt;762&lt;/span&gt;% cpu &lt;span class="m"&gt;1&lt;/span&gt;:16.02 total
+&lt;/pre&gt;
+&lt;p&gt;With 32 threads, the classification took only 1 minute. Beyond 32 threads, the classification time did not decrease significantly.&lt;/p&gt;
+&lt;h4&gt;Optimising input files&lt;/h4&gt;
+&lt;p&gt;So far we have used gzipped input files. Let's use unzipped input files and run kraken2.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ gunzip SRR6915097_1.fastq.gz
+$ gunzip SRR6915097_2.fastq.gz
+
+$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq SRR6915097_2.fastq --memory-mapping --threads &lt;span class="m"&gt;30&lt;/span&gt; &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;34&lt;/span&gt;.809s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;29512&lt;/span&gt;.0 Kseq/m, &lt;span class="m"&gt;5855&lt;/span&gt;.68 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq    &lt;span class="m"&gt;30&lt;/span&gt;   &lt;span class="m"&gt;565&lt;/span&gt;.03s user &lt;span class="m"&gt;17&lt;/span&gt;.12s system &lt;span class="m"&gt;1530&lt;/span&gt;% cpu &lt;span class="m"&gt;38&lt;/span&gt;.047 total
+&lt;/pre&gt;
+&lt;p&gt;Now the classification time has come down to 40 seconds.&lt;/p&gt;
+&lt;p&gt;Since the input fastq files are paired, interleaving the files also takes time. Lets interleave the files and run kraken2.&lt;/p&gt;
+&lt;p&gt;To interleave the files, lets use &lt;code&gt;seqfu&lt;/code&gt; tool.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ conda install -y -c conda-forge -c bioconda &lt;span class="s2"&gt;"seqfu&amp;gt;1.10"&lt;/span&gt;
+
+$ seqfu interleave -1 SRR6915097_1.fastq.gz -2 SRR6915097_2.fastq.gz &amp;gt; SRR6915097.fastq
+
+$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
+Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;34242490&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;.199s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;101714&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;10090&lt;/span&gt;.91 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;17983321&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;52&lt;/span&gt;.52%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;16259169&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;47&lt;/span&gt;.48%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt;span class="m"&gt;32&lt;/span&gt;  &lt;span class="m"&gt;618&lt;/span&gt;.96s user &lt;span class="m"&gt;18&lt;/span&gt;.24s system &lt;span class="m"&gt;2653&lt;/span&gt;% cpu &lt;span class="m"&gt;24&lt;/span&gt;.013 total
+&lt;/pre&gt;
+&lt;p&gt;Now the classification time has come down to 24 seconds. &lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In terms of classification speed, we have come a long way from 0.1 Mbp/m to 1200 Mbp/m. In the next post, we will learn how to optimise the creation of custom indices.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:k2"&gt;
+&lt;p&gt;&lt;a href="https://ccb.jhu.edu/software/kraken2/"&gt;Kraken2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:k2" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:ksr"&gt;
+&lt;p&gt;&lt;a href="https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#system-requirements"&gt;Kraken System Requirements&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:ksr" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:err"&gt;
+&lt;p&gt;&lt;a href="ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz"&gt;ERR10359977.fastq.gz&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:err" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:k2p"&gt;
+&lt;p&gt;&lt;a href="https://benlangmead.github.io/aws-indexes/k2"&gt;Genomic Index Zone - k2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:k2p" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:vmt"&gt;
+&lt;p&gt;&lt;a href="https://hoytech.com/vmtouch/"&gt;https://hoytech.com/vmtouch/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:vmt" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</guid><pubDate>Sun, 28 Jul 2024 05:21:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 1 - Initial Runs</title><link>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;p&gt;Part 1 - Initial Runs (this post)&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Part 3 - Custom Indices (upcoming)&lt;/p&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;Kraken2&lt;sup id="fnref:Kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:Kraken2"&gt;1&lt;/a&gt;&lt;/sup&gt; is widely used for metagenomics taxonomic classification, and it has pre-built indexes for many organisms. In this series, we will learn&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How to set up kraken2, download pre-built indices&lt;/li&gt;
+&lt;li&gt;Run kraken2 (8GB RAM) at ~0.19 Mbp/m (million base pairs per minute)&lt;/li&gt;
+&lt;li&gt;Learn various ways to speed up the classification process&lt;/li&gt;
+&lt;li&gt;Run kraken2 (128GB RAM) at ~1200 Mbp/m&lt;/li&gt;
+&lt;li&gt;Build custom indices&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Installation&lt;/h4&gt;
+&lt;p&gt;Let's start with an 8 GB RAM machine. We can install kraken2 using the &lt;code&gt;install_kraken2.sh&lt;/code&gt; script as per the manual&lt;sup id="fnref:install_kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ git clone https://github.com/DerrickWood/kraken2
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; kraken2
+$ ./install_kraken2.sh /usr/local/bin
+&lt;span class="c1"&gt;# ensure kraken2 is in the PATH&lt;/span&gt;
+$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$PATH&lt;/span&gt;:/usr/local/bin
+&lt;/pre&gt;
+&lt;p&gt;If you already have conda installed, you can install kraken2 from conda as well.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ conda install -c bioconda kraken2
+&lt;/pre&gt;
+&lt;h4&gt;Download pre-built indices&lt;/h4&gt;
+&lt;p&gt;Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.&lt;/p&gt;
+&lt;p&gt;Genomic Index Zone&lt;sup id="fnref:GenomicIndexZone"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:GenomicIndexZone"&gt;3&lt;/a&gt;&lt;/sup&gt; provides pre-built indices for kraken2. Let's download the standard database. It contains Refeq archaea, bacteria, viral, plasmid, human1, &amp;amp; UniVec_Core. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
+$ mkdir k2_standard
+$ tar -xvf k2_standard_20240605.tar.gz -C k2_standard
+&lt;/pre&gt;
+&lt;p&gt;The extracted directory contains three files - &lt;code&gt;hash.k2d&lt;/code&gt;, &lt;code&gt;opts.k2d&lt;/code&gt;, &lt;code&gt;taxo.k2d&lt;/code&gt; which are the kraken2 database files.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ ls -l *.k2d
+.rw-r--r--  83G anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 hash.k2d
+.rw-r--r--   &lt;span class="m"&gt;64&lt;/span&gt; anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 opts.k2d
+.rw-r--r-- &lt;span class="m"&gt;4&lt;/span&gt;.0M anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 taxo.k2d
+&lt;/pre&gt;
+&lt;h4&gt;Classification&lt;/h4&gt;
+&lt;p&gt;To run the taxonomic classification, let's use &lt;code&gt;ERR10359977&lt;/code&gt; human gut meta genome from NCBI SRA.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ wget https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
+$ kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
+&lt;/pre&gt;
+&lt;p&gt;By default, the machine I have used has 8GB RAM and an additioinal 8GB swap. Since kraken2 needs entire db(~80GB) in memory, when the process tries to consume more than 16GB memory, the kernel will kill the process. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+Loading database information...Command terminated by signal &lt;span class="m"&gt;9&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;.02user &lt;span class="m"&gt;275&lt;/span&gt;.83system &lt;span class="m"&gt;8&lt;/span&gt;:17.43elapsed &lt;span class="m"&gt;55&lt;/span&gt;%CPU 
+&lt;/pre&gt;
+&lt;p&gt;To prevent this, let's increase the swap space to 128 GB.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Create an empty swapfile of 128GB&lt;/span&gt;
+sudo dd &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/dev/zero &lt;span class="nv"&gt;of&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/swapfile &lt;span class="nv"&gt;bs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1G &lt;span class="nv"&gt;count&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;128&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Turn swap off - It might take several minutes&lt;/span&gt;
+sudo swapoff -a
+
+&lt;span class="c1"&gt;# Set the permissions for swapfile&lt;/span&gt;
+sudo chmod &lt;span class="m"&gt;0600&lt;/span&gt; /swapfile
+
+&lt;span class="c1"&gt;# make it a swap area&lt;/span&gt;
+sudo mkswap /swapfile  
+
+&lt;span class="c1"&gt;# Turn the swap on&lt;/span&gt;
+sudo swapon /swapfile
+&lt;/pre&gt;
+&lt;p&gt;We can time the classification process using the &lt;code&gt;time&lt;/code&gt; command.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
+&lt;/pre&gt;
+&lt;p&gt;If you have a machine with large RAM, the same scenario can be simulated using &lt;code&gt;systemd-run&lt;/code&gt;. This will limit the memory usage of kraken2 to 6.5GB. &lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;.5G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
+&lt;/pre&gt;
+&lt;p&gt;Depending on the CPU performance, this will take around ~40 minutes to complete.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;95064&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;1026&lt;/span&gt;.994s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.6 Kseq/m, &lt;span class="m"&gt;0&lt;/span&gt;.84 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+  &lt;span class="m"&gt;94939&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.87%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;125&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.13%&lt;span class="o"&gt;)&lt;/span&gt;
+  &lt;span class="m"&gt;4&lt;/span&gt;.24user &lt;span class="m"&gt;658&lt;/span&gt;.68system &lt;span class="m"&gt;38&lt;/span&gt;:26.78elapsed &lt;span class="m"&gt;28&lt;/span&gt;%CPU 
+&lt;/pre&gt;
+&lt;p&gt;If we try gut WGS(Whole Genome Sequence) sample like &lt;code&gt;SRR6915097&lt;/code&gt; which contains ~3.3 Gbp, it will take weeks to complete.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;6G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+&lt;/pre&gt;
+&lt;p&gt;I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.&lt;/p&gt;
+&lt;p&gt;If we have to process a large number of such samples, it takes months and this is not a practical solution. &lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;In this post, we ran kraken2 on an 8GB machine and learned that it is not feasible to run kraken2 on large samples.&lt;/p&gt;
+&lt;p&gt;In the next post, we will learn how to speed up the classification process and run classification at 1200 Mbp/m.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Next&lt;/strong&gt;: &lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:Kraken2"&gt;
+&lt;p&gt;&lt;a href="https://ccb.jhu.edu/software/kraken2/"&gt;Kraken2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:Kraken2" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:install_kraken2"&gt;
+&lt;p&gt;&lt;a href="https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#installation"&gt;Kraken2 - Manual - Install&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:install_kraken2" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:GenomicIndexZone"&gt;
+&lt;p&gt;&lt;a href="https://benlangmead.github.io/aws-indexes/k2"&gt;Genomic Index Zone - k2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:GenomicIndexZone" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item><item><title>Headlamp - k8s Lens open source alternative</title><link>https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative.png"&gt;&lt;/p&gt;
 &lt;p&gt;Since Lens is not open source, I tried out monokle, octant, k9s, and headlamp&lt;sup id="fnref:headlamp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html#fn:headlamp"&gt;1&lt;/a&gt;&lt;/sup&gt;. Among them, headlamp UI &amp;amp; features are closest to Lens. &lt;/p&gt;
 &lt;h4&gt;Headlamp&lt;/h4&gt;
 &lt;p&gt;Headlamp is CNCF sandbox project that provides cross-platform desktop application to manage Kubernetes clusters. It auto-detects clusters and provides cluster wide resource usage by default. &lt;/p&gt;
@@ -17,7 +225,7 @@ $ kubectl port-forward service/headlamp &lt;span class="m"&gt;8080&lt;/span&gt;:
 &lt;p&gt;Now, we can access the headlamp UI at &lt;a href="http://"&gt;http://localhost:8080&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;If you are looking for an open source alternative to Lens, headlamp is a good choice. It provides a similar UI &amp;amp; features as Lens and it is accessible via mobile devices as well. &lt;/p&gt;
+&lt;p&gt;If you are looking for an open source alternative to Lens, headlamp is a good choice. It provides a similar UI &amp;amp; features as Lens, and it is accessible via mobile devices as well. &lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
 &lt;ol&gt;
@@ -423,217 +631,4 @@ $&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&g
 &lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><category>macbook</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item><item><title>Make Python Docker Builds Slim &amp; Fast</title><link>https://avilpage.com/2020/10/python-docker-build-slim-fast.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;When using Docker, if the build is taking time or the build image is huge, it will waste system resources as well as our time. In this article, let's see how to reduce build time as well as image size when using Docker for Python projects.&lt;/p&gt;
-&lt;h4&gt;Project&lt;/h4&gt;
-&lt;p&gt;Let us take a hello world application written in flask.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt;
-
-
-&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-
-&lt;span class="nd"&gt;@app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'/'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;home&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s1"&gt;'hello world - v1.0.0'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let's create a requirements.txt file to list out python packages required for the project.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;flask==1.1.2
-pandas==1.1.2
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Pandas binary wheel size is ~10MB. It is included in requirements to see how python packages affect docker image size.&lt;/p&gt;
-&lt;p&gt;Here is our Dockerfile to run the flask application.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7
-
-ADD . /app
-
-WORKDIR /app
-
-RUN python -m pip install -r requirements.txt
-
-EXPOSE 5000
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "-m" "flask" "run" ]
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let's use the following commands to measure the image size &amp;amp; build time with/without cache.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;build&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;flask:0.0&lt;span class="w"&gt; &lt;/span&gt;--pull&lt;span class="w"&gt; &lt;/span&gt;--no-cache
-&lt;span class="o"&gt;[&lt;/span&gt;+&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Building&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;45&lt;/span&gt;.3s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;/9&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;FINISHED
-
-$&lt;span class="w"&gt; &lt;/span&gt;touch&lt;span class="w"&gt; &lt;/span&gt;app.py&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# modify app.py file&lt;/span&gt;
-
-$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;build&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;flask:0.1
-&lt;span class="o"&gt;[&lt;/span&gt;+&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Building&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15&lt;/span&gt;.3s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;/9&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;FINISHED
-
-$&lt;span class="w"&gt; &lt;/span&gt;docker&lt;span class="w"&gt; &lt;/span&gt;images&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;flask
-flask&lt;span class="w"&gt;               &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.1&lt;span class="w"&gt;     &lt;/span&gt;06d3e985f12e&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.01GB
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;With the current docker, here are the results.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker0.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;h4&gt;1. Install requirements first&lt;/h4&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7
-
-WORKDIR /app
-
-ADD ./requirements.txt /app/requirements.txt
-
-RUN python -m pip install -r requirements.txt
-
-ADD . /app
-
-EXPOSE 5000
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "-m" "flask" "run" ]
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Let us modify the docker file to install requirements first and then add code to the docker image.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker1.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;Now, build without cache took almost the same time. With cache, the build is completed in a second. Since docker caches step by step, it has cached python package installation step and thereby reducing the build time.&lt;/p&gt;
-&lt;h4&gt;2. Disable Cache&lt;/h4&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7
-
-WORKDIR /app
-
-ADD ./requirements.txt /app/requirements.txt
-
-RUN python -m pip install -r requirements.txt --no-cache
-
-ADD . /app
-
-EXPOSE 5000
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "-m" "flask" "run" ]
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;By default, pip will cache the downloaded packages. Since we don't need a cache inside docker, let's disable pip cache by passing &lt;code&gt;--no-cache&lt;/code&gt; argument.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker2.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;This reduced the docker image size by ~20MB. In real-world projects, where there are a good number of dependencies, the overall image size will be reduced a lot.&lt;/p&gt;
-&lt;h4&gt;3. Use slim variant&lt;/h4&gt;
-&lt;p&gt;Till now, we have been using defacto Python variant. It has a large number of common debian packages. There is a slim variant that doesn't contain all these common packages&lt;sup id="fnref:dpy"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:dpy"&gt;4&lt;/a&gt;&lt;/sup&gt;. Since we don't need all these debian packages, let's use slim variant.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;FROM python:3.7-slim
-
-...
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker3.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;This reduced the docker image size by ~750 MB without affecting the build time.&lt;/p&gt;
-&lt;h4&gt;4. Build from source&lt;/h4&gt;
-&lt;p&gt;Python packages can be installed via wheels (.whl files) for a faster and smoother installation. We can also install them via source code. If we look at Pandas project files on PyPi&lt;sup id="fnref:pandas"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:pandas"&gt;1&lt;/a&gt;&lt;/sup&gt;, it provides both wheels as well as tar zip source files. Pip will prefer wheels over source code the installation process will be much smoother.&lt;/p&gt;
-&lt;p&gt;To reduce Docker image size, we can build from source instead of using the wheel. This will increase build time as the python package will take some time to compile while building.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker4.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;Here build size is reduced by ~20MB but the build has increased to 15 minutes.&lt;/p&gt;
-&lt;h4&gt;5. Use Alpine&lt;/h4&gt;
-&lt;p&gt;Earlier we have used, python slim variant the base image. However, there is Alpine variant which is much smaller than slim. One caveat with using alpine is Python wheels won't work with this image&lt;sup id="fnref:aw"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:aw"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;p&gt;We have to build all packages from source. For example, packages like TensorFlow provide only wheels for installation. To install this on Alpine, we have to install from the source which will take additional effort to figure out dependencies and install.&lt;/p&gt;
-&lt;p&gt;Using Alpine will reduce the image size by ~70 MB but it is not recomended to use Alpine as wheels won't work with this image.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://avilpage.com/images/docker5.png" style="vertical-align:middle"&gt;&lt;/p&gt;
-&lt;p&gt;All the docker files used in the article are available on github&lt;sup id="fnref:gh"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fn:gh"&gt;3&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;We have started with a docker build of 1.01 GB and reduced it to 0.13 GB. We have also optimized build times using the docker caching mechanism. We can use appropriate steps to optimize build for size or speed or both.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:pandas"&gt;
-&lt;p&gt;&lt;a href="https://pypi.org/project/pandas/#files"&gt;https://pypi.org/project/pandas/#files&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:pandas" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:aw"&gt;
-&lt;p&gt;&lt;a href="https://github.com/docker-library/docs/issues/904"&gt;https://github.com/docker-library/docs/issues/904&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:aw" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:gh"&gt;
-&lt;p&gt;&lt;a href="https://github.com/ChillarAnand/library-docker"&gt;https://github.com/ChillarAnand/library-docker&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:gh" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:dpy"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/_/python"&gt;https://hub.docker.com/_/python&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/10/python-docker-build-slim-fast.html#fnref:dpy" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>featured</category><category>python</category><guid>https://avilpage.com/2020/10/python-docker-build-slim-fast.html</guid><pubDate>Sat, 31 Oct 2020 12:53:13 GMT</pubDate></item><item><title>How To Deploy Mirth Connect To Kubernetes</title><link>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;NextGen Connect(previously Mirth Connect) is widely used integration engine for information exchange in health-care domain. In this article, let us see how to deploy Mirth Connect to a Kubernetes cluster.&lt;/p&gt;
-&lt;h4&gt;Deployment To k8s&lt;/h4&gt;
-&lt;p&gt;From version 3.8, NextGen has started providing official docker images for Connect&lt;sup id="fnref:nc"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fn:nc"&gt;1&lt;/a&gt;&lt;/sup&gt;. By default, Connect docker exposes 8080, 8443 ports. We can start a Connect instance locally, by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nv"&gt;$docker&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8080&lt;/span&gt;:8080&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8443&lt;/span&gt;:8443&lt;span class="w"&gt; &lt;/span&gt;nextgenhealthcare/connect
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We can use this docker image and create a k8s deployment to start a container.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
-&lt;span class="nv"&gt;apiVersion&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;apps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;v1beta1&lt;/span&gt;
-&lt;span class="nv"&gt;kind&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;Deployment&lt;/span&gt;
-&lt;span class="nv"&gt;metadata&lt;/span&gt;:
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;namespace&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;default&lt;/span&gt;
-&lt;span class="nv"&gt;spec&lt;/span&gt;:
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nv"&gt;template&lt;/span&gt;:
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;spec&lt;/span&gt;:
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="nv"&gt;containers&lt;/span&gt;:
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;image&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;docker&lt;/span&gt;.&lt;span class="nv"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;nextgenhealthcare&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;connect&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;ports&lt;/span&gt;:
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;http&lt;/span&gt;
-&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;https&lt;/span&gt;
-&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8443&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nv"&gt;test&lt;/span&gt;
-&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="nv"&gt;containerPort&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
-&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nv"&gt;env&lt;/span&gt;:
-&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;DATABASE&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;value&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;postgres&lt;/span&gt;
-&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;name&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;DATABASE_URL&lt;/span&gt;
-&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nv"&gt;value&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;jdbc&lt;/span&gt;:&lt;span class="nv"&gt;postgresql&lt;/span&gt;:&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="nv"&gt;avilpage&lt;/span&gt;.&lt;span class="nv"&gt;com&lt;/span&gt;:&lt;span class="mi"&gt;5432&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;mirth_db&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This deployment file can be applied on a cluster using &lt;code&gt;kubectl&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;connect-deployment.yaml
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To access this container, we can create a service to expose this deployment to public.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;---&lt;/span&gt;
-&lt;span class="n"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;
-&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Service&lt;/span&gt;
-&lt;span class="n"&gt;metadata&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;annotations&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;arn&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;acm&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ap&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;south&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;aws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nb"&gt;load&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;balancer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ssl&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"443"&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;external&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;kubernetes&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;
-&lt;span class="n"&gt;spec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;LoadBalancer&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;selector&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;mirth&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;connect&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;ports&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;https&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;443&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;8443&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;hl7&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;targetPort&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9001&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;protocol&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;TCP&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This will create a load balancer in AWS through which we can access mirth connect instance. If an ingress controller is present in the cluster, we can use it directly instead of using a seperate load balancer for this service.&lt;/p&gt;
-&lt;p&gt;Once Mirth Connect is up &amp;amp; running, we might have to create HL7 channels running on various ports. In the above configuration files, we have exposed 9001 HL7 port for testing of channel. Once we configure Mirth Channels, we need to expose appropriate ports in deployment as well as service similiar to this.&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Earlier, there were no official docker images for Mirth Connect and it was bit diffucult to dockerize Mirth Connect and deploy it. With the release of official Docker images, deploying Mirth Connect to k8s or any other container orchestration platform has become much easier.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:nc"&gt;
-&lt;p&gt;&lt;a href="https://hub.docker.com/r/nextgenhealthcare/connect/"&gt;https://hub.docker.com/r/nextgenhealthcare/connect/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html#fnref:nc" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>aws</category><category>devops</category><category>HealthIT</category><category>kubernetes</category><guid>https://avilpage.com/2020/07/deploy-mirth-to-kubernetes.html</guid><pubDate>Wed, 30 Sep 2020 17:55:46 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><category>macbook</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item></channel></rss>
