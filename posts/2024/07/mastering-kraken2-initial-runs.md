@@ -1,11 +1,11 @@
 <!--
 .. title: Mastering Kraken2 - Part 1 - Initial Runs
 .. slug: mastering-kraken2-initial-runs
-.. date: 2024-07-18 20:44:25 UTC+05:30
+.. date: 2024-07-28 10:44:25 UTC+05:30
 .. tags: kraken2, metagenomics, devops
 .. category: 
 .. link: 
-.. description: 
+.. description: How to speed up kraken2 classification process
 .. type: text
 -->
 
@@ -78,7 +78,7 @@ $ kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz > output.txt
 By default, the machine I have used has 8GB RAM and an additioinal 8GB swap. Since kraken2 needs entire db(~80GB) in memory, when the process tries to consume more than 16GB memory, the kernel will kill the process. 
 
 ```shell
-$ time kraken2 --db kraken_db/k2_standard --paired fq/SRR6915097_1.fastq.gz fq/SRR6915097_2.fastq.gz > output.txt
+$ time kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz > output.txt
 Loading database information...Command terminated by signal 9
 0.02user 275.83system 8:17.43elapsed 55%CPU 
 ```
@@ -125,10 +125,13 @@ Loading database information... done.
   4.24user 658.68system 38:26.78elapsed 28%CPU 
 ```
 
-If we try gut WGS(Whole Genome Sequence) sample like `SRR6915097` which contains ~3.3 Gbp, it will take weeks to complete.
+If we try gut WGS(Whole Genome Sequence) sample like `SRR6915097` [^srr1] [^srr2]. which contains ~3.3 Gbp, it will take weeks to complete.
 
 ```shell
-$ time systemd-run --scope -p MemoryMax=6G --user time kraken2 --db kraken_db/k2_standard --paired fq/SRR6915097_1.fastq.gz fq/SRR6915097_2.fastq.gz > output.txt
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
+$ time systemd-run --scope -p MemoryMax=6G --user time kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz > output.txt
 ```
 
 I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.
@@ -149,3 +152,8 @@ In the next post, we will learn how to speed up the classification process and r
 [^install_kraken2]: [Kraken2 - Manual - Install](https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#installation)
 
 [^GenomicIndexZone]: [Genomic Index Zone - k2](https://benlangmead.github.io/aws-indexes/k2)
+
+
+[^srr1]: [SRR6915097_1.fastq.gz](https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz)
+
+[^srr2]: [SRR6915097_1.fastq.gz](https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz)

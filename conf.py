@@ -77,8 +77,8 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 
 NAVIGATION_LINKS = {
         DEFAULT_LANG: (
+                ("/archive.html", "Archive"),
                 ("/top-10.html", "Top 10"),
-                ("/archive.html", "Tech"),
                 # ("/non-tech.html", "Non-tech"),
                 # ("/p/projects.html", "Projects"),
                 # ("/tags", "Topics"),
