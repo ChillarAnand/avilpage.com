@@ -125,9 +125,12 @@ Loading database information... done.
   4.24user 658.68system 38:26.78elapsed 28%CPU 
 ```
 
-If we try gut WGS(Whole Genome Sequence) sample like `SRR6915097` which contains ~3.3 Gbp, it will take weeks to complete.
+If we try gut WGS(Whole Genome Sequence) sample like `SRR6915097` [^srr1] [^srr2]. which contains ~3.3 Gbp, it will take weeks to complete.
 
 ```shell
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
 $ time systemd-run --scope -p MemoryMax=6G --user time kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz > output.txt
 ```
 
@@ -149,3 +152,8 @@ In the next post, we will learn how to speed up the classification process and r
 [^install_kraken2]: [Kraken2 - Manual - Install](https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#installation)
 
 [^GenomicIndexZone]: [Genomic Index Zone - k2](https://benlangmead.github.io/aws-indexes/k2)
+
+
+[^srr1]: [SRR6915097_1.fastq.gz](https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz)
+
+[^srr2]: [SRR6915097_1.fastq.gz](https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz)
