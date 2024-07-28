@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2024)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_2024.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 28 Jul 2024 07:36:39 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about 2024)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_2024.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 28 Jul 2024 15:54:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Part 2 - Performance Optimisation (this post)&lt;/p&gt;
 &lt;p&gt;Part 3 - Custom Indices (upcoming)&lt;/p&gt;
@@ -185,8 +185,11 @@ sudo swapon /swapfile
   &lt;span class="m"&gt;125&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.13%&lt;span class="o"&gt;)&lt;/span&gt;
   &lt;span class="m"&gt;4&lt;/span&gt;.24user &lt;span class="m"&gt;658&lt;/span&gt;.68system &lt;span class="m"&gt;38&lt;/span&gt;:26.78elapsed &lt;span class="m"&gt;28&lt;/span&gt;%CPU 
 &lt;/pre&gt;
-&lt;p&gt;If we try gut WGS(Whole Genome Sequence) sample like &lt;code&gt;SRR6915097&lt;/code&gt; which contains ~3.3 Gbp, it will take weeks to complete.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;6G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
+&lt;p&gt;If we try gut WGS(Whole Genome Sequence) sample like &lt;code&gt;SRR6915097&lt;/code&gt; &lt;sup id="fnref:srr1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr1"&gt;4&lt;/a&gt;&lt;/sup&gt; &lt;sup id="fnref:srr2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr2"&gt;5&lt;/a&gt;&lt;/sup&gt;. which contains ~3.3 Gbp, it will take weeks to complete.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
+$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;6G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
 &lt;/pre&gt;
 &lt;p&gt;I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.&lt;/p&gt;
 &lt;p&gt;If we have to process a large number of such samples, it takes months and this is not a practical solution. &lt;/p&gt;
@@ -205,6 +208,12 @@ sudo swapon /swapfile
 &lt;/li&gt;
 &lt;li id="fn:GenomicIndexZone"&gt;
 &lt;p&gt;&lt;a href="https://benlangmead.github.io/aws-indexes/k2"&gt;Genomic Index Zone - k2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:GenomicIndexZone" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:srr1"&gt;
+&lt;p&gt;&lt;a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz"&gt;SRR6915097_1.fastq.gz&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:srr1" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:srr2"&gt;
+&lt;p&gt;&lt;a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz"&gt;SRR6915097_1.fastq.gz&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:srr2" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item><item><title>Cross Platform File Explorer in 50 lines of code</title><link>https://avilpage.com/2024/01/cross-platform-file-explorer-in-50-lines-of-code.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;In an earlier post, I wrote about why I need a &lt;a href="https://avilpage.com/2023/11/add-column-for-row-count-in-file-manager.html"&gt;"line count" column in file explorer&lt;/a&gt; and how I wrote a Lua script to see it in xplr file manager.&lt;/p&gt;

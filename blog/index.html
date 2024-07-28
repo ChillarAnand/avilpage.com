@@ -70,7 +70,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/07/mastering-kraken2-performance-optimisation.html" class="u-url">Mastering kraken2 - Part 2 - Performance Optimisation</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/07/mastering-kraken2-performance-optimisation.html" class="u-url">Mastering Kraken2 - Part 2 - Performance Optimisation</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -280,8 +280,11 @@ sudo swapon /swapfile
   <span class="m">125</span> sequences unclassified <span class="o">(</span><span class="m">0</span>.13%<span class="o">)</span>
   <span class="m">4</span>.24user <span class="m">658</span>.68system <span class="m">38</span>:26.78elapsed <span class="m">28</span>%CPU 
 </pre>
-<p>If we try gut WGS(Whole Genome Sequence) sample like <code>SRR6915097</code> which contains ~3.3 Gbp, it will take weeks to complete.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span>6G --user <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
+<p>If we try gut WGS(Whole Genome Sequence) sample like <code>SRR6915097</code> <sup id="fnref:srr1"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr1">4</a></sup><sup id="fnref:srr2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr2">5</a></sup>. which contains ~3.3 Gbp, it will take weeks to complete.</p>
+<pre class="code literal-block">$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
+$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span>6G --user <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
 </pre>
 <p>I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.</p>
 <p>If we have to process a large number of such samples, it takes months and this is not a practical solution. </p>
@@ -300,6 +303,12 @@ sudo swapon /swapfile
 </li>
 <li id="fn:GenomicIndexZone">
 <p><a href="https://benlangmead.github.io/aws-indexes/k2">Genomic Index Zone - k2</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:GenomicIndexZone" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:srr1">
+<p><a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz">SRR6915097_1.fastq.gz</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:srr1" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:srr2">
+<p><a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz">SRR6915097_1.fastq.gz</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:srr2" title="Jump back to footnote 5 in the text">↩</a></p>
 </li>
 </ol>
 </div>

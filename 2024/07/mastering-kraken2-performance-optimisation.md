@@ -1,5 +1,5 @@
 <!--
-.. title: Mastering kraken2 - Part 2 - Performance Optimisation
+.. title: Mastering Kraken2 - Part 2 - Performance Optimisation
 .. slug: mastering-kraken2-performance-optimisation
 .. date: 2024-07-28 10:51:30 UTC+05:30
 .. tags: kraken2, metagenomics, devops
