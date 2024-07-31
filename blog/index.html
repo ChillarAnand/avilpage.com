@@ -84,7 +84,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <h4>Mastering Kraken2</h4>
 <p><a href="../2024/07/mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a></p>
 <p>Part 2 - Performance Optimisation (this post)</p>
-<p>Part 3 - Custom Indices (upcoming)</p>
+<p>Part 3 - Build custom databases (upcoming)</p>
 <h4>Introduction</h4>
 <p>In the previous post, we learned how to set up kraken2<sup id="fnref:k2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:k2">1</a></sup>, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.</p>
 <h4>Increasing RAM</h4>
@@ -207,7 +207,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <sp
     <h4>Mastering Kraken2</h4>
 <p>Part 1 - Initial Runs (this post)</p>
 <p><a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Performance Optimisation</a></p>
-<p>Part 3 - Custom Indices (upcoming)</p>
+<p>Part 3 - Building custom databases (upcoming)</p>
 <h4>Introduction</h4>
 <p>Kraken2<sup id="fnref:Kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:Kraken2">1</a></sup> is widely used for metagenomics taxonomic classification, and it has pre-built indexes for many organisms. In this series, we will learn</p>
 <ul>
@@ -218,7 +218,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <sp
 <li>Build custom indices</li>
 </ul>
 <h4>Installation</h4>
-<p>Let's start with an 8 GB RAM machine. We can install kraken2 using the <code>install_kraken2.sh</code> script as per the manual<sup id="fnref:install_kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2">2</a></sup>.</p>
+<p>We can install kraken2 from source using the <code>install_kraken2.sh</code> script as per the manual<sup id="fnref:install_kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2">2</a></sup>.</p>
 <pre class="code literal-block">$ git clone https://github.com/DerrickWood/kraken2
 $ <span class="nb">cd</span> kraken2
 $ ./install_kraken2.sh /usr/local/bin
@@ -227,6 +227,9 @@ $ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</
 </pre>
 <p>If you already have conda installed, you can install kraken2 from conda as well.</p>
 <pre class="code literal-block">$ conda install -c bioconda kraken2
+</pre>
+<p>If you have <code>brew</code> installed on Linux or Mac(including M1), you can install kraken2 using <code>brew</code>.</p>
+<pre class="code literal-block">$ brew install brewsci/bio/kraken2
 </pre>
 <h4>Download pre-built indices</h4>
 <p>Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.</p>
@@ -371,29 +374,26 @@ $ kubectl port-forward service/headlamp <span class="m">8080</span>:80
 <h4>Glances</h4>
 <p>Glances<sup id="fnref:Glances"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances">3</a></sup> is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.</p>
 <p>We can install it using Brew or pip.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>glances
+<pre class="code literal-block">$ brew install glances
 
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>glances
-</pre></div>
-
+$ pip install glances
+</pre>
 <p>Once it is installed, we can monitor the resource usage using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances
-</pre></div>
-
+<pre class="code literal-block">$ glances
+</pre>
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-glances.png"></p>
 <p>Glances can log historical data to a file using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances<span class="w"> </span>--export-csv<span class="w"> </span>/tmp/glances.csv
-</pre></div>
-
+<pre class="code literal-block">$ glances --export-csv /tmp/glances.csv
+</pre>
 <p>In addition to that, it can log data to services like influxdb, prometheus, etc.</p>
 <p>Let's install influxdb and export stats to it.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>influxdb
-$<span class="w"> </span>brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>influxdb
-$<span class="w"> </span>influx<span class="w"> </span>setup
+<pre class="code literal-block">$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
 
-$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>influxdb-client
+$ python -m pip install influxdb-client
 
-$<span class="w"> </span>cat<span class="w"> </span>glances.conf
+$ cat glances.conf
 <span class="o">[</span>influxdb<span class="o">]</span>
 <span class="nv">host</span><span class="o">=</span>localhost
 <span class="nv">port</span><span class="o">=</span><span class="m">8086</span>
@@ -402,9 +402,8 @@ $<span class="w"> </span>cat<span class="w"> </span>glances.conf
 <span class="nv">bucket</span><span class="o">=</span>glances
 <span class="nv">token</span><span class="o">=</span>secret_token
 
-$<span class="w"> </span>glances<span class="w"> </span>--export-influxdb<span class="w"> </span>-C<span class="w"> </span>glances.conf
-</pre></div>
-
+$ glances --export-influxdb -C glances.conf
+</pre>
 <p>We can view stats in the influxdb from Data Explorer web UI at <a href="http://localhost:8086">http://localhost:8086</a>.</p>
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-influxdb.png"></p>
 <p>Glances provides a prebuilt Grafana dashboard<sup id="fnref:grafana_dashboard"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard">4</a></sup> that we can import to visualize the stats. </p>
@@ -445,48 +444,44 @@ $<span class="w"> </span>glances<span class="w"> </span>--export-influxdb<span c
 <p>Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.</p>
 <h4>Automating Zscaler Connectivity</h4>
 <p>Once Zscaler is installed on macOS, if we search for <code>LaunchAgents</code> &amp; <code>LaunchDaemons</code> directories, we can find the Zscaler plist files. </p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
+<pre class="code literal-block">$ sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span>
 /Library/LaunchAgents/com.zscaler.tray.plist
 
 
-$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
+$ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span>
 /Library/LaunchDaemons/com.zscaler.service.plist
 /Library/LaunchDaemons/com.zscaler.tunnel.plist
 /Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
-</pre></div>
-
+</pre>
 <p>To connect to Zscaler, we can load these services.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
-sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</pre></div>
-
+/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+</pre>
 <p>To disconnect from Zscaler, we can unload all of them.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</pre></div>
-
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+</pre>
 <p>To automatically toggle the connectivity, we can create a shell script.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
 <span class="k">else</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
-<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
 <span class="k">fi</span>
-</pre></div>
-
+</pre>
 <p>Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.</p>
-<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
 <span class="c1"># Required parameters:</span>
 <span class="c1"># @raycast.schemaVersion 1</span>
@@ -500,18 +495,17 @@ sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<s
 <span class="c1"># @raycast.author chillaranand</span>
 <span class="c1"># @raycast.authorURL https://avilpage.com/</span>
 
-<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
 <span class="k">else</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
-<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
 <span class="k">fi</span>
-</pre></div>
-
+</pre>
 <p>Save this script to a folder. From <code>Raycast Settings</code> -&gt; <code>Extensions</code> -&gt; <code>Add Script Directory</code>, we can select this folder, and the script will be available in Raycast. </p>
 <p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect2.png"></p>
 <p>We can assign a shortcut key to the script for quick access.</p>
@@ -542,7 +536,7 @@ sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<s
 <p>At the moment, Activity Watch doesn't have any feature to show screen time alerts. In this post, we will see how to show screen time alerts using Activity Watch.</p>
 <h4>Python Script</h4>
 <p>Activity Watch provides an API to interact with the Activity Watch server. We can use the API to get the screen time data and show alerts.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">json</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
@@ -588,18 +582,15 @@ sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<s
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre></div>
-
+</pre>
 <p>This script<sup id="fnref:github"><a class="footnote-ref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fn:github">2</a></sup> will show the screen time alerts using the Activity Watch API. We can run this script using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>screen_time_alerts.py
-</pre></div>
-
+<pre class="code literal-block">$ python screen_time_alerts.py
+</pre>
 <p><img alt="Screen Time Alerts" src="../images/activity-watch-alerts2.png"></p>
 <p>We can set up a cron job to run this script every hour to show screen time alerts.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
-<span class="m">0</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>python<span class="w"> </span>screen_time_alerts.py
-</pre></div>
-
+<pre class="code literal-block">$ crontab -e
+<span class="m">0</span> * * * * python screen_time_alerts.py
+</pre>
 <p>We can also modify the script to show alerts only when the screen time exceeds a certain limit.</p>
 <h4>Conclusion</h4>
 <p>Since Actvity Watch is open-source and provides an API, we can extend its functionality to show screen time alerts. We can also use the API to create custom reports and dashboards.</p>
@@ -634,25 +625,22 @@ sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<s
 <p><br></p>
 <p>On Linux &amp; Mac OS X, Python comes pre-installed. On Windows, we can install it from Windows store or from <a href="https://python.org">https://python.org</a> website.</p>
 <p>We can verify the Python version using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>--version
-Python<span class="w"> </span><span class="m">3</span>.11.6
-</pre></div>
-
+<pre class="code literal-block">$ python --version
+Python <span class="m">3</span>.11.6
+</pre>
 <p>We can use the <code>pyftpdlib</code> library to create an FTP server. We can install the library using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pyftpdlib
-<span class="o">[</span>I<span class="w"> </span><span class="m">11</span>:28:21<span class="o">]</span><span class="w"> </span>concurrency<span class="w"> </span>model:<span class="w"> </span>async
-<span class="o">[</span>I<span class="w"> </span><span class="m">11</span>:28:21<span class="o">]</span><span class="w"> </span>masquerade<span class="w"> </span><span class="o">(</span>NAT<span class="o">)</span><span class="w"> </span>address:<span class="w"> </span>None
-<span class="o">[</span>I<span class="w"> </span><span class="m">11</span>:28:21<span class="o">]</span><span class="w"> </span>passive<span class="w"> </span>ports:<span class="w"> </span>None
-<span class="o">[</span>I<span class="w"> </span><span class="m">11</span>:28:21<span class="o">]</span><span class="w"> </span>&gt;&gt;&gt;<span class="w"> </span>starting<span class="w"> </span>FTP<span class="w"> </span>server<span class="w"> </span>on<span class="w"> </span>:::2121,<span class="w"> </span><span class="nv">pid</span><span class="o">=</span><span class="m">99951</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span>
-</pre></div>
-
+<pre class="code literal-block">$ python -m pip install pyftpdlib
+<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> concurrency model: async
+<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> masquerade <span class="o">(</span>NAT<span class="o">)</span> address: None
+<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> passive ports: None
+<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> &gt;&gt;&gt; starting FTP server on :::2121, <span class="nv">pid</span><span class="o">=</span><span class="m">99951</span> <span class="o">&lt;&lt;&lt;</span>
+</pre>
 <p>Now, we can start the FTP server using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pyftpdlib
-</pre></div>
-
+<pre class="code literal-block">$ python -m pyftpdlib
+</pre>
 <p>It will start the FTP server on port 2121. We can connect to the FTP server using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>ftp<span class="w"> </span>localhost<span class="w"> </span><span class="m">2121</span>
-</pre></div>
+<pre class="code literal-block">$ ftp localhost <span class="m">2121</span>
+</pre>
     </div>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/04/timestamp-to-relative-time-kibana-scripted-fields.html" class="u-url">Timestamp to Relative Time - Kibana Scripted fields</a></h1>
         <div class="metadata">
@@ -670,23 +658,22 @@ Python<span class="w"> </span><span class="m">3</span>.11.6
 <p>Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.</p>
 <p><img alt="kibana-relative-time" src="../images/kibana-relative-time1.png"></p>
 <p>Go to <code>Stack Management</code> -&gt; <code>Index Patterns</code> -&gt; <code>Create index pattern</code> -&gt; Select the index pattern -&gt; <code>Scripted fields</code>, click on <code>Add scripted field</code>, add the below script.</p>
-<div class="code"><pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span>
+<pre class="code literal-block"><span class="n">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="nc">Date</span><span class="p">().</span><span class="n">getTime</span><span class="p">();</span><span class="w"></span>
 
-<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span>
-<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span>
-<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span>
-<span class="err">}</span>
-</pre></div>
-
+<span class="n">long</span><span class="w"> </span><span class="nc">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="o">[</span><span class="n">'@timestamp'</span><span class="o">]</span><span class="p">.</span><span class="k">value</span><span class="p">.</span><span class="n">toInstant</span><span class="p">().</span><span class="n">toEpochMilli</span><span class="p">();</span><span class="w"></span>
+<span class="n">long</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nc">timestamp</span><span class="p">;</span><span class="w"></span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">7200000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hours ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">3600000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" hour ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">120000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minutes ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" minute ago"</span><span class="p">);</span><span class="w"></span>
+<span class="err">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="err">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="nf">round</span><span class="p">(</span><span class="n">diff</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">" seconds ago"</span><span class="p">;</span><span class="w"></span>
+<span class="err">}</span><span class="w"></span>
+</pre>
 <p>Once the field is saved, we can go back to <code>Discover</code> and see the new field in the logs. We can toggle the visibility of the <code>Relative Time</code> field to see the relative time.</p>
 <p><img alt="kibana-relative-time" src="../images/kibana-relative-time2.png"></p>
 <h4>Conclusion</h4>
@@ -730,27 +717,23 @@ Python<span class="w"> </span><span class="m">3</span>.11.6
 <h4>ArchiveBox</h4>
 <p>ArchiveBox<sup id="fnref:archivebox"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:archivebox">1</a></sup> is a tool to archive web pages. It can be used to archive the option chain data for the stocks &amp; indices.</p>
 <p>Let's install ArchiveBox.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>archivebox
-$<span class="w"> </span>mkdir<span class="w"> </span>option_chain
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>option_chain
-$<span class="w"> </span>archivebox<span class="w"> </span>init
-$<span class="w"> </span>archivebox<span class="w"> </span>setup
-</pre></div>
-
+<pre class="code literal-block">$ pip install archivebox
+$ mkdir option_chain
+$ <span class="nb">cd</span> option_chain
+$ archivebox init
+$ archivebox setup
+</pre>
 <p>We can start the server(defaults to https://localhost:8000) and add URLs manually to archive them.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>server
-</pre></div>
-
+<pre class="code literal-block">$ archivebox server
+</pre>
 <p><img alt="historical-option-chain" src="../images/historical-option-chain.png"></p>
 <p>There are 180+ stocks in FNO segment &amp; 6 indices with weekly expiry. We can write a simple Python script to generate all combinations of URLs for the option chain data and archive them using ArchiveBox.</p>
 <p>Once URLs is generated, we can use the following command to archive them.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>add<span class="w"> </span>--input-file<span class="w"> </span>urls.txt
-</pre></div>
-
+<pre class="code literal-block">$ archivebox add --input-file urls.txt
+</pre>
 <p>These URLs will be archived and stored in the <code>archive</code> directory. Since we want to archive the data regularly, we can use a schedule to archive daily.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>archivebox<span class="w"> </span>schedule<span class="w"> </span>--every<span class="o">=</span>day<span class="w"> </span>--depth<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="s1">'{{url}}'</span>
-</pre></div>
-
+<pre class="code literal-block">$ archivebox schedule --every<span class="o">=</span>day --depth<span class="o">=</span><span class="m">0</span> <span class="s1">'{{url}}'</span>
+</pre>
 <p>This will archive the option chain data for the stocks &amp; indices on a daily basis.</p>
 <h4>Conclusion</h4>
 <p>Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue<sup id="fnref:issue"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:issue">2</a></sup> regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.</p>

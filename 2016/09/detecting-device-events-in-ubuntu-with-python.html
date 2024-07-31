@@ -148,7 +148,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    5 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -162,22 +162,21 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p><a href="https://en.wikipedia.org/wiki/Udev">udev</a> is responsible for managing devices on Linux. It provides <code>udevadm</code>, a CLI utility to monitor and control devices.</p>
 <p>If we run <code>udevadm monitor</code> on terminal and connect a USB drive or hard disk or a mobile via USB to your computer, it will show that kernel has detected the device and it will send a signal to udev about it.</p>
-<div class="code"><pre class="code literal-block">→<span class="w"> </span>udevadm<span class="w"> </span>monitor
-monitor<span class="w"> </span>will<span class="w"> </span>print<span class="w"> </span>the<span class="w"> </span>received<span class="w"> </span>events<span class="w"> </span><span class="k">for</span>:
-UDEV<span class="w"> </span>-<span class="w"> </span>the<span class="w"> </span>event<span class="w"> </span>which<span class="w"> </span>udev<span class="w"> </span>sends<span class="w"> </span>out<span class="w"> </span>after<span class="w"> </span>rule<span class="w"> </span>processing
-KERNEL<span class="w"> </span>-<span class="w"> </span>the<span class="w"> </span>kernel<span class="w"> </span>uevent
+<pre class="code literal-block">→ udevadm monitor
+monitor will print the received events <span class="k">for</span>:
+UDEV - the event which udev sends out after rule processing
+KERNEL - the kernel uevent
 
-KERNEL<span class="o">[</span><span class="m">4336</span>.899091<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-KERNEL<span class="o">[</span><span class="m">4336</span>.899774<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-KERNEL<span class="o">[</span><span class="m">4336</span>.902553<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-UDEV<span class="w">  </span><span class="o">[</span><span class="m">4336</span>.911201<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-UDEV<span class="w">  </span><span class="o">[</span><span class="m">4336</span>.936453<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-UDEV<span class="w">  </span><span class="o">[</span><span class="m">4337</span>.947174<span class="o">]</span><span class="w"> </span>add<span class="w">      </span>/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0<span class="w"> </span><span class="o">(</span>usb<span class="o">)</span>
-</pre></div>
-
+KERNEL<span class="o">[</span><span class="m">4336</span>.899091<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.899774<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+KERNEL<span class="o">[</span><span class="m">4336</span>.902553<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.911201<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4336</span>.936453<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1 <span class="o">(</span>usb<span class="o">)</span>
+UDEV  <span class="o">[</span><span class="m">4337</span>.947174<span class="o">]</span> add      /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0 <span class="o">(</span>usb<span class="o">)</span>
+</pre>
 <p><a href="https://pypi.python.org/pypi/pyudev">Pyudev</a>, a third party package provides python bindings for udev. It can be installed with <code>pip install pyudev</code>.</p>
 <p>With this we can create a simple monitor to detect USB events.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">pyudev</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pyudev</span>
 
 <span class="n">context</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
 <span class="n">monitor</span> <span class="o">=</span> <span class="n">pyudev</span><span class="o">.</span><span class="n">Monitor</span><span class="o">.</span><span class="n">from_netlink</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
@@ -187,13 +186,11 @@ UDEV<span class="w">  </span><span class="o">[</span><span class="m">4337</span>
     <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'add'</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1"> connected'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
         <span class="c1"># do something</span>
-</pre></div>
-
+</pre>
 <p>Save this to a file say monitor.py and run it with <code>python monitor.py</code> and connect a mobile or pendrive and it will show something like this.</p>
-<div class="code"><pre class="code literal-block">Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'</span><span class="o">)</span><span class="w"> </span>connected
-Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'</span><span class="o">)</span><span class="w"> </span>connected
-</pre></div>
-
+<pre class="code literal-block">Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0'</span><span class="o">)</span> connected
+Device<span class="o">(</span><span class="s1">'/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0'</span><span class="o">)</span> connected
+</pre>
 <p>Here we are just detecting <code>add</code> event. Similary we can detect other events like <code>delete</code>.</p>
 <p>This is useful for automatically running shell scripts once the device gets plugged or unplugged.</p>
         </div>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 28 Jul 2024 15:54:42 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Jul 2024 17:30:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Part 2 - Performance Optimisation (this post)&lt;/p&gt;
-&lt;p&gt;Part 3 - Custom Indices (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 3 - Build custom databases (upcoming)&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In the previous post, we learned how to set up kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt;, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.&lt;/p&gt;
 &lt;h4&gt;Increasing RAM&lt;/h4&gt;
@@ -112,7 +112,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</guid><pubDate>Sun, 28 Jul 2024 05:21:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 1 - Initial Runs</title><link>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;Part 1 - Initial Runs (this post)&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Part 3 - Custom Indices (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 3 - Building custom databases (upcoming)&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kraken2&lt;sup id="fnref:Kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:Kraken2"&gt;1&lt;/a&gt;&lt;/sup&gt; is widely used for metagenomics taxonomic classification, and it has pre-built indexes for many organisms. In this series, we will learn&lt;/p&gt;
 &lt;ul&gt;
@@ -123,7 +123,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;li&gt;Build custom indices&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
-&lt;p&gt;Let's start with an 8 GB RAM machine. We can install kraken2 using the &lt;code&gt;install_kraken2.sh&lt;/code&gt; script as per the manual&lt;sup id="fnref:install_kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;We can install kraken2 from source using the &lt;code&gt;install_kraken2.sh&lt;/code&gt; script as per the manual&lt;sup id="fnref:install_kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ git clone https://github.com/DerrickWood/kraken2
 $ &lt;span class="nb"&gt;cd&lt;/span&gt; kraken2
 $ ./install_kraken2.sh /usr/local/bin
@@ -132,6 +132,9 @@ $ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;PATH&lt;/spa
 &lt;/pre&gt;
 &lt;p&gt;If you already have conda installed, you can install kraken2 from conda as well.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ conda install -c bioconda kraken2
+&lt;/pre&gt;
+&lt;p&gt;If you have &lt;code&gt;brew&lt;/code&gt; installed on Linux or Mac(including M1), you can install kraken2 using &lt;code&gt;brew&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ brew install brewsci/bio/kraken2
 &lt;/pre&gt;
 &lt;h4&gt;Download pre-built indices&lt;/h4&gt;
 &lt;p&gt;Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.&lt;/p&gt;
@@ -250,29 +253,26 @@ $ kubectl port-forward service/headlamp &lt;span class="m"&gt;8080&lt;/span&gt;:
 &lt;h4&gt;Glances&lt;/h4&gt;
 &lt;p&gt;Glances&lt;sup id="fnref:Glances"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances"&gt;3&lt;/a&gt;&lt;/sup&gt; is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.&lt;/p&gt;
 &lt;p&gt;We can install it using Brew or pip.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;glances
+&lt;pre class="code literal-block"&gt;$ brew install glances
 
-$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;glances
-&lt;/pre&gt;&lt;/div&gt;
-
+$ pip install glances
+&lt;/pre&gt;
 &lt;p&gt;Once it is installed, we can monitor the resource usage using the below command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;glances
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ glances
+&lt;/pre&gt;
 &lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-glances.png"&gt;&lt;/p&gt;
 &lt;p&gt;Glances can log historical data to a file using the below command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;--export-csv&lt;span class="w"&gt; &lt;/span&gt;/tmp/glances.csv
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ glances --export-csv /tmp/glances.csv
+&lt;/pre&gt;
 &lt;p&gt;In addition to that, it can log data to services like influxdb, prometheus, etc.&lt;/p&gt;
 &lt;p&gt;Let's install influxdb and export stats to it.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;influxdb
-$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;services&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;influxdb
-$&lt;span class="w"&gt; &lt;/span&gt;influx&lt;span class="w"&gt; &lt;/span&gt;setup
+&lt;pre class="code literal-block"&gt;$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
 
-$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;influxdb-client
+$ python -m pip install influxdb-client
 
-$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;glances.conf
+$ cat glances.conf
 &lt;span class="o"&gt;[&lt;/span&gt;influxdb&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;localhost
 &lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;8086&lt;/span&gt;
@@ -281,9 +281,8 @@ $&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;glan
 &lt;span class="nv"&gt;bucket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;glances
 &lt;span class="nv"&gt;token&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;secret_token
 
-$&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;--export-influxdb&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;glances.conf
-&lt;/pre&gt;&lt;/div&gt;
-
+$ glances --export-influxdb -C glances.conf
+&lt;/pre&gt;
 &lt;p&gt;We can view stats in the influxdb from Data Explorer web UI at &lt;a href="http://localhost:8086"&gt;http://localhost:8086&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-influxdb.png"&gt;&lt;/p&gt;
 &lt;p&gt;Glances provides a prebuilt Grafana dashboard&lt;sup id="fnref:grafana_dashboard"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard"&gt;4&lt;/a&gt;&lt;/sup&gt; that we can import to visualize the stats. &lt;/p&gt;
@@ -312,23 +311,22 @@ $&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;
 &lt;p&gt;Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time1.png"&gt;&lt;/p&gt;
 &lt;p&gt;Go to &lt;code&gt;Stack Management&lt;/code&gt; -&amp;gt; &lt;code&gt;Index Patterns&lt;/code&gt; -&amp;gt; &lt;code&gt;Create index pattern&lt;/code&gt; -&amp;gt; Select the index pattern -&amp;gt; &lt;code&gt;Scripted fields&lt;/code&gt;, click on &lt;code&gt;Add scripted field&lt;/code&gt;, add the below script.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Once the field is saved, we can go back to &lt;code&gt;Discover&lt;/code&gt; and see the new field in the logs. We can toggle the visibility of the &lt;code&gt;Relative Time&lt;/code&gt; field to see the relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -336,32 +334,27 @@ $&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;
 &lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-fsSL&lt;span class="w"&gt; &lt;/span&gt;https://tailscale.com/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ curl -fsSL https://tailscale.com/install.sh &lt;span class="p"&gt;|&lt;/span&gt; sh
+&lt;/pre&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Once the installation is done, I run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="tailscale dashboard" src="https://avilpage.com/images/tailscale-pi.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tailscale&lt;/code&gt; has CLI tool as well and status can be viewed with the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;status
-&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75&lt;span class="w"&gt;   &lt;/span&gt;m1&lt;span class="w"&gt;                    &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;macOS&lt;span class="w"&gt;   &lt;/span&gt;-
-&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92&lt;span class="w"&gt;   &lt;/span&gt;rpi1.tailscale.ts.net&lt;span class="w"&gt; &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;linux&lt;span class="w"&gt;   &lt;/span&gt;offline
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ tailscale status
+&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75   m1                    avilpage@  macOS   -
+&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
+&lt;/pre&gt;
 &lt;p&gt;I also set up a cron job to start tailscale daemon on boot.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
-@reboot&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;up
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ crontab -e
+@reboot tailscale up
+&lt;/pre&gt;
 &lt;h4&gt;Access&lt;/h4&gt;
 &lt;p&gt;Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. I can ssh into the device using the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@100.81.12.92
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ ssh pi@100.81.12.92
+&lt;/pre&gt;
 &lt;p&gt;It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@raspberry3.tailscale.net
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ ssh pi@raspberry3.tailscale.net
+&lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp;amp; Linux as well.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -373,47 +366,42 @@ $&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>command-line</category><category>devops</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+$ top -pid &lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;In this article, we will see how to record and plot resource usage of a single process using &lt;code&gt;top&lt;/code&gt; and a Python package called psrecord&lt;sup id="fnref:psrecord"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fn:psrecord"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;h4&gt;Record Resource Usage&lt;/h4&gt;
 &lt;p&gt;In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use &lt;code&gt;top&lt;/code&gt; to log resource usage into a text file. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$ top -p &lt;span class="m"&gt;1234&lt;/span&gt; -b -d &lt;span class="m"&gt;1&lt;/span&gt; &amp;gt; top.log
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32515&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
-&lt;/pre&gt;&lt;/div&gt;
-
+$ top -l &lt;span class="m"&gt;0&lt;/span&gt; -s &lt;span class="m"&gt;1&lt;/span&gt; -pid &lt;span class="m"&gt;32515&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt; &amp;gt; top.log
+&lt;/pre&gt;
 &lt;p&gt;Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like &lt;code&gt;gnuplot&lt;/code&gt; or &lt;code&gt;matplotlib&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Instead of using &lt;code&gt;top&lt;/code&gt; command, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;code&gt;psrecord&lt;/code&gt; is a Python package that can be installed all using &lt;code&gt;pip&lt;/code&gt;. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;psrecord
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ python -m pip install psrecord
+&lt;/pre&gt;
 &lt;p&gt;Once installed, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--log&lt;span class="w"&gt; &lt;/span&gt;top.log
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
+$ psrecord &lt;span class="m"&gt;1234&lt;/span&gt; --log top.log
 
 &lt;span class="c1"&gt;# start and record resource usage of a process&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;script.py&lt;span class="w"&gt; &lt;/span&gt;--plot&lt;span class="w"&gt; &lt;/span&gt;graph.png
-&lt;/pre&gt;&lt;/div&gt;
-
+$ psrecord python script.py --plot graph.png
+&lt;/pre&gt;
 &lt;p&gt;We can view the raw data in the log file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;top.log
-$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;a.txt
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
+$ head top.log
+$ head a.txt
 &lt;span class="c1"&gt;# Elapsed time   CPU (%)     Real (MB)   Virtual (MB)&lt;/span&gt;
-&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;93&lt;/span&gt;.700&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;96&lt;/span&gt;.300&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;91&lt;/span&gt;.900&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;/pre&gt;&lt;/div&gt;
-
+       &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;93&lt;/span&gt;.700        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;96&lt;/span&gt;.300        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;91&lt;/span&gt;.900        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;/pre&gt;
 &lt;p&gt;Here is the generated graph.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/single-proc-resource.png" alt="single-proc-resource"&gt;
@@ -443,23 +431,19 @@ $&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;a.t
 &lt;p&gt;k3d&lt;sup id="fnref:k3d"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html#fn:k3d"&gt;4&lt;/a&gt;&lt;/sup&gt; is a wrapper around k3s that allows you to run k3s on Docker. It is a great option for running Kubernetes on your local machine.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;k3d can be installed using the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# mac&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;chocolatey&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# windows&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# linux&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ brew install k3d  &lt;span class="c1"&gt;# mac&lt;/span&gt;
+$ chocolatey install k3d  &lt;span class="c1"&gt;# windows&lt;/span&gt;
+$ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh &lt;span class="p"&gt;|&lt;/span&gt; bash &lt;span class="c1"&gt;# linux&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Once it is installed, we can create a cluster using the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ k3d cluster create demo
+&lt;/pre&gt;
 &lt;p&gt;This will launch a cluster with a single node. We can also setup a multi-node cluster using the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo&lt;span class="w"&gt; &lt;/span&gt;--servers&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--agents&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ k3d cluster create demo --servers &lt;span class="m"&gt;3&lt;/span&gt; --agents &lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;We can verify the cluster is up and running using the following command:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;nodes
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ kubectl get nodes
+&lt;/pre&gt;
 &lt;p&gt;We can also use GUI tools like Lens to manage and navigate the cluster. In the above video we have used Lens to create a Jenkins deployment as well.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how to set up Kubernetes on Docker. This is a great option for running Kubernetes on your local machine. We can also use this to run production setup for small applications.&lt;/p&gt;
@@ -547,49 +531,43 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
 &lt;h4&gt;K3s Setup&lt;/h4&gt;
 &lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;--cask&lt;span class="w"&gt; &lt;/span&gt;multipass
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
+&lt;/pre&gt;
 &lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;launch&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="w"&gt; &lt;/span&gt;k3s&lt;span class="w"&gt; &lt;/span&gt;--mem&lt;span class="w"&gt; &lt;/span&gt;4G&lt;span class="w"&gt; &lt;/span&gt;--disk&lt;span class="w"&gt; &lt;/span&gt;40G
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
+&lt;/pre&gt;
 &lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;k3s
-Name:&lt;span class="w"&gt;           &lt;/span&gt;k3s
-State:&lt;span class="w"&gt;          &lt;/span&gt;Running
-IPv4:&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
-&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
-Release:&lt;span class="w"&gt;        &lt;/span&gt;Ubuntu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.04.1&lt;span class="w"&gt; &lt;/span&gt;LTS
-Image&lt;span class="w"&gt; &lt;/span&gt;hash:&lt;span class="w"&gt;     &lt;/span&gt;78b5ca0da456&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;Ubuntu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.04&lt;span class="w"&gt; &lt;/span&gt;LTS&lt;span class="o"&gt;)&lt;/span&gt;
-Load:&lt;span class="w"&gt;           &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.34&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.10&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.70
-Disk&lt;span class="w"&gt; &lt;/span&gt;usage:&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.7G&lt;span class="w"&gt; &lt;/span&gt;out&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;38&lt;/span&gt;.6G
-Memory&lt;span class="w"&gt; &lt;/span&gt;usage:&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.2G&lt;span class="w"&gt; &lt;/span&gt;out&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.8G
-Mounts:&lt;span class="w"&gt;         &lt;/span&gt;/Users/chillaranand/test/k8s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;~/k8s
-&lt;span class="w"&gt;                    &lt;/span&gt;UID&lt;span class="w"&gt; &lt;/span&gt;map:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;503&lt;/span&gt;:default
-&lt;span class="w"&gt;                    &lt;/span&gt;GID&lt;span class="w"&gt; &lt;/span&gt;map:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;:default
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass info k3s
+Name:           k3s
+State:          Running
+IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
+                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
+Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
+Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
+Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
+Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
+Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
+Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
+                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
+                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
+&lt;/pre&gt;
 &lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;mount&lt;span class="w"&gt; &lt;/span&gt;~/test/k8s&lt;span class="w"&gt; &lt;/span&gt;k3s:~/k8s
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
+&lt;/pre&gt;
 &lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
 &lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;k3s
+&lt;pre class="code literal-block"&gt;$ multipass shell k3s
 
-ubuntu@k3s:~$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
-&lt;/pre&gt;&lt;/div&gt;
-
+ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
+&lt;/pre&gt;
 &lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
 &lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
 &lt;p align="center"&gt;
@@ -597,30 +575,26 @@ ubuntu@k3s:~$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;
 &lt;/p&gt;
 
 &lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;exec&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sudo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;cat&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;multipass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;grep&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ip&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
+&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;grep&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
 
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;launch&lt;span class="w"&gt; &lt;/span&gt;--name&lt;span class="w"&gt; &lt;/span&gt;k3s-worker&lt;span class="w"&gt; &lt;/span&gt;--mem&lt;span class="w"&gt; &lt;/span&gt;2G&lt;span class="w"&gt; &lt;/span&gt;--disk&lt;span class="w"&gt; &lt;/span&gt;20G
+$ multipass shell k3s-worker
 
-$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;k3s-worker
-
-ubuntu@k3s-worker:~$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
-&lt;/pre&gt;&lt;/div&gt;
-
+ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
+&lt;/pre&gt;
 &lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;
-&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;delete&lt;span class="w"&gt; &lt;/span&gt;k3s&lt;span class="w"&gt; &lt;/span&gt;k3s-worker
-$&lt;span class="w"&gt; &lt;/span&gt;multipass&lt;span class="w"&gt; &lt;/span&gt;purge
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
+$ multipass purge
+&lt;/pre&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
 &lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;

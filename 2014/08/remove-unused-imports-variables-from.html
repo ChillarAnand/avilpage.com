@@ -166,39 +166,35 @@ it is considered as a bad practice. Lets try to get rid of unused
 imports &amp; variables from Python code.</p>
 <p><a href="https://github.com/myint/autoflake" target="_blank">Autoflake</a> removes
 unused imports and unused variables as reported by pyflakes. Install it\</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>autoflake
-</pre></div>
-
+<pre class="code literal-block">$ pip install --upgrade autoflake
+</pre>
 <p>Now select a file which you want to clean and run this in terminal.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>autoflake<span class="w"> </span>--in-place<span class="w"> </span>--remove-unused-variables<span class="w"> </span>example.py
-</pre></div>
-
+<pre class="code literal-block">$ autoflake --in-place --remove-unused-variables example.py
+</pre>
 <p>It removes all unused imports &amp; variables from the file.</p>
 <p>Instead of running this command every time, I wrote a simple elisp
 function and assigned a F8 key to that function. So while writing the
 code itself it can clean it &amp; it's much efficient.</p>
-<div class="code"><pre class="code literal-block"><span class="c1">;; Py-rm - Remove unused variables &amp; imports from python</span>
+<pre class="code literal-block"><span class="c1">;; Py-rm - Remove unused variables &amp; imports from python</span>
 
-<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">pyrm</span><span class="w"> </span><span class="p">()</span>
-<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">command</span><span class="w"> </span><span class="p">(</span><span class="nv">concatenate</span><span class="w"> </span><span class="ss">'string</span><span class="w"> </span><span class="s">"autoflake --in-place --remove-unused-variables "</span><span class="w"> </span><span class="nf">buffer-file-name</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">shell-command</span><span class="w"> </span><span class="nv">command</span><span class="p">)</span>
-<span class="w">  </span><span class="c1">;; Reload the modified file</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">revert-buffer</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-<span class="w">  </span><span class="p">)</span>
+<span class="p">(</span><span class="nb">defun</span> <span class="nv">pyrm</span> <span class="p">()</span>
+  <span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">setq</span> <span class="nv">command</span> <span class="p">(</span><span class="nv">concatenate</span> <span class="ss">'string</span> <span class="s">"autoflake --in-place --remove-unused-variables "</span> <span class="nf">buffer-file-name</span><span class="p">))</span>
+  <span class="p">(</span><span class="nv">shell-command</span> <span class="nv">command</span><span class="p">)</span>
+  <span class="c1">;; Reload the modified file</span>
+  <span class="p">(</span><span class="nv">revert-buffer</span> <span class="no">t</span> <span class="no">t</span><span class="p">)</span>
+  <span class="p">)</span>
 
 <span class="c1">;; set a custom key for pyrm</span>
-<span class="p">(</span><span class="nv">global-set-key</span><span class="w"> </span><span class="p">[</span><span class="nv">f8</span><span class="p">]</span><span class="w"> </span><span class="ss">'pyrm</span><span class="p">)</span>
-</pre></div>
-
+<span class="p">(</span><span class="nv">global-set-key</span> <span class="p">[</span><span class="nv">f8</span><span class="p">]</span> <span class="ss">'pyrm</span><span class="p">)</span>
+</pre>
 <p>Put the above code in your emacs configuration file, restart it &amp; press
 F8 whenever you want to clean the code.</p>
 <p>However, if you just need to highlight but not delete them, you can
 install <a href="http://flymake.sourceforge.net/" target="_blank">flymake</a> and
 then enter this.</p>
-<div class="code"><pre class="code literal-block"><span class="nv">M-x</span><span class="w"> </span><span class="nv">flymake-mode</span><span class="w"> </span><span class="nv">RET</span>
-</pre></div>
-
+<pre class="code literal-block"><span class="nv">M-x</span> <span class="nv">flymake-mode</span> <span class="nv">RET</span>
+</pre>
 <p>It just highlights the other syntax errors and unused imports but won\'t
 delete them.</p>
 <h4>Screenshots</h4>

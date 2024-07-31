@@ -147,7 +147,7 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
             </p>
 
             <p class="dateline">
-                    3 min read
+                    2 min read
             </p>
 
             <p class="dateline">
@@ -164,11 +164,10 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
 <h4>Using Orthanc Worklist Plugin</h4>
 <p>Orthanc server has worklist plugin<sup id="fnref:owp"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:owp">1</a></sup> which will serve worklist files that are stored in a particular directory. Let us download sample worklist files from Orthanc repository and keep in "WorklistDatabase" directory.</p>
 <p>Generate default configuration by running the following command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>./Orthanc<span class="w"> </span>--config<span class="o">=</span>config.json
-</pre></div>
-
+<pre class="code literal-block">$ ./Orthanc --config<span class="o">=</span>config.json
+</pre>
 <p>In the orthanc configuration file, enable worklist plugin, specify the worklist database directory so that Orthanc can locate relevant worklist files, add required modalities and restart the server.</p>
-<div class="code"><pre class="code literal-block">  "Plugins" : [
+<pre class="code literal-block">  "Plugins" : [
     "libModalityWorklists.dylib"
   ],
 
@@ -183,18 +182,15 @@ In the earlier article, we have learnt how to setup DICOM for digging deeper int
       "PYNETDICOM" : ["PYNETDICOM", "127.0.0.1", 4243],
       "FINDSCU" : ["FINDSCU", "127.0.0.1", 4244]
   }
-</pre></div>
-
+</pre>
 <p>Once the plugin is enabled, we can use findscu to send C-FIND query.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>findscu<span class="w"> </span>-W<span class="w"> </span>-k<span class="w"> </span><span class="s2">"ScheduledProcedureStepSequence"</span><span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span><span class="m">4242</span>
-</pre></div>
-
+<pre class="code literal-block">$ findscu -W -k <span class="s2">"ScheduledProcedureStepSequence"</span> <span class="m">127</span>.0.0.1 <span class="m">4242</span>
+</pre>
 <p>This will retrieve all worklist files from the server.</p>
 <h4>Using wlmscpfs</h4>
 <p><code>dcmtk</code> <sup id="fnref:dcmtk"><a class="footnote-ref" href="dicom-modality-worklist-scp.html#fn:dcmtk">2</a></sup> is a collection of utilities for DICOM standard. It has <code>wlmscpfs</code> application which implements basic Service Class Provider(SCP). We can start the service by running the following command.</p>
-<div class="code"><pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
-</pre></div>
-
+<pre class="code literal-block">wlmscpfs --debug --data-files-path WorklistsDatabase 4242
+</pre>
 <p>Once the service is started modalities can send C-FIND query to this service.</p>
 <h4>Conclusion</h4>
 <p>We have seen how to setup MWL SCP using Orthanc &amp; wmlscpfs. Now that we have PACS &amp; WML SCP up and running, in the next article lets see how to dig deeper in to the dicom standard.</p>

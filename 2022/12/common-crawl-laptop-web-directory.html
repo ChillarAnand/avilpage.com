@@ -148,7 +148,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    10 min read
+                    8 min read
             </p>
 
             <p class="dateline">
@@ -170,25 +170,23 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In the earlier post, we have extracted all telugu web page urls to a csv file. In this post, let's explore these urls and build a web directory from it.</p>
 <h4>Explore Data</h4>
 <p>Let's see how many urls are present in the extracted subset of data.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span>telugu.csv
-<span class="w">  </span><span class="m">852025</span><span class="w"> </span>telugu.csv<span class="w"> </span>
-</pre></div>
-
+<pre class="code literal-block">$ wc -l telugu.csv
+  <span class="m">852025</span> telugu.csv 
+</pre>
 <p>In the earlier post, we have installed <code>duckdb</code> and used it for processing parquet files. <code>duckdb</code> can execute SQL queries directly on csv file. Let's use it to explore the data stored in telugu.csv.</p>
 <p>Let's see how many unique domains are present in the data.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"""</span>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
 <span class="s2">    SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites</span>
 <span class="s2">    FROM read_csv('telugu.csv', auto_detect = TRUE);</span>
 <span class="s2">"""</span>
 ┌──────────────┐
-│<span class="w"> </span>unique_sites<span class="w"> </span>│
+│ unique_sites │
 ├──────────────┤
-│<span class="w"> </span><span class="m">13632</span><span class="w">        </span>│
+│ <span class="m">13632</span>        │
 └──────────────┘
-</pre></div>
-
+</pre>
 <p>There ~14k unique domains. Let's see page density across these domains.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"""</span>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
 <span class="s2">SELECT count    AS page_count,</span>
 <span class="s2">COUNT(*) AS sites</span>
 <span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
@@ -198,39 +196,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="s2">ORDER BY page_count;</span>
 <span class="s2">"""</span>
 ┌────────────┬───────┐
-│<span class="w"> </span>page_count<span class="w"> </span>│<span class="w"> </span>sites<span class="w"> </span>│
+│ page_count │ sites │
 ├────────────┼───────┤
-│<span class="w"> </span><span class="m">1</span><span class="w">          </span>│<span class="w"> </span><span class="m">6326</span><span class="w">  </span>│
-│<span class="w"> </span><span class="m">2</span><span class="w">          </span>│<span class="w"> </span><span class="m">1904</span><span class="w">  </span>│
-│<span class="w"> </span><span class="m">3</span><span class="w">          </span>│<span class="w"> </span><span class="m">733</span><span class="w">   </span>│
-│<span class="w"> </span><span class="m">4</span><span class="w">          </span>│<span class="w"> </span><span class="m">459</span><span class="w">   </span>│
-│<span class="w"> </span><span class="m">5</span><span class="w">          </span>│<span class="w"> </span><span class="m">315</span><span class="w">   </span>│
-</pre></div>
-
+│ <span class="m">1</span>          │ <span class="m">6326</span>  │
+│ <span class="m">2</span>          │ <span class="m">1904</span>  │
+│ <span class="m">3</span>          │ <span class="m">733</span>   │
+│ <span class="m">4</span>          │ <span class="m">459</span>   │
+│ <span class="m">5</span>          │ <span class="m">315</span>   │
+</pre>
 <p>About ~75% of the sites have less than 5 pages. It is highly unlikely that these sites complete content is in Telugu language. After manually checking a few of these sites, I found that there are a lot of false positives. </p>
 <p>In the earlier post, we have extracted all pages where there is Telugu language content. Let's filter out pages where Telugu is <strong>primary</strong> language.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"""</span>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
 <span class="s2">  COPY (</span>
 <span class="s2">    SELECT * FROM read_csv('cct.csv', auto_detect=true) </span>
 <span class="s2">    WHERE content_languages like 'tel%'</span>
 <span class="s2">  ) TO 'te_primary.csv' (DELIMITER ',', HEADER TRUE);</span>
 <span class="s2">"""</span>
-</pre></div>
-
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span>te_primary.csv
-<span class="w">  </span><span class="m">573130</span><span class="w"> </span>te_primary.csv
-</pre></div>
-
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"</span><span class="w">                           </span>
+</pre>
+<pre class="code literal-block">$ wc -l te_primary.csv
+  <span class="m">573130</span> te_primary.csv
+</pre>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"</span>                           
 ┌──────────────┐
-│<span class="w"> </span>unique_sites<span class="w"> </span>│
+│ unique_sites │
 ├──────────────┤
-│<span class="w"> </span><span class="m">5666</span><span class="w">         </span>│
-└──────────────┘<span class="w">    </span>
-</pre></div>
-
+│ <span class="m">5666</span>         │
+└──────────────┘    
+</pre>
 <p>Let's see how page density per domain has changed.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"""</span>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
 <span class="s2">SELECT count    AS page_count,</span>
 <span class="s2">COUNT(*) AS sites</span>
 <span class="s2">FROM (SELECT url_host_name_reversed, COUNT(*) AS count</span>
@@ -241,38 +235,35 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="s2">;</span>
 <span class="s2">"""</span>
 ┌────────────┬───────┐
-│<span class="w"> </span>page_count<span class="w"> </span>│<span class="w"> </span>sites<span class="w"> </span>│
+│ page_count │ sites │
 ├────────────┼───────┤
-│<span class="w"> </span><span class="m">1</span><span class="w">          </span>│<span class="w"> </span><span class="m">2183</span><span class="w">  </span>│
-│<span class="w"> </span><span class="m">2</span><span class="w">          </span>│<span class="w"> </span><span class="m">843</span><span class="w">   </span>│
-│<span class="w"> </span><span class="m">3</span><span class="w">          </span>│<span class="w"> </span><span class="m">235</span><span class="w">   </span>│
-│<span class="w"> </span><span class="m">4</span><span class="w">          </span>│<span class="w"> </span><span class="m">146</span><span class="w">   </span>│
-│<span class="w"> </span><span class="m">5</span><span class="w">          </span>│<span class="w"> </span><span class="m">98</span><span class="w">    </span>│
-</pre></div>
-
+│ <span class="m">1</span>          │ <span class="m">2183</span>  │
+│ <span class="m">2</span>          │ <span class="m">843</span>   │
+│ <span class="m">3</span>          │ <span class="m">235</span>   │
+│ <span class="m">4</span>          │ <span class="m">146</span>   │
+│ <span class="m">5</span>          │ <span class="m">98</span>    │
+</pre>
 <p>Page density remains almost the same. </p>
 <p>Let's filter out sites which have at least 5 pages in Telugu. This will eliminate a lot of false positives. Let's look at the most popular sites from the results.</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="m">1</span><span class="w">   </span>│<span class="w"> </span>Rank,Domain,Open<span class="w"> </span>Page<span class="w"> </span>Rank
-<span class="w">   </span><span class="m">2</span><span class="w">   </span>│<span class="w"> </span><span class="m">25</span>,support.google.com,8.55
-<span class="w">   </span><span class="m">3</span><span class="w">   </span>│<span class="w"> </span><span class="m">57</span>,t.me,7.76
-<span class="w">   </span><span class="m">4</span><span class="w">   </span>│<span class="w"> </span><span class="m">76</span>,chrome.google.com,7.49
-<span class="w">   </span><span class="m">5</span><span class="w">   </span>│<span class="w"> </span><span class="m">163</span>,support.mozilla.org,6.99
-<span class="w">   </span><span class="m">6</span><span class="w">   </span>│<span class="w"> </span><span class="m">170</span>,groups.google.com,6.94
-</pre></div>
-
+<pre class="code literal-block">   <span class="m">1</span>   │ Rank,Domain,Open Page Rank
+   <span class="m">2</span>   │ <span class="m">25</span>,support.google.com,8.55
+   <span class="m">3</span>   │ <span class="m">57</span>,t.me,7.76
+   <span class="m">4</span>   │ <span class="m">76</span>,chrome.google.com,7.49
+   <span class="m">5</span>   │ <span class="m">163</span>,support.mozilla.org,6.99
+   <span class="m">6</span>   │ <span class="m">170</span>,groups.google.com,6.94
+</pre>
 <p>A lot of unrelated domains are present here because there might be 10+ pages in telugu in these domains as well. But we don't need these.</p>
 <p>Let's look at only home page(or translated home page) where primary content language is telugu.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>duckdb<span class="w"> </span>-c<span class="w"> </span><span class="s2">"""</span>
+<pre class="code literal-block">$ duckdb -c <span class="s2">"""</span>
 <span class="s2">  SELECT COUNT(distinct url) </span>
 <span class="s2">  FROM read_csv('te_primary.csv', auto_detect=true) </span>
 <span class="s2">  WHERE (url_path = '/' or url_path = '/te/') and url_query is null;</span>
 <span class="s2">"""</span>
-</pre></div>
-
+</pre>
 <p>Now the domain count has reduced to 6k. Let's export these domains to csv file.</p>
 <p>To categorize these domains, Common-crawl doesn't yet provide any kind of categorisation. For now, we can use Open PageRank to sort these domains based on rank. </p>
 <p>We can download top 10 million domains from Open PageRank<sup id="fnref:pagerank"><a class="footnote-ref" href="common-crawl-laptop-web-directory.html#fn:pagerank">3</a></sup>. Here is a simple python script to extract telugu domains from the list.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">domains_file</span> <span class="o">=</span> <span class="s1">'domains.csv'</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">domains_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -284,8 +275,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">'Domain'</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">telugu_domains</span><span class="p">)]</span>
 
 <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'t10m_telugu.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>Now, we have list of all telugu domains sorted by rank. In the next post, we will use this list to categorize the domains.</p>
 <div class="footnote">
 <hr>

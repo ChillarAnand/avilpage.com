@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about common-crawl)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/common-crawl.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Jun 2024 13:48:09 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl on Laptop - Building Web Directory</title><link>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about common-crawl)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/common-crawl.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Jul 2024 07:41:53 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Common Crawl on Laptop - Building Web Directory</title><link>https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;This series of posts discuss processing of common crawl dataset on laptop.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html"&gt;Extracting Subset of Common Crawl&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html"&gt;Building web directory&lt;/a&gt; (this post)&lt;/li&gt;
@@ -8,25 +8,23 @@
 &lt;p&gt;In the earlier post, we have extracted all telugu web page urls to a csv file. In this post, let's explore these urls and build a web directory from it.&lt;/p&gt;
 &lt;h4&gt;Explore Data&lt;/h4&gt;
 &lt;p&gt;Let's see how many urls are present in the extracted subset of data.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;wc&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;telugu.csv
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;852025&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;telugu.csv&lt;span class="w"&gt; &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;$ wc -l telugu.csv
+  &lt;span class="m"&gt;852025&lt;/span&gt; telugu.csv 
+&lt;/pre&gt;
 &lt;p&gt;In the earlier post, we have installed &lt;code&gt;duckdb&lt;/code&gt; and used it for processing parquet files. &lt;code&gt;duckdb&lt;/code&gt; can execute SQL queries directly on csv file. Let's use it to explore the data stored in telugu.csv.&lt;/p&gt;
 &lt;p&gt;Let's see how many unique domains are present in the data.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites&lt;/span&gt;
 &lt;span class="s2"&gt;    FROM read_csv('telugu.csv', auto_detect = TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 ┌──────────────┐
-│&lt;span class="w"&gt; &lt;/span&gt;unique_sites&lt;span class="w"&gt; &lt;/span&gt;│
+│ unique_sites │
 ├──────────────┤
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;13632&lt;/span&gt;&lt;span class="w"&gt;        &lt;/span&gt;│
+│ &lt;span class="m"&gt;13632&lt;/span&gt;        │
 └──────────────┘
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;There ~14k unique domains. Let's see page density across these domains.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;SELECT count    AS page_count,&lt;/span&gt;
 &lt;span class="s2"&gt;COUNT(*) AS sites&lt;/span&gt;
 &lt;span class="s2"&gt;FROM (SELECT url_host_name_reversed, COUNT(*) AS count&lt;/span&gt;
@@ -36,39 +34,35 @@
 &lt;span class="s2"&gt;ORDER BY page_count;&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 ┌────────────┬───────┐
-│&lt;span class="w"&gt; &lt;/span&gt;page_count&lt;span class="w"&gt; &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;sites&lt;span class="w"&gt; &lt;/span&gt;│
+│ page_count │ sites │
 ├────────────┼───────┤
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;6326&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1904&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;733&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;459&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;315&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-&lt;/pre&gt;&lt;/div&gt;
-
+│ &lt;span class="m"&gt;1&lt;/span&gt;          │ &lt;span class="m"&gt;6326&lt;/span&gt;  │
+│ &lt;span class="m"&gt;2&lt;/span&gt;          │ &lt;span class="m"&gt;1904&lt;/span&gt;  │
+│ &lt;span class="m"&gt;3&lt;/span&gt;          │ &lt;span class="m"&gt;733&lt;/span&gt;   │
+│ &lt;span class="m"&gt;4&lt;/span&gt;          │ &lt;span class="m"&gt;459&lt;/span&gt;   │
+│ &lt;span class="m"&gt;5&lt;/span&gt;          │ &lt;span class="m"&gt;315&lt;/span&gt;   │
+&lt;/pre&gt;
 &lt;p&gt;About ~75% of the sites have less than 5 pages. It is highly unlikely that these sites complete content is in Telugu language. After manually checking a few of these sites, I found that there are a lot of false positives. &lt;/p&gt;
 &lt;p&gt;In the earlier post, we have extracted all pages where there is Telugu language content. Let's filter out pages where Telugu is &lt;strong&gt;primary&lt;/strong&gt; language.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;  COPY (&lt;/span&gt;
 &lt;span class="s2"&gt;    SELECT * FROM read_csv('cct.csv', auto_detect=true) &lt;/span&gt;
 &lt;span class="s2"&gt;    WHERE content_languages like 'tel%'&lt;/span&gt;
 &lt;span class="s2"&gt;  ) TO 'te_primary.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;wc&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;te_primary.csv
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;573130&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;te_primary.csv
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"&lt;/span&gt;&lt;span class="w"&gt;                           &lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ wc -l te_primary.csv
+  &lt;span class="m"&gt;573130&lt;/span&gt; te_primary.csv
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"SELECT COUNT(DISTINCT url_host_name_reversed) as unique_sites FROM read_csv('te_primary.csv', auto_detect = TRUE)"&lt;/span&gt;                           
 ┌──────────────┐
-│&lt;span class="w"&gt; &lt;/span&gt;unique_sites&lt;span class="w"&gt; &lt;/span&gt;│
+│ unique_sites │
 ├──────────────┤
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5666&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;│
-└──────────────┘&lt;span class="w"&gt;    &lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+│ &lt;span class="m"&gt;5666&lt;/span&gt;         │
+└──────────────┘    
+&lt;/pre&gt;
 &lt;p&gt;Let's see how page density per domain has changed.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;SELECT count    AS page_count,&lt;/span&gt;
 &lt;span class="s2"&gt;COUNT(*) AS sites&lt;/span&gt;
 &lt;span class="s2"&gt;FROM (SELECT url_host_name_reversed, COUNT(*) AS count&lt;/span&gt;
@@ -79,38 +73,35 @@
 &lt;span class="s2"&gt;;&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
 ┌────────────┬───────┐
-│&lt;span class="w"&gt; &lt;/span&gt;page_count&lt;span class="w"&gt; &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;sites&lt;span class="w"&gt; &lt;/span&gt;│
+│ page_count │ sites │
 ├────────────┼───────┤
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2183&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;843&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;235&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;146&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│
-│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;98&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;│
-&lt;/pre&gt;&lt;/div&gt;
-
+│ &lt;span class="m"&gt;1&lt;/span&gt;          │ &lt;span class="m"&gt;2183&lt;/span&gt;  │
+│ &lt;span class="m"&gt;2&lt;/span&gt;          │ &lt;span class="m"&gt;843&lt;/span&gt;   │
+│ &lt;span class="m"&gt;3&lt;/span&gt;          │ &lt;span class="m"&gt;235&lt;/span&gt;   │
+│ &lt;span class="m"&gt;4&lt;/span&gt;          │ &lt;span class="m"&gt;146&lt;/span&gt;   │
+│ &lt;span class="m"&gt;5&lt;/span&gt;          │ &lt;span class="m"&gt;98&lt;/span&gt;    │
+&lt;/pre&gt;
 &lt;p&gt;Page density remains almost the same. &lt;/p&gt;
 &lt;p&gt;Let's filter out sites which have at least 5 pages in Telugu. This will eliminate a lot of false positives. Let's look at the most popular sites from the results.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;Rank,Domain,Open&lt;span class="w"&gt; &lt;/span&gt;Page&lt;span class="w"&gt; &lt;/span&gt;Rank
-&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;25&lt;/span&gt;,support.google.com,8.55
-&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;,t.me,7.76
-&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;76&lt;/span&gt;,chrome.google.com,7.49
-&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;163&lt;/span&gt;,support.mozilla.org,6.99
-&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;│&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;170&lt;/span&gt;,groups.google.com,6.94
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;pre class="code literal-block"&gt;   &lt;span class="m"&gt;1&lt;/span&gt;   │ Rank,Domain,Open Page Rank
+   &lt;span class="m"&gt;2&lt;/span&gt;   │ &lt;span class="m"&gt;25&lt;/span&gt;,support.google.com,8.55
+   &lt;span class="m"&gt;3&lt;/span&gt;   │ &lt;span class="m"&gt;57&lt;/span&gt;,t.me,7.76
+   &lt;span class="m"&gt;4&lt;/span&gt;   │ &lt;span class="m"&gt;76&lt;/span&gt;,chrome.google.com,7.49
+   &lt;span class="m"&gt;5&lt;/span&gt;   │ &lt;span class="m"&gt;163&lt;/span&gt;,support.mozilla.org,6.99
+   &lt;span class="m"&gt;6&lt;/span&gt;   │ &lt;span class="m"&gt;170&lt;/span&gt;,groups.google.com,6.94
+&lt;/pre&gt;
 &lt;p&gt;A lot of unrelated domains are present here because there might be 10+ pages in telugu in these domains as well. But we don't need these.&lt;/p&gt;
 &lt;p&gt;Let's look at only home page(or translated home page) where primary content language is telugu.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;  SELECT COUNT(distinct url) &lt;/span&gt;
 &lt;span class="s2"&gt;  FROM read_csv('te_primary.csv', auto_detect=true) &lt;/span&gt;
 &lt;span class="s2"&gt;  WHERE (url_path = '/' or url_path = '/te/') and url_query is null;&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Now the domain count has reduced to 6k. Let's export these domains to csv file.&lt;/p&gt;
 &lt;p&gt;To categorize these domains, Common-crawl doesn't yet provide any kind of categorisation. For now, we can use Open PageRank to sort these domains based on rank. &lt;/p&gt;
 &lt;p&gt;We can download top 10 million domains from Open PageRank&lt;sup id="fnref:pagerank"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/12/common-crawl-laptop-web-directory.html#fn:pagerank"&gt;3&lt;/a&gt;&lt;/sup&gt;. Here is a simple python script to extract telugu domains from the list.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 
 &lt;span class="n"&gt;domains_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'domains.csv'&lt;/span&gt;
 &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="nb"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;domains_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;'r'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
@@ -122,8 +113,7 @@
 &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'Domain'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;telugu_domains&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
 
 &lt;span class="n"&gt;df&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;to_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'t10m_telugu.csv'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Now, we have list of all telugu domains sorted by rank. In the next post, we will use this list to categorize the domains.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
@@ -155,52 +145,47 @@
 &lt;h4&gt;Common Crawl Index&lt;/h4&gt;
 &lt;p&gt;Each crawl index is spread over 300 files consisting of ~250 GB of data. For this post, let use the latest crawl which is &lt;code&gt;CC-MAIN-2022-40&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The index files can be accessed from AWS S3 or https. We can use aws cli to list all the files along with the sizes.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;aws&lt;span class="w"&gt; &lt;/span&gt;s3&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;--recursive&lt;span class="w"&gt; &lt;/span&gt;--human-readable&lt;span class="w"&gt; &lt;/span&gt;--summarize&lt;span class="w"&gt; &lt;/span&gt;s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40
-&lt;span class="m"&gt;2022&lt;/span&gt;-10-08&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:07:59&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;621&lt;/span&gt;.9&lt;span class="w"&gt; &lt;/span&gt;MiB&lt;span class="w"&gt; &lt;/span&gt;cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
-&lt;span class="m"&gt;2022&lt;/span&gt;-10-08&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:08:26&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;721&lt;/span&gt;.6&lt;span class="w"&gt; &lt;/span&gt;MiB&lt;span class="w"&gt; &lt;/span&gt;cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00001.gz
+&lt;pre class="code literal-block"&gt;$ aws s3 ls --recursive --human-readable --summarize s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:07:59  &lt;span class="m"&gt;621&lt;/span&gt;.9 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:08:26  &lt;span class="m"&gt;721&lt;/span&gt;.6 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00001.gz
 ...
-&lt;span class="m"&gt;2022&lt;/span&gt;-10-08&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:42:39&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;146&lt;/span&gt;.6&lt;span class="w"&gt; &lt;/span&gt;MiB&lt;span class="w"&gt; &lt;/span&gt;cc-index/collections/CC-MAIN-2022-40/indexes/cluster.idx
-&lt;span class="m"&gt;2022&lt;/span&gt;-10-08&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:42:33&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Bytes&lt;span class="w"&gt; &lt;/span&gt;cc-index/collections/CC-MAIN-2022-40/metadata.yaml
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:42:39  &lt;span class="m"&gt;146&lt;/span&gt;.6 MiB cc-index/collections/CC-MAIN-2022-40/indexes/cluster.idx
+&lt;span class="m"&gt;2022&lt;/span&gt;-10-08 &lt;span class="m"&gt;16&lt;/span&gt;:42:33   &lt;span class="m"&gt;30&lt;/span&gt; Bytes cc-index/collections/CC-MAIN-2022-40/metadata.yaml
 
-Total&lt;span class="w"&gt; &lt;/span&gt;Objects:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;302&lt;/span&gt;
-&lt;span class="w"&gt;   &lt;/span&gt;Total&lt;span class="w"&gt; &lt;/span&gt;Size:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;236&lt;/span&gt;.1&lt;span class="w"&gt; &lt;/span&gt;GiB
-&lt;/pre&gt;&lt;/div&gt;
-
+Total Objects: &lt;span class="m"&gt;302&lt;/span&gt;
+   Total Size: &lt;span class="m"&gt;236&lt;/span&gt;.1 GiB
+&lt;/pre&gt;
 &lt;p&gt;Let's download an index file to our local machine and see how the data is arranged. We can use &lt;code&gt;aws&lt;/code&gt; cli to download the data from s3 bucket or use wget to download it from https endpoint.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;aws&lt;span class="w"&gt; &lt;/span&gt;s3&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz&lt;span class="w"&gt; &lt;/span&gt;.
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
+$ aws s3 cp s3://commoncrawl/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz .
 
 &lt;span class="c1"&gt;# from https&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://data.commoncrawl.org/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
-&lt;/pre&gt;&lt;/div&gt;
-
+$ wget https://data.commoncrawl.org/cc-index/collections/CC-MAIN-2022-40/indexes/cdx-00000.gz
+&lt;/pre&gt;
 &lt;p&gt;Let's print top five lines of the file.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;zcat&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;&lt;span class="w"&gt; &lt;/span&gt;cdx-00000.gz&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;
-&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/1klikbet&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20221005193707&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"http://137.184.1.0/1klikbet/"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"mime"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"text/html"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"text/html"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"200"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"digest"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"XTKGORHKLZCHDBBOMYCYYIZVRPMXNRII"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"length"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"7065"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"offset"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"83437"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"filename"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00011.warc.gz"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"charset"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"languages"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/7meter&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20221005192131&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"http://137.184.1.0/7meter/"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"mime"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"text/html"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"text/html"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"status"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"200"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"digest"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"KUJAMRT6MXYR3RTWRJTIWJ5T2ZUB3EBH"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"length"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"7456"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"offset"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"142680"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"filename"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00182.warc.gz"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"charset"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"languages"&lt;/span&gt;:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ zcat &amp;lt; cdx-00000.gz &lt;span class="p"&gt;|&lt;/span&gt; head -n &lt;span class="m"&gt;5&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/1klikbet &lt;span class="m"&gt;20221005193707&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;: &lt;span class="s2"&gt;"http://137.184.1.0/1klikbet/"&lt;/span&gt;, &lt;span class="s2"&gt;"mime"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"200"&lt;/span&gt;, &lt;span class="s2"&gt;"digest"&lt;/span&gt;: &lt;span class="s2"&gt;"XTKGORHKLZCHDBBOMYCYYIZVRPMXNRII"&lt;/span&gt;, &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="s2"&gt;"7065"&lt;/span&gt;, &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="s2"&gt;"83437"&lt;/span&gt;, &lt;span class="s2"&gt;"filename"&lt;/span&gt;: &lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00011.warc.gz"&lt;/span&gt;, &lt;span class="s2"&gt;"charset"&lt;/span&gt;: &lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;, &lt;span class="s2"&gt;"languages"&lt;/span&gt;: &lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;,1,184,137&lt;span class="o"&gt;)&lt;/span&gt;/7meter &lt;span class="m"&gt;20221005192131&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;: &lt;span class="s2"&gt;"http://137.184.1.0/7meter/"&lt;/span&gt;, &lt;span class="s2"&gt;"mime"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"mime-detected"&lt;/span&gt;: &lt;span class="s2"&gt;"text/html"&lt;/span&gt;, &lt;span class="s2"&gt;"status"&lt;/span&gt;: &lt;span class="s2"&gt;"200"&lt;/span&gt;, &lt;span class="s2"&gt;"digest"&lt;/span&gt;: &lt;span class="s2"&gt;"KUJAMRT6MXYR3RTWRJTIWJ5T2ZUB3EBH"&lt;/span&gt;, &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="s2"&gt;"7456"&lt;/span&gt;, &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="s2"&gt;"142680"&lt;/span&gt;, &lt;span class="s2"&gt;"filename"&lt;/span&gt;: &lt;span class="s2"&gt;"crawl-data/CC-MAIN-2022-40/segments/1664030337663.75/warc/CC-MAIN-20221005172112-20221005202112-00182.warc.gz"&lt;/span&gt;, &lt;span class="s2"&gt;"charset"&lt;/span&gt;: &lt;span class="s2"&gt;"UTF-8"&lt;/span&gt;, &lt;span class="s2"&gt;"languages"&lt;/span&gt;: &lt;span class="s2"&gt;"ind"&lt;/span&gt;&lt;span class="o"&gt;}&lt;/span&gt;
 ...
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;The last column of each line contains the language information. We can use these index files, and we can  extract all the lines containing &lt;code&gt;tel&lt;/code&gt; language code.&lt;/p&gt;
 &lt;h4&gt;Columnar Index&lt;/h4&gt;
 &lt;p&gt;We can also use columnar index to filter out telugu language web pages. Let's download a single file from the index.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;aws&lt;span class="w"&gt; &lt;/span&gt;s3&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet&lt;span class="w"&gt; &lt;/span&gt;.
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# from s3&lt;/span&gt;
+$ aws s3 cp s3://commoncrawl/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet .
 
 &lt;span class="c1"&gt;# from https&lt;/span&gt;
-$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
-&lt;/pre&gt;&lt;/div&gt;
-
+$ wget https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl&lt;span class="o"&gt;=&lt;/span&gt;CC-MAIN-2022-40/subset&lt;span class="o"&gt;=&lt;/span&gt;warc/part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet
+&lt;/pre&gt;
 &lt;p&gt;We can use Python pandas to read the parquet file and filter out telugu language web pages. Columnar index has &lt;code&gt;content_languages&lt;/code&gt; column which can be used to filter out telugu pages as shown below.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ python -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;import pandas as pd&lt;/span&gt;
 &lt;span class="s2"&gt;filename = 'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
 &lt;span class="s2"&gt;df = pd.read_parquet(filename)&lt;/span&gt;
 &lt;span class="s2"&gt;df = df[df['content_languages'].str.startswith('tel', na=False)]&lt;/span&gt;
 &lt;span class="s2"&gt;df.to_csv('telugu.csv')&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;I have used Macbook M1 with local ISP(Internet Service Provider) to download and extract the index. It took around 7 minutes to download a single file and 2 minutes to extract the data. To process 300 index files, it takes ~2 days.&lt;/p&gt;
 &lt;p&gt;Let's see how we can speed it up.&lt;/p&gt;
 &lt;h4&gt;Improving Performance&lt;/h4&gt;
@@ -209,38 +194,34 @@ $&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;htt
 &lt;p&gt;CC dataset is hosted in us-east-1 region. So, I have created a new t2.micro instance in us-east-1 region. This instance is taking &amp;lt;20 seconds to download a single file. We can download entire index in less than 2 hours.&lt;/p&gt;
 &lt;h5&gt;Faster Performance&lt;/h5&gt;
 &lt;p&gt;To extract data from index files, we have used Python pandas without specifying the engine. By default, it uses &lt;code&gt;pyarrow&lt;/code&gt; which is a bit slow. To improve speed we can use &lt;code&gt;fastparquet&lt;/code&gt; as engine which is ~5x faster than &lt;code&gt;pyarrow&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 
 &lt;span class="n"&gt;filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet'&lt;/span&gt;
 &lt;span class="n"&gt;df&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_parquet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;engine&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'fastparquet'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;To get better performance, we can use duckdb. Duckdb is an in-process SQL OLAP DBMS and it can execute SQL queries directly on parquet files with &lt;code&gt;parquet&lt;/code&gt; extension.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;duckdb
+&lt;pre class="code literal-block"&gt;$ brew install duckdb
 
-$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'INSTALL parquet;'&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+$ duckdb -c &lt;span class="s1"&gt;'INSTALL parquet;'&lt;/span&gt;
+&lt;/pre&gt;
 &lt;p&gt;We can write a simple SQL query to filter out the required rows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;LOAD parquet;&lt;/span&gt;
 &lt;span class="s2"&gt;COPY (select * from PARQUET_SCAN('part-00000-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Duckdb can execute SQL queries on remote files as well with &lt;code&gt;httpfs&lt;/code&gt; extension.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'INSTALL httpfs;'&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s1"&gt;'INSTALL httpfs;'&lt;/span&gt;
 
-$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD httpfs;&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD parquet;&lt;/span&gt;
 
 &lt;span class="s2"&gt;    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/part-00001-26160df0-1827-4787-a515-95ecaa2c9688.c000.gz.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);"""&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Duckdb can also read series of parquet files and treat them as a single table. We can use this feature to process all the index files in a single command.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD httpfs;&lt;/span&gt;
 &lt;span class="s2"&gt;    LOAD parquet;&lt;/span&gt;
 
@@ -250,14 +231,12 @@ $&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-
 
 &lt;span class="s2"&gt;    COPY (select * from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;Depending on the file size, duckdb takes 10-15 seconds to process a single file. Since we don't need all the columns for further data processing, we can limit columns to required 5 columns.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;duckdb&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"""&lt;/span&gt;
+&lt;pre class="code literal-block"&gt;$ duckdb -c &lt;span class="s2"&gt;"""&lt;/span&gt;
 &lt;span class="s2"&gt;    COPY (select url, content_languages, warc_filename, warc_record_offset, warc_record_length from PARQUET_SCAN('s3://commoncrawl/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-40/subset=warc/*.parquet') where content_languages ilike '%tel%') TO 'telugu.csv' (DELIMITER ',', HEADER TRUE);&lt;/span&gt;
 &lt;span class="s2"&gt;"""&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;/pre&gt;
 &lt;p&gt;By limiting columns&lt;sup id="fnref:cc-gg"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/11/common-crawl-laptop-extract-subset.html#fn:cc-gg"&gt;3&lt;/a&gt;&lt;/sup&gt; there is another 65% improvement in performance. Now duckdb can process a file in 3 to 8 seconds depending on the size of the file. We can process entire index in ~20 minutes.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;With a single command, we can extract a subset of index from CC in ~2 hours. So far we have processed all files in a single process. We can also parallelize the process using &lt;code&gt;parallel&lt;/code&gt; to get faster results.&lt;/p&gt;

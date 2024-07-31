@@ -148,7 +148,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -166,16 +166,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <ul>
 <li>Install the <code>pydevd-pycharm</code> package in the Docker image.</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'pydevd-pycharm~=222.4554.11'</span>
-</pre></div>
-
+<pre class="code literal-block"><span class="k">RUN</span> pip install <span class="s1">'pydevd-pycharm~=222.4554.11'</span>
+</pre>
 <ul>
 <li>Add the following lines to the Python script that you want to debug.</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">pydevd_pycharm</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">pydevd_pycharm</span>
 <span class="n">pydevd_pycharm</span><span class="o">.</span><span class="n">settrace</span><span class="p">(</span><span class="s1">'host.docker.internal'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">stdoutToServer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stderrToServer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <ul>
 <li>Create a new Python Remote Debug configuration in PyCharm with the following settings.</li>
 </ul>
@@ -188,43 +186,40 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Run the Docker container with the following command or let a shell script or another package run the container.</p>
 </li>
 </ul>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>flask_web
-$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>flask_web
-</pre></div>
-
+<pre class="code literal-block">$ docker build . -t flask_web
+$ docker run --rm flask_web
+</pre>
 <h4>Explanation</h4>
 <p>The <code>pydevd-pycharm</code> package is a Python debugger that can be used to debug a Python application running inside a Docker container. The <code>pydevd_pycharm.settrace()</code> function is used to connect the debugger to the PyCharm IDE. The <code>host.docker.internal</code> is the hostname of the host machine from inside the Docker container. The <code>port</code> is the port number that is used to connect to the PyCharm IDE. The <code>stdoutToServer</code> and <code>stderrToServer</code> are used to redirect the standard output and standard error to the PyCharm IDE.</p>
 <h4>Gotchas</h4>
 <ul>
 <li>You might face the following error depending on the version of the <code>pydevd-pycharm</code> package.</li>
 </ul>
-<div class="code"><pre class="code literal-block">Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/flask/cli.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">218</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>locate_app
-<span class="w">    </span>__import__<span class="o">(</span>module_name<span class="o">)</span>
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/app/app.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">5</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
-<span class="w">    </span>import<span class="w"> </span>pydevd_pycharm
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
-<span class="w">    </span>from<span class="w"> </span>pydevd<span class="w"> </span>import<span class="w"> </span>settrace
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">41</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
-<span class="w">    </span>from<span class="w"> </span>_pydevd_bundle<span class="w"> </span>import<span class="w"> </span>pydevd_utils
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">24</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
-<span class="w">    </span>from<span class="w"> </span>_pydevd_asyncio_util.pydevd_asyncio_utils<span class="w"> </span>import<span class="w"> </span>eval_async_expression_in_context
-ModuleNotFoundError:<span class="w"> </span>No<span class="w"> </span>module<span class="w"> </span>named<span class="w"> </span><span class="s1">'_pydevd_asyncio_util'</span>
-</pre></div>
-
+<pre class="code literal-block">Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/flask/cli.py"</span>, line <span class="m">218</span>, <span class="k">in</span> locate_app
+    __import__<span class="o">(</span>module_name<span class="o">)</span>
+  File <span class="s2">"/app/app.py"</span>, line <span class="m">5</span>, <span class="k">in</span> &lt;module&gt;
+    import pydevd_pycharm
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd_pycharm.py"</span>, line <span class="m">3</span>, <span class="k">in</span> &lt;module&gt;
+    from pydevd import settrace
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">41</span>, <span class="k">in</span> &lt;module&gt;
+    from _pydevd_bundle import pydevd_utils
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_utils.py"</span>, line <span class="m">24</span>, <span class="k">in</span> &lt;module&gt;
+    from _pydevd_asyncio_util.pydevd_asyncio_utils import eval_async_expression_in_context
+ModuleNotFoundError: No module named <span class="s1">'_pydevd_asyncio_util'</span>
+</pre>
 <p>There seems to be an issue with all 223.*.* versions. The solution is to use the 222.*.* version.</p>
 <ul>
 <li>You might face <code>ConnectionRefused</code> error when running the docker container.</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1758</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>_locked_settrace
-<span class="w">    </span>debugger.connect<span class="o">(</span>host,<span class="w"> </span>port<span class="o">)</span><span class="w">  </span><span class="c1"># Note: connect can raise error.</span>
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">660</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>connect
-<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>start_client<span class="o">(</span>host,<span class="w"> </span>port<span class="o">)</span>
-<span class="w">  </span>File<span class="w"> </span><span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">463</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>start_client
-<span class="w">    </span>s.connect<span class="o">((</span>host,<span class="w"> </span>port<span class="o">))</span>
-ConnectionRefusedError:<span class="w"> </span><span class="o">[</span>Errno<span class="w"> </span><span class="m">111</span><span class="o">]</span><span class="w"> </span>Connection<span class="w"> </span>refused
-</pre></div>
-
+<pre class="code literal-block">  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">1758</span>, <span class="k">in</span> _locked_settrace
+    debugger.connect<span class="o">(</span>host, port<span class="o">)</span>  <span class="c1"># Note: connect can raise error.</span>
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/pydevd.py"</span>, line <span class="m">660</span>, <span class="k">in</span> connect
+    <span class="nv">s</span> <span class="o">=</span> start_client<span class="o">(</span>host, port<span class="o">)</span>
+  File <span class="s2">"/usr/local/lib/python3.10/site-packages/_pydevd_bundle/pydevd_comm.py"</span>, line <span class="m">463</span>, <span class="k">in</span> start_client
+    s.connect<span class="o">((</span>host, port<span class="o">))</span>
+ConnectionRefusedError: <span class="o">[</span>Errno <span class="m">111</span><span class="o">]</span> Connection refused
+</pre>
 <p>Ensure that you have started the Remote Debug configuration in PyCharm before running the docker container.</p>
         </div>
         <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
