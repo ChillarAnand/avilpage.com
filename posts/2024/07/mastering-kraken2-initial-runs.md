@@ -11,11 +11,15 @@
 
 ### Mastering Kraken2
 
- Part 1 - Initial Runs (this post)
+[Part 1 - Initial Runs](/2024/07/mastering-kraken2-initial-runs.html) (this post)
 
 [Part 2 - Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html)
 
-Part 3 - Custom Indices (upcoming)
+[Part 3 - Building custom databases](2024/07/mastering-kraken2-build-custom-db.html)
+
+Part 4 - Regular vs Fast Builds (upcoming)
+
+Part 5 - Benchmarking (upcoming)
 
 ### Introduction
 
@@ -29,7 +33,7 @@ Kraken2[^Kraken2] is widely used for metagenomics taxonomic classification, and 
 
 ### Installation
 
-Let's start with an 8 GB RAM machine. We can install kraken2 using the `install_kraken2.sh` script as per the manual[^install_kraken2].
+We can install kraken2 from source using the `install_kraken2.sh` script as per the manual[^install_kraken2].
 
 ```shell
 $ git clone https://github.com/DerrickWood/kraken2
@@ -43,6 +47,12 @@ If you already have conda installed, you can install kraken2 from conda as well.
 
 ```shell
 $ conda install -c bioconda kraken2
+```
+
+If you have `brew` installed on Linux or Mac(including M1), you can install kraken2 using `brew`.
+
+```shell
+$ brew install brewsci/bio/kraken2
 ```
 
 ### Download pre-built indices
