@@ -148,7 +148,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    5 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -168,29 +168,26 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Glances</h4>
 <p>Glances<sup id="fnref:Glances"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:Glances">3</a></sup> is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.</p>
 <p>We can install it using Brew or pip.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>glances
+<pre class="code literal-block">$ brew install glances
 
-$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>glances
-</pre></div>
-
+$ pip install glances
+</pre>
 <p>Once it is installed, we can monitor the resource usage using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances
-</pre></div>
-
+<pre class="code literal-block">$ glances
+</pre>
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-glances.png"></p>
 <p>Glances can log historical data to a file using the below command.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances<span class="w"> </span>--export-csv<span class="w"> </span>/tmp/glances.csv
-</pre></div>
-
+<pre class="code literal-block">$ glances --export-csv /tmp/glances.csv
+</pre>
 <p>In addition to that, it can log data to services like influxdb, prometheus, etc.</p>
 <p>Let's install influxdb and export stats to it.</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>influxdb
-$<span class="w"> </span>brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>influxdb
-$<span class="w"> </span>influx<span class="w"> </span>setup
+<pre class="code literal-block">$ brew install influxdb
+$ brew services start influxdb
+$ influx setup
 
-$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>influxdb-client
+$ python -m pip install influxdb-client
 
-$<span class="w"> </span>cat<span class="w"> </span>glances.conf
+$ cat glances.conf
 <span class="o">[</span>influxdb<span class="o">]</span>
 <span class="nv">host</span><span class="o">=</span>localhost
 <span class="nv">port</span><span class="o">=</span><span class="m">8086</span>
@@ -199,9 +196,8 @@ $<span class="w"> </span>cat<span class="w"> </span>glances.conf
 <span class="nv">bucket</span><span class="o">=</span>glances
 <span class="nv">token</span><span class="o">=</span>secret_token
 
-$<span class="w"> </span>glances<span class="w"> </span>--export-influxdb<span class="w"> </span>-C<span class="w"> </span>glances.conf
-</pre></div>
-
+$ glances --export-influxdb -C glances.conf
+</pre>
 <p>We can view stats in the influxdb from Data Explorer web UI at <a href="http://localhost:8086">http://localhost:8086</a>.</p>
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../../images/mac-log-cpu-ram-influxdb.png"></p>
 <p>Glances provides a prebuilt Grafana dashboard<sup id="fnref:grafana_dashboard"><a class="footnote-ref" href="macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard">4</a></sup> that we can import to visualize the stats. </p>

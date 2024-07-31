@@ -161,7 +161,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p>Let us write a function which retrieves user information from GitHub API.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">requests</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">requests</span>
 
 
 <span class="k">def</span> <span class="nf">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
@@ -171,19 +171,17 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-</pre></div>
-
+</pre>
 <p>To test this function, we can write a test case to call the external API and check if it is returning valid data.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
+<pre class="code literal-block"><span class="k">def</span> <span class="nf">test_get_github_user_info</span><span class="p">():</span>
     <span class="n">username</span> <span class="o">=</span> <span class="s1">'ChillarAnand'</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre></div>
-
+</pre>
 <p>Even though this test case is reliable, this won't be efficient when we have many APIs to test as it sends unwanted requests to external API and makes tests slower due to I/O.</p>
 <p>A widely used solution to avoid external API calls is <a href="https://en.wikipedia.org/wiki/Mock_object">mocking</a>. Instead of getting the response from external API, use a mock object which returns similar data.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
 
 
 <span class="k">def</span> <span class="nf">test_get_github_user_info_with_mock</span><span class="p">():</span>
@@ -198,15 +196,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
         <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre></div>
-
+</pre>
 <p>This solves above problems but creates additional problems.</p>
 <ul>
 <li>Unreliable. Even though test cases pass, we are not sure if API is up and is returning a valid response.</li>
 <li>Maintenance. We need to ensure mock responses are up to date with API.</li>
 </ul>
 <p>To avoid this, we can cache the responses using <a href="https://pypi.python.org/pypi/requests-cache">requests-cache</a>.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">requests_cache</span>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">requests_cache</span>
 
 <span class="n">requests_cache</span><span class="o">.</span><span class="n">install_cache</span><span class="p">(</span><span class="s1">'github_cache'</span><span class="p">)</span>
 
@@ -216,8 +213,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_github_user_info</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">username</span> <span class="o">==</span> <span class="n">info</span><span class="p">[</span><span class="s1">'login'</span><span class="p">]</span>
-</pre></div>
-
+</pre>
 <p>When running tests from developer machine, it will call the API for the first time and uses the cached response for subsequent API calls. On CI pipeline, it will hit the external API as there won't be any cache.</p>
 <p>When the response from external API changes, we need to invalidate the cache. Even if we miss cache invalidation, test cases will fail in CI pipeline before going into production.</p>
         </div>

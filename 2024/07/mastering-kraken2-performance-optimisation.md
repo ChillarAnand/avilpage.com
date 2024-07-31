@@ -15,7 +15,7 @@
 
 Part 2 - Performance Optimisation (this post)
 
-Part 3 - Custom Indices (upcoming)
+Part 3 - Build custom databases (upcoming)
 
 
 ### Introduction

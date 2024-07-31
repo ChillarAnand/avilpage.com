@@ -163,7 +163,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p>Consider <code>Book</code> model which has <code>Author</code> as foreignkey.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
 
 
 <span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -172,10 +172,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="n">author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>We can register these models with admin interface as follows.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Author</span><span class="p">,</span> <span class="n">Book</span>
 
@@ -184,8 +183,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Author</span><span class="p">)</span>
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="n">BookAdmin</span><span class="p">)</span>
-</pre></div>
-
+</pre>
 <p>Once they are registed, admin page shows <code>Book</code> model like this.</p>
 <p align="center">
 <img src="../../images/django-tips-tricks-1.png"></p>
@@ -193,7 +191,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>While browsing books, we can see <code>name</code> and <code>author</code>. Here, name field is liked to change view of book. But author field is shown as plain text. If we have to modify author name, we have to go back to authors admin page, search for relevant author and then change name.</p>
 <p>This becomes tedious if we spend lot of time in admin for tasks like this. Instead, if author field is hyperlinked to its change view, we can directly go to that page.</p>
 <p>Django provides an option to <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#reversing-admin-urls">access admin views by its URL reversing system</a>. For example, we can get change view of author model in book app using <code>reverse("admin:book_author_change", args=id)</code>. Now we can use this url to hyperlink author field in book admin.</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
 <span class="kn">from</span> <span class="nn">django.utils.safestring</span> <span class="kn">import</span> <span class="n">mark_safe</span>
 
 
@@ -205,8 +203,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <span class="n">link</span> <span class="o">=</span> <span class="s1">'&lt;a href="</span><span class="si">%s</span><span class="s1">"&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;'</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mark_safe</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
     <span class="n">author_link</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s1">'Author'</span>
-</pre></div>
-
+</pre>
 <p>Now in the book admin view, author field will be hyperlinked to its change view and we can visit just by clicking it.</p>
 <p align="center">
 <img src="../../images/django-tips-tricks-2.png"></p>
