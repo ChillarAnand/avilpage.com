@@ -1,8 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Jul 2024 17:30:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 Aug 2024 16:27:51 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Part 2 - Performance Optimisation (this post)&lt;/p&gt;
-&lt;p&gt;Part 3 - Build custom databases (upcoming)&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt; (this post)&lt;/p&gt;
+&lt;p&gt;Part 4 - Regular vs Fast Builds (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 5 - Benchmarking (upcoming)&lt;/p&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;In the previous post, we learned how to improve kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt; classification performance. So far we have downloaded &amp;amp; used pre-built genome indices(databases). &lt;/p&gt;
+&lt;p&gt;In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes&lt;sup id="fnref:rag"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fn:rag"&gt;2&lt;/a&gt;&lt;/sup&gt; for building the index.&lt;/p&gt;
+&lt;h4&gt;Building Custom Database&lt;/h4&gt;
+&lt;p&gt;First, we need to download the taxonomy files. We can use the &lt;code&gt;k2&lt;/code&gt; script provided by kraken2.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ k2 download-taxonomy --db custom_db
+&lt;/pre&gt;
+&lt;p&gt;This takes ~30 minutes depending on the network speed. The taxonomy files are downloaded to the &lt;code&gt;custom_db/taxonomy&lt;/code&gt; directory.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ ls custom_db/taxonomy
+citations.dmp  division.dmp  gencode.dmp  merged.dmp  nodes.dmp
+nucl_wgs.accession2taxid delnodes.dmp  gc.prt 
+images.dmp  names.dmp  nucl_gb.accession2taxid  readme.txt
+
+$ du -hs custom_db/taxonomy
+43G     custom_db/taxonomy
+&lt;/pre&gt;
+&lt;p&gt;For simplicity, let's use the archaea refseq genomes. We can use &lt;code&gt;kraken2-build&lt;/code&gt; to download the refseq genomes.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ k2 download-library --library archaea --db custom_db
+&lt;/pre&gt;
+&lt;p&gt;This runs on a single thread. Instead of using &lt;code&gt;kraken2-build&lt;/code&gt;, we can use &lt;code&gt;ncbi-genome-download&lt;/code&gt;&lt;sup id="fnref:ngd"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fn:ngd"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to download the genomes. This provides much granular control over the download process. For example, we can download only &lt;code&gt;--assembly-levels complete&lt;/code&gt; genomes. We can also download multiple genomes in parallel.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ pip install ncbi-genome-download
+
+$ conda install -c bioconda ncbi-genome-download
+
+$ ncbi-genome-download -s refseq -F fasta --parallel &lt;span class="m"&gt;40&lt;/span&gt; -P archaea
+Checking assemblies: &lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2184&lt;/span&gt;/2184 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;00&lt;/span&gt;:19&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00, &lt;span class="m"&gt;111&lt;/span&gt;.60entries/s&lt;span class="o"&gt;]&lt;/span&gt;
+Downloading assemblies: &lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2184&lt;/span&gt;/2184  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:04&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00,  &lt;span class="m"&gt;4&lt;/span&gt;.54s/files&lt;span class="o"&gt;]&lt;/span&gt;
+Downloading assemblies: 2184files &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:23, 2184files/s&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;In just 2 minutes, it has downloaded all the files. Lets gunzip the files.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ find refseq -name &lt;span class="s2"&gt;"*.gz"&lt;/span&gt; -print0 &lt;span class="p"&gt;|&lt;/span&gt; parallel -0 gunzip
+
+$ du -hs refseq
+&lt;span class="m"&gt;5&lt;/span&gt;.9G    refseq
+&lt;/pre&gt;
+&lt;p&gt;Lets add all fasta genome files to the custom database&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; find refseq -name &lt;span class="s2"&gt;"*.fna"&lt;/span&gt; -exec kraken2-build --add-to-library &lt;span class="o"&gt;{}&lt;/span&gt; --db custom_db &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="m"&gt;667&lt;/span&gt;.46s user &lt;span class="m"&gt;90&lt;/span&gt;.78s system &lt;span class="m"&gt;106&lt;/span&gt;% cpu &lt;span class="m"&gt;12&lt;/span&gt;:54.80 total
+&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;kraken2-build&lt;/code&gt; doesn't use multiple threads for adding genomes to the database. In addition to that, it also doesn't check if the genome is already present in the database. &lt;/p&gt;
+&lt;p&gt;Let's use &lt;code&gt;k2&lt;/code&gt; for adding genomes to the database.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;KRAKEN_NUM_THREADS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
+
+$ find . -name &lt;span class="s2"&gt;"*.fna"&lt;/span&gt; -exec k2 add-to-library --files &lt;span class="o"&gt;{}&lt;/span&gt; --db custom_db &lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="m"&gt;668&lt;/span&gt;.37s user &lt;span class="m"&gt;88&lt;/span&gt;.44s system &lt;span class="m"&gt;159&lt;/span&gt;% cpu &lt;span class="m"&gt;7&lt;/span&gt;:54.40 total
+&lt;/pre&gt;
+&lt;p&gt;This took only half the time compared to &lt;code&gt;kraken2-build&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Let's build the index from the library.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2-build --db custom_db --build --threads &lt;span class="m"&gt;36&lt;/span&gt;
+Creating sequence ID to taxonomy ID map &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Found &lt;span class="m"&gt;0&lt;/span&gt;/125783 targets, searched through &lt;span class="m"&gt;60000000&lt;/span&gt; accession IDs...
+Found &lt;span class="m"&gt;59923&lt;/span&gt;/125783 targets, searched through &lt;span class="m"&gt;822105735&lt;/span&gt; accession IDs, search complete.
+lookup_accession_numbers: &lt;span class="m"&gt;65860&lt;/span&gt;/125783 accession numbers remain unmapped, see unmapped.txt &lt;span class="k"&gt;in&lt;/span&gt; DB directory
+Sequence ID to taxonomy ID map complete. &lt;span class="o"&gt;[&lt;/span&gt;2m1.950s&lt;span class="o"&gt;]&lt;/span&gt;
+Estimating required capacity &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Estimated &lt;span class="nb"&gt;hash&lt;/span&gt; table requirement: &lt;span class="m"&gt;5340021028&lt;/span&gt; bytes
+Capacity estimation complete. &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;23&lt;/span&gt;.875s&lt;span class="o"&gt;]&lt;/span&gt;
+Building database files &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Taxonomy parsed and converted.
+CHT created with &lt;span class="m"&gt;11&lt;/span&gt; bits reserved &lt;span class="k"&gt;for&lt;/span&gt; taxid.
+Completed processing of &lt;span class="m"&gt;59911&lt;/span&gt; sequences, &lt;span class="m"&gt;3572145823&lt;/span&gt; bp
+Writing data to disk...  complete.
+Database files completed. &lt;span class="o"&gt;[&lt;/span&gt;12m3.368s&lt;span class="o"&gt;]&lt;/span&gt;
+Database construction complete. &lt;span class="o"&gt;[&lt;/span&gt;Total: 14m29.666s&lt;span class="o"&gt;]&lt;/span&gt;
+kraken2-build --db custom_db --build --threads &lt;span class="m"&gt;36&lt;/span&gt;  &lt;span class="m"&gt;24534&lt;/span&gt;.98s user &lt;span class="m"&gt;90&lt;/span&gt;.50s system &lt;span class="m"&gt;2831&lt;/span&gt;% cpu &lt;span class="m"&gt;14&lt;/span&gt;:29.75 total
+
+$ ls -ll
+.rw-rw-r-- &lt;span class="m"&gt;5&lt;/span&gt;.3G anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:35 hash.k2d
+drwxrwxr-x    - anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;12&lt;/span&gt;:32 library
+.rw-rw-r--   &lt;span class="m"&gt;64&lt;/span&gt; anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:35 opts.k2d
+.rw-rw-r-- &lt;span class="m"&gt;1&lt;/span&gt;.5M anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:22 seqid2taxid.map
+.rw-rw-r-- 115k anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:23 taxo.k2d
+lrwxrwxrwx   &lt;span class="m"&gt;20&lt;/span&gt; anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;12&lt;/span&gt;:31 taxonomy
+.rw-rw-r-- &lt;span class="m"&gt;1&lt;/span&gt;.2M anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:22 unmapped.txt
+&lt;/pre&gt;
+&lt;p&gt;We are able to build index for ~6GB input files in ~15 minutes.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We learnt some useful tips to speed up the custom database creation process. In the next post, we will learn about regular vs. fast builds.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:k2"&gt;
+&lt;p&gt;&lt;a href="https://ccb.jhu.edu/software/kraken2/"&gt;Kraken2&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fnref:k2" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:rag"&gt;
+&lt;p&gt;&lt;a href="https://ftp.ncbi.nlm.nih.gov/genomes/refseq/archaea/"&gt;RefSeq Archaea genomes&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fnref:rag" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:ngd"&gt;
+&lt;p&gt;&lt;a href="https://github.com/kblin/ncbi-genome-download"&gt;https://github.com/kblin/ncbi-genome-download&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fnref:ngd" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</guid><pubDate>Thu, 01 Aug 2024 05:22:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt; (this post)&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Part 4 - Regular vs Fast Builds (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 5 - Benchmarking (upcoming)&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In the previous post, we learned how to set up kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt;, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.&lt;/p&gt;
 &lt;h4&gt;Increasing RAM&lt;/h4&gt;
@@ -110,9 +209,11 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</guid><pubDate>Sun, 28 Jul 2024 05:21:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 1 - Initial Runs</title><link>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
-&lt;p&gt;Part 1 - Initial Runs (this post)&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt; (this post)&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Part 3 - Building custom databases (upcoming)&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Part 4 - Regular vs Fast Builds (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 5 - Benchmarking (upcoming)&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kraken2&lt;sup id="fnref:Kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:Kraken2"&gt;1&lt;/a&gt;&lt;/sup&gt; is widely used for metagenomics taxonomic classification, and it has pre-built indexes for many organisms. In this series, we will learn&lt;/p&gt;
 &lt;ul&gt;
@@ -521,97 +622,4 @@ $ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
 &lt;p&gt;&lt;a href="https://github.com/lima-vm/lima"&gt;https://github.com/lima-vm/lima&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fnref:lima" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>linux</category><category>macbook</category><guid>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</guid><pubDate>Thu, 20 Oct 2022 17:08:56 GMT</pubDate></item><item><title>Local Kubernetes Cluster with K3s on MacBook M1</title><link>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; This article is outdated. I wrote an updated article on &lt;a href="https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html"&gt;setting up k8s anywhere with single command&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;br&gt;&lt;/p&gt;
-&lt;div class="embed-responsive embed-responsive-16by9"&gt;
-&lt;iframe class="embed-responsive-item" src="https://www.youtube.com/embed/vi5eRgBMs90" allowfullscreen&gt;
-&lt;/iframe&gt;
-&lt;/div&gt;
-
-&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Kubernetes(k8s)&lt;sup id="fnref:k8s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k8s"&gt;1&lt;/a&gt;&lt;/sup&gt; is an open-source system for managing large scale containerized applications. K3s&lt;sup id="fnref:k3s"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:k3s"&gt;2&lt;/a&gt;&lt;/sup&gt; is lightweight K8s in a single binary file. However, K3s won't work directly on Macbook as it needs systemd/OpenRC.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;curl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sfL&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nl"&gt;https&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-
-&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;ERROR&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;Can&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;find&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;systemd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ow"&gt;or&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;openrc&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;to&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;supervisor&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;To setup k8s/k3s on Mac, we need to setup a Linux layer on top of Mac. An easy way to spin up Linux VMs on Macbook M1(Apple Silicon) is to use multipass&lt;sup id="fnref:multipass"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:multipass"&gt;3&lt;/a&gt;&lt;/sup&gt;. In this article, lets see how to setup K3s on Mac using multipass&lt;/p&gt;
-&lt;h4&gt;K3s Setup&lt;/h4&gt;
-&lt;p&gt;Install multipass with brew by running the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install --cask multipass
-&lt;/pre&gt;
-&lt;p&gt;Once it is installed, spin up a new VM by specifying memory and disk space.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s --mem 4G --disk 40G
-&lt;/pre&gt;
-&lt;p&gt;Once VM is launched, we can see VM details.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass info k3s
-Name:           k3s
-State:          Running
-IPv4:           &lt;span class="m"&gt;192&lt;/span&gt;.168.64.4
-                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.0
-                &lt;span class="m"&gt;10&lt;/span&gt;.42.0.1
-Release:        Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04.1 LTS
-Image hash:     78b5ca0da456 &lt;span class="o"&gt;(&lt;/span&gt;Ubuntu &lt;span class="m"&gt;22&lt;/span&gt;.04 LTS&lt;span class="o"&gt;)&lt;/span&gt;
-Load:           &lt;span class="m"&gt;1&lt;/span&gt;.34 &lt;span class="m"&gt;2&lt;/span&gt;.10 &lt;span class="m"&gt;1&lt;/span&gt;.70
-Disk usage:     &lt;span class="m"&gt;3&lt;/span&gt;.7G out of &lt;span class="m"&gt;38&lt;/span&gt;.6G
-Memory usage:   &lt;span class="m"&gt;1&lt;/span&gt;.2G out of &lt;span class="m"&gt;3&lt;/span&gt;.8G
-Mounts:         /Users/chillaranand/test/k8s &lt;span class="o"&gt;=&lt;/span&gt;&amp;gt; ~/k8s
-                    UID map: &lt;span class="m"&gt;503&lt;/span&gt;:default
-                    GID map: &lt;span class="m"&gt;20&lt;/span&gt;:default
-&lt;/pre&gt;
-&lt;p&gt;We can even mount Mac directories on the VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass mount ~/test/k8s k3s:~/k8s
-&lt;/pre&gt;
-&lt;p&gt;This will be useful when we are making changes on host directories and want to apply changes on the cluster which is inside VM.&lt;/p&gt;
-&lt;p&gt;Now, we can install k3s by running the install script inside the VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass shell k3s
-
-ubuntu@k3s:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
-&lt;p&gt;This will setup a k3s cluster on the VM. We can use kubectl and deploy applications on this cluster.&lt;/p&gt;
-&lt;p&gt;By default, k3s config file will be located at &lt;code&gt;/etc/rancher/k3s/k3s.yaml&lt;/code&gt;. With this config file, we can use Lens&lt;sup id="fnref:lens"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fn:lens"&gt;4&lt;/a&gt;&lt;/sup&gt; to manage k8s cluster.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="https://avilpage.com/images/k8s-mac-m1.jpg"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Lets find out IP of the VM &amp;amp; k8s token so that we can spin up a new VM and add it to this cluster.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# get token &amp;amp; ip of k3s&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;exec&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="n"&gt;sudo&lt;/span&gt; &lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;rancher&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;token&lt;/span&gt;
-&lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="n"&gt;multipass&lt;/span&gt; &lt;span class="n"&gt;info&lt;/span&gt; &lt;span class="n"&gt;k3s&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;grep&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ multipass launch --name k3s-worker --mem 2G --disk 20G
-
-$ multipass shell k3s-worker
-
-ubuntu@k3s-worker:~$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nv"&gt;K3S_URL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;https://192.168.64.4:6443 &lt;span class="nv"&gt;K3S_TOKEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"hs48af...947fh4::server:3tfkwjd...4jed73"&lt;/span&gt; sh -
-&lt;/pre&gt;
-&lt;p&gt;We can verify if the node is added correctly from k3s VM.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;ubuntu&lt;/span&gt;&lt;span class="nv"&gt;@k3s&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt;&lt;span class="o"&gt;~&lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kubectl&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;get&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;nodes&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;NAME&lt;/span&gt;&lt;span class="w"&gt;         &lt;/span&gt;&lt;span class="n"&gt;STATUS&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;ROLES&lt;/span&gt;&lt;span class="w"&gt;                  &lt;/span&gt;&lt;span class="n"&gt;AGE&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;VERSION&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;control&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;plane&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;master&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="w"&gt;     &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;k3s&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;worker&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;Ready&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;none&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt;                 &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;m15s&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="n"&gt;v1&lt;/span&gt;&lt;span class="mf"&gt;.24.6&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;k3s1&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;Once we are done with experimenting k3s, we can delete the VMs.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ multipass delete k3s k3s-worker
-$ multipass purge
-&lt;/pre&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;multipass is a great tool to spin up Linux VMs on Mac with single command. K3s is better tool to setup k8s cluster locally for development and testing.&lt;/p&gt;
-&lt;p&gt;Even though we have mentioned this tutorial is meant for Mac M1, it should work fine on any Linux distribution as well.&lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:k8s"&gt;
-&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Kubernetes"&gt;https://en.wikipedia.org/wiki/Kubernetes&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k8s" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:k3s"&gt;
-&lt;p&gt;&lt;a href="https://k3s.io/"&gt;https://k3s.io/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:k3s" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:multipass"&gt;
-&lt;p&gt;&lt;a href="https://github.com/canonical/multipass"&gt;https://github.com/canonical/multipass&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:multipass" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li id="fn:lens"&gt;
-&lt;p&gt;&lt;a href="https://k8slens.dev/"&gt;https://k8slens.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html#fnref:lens" title="Jump back to footnote 4 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><category>macbook</category><guid>https://avilpage.com/2022/10/local-kubernetes-with-k3s-on-mac.html</guid><pubDate>Tue, 11 Oct 2022 02:38:36 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>devops</category><category>linux</category><category>macbook</category><guid>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</guid><pubDate>Thu, 20 Oct 2022 17:08:56 GMT</pubDate></item></channel></rss>
