@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 Aug 2024 16:27:51 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 Aug 2024 16:39:01 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt; (this post)&lt;/p&gt;
@@ -140,6 +140,11 @@ kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &amp
      Directories: &lt;span class="m"&gt;0&lt;/span&gt;
    Touched Pages: &lt;span class="m"&gt;20382075&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
          Elapsed: &lt;span class="m"&gt;434&lt;/span&gt;.77 seconds
+&lt;/pre&gt;
+&lt;p&gt;When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ cp -r k2_standard /dev/shm
+
+$ vmtouch -t /dev/shm/*.k2d
 &lt;/pre&gt;
 &lt;p&gt;Now, let's run kraken2 with &lt;code&gt;--memory-mapping&lt;/code&gt; option.&lt;/p&gt;
 &lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
