@@ -80,6 +80,14 @@ $ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
          Elapsed: 434.77 seconds
 ```
 
+When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.
+
+```shell
+$ cp -r k2_standard /dev/shm
+
+$ vmtouch -t /dev/shm/*.k2d
+```
+
 Now, let's run kraken2 with `--memory-mapping` option.
 
 ```shell

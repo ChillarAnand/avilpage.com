@@ -236,6 +236,11 @@ kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &gt;
    Touched Pages: <span class="m">20382075</span> <span class="o">(</span>77G<span class="o">)</span>
          Elapsed: <span class="m">434</span>.77 seconds
 </pre>
+<p>When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.</p>
+<pre class="code literal-block">$ cp -r k2_standard /dev/shm
+
+$ vmtouch -t /dev/shm/*.k2d
+</pre>
 <p>Now, let's run kraken2 with <code>--memory-mapping</code> option.</p>
 <pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
 Loading database information... <span class="k">done</span>.
