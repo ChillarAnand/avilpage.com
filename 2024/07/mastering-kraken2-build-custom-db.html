@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to create a custom database with kraken2">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mastering Kraken2 - Part 3 - Build Custom Database | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
+<link rel="prev" href="mastering-kraken2-performance-optimisation.html" title="Mastering Kraken2 - Part 2 - Performance Optimisation" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Mastering Kraken2 - Part 3 - Build Custom Database">
+<meta property="og:url" content="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html">
+<meta property="og:description" content="How to create a custom database with kraken2">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-08-01T10:52:30+05:30">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="kraken2">
+<meta property="article:tag" content="metagenomics">
+<style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
+<style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Archive</a>
+                </li>
+<li class="nav-item">
+<a href="../../top-10.html" class="nav-link">Top 10</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Mastering Kraken2 - Part 3 - Build Custom Database</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card">
+                <span class="byline-name fn p-name" itemprop="author">
+                    Chillar Anand
+                </span>
+            </p>
+
+            <p class="dateline">
+                    7 min read
+            </p>
+
+            <p class="dateline">
+                <a href="#" rel="bookmark">
+                    <time class="published dt-published" datetime="2024-08-01T10:52:30+05:30" itemprop="datePublished" title="2024-08-01">2024-08-01</time></a>
+            </p>
+            
+        </div>
+
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+            <h4>Mastering Kraken2</h4>
+<p><a href="mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a></p>
+<p><a href="mastering-kraken2-performance-optimisation.html">Part 2 - Performance Optimisation</a></p>
+<p><a href="#">Part 3 - Building custom databases</a> (this post)</p>
+<p>Part 4 - Regular vs Fast Builds (upcoming)</p>
+<p>Part 5 - Benchmarking (upcoming)</p>
+<h4>Introduction</h4>
+<p>In the previous post, we learned how to improve kraken2<sup id="fnref:k2"><a class="footnote-ref" href="mastering-kraken2-build-custom-db.html#fn:k2">1</a></sup> classification performance. So far we have downloaded &amp; used pre-built genome indices(databases). </p>
+<p>In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes<sup id="fnref:rag"><a class="footnote-ref" href="mastering-kraken2-build-custom-db.html#fn:rag">2</a></sup> for building the index.</p>
+<h4>Building Custom Database</h4>
+<p>First, we need to download the taxonomy files. We can use the <code>k2</code> script provided by kraken2.</p>
+<pre class="code literal-block">$ k2 download-taxonomy --db custom_db
+</pre>
+<p>This takes ~30 minutes depending on the network speed. The taxonomy files are downloaded to the <code>custom_db/taxonomy</code> directory.</p>
+<pre class="code literal-block">$ ls custom_db/taxonomy
+citations.dmp  division.dmp  gencode.dmp  merged.dmp  nodes.dmp
+nucl_wgs.accession2taxid delnodes.dmp  gc.prt 
+images.dmp  names.dmp  nucl_gb.accession2taxid  readme.txt
+
+$ du -hs custom_db/taxonomy
+43G     custom_db/taxonomy
+</pre>
+<p>For simplicity, let's use the archaea refseq genomes. We can use <code>kraken2-build</code> to download the refseq genomes.</p>
+<pre class="code literal-block">$ k2 download-library --library archaea --db custom_db
+</pre>
+<p>This runs on a single thread. Instead of using <code>kraken2-build</code>, we can use <code>ncbi-genome-download</code><sup id="fnref:ngd"><a class="footnote-ref" href="mastering-kraken2-build-custom-db.html#fn:ngd">3</a></sup> tool to download the genomes. This provides much granular control over the download process. For example, we can download only <code>--assembly-levels complete</code> genomes. We can also download multiple genomes in parallel.</p>
+<pre class="code literal-block">$ pip install ncbi-genome-download
+
+$ conda install -c bioconda ncbi-genome-download
+
+$ ncbi-genome-download -s refseq -F fasta --parallel <span class="m">40</span> -P archaea
+Checking assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184 <span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00, <span class="m">111</span>.60entries/s<span class="o">]</span>
+Downloading assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184  <span class="o">[</span><span class="m">02</span>:04&lt;<span class="m">00</span>:00,  <span class="m">4</span>.54s/files<span class="o">]</span>
+Downloading assemblies: 2184files <span class="o">[</span><span class="m">02</span>:23, 2184files/s<span class="o">]</span>
+</pre>
+<p>In just 2 minutes, it has downloaded all the files. Lets gunzip the files.</p>
+<pre class="code literal-block">$ find refseq -name <span class="s2">"*.gz"</span> -print0 <span class="p">|</span> parallel -0 gunzip
+
+$ du -hs refseq
+<span class="m">5</span>.9G    refseq
+</pre>
+<p>Lets add all fasta genome files to the custom database</p>
+<pre class="code literal-block">$ <span class="nb">time</span> find refseq -name <span class="s2">"*.fna"</span> -exec kraken2-build --add-to-library <span class="o">{}</span> --db custom_db <span class="se">\;</span>
+<span class="m">667</span>.46s user <span class="m">90</span>.78s system <span class="m">106</span>% cpu <span class="m">12</span>:54.80 total
+</pre>
+<p><code>kraken2-build</code> doesn't use multiple threads for adding genomes to the database. In addition to that, it also doesn't check if the genome is already present in the database. </p>
+<p>Let's use <code>k2</code> for adding genomes to the database.</p>
+<pre class="code literal-block"><span class="nb">export</span> <span class="nv">KRAKEN_NUM_THREADS</span><span class="o">=</span><span class="m">40</span>
+
+$ find . -name <span class="s2">"*.fna"</span> -exec k2 add-to-library --files <span class="o">{}</span> --db custom_db <span class="se">\;</span>
+<span class="m">668</span>.37s user <span class="m">88</span>.44s system <span class="m">159</span>% cpu <span class="m">7</span>:54.40 total
+</pre>
+<p>This took only half the time compared to <code>kraken2-build</code>.</p>
+<p>Let's build the index from the library.</p>
+<pre class="code literal-block">$ <span class="nb">time</span> kraken2-build --db custom_db --build --threads <span class="m">36</span>
+Creating sequence ID to taxonomy ID map <span class="o">(</span>step <span class="m">1</span><span class="o">)</span>...
+Found <span class="m">0</span>/125783 targets, searched through <span class="m">60000000</span> accession IDs...
+Found <span class="m">59923</span>/125783 targets, searched through <span class="m">822105735</span> accession IDs, search complete.
+lookup_accession_numbers: <span class="m">65860</span>/125783 accession numbers remain unmapped, see unmapped.txt <span class="k">in</span> DB directory
+Sequence ID to taxonomy ID map complete. <span class="o">[</span>2m1.950s<span class="o">]</span>
+Estimating required capacity <span class="o">(</span>step <span class="m">2</span><span class="o">)</span>...
+Estimated <span class="nb">hash</span> table requirement: <span class="m">5340021028</span> bytes
+Capacity estimation complete. <span class="o">[</span><span class="m">23</span>.875s<span class="o">]</span>
+Building database files <span class="o">(</span>step <span class="m">3</span><span class="o">)</span>...
+Taxonomy parsed and converted.
+CHT created with <span class="m">11</span> bits reserved <span class="k">for</span> taxid.
+Completed processing of <span class="m">59911</span> sequences, <span class="m">3572145823</span> bp
+Writing data to disk...  complete.
+Database files completed. <span class="o">[</span>12m3.368s<span class="o">]</span>
+Database construction complete. <span class="o">[</span>Total: 14m29.666s<span class="o">]</span>
+kraken2-build --db custom_db --build --threads <span class="m">36</span>  <span class="m">24534</span>.98s user <span class="m">90</span>.50s system <span class="m">2831</span>% cpu <span class="m">14</span>:29.75 total
+
+$ ls -ll
+.rw-rw-r-- <span class="m">5</span>.3G anand  <span class="m">1</span> Aug <span class="m">16</span>:35 hash.k2d
+drwxrwxr-x    - anand  <span class="m">1</span> Aug <span class="m">12</span>:32 library
+.rw-rw-r--   <span class="m">64</span> anand  <span class="m">1</span> Aug <span class="m">16</span>:35 opts.k2d
+.rw-rw-r-- <span class="m">1</span>.5M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 seqid2taxid.map
+.rw-rw-r-- 115k anand  <span class="m">1</span> Aug <span class="m">16</span>:23 taxo.k2d
+lrwxrwxrwx   <span class="m">20</span> anand  <span class="m">1</span> Aug <span class="m">12</span>:31 taxonomy
+.rw-rw-r-- <span class="m">1</span>.2M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 unmapped.txt
+</pre>
+<p>We are able to build index for ~6GB input files in ~15 minutes.</p>
+<h4>Conclusion</h4>
+<p>We learnt some useful tips to speed up the custom database creation process. In the next post, we will learn about regular vs. fast builds.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:k2">
+<p><a href="https://ccb.jhu.edu/software/kraken2/">Kraken2</a> <a class="footnote-backref" href="mastering-kraken2-build-custom-db.html#fnref:k2" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:rag">
+<p><a href="https://ftp.ncbi.nlm.nih.gov/genomes/refseq/archaea/">RefSeq Archaea genomes</a> <a class="footnote-backref" href="mastering-kraken2-build-custom-db.html#fnref:rag" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:ngd">
+<p><a href="https://github.com/kblin/ncbi-genome-download">https://github.com/kblin/ncbi-genome-download</a> <a class="footnote-backref" href="mastering-kraken2-build-custom-db.html#fnref:ngd" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+        </div>
+        <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/devops.html" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../tags/kraken2.html" rel="tag">kraken2</a></li>
+            <li><a class="tag p-category" href="../../tags/metagenomics.html" rel="tag">metagenomics</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="mastering-kraken2-performance-optimisation.html" rel="prev" title="Mastering Kraken2 - Part 2 - Performance Optimisation">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    <b>Chillar Anand</b>
+                    <br>
+                    A blog about python, careers &amp; life.
+                    <br>
+                    To contact me, <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">send a message here</a>.
+                </p>
+
+            </div>
+        </div>
+
+        
+    </article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

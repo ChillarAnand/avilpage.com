@@ -71,7 +71,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/01/cross-platform-file-explorer-in-50-lines-of-code.html" class="u-url">Cross Platform File Explorer in 50 lines of code</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/02/historical-option-chain-india.html" class="u-url">Archiving Option Chain Data</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/02/historical-option-chain-india.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-02-29T14:14:52+05:30" itemprop="datePublished" title="2024-02-29">2024-02-29</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>BSE &amp; NSE are the prominent exchanges in India, and they provide option chain data for the stocks &amp; indices listed in their exchange.</p>
+<p>The option chain data is available for the current date. But it is not available for the past dates. This is a problem for traders who want to analyze the historical option chain data.</p>
+<h4>ArchiveBox</h4>
+<p>ArchiveBox<sup id="fnref:archivebox"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:archivebox">1</a></sup> is a tool to archive web pages. It can be used to archive the option chain data for the stocks &amp; indices.</p>
+<p>Let's install ArchiveBox.</p>
+<pre class="code literal-block">$ pip install archivebox
+$ mkdir option_chain
+$ <span class="nb">cd</span> option_chain
+$ archivebox init
+$ archivebox setup
+</pre>
+<p>We can start the server(defaults to https://localhost:8000) and add URLs manually to archive them.</p>
+<pre class="code literal-block">$ archivebox server
+</pre>
+<p><img alt="historical-option-chain" src="../images/historical-option-chain.png"></p>
+<p>There are 180+ stocks in FNO segment &amp; 6 indices with weekly expiry. We can write a simple Python script to generate all combinations of URLs for the option chain data and archive them using ArchiveBox.</p>
+<p>Once URLs is generated, we can use the following command to archive them.</p>
+<pre class="code literal-block">$ archivebox add --input-file urls.txt
+</pre>
+<p>These URLs will be archived and stored in the <code>archive</code> directory. Since we want to archive the data regularly, we can use a schedule to archive daily.</p>
+<pre class="code literal-block">$ archivebox schedule --every<span class="o">=</span>day --depth<span class="o">=</span><span class="m">0</span> <span class="s1">'{{url}}'</span>
+</pre>
+<p>This will archive the option chain data for the stocks &amp; indices on a daily basis.</p>
+<h4>Conclusion</h4>
+<p>Browsing the archived data of a single url is a bit difficult. Wayback machine provides a better interface to browse the archived data. I have raised an issue<sup id="fnref:issue"><a class="footnote-ref" href="../2024/02/historical-option-chain-india.html#fn:issue">2</a></sup> regarding the same in the ArchiveBox repository. Once the UI issue is resolved, this will serve as the best tool to browse the historical option chain data.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:archivebox">
+<p><a href="https://github.com/ArchiveBox/ArchiveBox">ArchiveBox</a> <a class="footnote-backref" href="../2024/02/historical-option-chain-india.html#fnref:archivebox" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:issue">
+<p><a href="https://github.com/ArchiveBox/ArchiveBox/issues/1377">ArchiveBox Issue</a> <a class="footnote-backref" href="../2024/02/historical-option-chain-india.html#fnref:issue" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/01/cross-platform-file-explorer-in-50-lines-of-code.html" class="u-url">Cross Platform File Explorer in 50 lines of code</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -308,6 +356,53 @@ $ brew install libgeoip
 </pre>
 <h4>Conclusion</h4>
 <p>In this article, we looked at how to set up GeoDjango on Mac M1. We used conda to install gdal and brew to install other dependencies. </p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html" class="u-url">tailscale: Remote SSH Access to Pi or Any Device</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html" rel="bookmark">
+            <time class="published dt-published" datetime="2023-09-25T07:19:54+05:30" itemprop="datePublished" title="2023-09-25">2023-09-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale<sup id="fnref:tailscale"><a class="footnote-ref" href="../2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale">1</a></sup>.</p>
+<p>Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.</p>
+<h4>Installation</h4>
+<p>I installed tailscale on Raspberry Pi using the following command.</p>
+<pre class="code literal-block">$ curl -fsSL https://tailscale.com/install.sh <span class="p">|</span> sh
+</pre>
+<h4>Setup</h4>
+<p>Once the installation is done, I run <code>tailscale up</code> to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.</p>
+<p><img alt="tailscale dashboard" src="../images/tailscale-pi.png"></p>
+<p><code>tailscale</code> has CLI tool as well and status can be viewed with the following command.</p>
+<pre class="code literal-block">$ tailscale status
+<span class="m">100</span>.81.13.75   m1                    avilpage@  macOS   -
+<span class="m">100</span>.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
+</pre>
+<p>I also set up a cron job to start tailscale daemon on boot.</p>
+<pre class="code literal-block">$ crontab -e
+@reboot tailscale up
+</pre>
+<h4>Access</h4>
+<p>Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is <code>100.34.2.23</code>. I can ssh into the device using the following command.</p>
+<pre class="code literal-block">$ ssh pi@100.81.12.92
+</pre>
+<p>It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.</p>
+<pre class="code literal-block">$ ssh pi@raspberry3.tailscale.net
+</pre>
+<h4>Conclusion</h4>
+<p>Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp; Linux as well.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:tailscale">
+<p><a href="https://en.wikipedia.org/wiki/Tailscale">https://en.wikipedia.org/wiki/Tailscale</a> <a class="footnote-backref" href="../2023/09/tailscale-remote-ssh-raspberry-pi.html#fnref:tailscale" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+</ol>
+</div>
     </div>
     </article>
 </div>

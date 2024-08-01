@@ -11,11 +11,15 @@
 
 ### Mastering Kraken2
 
- Part 1 - Initial Runs (this post)
+[Part 1 - Initial Runs](/2024/07/mastering-kraken2-initial-runs.html) (this post)
 
 [Part 2 - Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html)
 
-Part 3 - Building custom databases (upcoming)
+[Part 3 - Building custom databases](/2024/07/mastering-kraken2-build-custom-db.html)
+
+Part 4 - Regular vs Fast Builds (upcoming)
+
+Part 5 - Benchmarking (upcoming)
 
 ### Introduction
 
