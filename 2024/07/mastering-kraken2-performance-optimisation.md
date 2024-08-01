@@ -13,7 +13,7 @@
 
 [Part 1 - Initial Runs](/2024/07/mastering-kraken2-initial-runs.html)
 
-[Part 2 - Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html) (this post)
+[Part 2 - Classification Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html) (this post)
 
 [Part 3 - Building custom databases](/2024/07/mastering-kraken2-build-custom-db.html)
 
