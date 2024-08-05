@@ -1,5 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Wed, 31 Jul 2024 07:41:52 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Automating Zscaler Connectivity on macOS</title><link>https://avilpage.com/2024/05/managing-zscaler-connectivity-from-command-line.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about programming)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_programming.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 05 Aug 2024 23:04:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How (and when) to use systemd timer instead of cronjob</title><link>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;* * * * * bash demo.sh
+&lt;/pre&gt;
+&lt;p&gt;Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.&lt;/p&gt;
+&lt;h4&gt;How to use systemd timer&lt;/h4&gt;
+&lt;p&gt;We need to create a service file(contains the script to be run) and a timer(contains the schedule).&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo service
+
+&lt;span class="o"&gt;[&lt;/span&gt;Service&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash demo.sh
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run myscript.service every &lt;span class="m"&gt;1&lt;/span&gt; minutes
+
+&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
+&lt;span class="nv"&gt;OnUnitActiveSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
+
+&lt;span class="o"&gt;[&lt;/span&gt;Install&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;multi-user.target
+&lt;/pre&gt;
+&lt;p&gt;We can copy these files to &lt;code&gt;/etc/systemd/system/&lt;/code&gt; and enable the timer.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ sudo cp demo.service demo.timer /etc/systemd/system/
+
+$ sudo systemctl daemon-reload
+
+$ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
+&lt;/pre&gt;
+&lt;p&gt;We can use &lt;code&gt;systemctl&lt;/code&gt; to see when the task is executed last and when it will be executed next.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ sudo systemctl list-timers --all
+&lt;/pre&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/systemd-timer-cronjob.png" alt="systemd timer"&gt;&lt;/p&gt;
+&lt;h4&gt;Use Cases&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Singleton - In the above example, lets say &lt;code&gt;demo.sh&lt;/code&gt; takes ~10 minutes to run. With cron job, in ten minutes we will have 10 instances of &lt;code&gt;demo.sh&lt;/code&gt; running. This is not ideal. With systemd timer, it will ensure only one instance of &lt;code&gt;demo.sh&lt;/code&gt; is running at a time.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;On demand runs - If we want to test out the script/job, systemd allows us to immediately run it with usual &lt;code&gt;systemctl start demo&lt;/code&gt; without needing to run the script manually.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till &lt;code&gt;second&lt;/code&gt; level precision. &lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-* &lt;span class="m"&gt;15&lt;/span&gt;:30:15
+&lt;/pre&gt;
+&lt;p&gt;In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;15min
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</guid><pubDate>Mon, 05 Aug 2024 07:37:50 GMT</pubDate></item><item><title>Automating Zscaler Connectivity on macOS</title><link>https://avilpage.com/2024/05/managing-zscaler-connectivity-from-command-line.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.&lt;/p&gt;
 &lt;h4&gt;Automating Zscaler Connectivity&lt;/h4&gt;
 &lt;p&gt;Once Zscaler is installed on macOS, if we search for &lt;code&gt;LaunchAgents&lt;/code&gt; &amp;amp; &lt;code&gt;LaunchDaemons&lt;/code&gt; directories, we can find the Zscaler plist files. &lt;/p&gt;
@@ -376,77 +431,4 @@ $ brew install libgeoip
 &lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Tailscale"&gt;https://en.wikipedia.org/wiki/Tailscale&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fnref:tailscale" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>command-line</category><category>devops</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item><item><title>Create Telegram Bot To Post Messages to Group</title><link>https://avilpage.com/2023/09/telegram-bot-for-iot-updates.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;Recently I had to create a Telegram bot again to post updates to a group based on IoT events. This post is just a reference for future.&lt;/p&gt;
-&lt;h4&gt;Create a Telegram Bot&lt;/h4&gt;
-&lt;p&gt;First, create a bot using BotFather in the Telegram app and get the API token. Then, create a group and add the bot to the group. This will give the bot access to the group.&lt;/p&gt;
-&lt;h4&gt;Post Messages to the Group&lt;/h4&gt;
-&lt;p&gt;Now, we need to fetch the group id. For this, we can use the following curl API call. &lt;/p&gt;
-&lt;p&gt;&lt;code&gt;curl&lt;/code&gt; is available by default on Mac and Linux terminals. On Windows, we can use &lt;code&gt;curl&lt;/code&gt; from command prompt.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X GET https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/getUpdates
-
-&lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="s2"&gt;"ok"&lt;/span&gt;: true,
-  &lt;span class="s2"&gt;"result"&lt;/span&gt;: &lt;span class="o"&gt;[&lt;/span&gt;
-    &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"update_id"&lt;/span&gt;: &lt;span class="m"&gt;733724271&lt;/span&gt;,
-      &lt;span class="s2"&gt;"message"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-        &lt;span class="s2"&gt;"message_id"&lt;/span&gt;: &lt;span class="m"&gt;9&lt;/span&gt;,
-        &lt;span class="s2"&gt;"from"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-          &lt;span class="s2"&gt;"id"&lt;/span&gt;: &lt;span class="m"&gt;1122&lt;/span&gt;,
-          &lt;span class="s2"&gt;"is_bot"&lt;/span&gt;: false,
-          &lt;span class="s2"&gt;"username"&lt;/span&gt;: &lt;span class="s2"&gt;"ChillarAnand"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"language_code"&lt;/span&gt;: &lt;span class="s2"&gt;"en"&lt;/span&gt;
-        &lt;span class="o"&gt;}&lt;/span&gt;,
-        &lt;span class="s2"&gt;"chat"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-          &lt;span class="s2"&gt;"id"&lt;/span&gt;: -114522,
-          &lt;span class="s2"&gt;"title"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"group"&lt;/span&gt;,
-          &lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;: &lt;span class="nb"&gt;true&lt;/span&gt;
-        &lt;span class="o"&gt;}&lt;/span&gt;,
-        &lt;span class="s2"&gt;"date"&lt;/span&gt;: &lt;span class="m"&gt;1694045795&lt;/span&gt;,
-        &lt;span class="s2"&gt;"text"&lt;/span&gt;: &lt;span class="s2"&gt;"@DailyPythonTipsBot hi"&lt;/span&gt;,
-        &lt;span class="s2"&gt;"entities"&lt;/span&gt;: &lt;span class="o"&gt;[&lt;/span&gt;
-          &lt;span class="o"&gt;{&lt;/span&gt;
-            &lt;span class="s2"&gt;"offset"&lt;/span&gt;: &lt;span class="m"&gt;0&lt;/span&gt;,
-            &lt;span class="s2"&gt;"length"&lt;/span&gt;: &lt;span class="m"&gt;19&lt;/span&gt;,
-            &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"mention"&lt;/span&gt;
-          &lt;span class="o"&gt;}&lt;/span&gt;
-        &lt;span class="o"&gt;]&lt;/span&gt;
-      &lt;span class="o"&gt;}&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;
-  &lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;This will return a JSON response with the group id. It sends empty response if there are no recent conversations. &lt;/p&gt;
-&lt;p&gt;In that case, send a dummy message to the bot in the group and try again. It should return the group id in the response.&lt;/p&gt;
-&lt;p&gt;We can use this group id to post messages to the group.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -X POST https://api.telegram.org/bot&amp;lt;API_TOKEN&amp;gt;/sendMessage -d &lt;span class="s2"&gt;"chat_id=&amp;lt;GROUP_ID&amp;gt;&amp;amp;text=Hello"&lt;/span&gt;
-
-&lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="s2"&gt;"ok"&lt;/span&gt;: true,
-  &lt;span class="s2"&gt;"result"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-    &lt;span class="s2"&gt;"message_id"&lt;/span&gt;: &lt;span class="m"&gt;12&lt;/span&gt;,
-    &lt;span class="s2"&gt;"from"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"id"&lt;/span&gt;: &lt;span class="m"&gt;3349238234&lt;/span&gt;,
-      &lt;span class="s2"&gt;"is_bot"&lt;/span&gt;: true,
-      &lt;span class="s2"&gt;"first_name"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"username"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTipsBot"&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;,
-    &lt;span class="s2"&gt;"chat"&lt;/span&gt;: &lt;span class="o"&gt;{&lt;/span&gt;
-      &lt;span class="s2"&gt;"id"&lt;/span&gt;: -114522,
-      &lt;span class="s2"&gt;"title"&lt;/span&gt;: &lt;span class="s2"&gt;"DailyPythonTips"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"type"&lt;/span&gt;: &lt;span class="s2"&gt;"group"&lt;/span&gt;,
-      &lt;span class="s2"&gt;"all_members_are_administrators"&lt;/span&gt;: &lt;span class="nb"&gt;true&lt;/span&gt;
-    &lt;span class="o"&gt;}&lt;/span&gt;,
-    &lt;span class="s2"&gt;"date"&lt;/span&gt;: &lt;span class="m"&gt;1694046381&lt;/span&gt;,
-    &lt;span class="s2"&gt;"text"&lt;/span&gt;: &lt;span class="s2"&gt;"Hello"&lt;/span&gt;
-  &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
-&lt;p&gt;Here is the message posted by the bot in the group.&lt;/p&gt;
-&lt;p align="center"&gt;
-&lt;img src="https://avilpage.com/images/telegram-bot-group-message.jpeg" alt="Telegram Bot for IoT Updates" width="200" height="400"&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Now, we can use this API to post messages to the group from our IoT devices or from any other devices where &lt;code&gt;curl&lt;/code&gt; command is available.&lt;/p&gt;</description><category>automation</category><guid>https://avilpage.com/2023/09/telegram-bot-for-iot-updates.html</guid><pubDate>Mon, 04 Sep 2023 13:14:32 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>command-line</category><category>devops</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item></channel></rss>
