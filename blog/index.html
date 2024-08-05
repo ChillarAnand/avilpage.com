@@ -70,7 +70,75 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/07/mastering-kraken2-build-custom-db.html" class="u-url">Mastering Kraken2 - Part 3 - Build Custom Database</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/08/guide-systemd-timer-cronjob.html" class="u-url">How (and when) to use systemd timer instead of cronjob</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/08/guide-systemd-timer-cronjob.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-05T13:07:50+05:30" itemprop="datePublished" title="2024-08-05">2024-08-05</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<pre class="code literal-block">* * * * * bash demo.sh
+</pre>
+<p>Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.</p>
+<h4>How to use systemd timer</h4>
+<p>We need to create a service file(contains the script to be run) and a timer(contains the schedule).</p>
+<pre class="code literal-block"><span class="c1"># demo.service</span>
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Demo service
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">ExecStart</span><span class="o">=</span>bash demo.sh
+</pre>
+<pre class="code literal-block"><span class="c1"># demo.timer</span>
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>Run myscript.service every <span class="m">1</span> minutes
+
+<span class="o">[</span>Timer<span class="o">]</span>
+<span class="nv">OnBootSec</span><span class="o">=</span>1min
+<span class="nv">OnUnitActiveSec</span><span class="o">=</span>1min
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</pre>
+<p>We can copy these files to <code>/etc/systemd/system/</code> and enable the timer.</p>
+<pre class="code literal-block">$ sudo cp demo.service demo.timer /etc/systemd/system/
+
+$ sudo systemctl daemon-reload
+
+$ sudo systemctl <span class="nb">enable</span> --now demo.timer
+</pre>
+<p>We can use <code>systemctl</code> to see when the task is executed last and when it will be executed next.</p>
+<pre class="code literal-block">$ sudo systemctl list-timers --all
+</pre>
+<p><img src="../images/systemd-timer-cronjob.png" alt="systemd timer"></p>
+<h4>Use Cases</h4>
+<ul>
+<li>
+<p>Singleton - In the above example, lets say <code>demo.sh</code> takes ~10 minutes to run. With cron job, in ten minutes we will have 10 instances of <code>demo.sh</code> running. This is not ideal. With systemd timer, it will ensure only one instance of <code>demo.sh</code> is running at a time.</p>
+</li>
+<li>
+<p>On demand runs - If we want to test out the script/job, systemd allows us to immediately run it with usual <code>systemctl start demo</code> without needing to run the script manually.</p>
+</li>
+<li>
+<p>Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till <code>second</code> level precision. </p>
+</li>
+</ul>
+<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<span class="nv">OnCalendar</span><span class="o">=</span>*-*-* <span class="m">15</span>:30:15
+</pre>
+<p>In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.</p>
+<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<span class="nv">OnBootSec</span><span class="o">=</span>15min
+</pre>
+<h4>Conclusion</h4>
+<p>Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/07/mastering-kraken2-build-custom-db.html" class="u-url">Mastering Kraken2 - Part 3 - Build Custom Database</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -797,28 +865,6 @@ Python <span class="m">3</span>.11.6
 <p><img alt="kibana-relative-time" src="../images/kibana-relative-time2.png"></p>
 <h4>Conclusion</h4>
 <p>Instead of looking at the timestamp and calculating the relative time in our head, we can use relative time in Kibana . This will make it easier to read &amp; comprehend the logs.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/03/the-strange-case-of-mac-and-linux.html" class="u-url">The Strange Case of Dr. Linux and Mr. Mac</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2024/03/the-strange-case-of-mac-and-linux.html" rel="bookmark">
-            <time class="published dt-published" datetime="2024-03-30T09:53:53+05:30" itemprop="datePublished" title="2024-03-30">2024-03-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>Few days back, some of the tests started failing on CI server. When I tried to run the tests locally, they were passing.</p>
-<p>After debugging for a while, I found that the tests were failing because of the case sensitivity of the file system. One of the developer was using Linux and had committed 2 files with the same name but different case(<code>config.json</code>, <code>Config.json</code>).</p>
-<p>Linux file system is case-sensitive. So these 2 files will be shown as 2 different files.</p>
-<p><img alt="linux-file-system" src="../images/linux-git-case-sensitive.png"></p>
-<p>But Mac/Windows file system is case-insensitive. Out of these 2 files, only one file will be shown.</p>
-<p><img alt="mac-file-system" src="../images/mac-git-case-insensitive.png"></p>
-<p>Due to this, the tests were failing on Linux but passing on Mac. Once the case of the file was corrected, the tests started passing on both the systems.</p>
-<p>I have been using Mac for a long time and never faced this issue. Even though Mac's APFS is case-insensitive, we can create a case-sensitive volume using Disk Utility. </p>
-<p><img alt="case-sensitive-volume" src="../images/mac-case-sensitive-volume.png"></p>
-<p>We have to be aware of these differences when working on a project with developers using different OS.</p>
     </div>
     </article>
 </div>

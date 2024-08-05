@@ -1,5 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 Aug 2024 16:43:49 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Chillar Anand</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 05 Aug 2024 23:04:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>How (and when) to use systemd timer instead of cronjob</title><link>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;pre class="code literal-block"&gt;* * * * * bash demo.sh
+&lt;/pre&gt;
+&lt;p&gt;Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.&lt;/p&gt;
+&lt;h4&gt;How to use systemd timer&lt;/h4&gt;
+&lt;p&gt;We need to create a service file(contains the script to be run) and a timer(contains the schedule).&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo service
+
+&lt;span class="o"&gt;[&lt;/span&gt;Service&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash demo.sh
+&lt;/pre&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run myscript.service every &lt;span class="m"&gt;1&lt;/span&gt; minutes
+
+&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
+&lt;span class="nv"&gt;OnUnitActiveSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
+
+&lt;span class="o"&gt;[&lt;/span&gt;Install&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;multi-user.target
+&lt;/pre&gt;
+&lt;p&gt;We can copy these files to &lt;code&gt;/etc/systemd/system/&lt;/code&gt; and enable the timer.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ sudo cp demo.service demo.timer /etc/systemd/system/
+
+$ sudo systemctl daemon-reload
+
+$ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
+&lt;/pre&gt;
+&lt;p&gt;We can use &lt;code&gt;systemctl&lt;/code&gt; to see when the task is executed last and when it will be executed next.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ sudo systemctl list-timers --all
+&lt;/pre&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/systemd-timer-cronjob.png" alt="systemd timer"&gt;&lt;/p&gt;
+&lt;h4&gt;Use Cases&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Singleton - In the above example, lets say &lt;code&gt;demo.sh&lt;/code&gt; takes ~10 minutes to run. With cron job, in ten minutes we will have 10 instances of &lt;code&gt;demo.sh&lt;/code&gt; running. This is not ideal. With systemd timer, it will ensure only one instance of &lt;code&gt;demo.sh&lt;/code&gt; is running at a time.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;On demand runs - If we want to test out the script/job, systemd allows us to immediately run it with usual &lt;code&gt;systemctl start demo&lt;/code&gt; without needing to run the script manually.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till &lt;code&gt;second&lt;/code&gt; level precision. &lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-* &lt;span class="m"&gt;15&lt;/span&gt;:30:15
+&lt;/pre&gt;
+&lt;p&gt;In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;15min
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</guid><pubDate>Mon, 05 Aug 2024 07:37:50 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt; (this post)&lt;/p&gt;
@@ -610,13 +665,4 @@ Python &lt;span class="m"&gt;3&lt;/span&gt;.11.6
 &lt;p&gt;Once the field is saved, we can go back to &lt;code&gt;Discover&lt;/code&gt; and see the new field in the logs. We can toggle the visibility of the &lt;code&gt;Relative Time&lt;/code&gt; field to see the relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Instead of looking at the timestamp and calculating the relative time in our head, we can use relative time in Kibana . This will make it easier to read &amp;amp; comprehend the logs.&lt;/p&gt;</description><category>devops</category><category>kibana</category><category>monitoring</category><guid>https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html</guid><pubDate>Wed, 10 Apr 2024 08:45:33 GMT</pubDate></item><item><title>The Strange Case of Dr. Linux and Mr. Mac</title><link>https://avilpage.com/2024/03/the-strange-case-of-mac-and-linux.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Few days back, some of the tests started failing on CI server. When I tried to run the tests locally, they were passing.&lt;/p&gt;
-&lt;p&gt;After debugging for a while, I found that the tests were failing because of the case sensitivity of the file system. One of the developer was using Linux and had committed 2 files with the same name but different case(&lt;code&gt;config.json&lt;/code&gt;, &lt;code&gt;Config.json&lt;/code&gt;).&lt;/p&gt;
-&lt;p&gt;Linux file system is case-sensitive. So these 2 files will be shown as 2 different files.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="linux-file-system" src="https://avilpage.com/images/linux-git-case-sensitive.png"&gt;&lt;/p&gt;
-&lt;p&gt;But Mac/Windows file system is case-insensitive. Out of these 2 files, only one file will be shown.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="mac-file-system" src="https://avilpage.com/images/mac-git-case-insensitive.png"&gt;&lt;/p&gt;
-&lt;p&gt;Due to this, the tests were failing on Linux but passing on Mac. Once the case of the file was corrected, the tests started passing on both the systems.&lt;/p&gt;
-&lt;p&gt;I have been using Mac for a long time and never faced this issue. Even though Mac's APFS is case-insensitive, we can create a case-sensitive volume using Disk Utility. &lt;/p&gt;
-&lt;p&gt;&lt;img alt="case-sensitive-volume" src="https://avilpage.com/images/mac-case-sensitive-volume.png"&gt;&lt;/p&gt;
-&lt;p&gt;We have to be aware of these differences when working on a project with developers using different OS.&lt;/p&gt;</description><category>git</category><category>linux</category><category>macbook</category><guid>https://avilpage.com/2024/03/the-strange-case-of-mac-and-linux.html</guid><pubDate>Sat, 30 Mar 2024 04:23:53 GMT</pubDate></item></channel></rss>
+&lt;p&gt;Instead of looking at the timestamp and calculating the relative time in our head, we can use relative time in Kibana . This will make it easier to read &amp;amp; comprehend the logs.&lt;/p&gt;</description><category>devops</category><category>kibana</category><category>monitoring</category><guid>https://avilpage.com/2024/04/timestamp-to-relative-time-kibana-scripted-fields.html</guid><pubDate>Wed, 10 Apr 2024 08:45:33 GMT</pubDate></item></channel></rss>
