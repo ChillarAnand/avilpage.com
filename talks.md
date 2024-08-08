@@ -44,12 +44,20 @@ Here are some of the talks I have given at various conferences and events.
 <br />
 <br />
 
+### Build your own blog @ Polytechnic Kamalapuram-2024
+
+<img src="/images/build-your-blog.jpeg" class="img-responsive" alt="Build your own blog" />
+
+<br />
+<br />
 
 ### Up & Running With Django @ YIT College-2017
 
 <img src="/images/django-yit.png" class="img-responsive" alt="Django Workshop at YIT College" />
 
 
+<br />
+<br />
 
 #### [Django Gotchas!](http://chillaranand.github.io/django-gotcha/) @BangaloreDjangoUserGroup
 
