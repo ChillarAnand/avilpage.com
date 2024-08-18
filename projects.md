@@ -10,7 +10,7 @@
 -->
 
 
-### Personal Projects
+### Projects
 
 - [fadapa](https://github.com/ChillarAnand/fadapa) - Python package to parse FastQC output data.
 
@@ -22,6 +22,7 @@
 
 - [Stock Trends](https://github.com/ChillarAnand/stocktrends) - Python package to calculate sentiment trends in stocks.
 
+- [Kraken-db-builder](/kdb.html) - Build standard & custom databases for Kraken2.
 
 ### OSS Contributions
 

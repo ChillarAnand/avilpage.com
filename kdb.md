@@ -35,6 +35,9 @@ kdb --db-type protozoa
 
 # To create standard Kraken2 database
 kdb --db-type standard
+
+# To build db from a directory containing fasta files
+kdb --genomes-dir /path/to/genomes --db-name k2_test --threads 36 
 ```
 
 ### Why kdb(kraken-db-builder)?
