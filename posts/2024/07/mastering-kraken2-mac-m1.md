@@ -2,7 +2,7 @@
 .. title: Mastering Kraken2 - Part 3 - Running on Mac M1 (ARM)
 .. slug: mastering-kraken2-run-mac-m1
 .. date: 2024-07-31 10:51:30 UTC+05:30
-.. tags: kraken2, metagenomics, devops, draft
+.. tags: bioinformatics, metagenomics, kraken2, draft
 .. category: 
 .. link: 
 .. description: How to run kraken2 on Mac M1 or Ubuntu ARM

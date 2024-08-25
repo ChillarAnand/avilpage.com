@@ -26,7 +26,7 @@ SITE_URL = "https://avilpage.com/"
 # BASE_URL = "https://avilpage.com/"
 
 BLOG_EMAIL = ""
-BLOG_DESCRIPTION = "Avil Page - Personal & tech blog by Chillar Anand"  # (translatable)
+BLOG_DESCRIPTION = "Avil Page - Personal & tech blog by Pandikunta Anand Reddy (aka Chillar Anand)"  # (translatable)
 
 # What is the default language?
 DEFAULT_LANG = "en"
@@ -78,6 +78,7 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 NAVIGATION_LINKS = {
         DEFAULT_LANG: (
                 ("/archive.html", "Blog"),
+                ("/books.html", "Books"),
                 ("/talks.html", "Talks"),
                 ("/projects.html", "Projects"),
                 # ("/top-10.html", "Top 10"),

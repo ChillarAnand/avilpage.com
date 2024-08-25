@@ -2,7 +2,7 @@
 .. title: Mastering Kraken2 - Part 3 - Build Custom Database
 .. slug: mastering-kraken2-build-custom-db
 .. date: 2024-08-01 10:52:30 UTC+05:30
-.. tags: kraken2, metagenomics, devops
+.. tags: bioinformatics, metagenomics, kraken2
 .. category: 
 .. link: 
 .. description: How to create a custom database with kraken2
@@ -15,11 +15,13 @@
 
 [Part 2 - Classification Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html)
 
-[Part 3 - Building custom databases](/2024/07/mastering-kraken2-build-custom-db.html) (this post)
+[Part 3 - Build custom database indices](/2024/07/mastering-kraken2-build-custom-db.html) (this post)
 
-Part 4 - Regular vs Fast Builds (upcoming)
+[Part 4 - Build FDA-ARGOS index](/2024/08/mastering-kraken2-fda-argos-index.html) 
 
-Part 5 - Benchmarking (upcoming)
+Part 5 - Regular vs Fast Builds (upcoming)
+
+Part 6 - Benchmarking (upcoming)
 
 ### Introduction
 

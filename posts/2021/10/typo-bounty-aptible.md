@@ -3,7 +3,7 @@
 .. slug: typo-lead-to-bug-bounty
 .. date: 2021-10-25 08:52:19 UTC+05:30
 .. update: 2023-01-18 08:52:19 UTC+05:30
-.. tags: security, HealthIT
+.. tags: security, HealthIT, musings
 .. category: security
 .. link:
 .. description: How a typo got me a bug bounty.
