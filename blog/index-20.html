@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Avil Page - Personal &amp; tech blog by Chillar Anand">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avil Page (old posts, page 20) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../rss.xml">
+<link rel="canonical" href="https://avilpage.com/blog/index-20.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-19.html" type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../archive.html" class="nav-link">Blog</a>
+                </li>
+<li class="nav-item">
+<a href="../talks.html" class="nav-link">Talks</a>
+                </li>
+<li class="nav-item">
+<a href="../projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    
+    
+<div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/screen-time-alerts-from-activity-watch.html" class="u-url">Screen Time Alerts from Activity Watch</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/05/screen-time-alerts-from-activity-watch.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-05-01T06:59:27+05:30" itemprop="datePublished" title="2024-05-01">2024-05-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/41A0r2H-EXs" allowfullscreen>
+</iframe>
+</div>
+
+<p><br></p>
+<p>Activity Watch<sup id="fnref:activity_watch"><a class="footnote-ref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fn:activity_watch">1</a></sup> is a cross-platform open-source time-tracking tool that helps us to track time spent on applications and websites.</p>
+<p><img alt="Activity Watch" src="../images/activity-watch-alerts.png"></p>
+<p>At the moment, Activity Watch doesn't have any feature to show screen time alerts. In this post, we will see how to show screen time alerts using Activity Watch.</p>
+<h4>Python Script</h4>
+<p>Activity Watch provides an API to interact with the Activity Watch server. We can use the API to get the screen time data and show alerts.</p>
+<pre class="code literal-block"><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+
+<span class="k">def</span> <span class="nf">get_nonafk_events</span><span class="p">(</span><span class="n">timeperiods</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Content-type"</span><span class="p">:</span> <span class="s2">"application/json"</span><span class="p">,</span> <span class="s2">"charset"</span><span class="p">:</span> <span class="s2">"utf-8"</span><span class="p">}</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">"""afk_events = query_bucket(find_bucket('aw-watcher-afk_'));</span>
+<span class="s2">window_events = query_bucket(find_bucket('aw-watcher-window_'));</span>
+<span class="s2">window_events = filter_period_intersect(window_events, filter_keyvals(afk_events, 'status', ['not-afk']));</span>
+<span class="s2">RETURN = merge_events_by_keys(window_events, ['app', 'title']);"""</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"timeperiods"</span><span class="p">:</span> <span class="n">timeperiods</span><span class="p">,</span>
+        <span class="s2">"query"</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s2">"http://localhost:5600/api/0/query/"</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="nb">bytes</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="s2">"utf-8"</span><span class="p">),</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">timeperiods</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span> <span class="n">now</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()])</span>
+    <span class="p">]</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">get_nonafk_events</span><span class="p">(</span><span class="n">timeperiods</span><span class="p">)</span>
+
+    <span class="n">total_time_secs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">event</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">])</span>
+    <span class="n">total_time_mins</span> <span class="o">=</span> <span class="n">total_time_secs</span> <span class="o">/</span> <span class="mi">60</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Total time: </span><span class="si">{</span><span class="n">total_time_mins</span><span class="si">}</span><span class="s2"> seconds"</span><span class="p">)</span>
+    <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">total_time_mins</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">minutes</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Screen Time: </span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2"> hours </span><span class="si">{</span><span class="n">minutes</span><span class="si">}</span><span class="s2"> minutes"</span><span class="p">)</span>
+
+    <span class="c1"># show mac notification</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">"osascript -e 'display notification </span><span class="se">\"</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s2"> hours </span><span class="si">{</span><span class="n">minutes</span><span class="si">}</span><span class="s2"> minutes</span><span class="se">\"</span><span class="s2"> with title </span><span class="se">\"</span><span class="s2">Screen TIme</span><span class="se">\"</span><span class="s2">'"</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre>
+<p>This script<sup id="fnref:github"><a class="footnote-ref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fn:github">2</a></sup> will show the screen time alerts using the Activity Watch API. We can run this script using the below command.</p>
+<pre class="code literal-block">$ python screen_time_alerts.py
+</pre>
+<p><img alt="Screen Time Alerts" src="../images/activity-watch-alerts2.png"></p>
+<p>We can set up a cron job to run this script every hour to show screen time alerts.</p>
+<pre class="code literal-block">$ crontab -e
+<span class="m">0</span> * * * * python screen_time_alerts.py
+</pre>
+<p>We can also modify the script to show alerts only when the screen time exceeds a certain limit.</p>
+<h4>Conclusion</h4>
+<p>Since Actvity Watch is open-source and provides an API, we can extend its functionality to show screen time alerts. We can also use the API to create custom reports and dashboards.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:activity_watch">
+<p><a href="https://activitywatch.net/">Activity Watch</a> <a class="footnote-backref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fnref:activity_watch" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:github">
+<p><a href="https://github.com/ChillarAnand/avilpage.com/blob/master/scripts/activity_watch_alerts.py">Screen Time Alerts Script</a> <a class="footnote-backref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fnref:github" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article>
+</div>
+        <ul class="pager postindexpager clearfix">
+<li class="previous"><a href="." rel="prev">Newer posts</a></li>
+            <li class="next"><a href="index-19.html" rel="next">Older posts</a></li>
+        </ul>
+<!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><br></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/popper.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
