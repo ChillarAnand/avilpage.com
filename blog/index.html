@@ -73,7 +73,71 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/08/midnight-coding-narendra-modi-ivanka-trump.html" class="u-url">Midnight Coding for Narendra Modi &amp; Ivanka Trump</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/08/mastering-kraken2-fda-argos-index.html" class="u-url">Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/08/mastering-kraken2-fda-argos-index.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-24T15:28:00+05:30" itemprop="datePublished" title="2024-08-24">2024-08-24</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Mastering Kraken2</h4>
+<p><a href="../2024/07/mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a></p>
+<p><a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Classification Performance Optimisation</a></p>
+<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Build custom database indices</a></p>
+<p><a href="../2024/08/mastering-kraken2-fda-argos-index.html">Part 4 - Buil FDA-ARGOS index</a> (this post)</p>
+<p>Part 5 - Regular vs Fast Builds (upcoming)</p>
+<p>Part 6 - Benchmarking (upcoming)</p>
+<h4>Introduction</h4>
+<p>In the previous post, we learnt how to build a custom index for Kraken2.</p>
+<p>FDA-ARGOS<sup id="fnref:argos"><a class="footnote-ref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fn:argos">1</a></sup> is a popular database with quality reference genomes for diagnostic usage. Let's build an index for FDA-ARGOS.</p>
+<h4>FDA-ARGOS Kraken2 Index</h4>
+<p>FDA-ARGOS db is available at NCBI<sup id="fnref:ncbi"><a class="footnote-ref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi">2</a></sup> from which we can download the assembly file.</p>
+<p><img src="../images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"></p>
+<p>We can extract accession numbers from the assembly file and then download the genomes from these accession ids.</p>
+<pre class="code literal-block">$ grep -e <span class="s2">"^#"</span> -v PRJNA231221_AssemblyDetails.txt <span class="p">|</span> cut -d<span class="s1">$'\t'</span> -f1 &gt; accessions.txt
+
+$ wc accessions.txt
+ <span class="m">1428</span>  <span class="m">1428</span> <span class="m">22848</span> accessions.txt
+
+$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel <span class="m">40</span>
+</pre>
+<p>It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.</p>
+<p>We can use kraken-db-builder<sup id="fnref:kdb"><a class="footnote-ref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb">3</a></sup> tool to build index from these genbank genome files.</p>
+<pre class="code literal-block"><span class="c1"># kraken-db-builder needs this to convert gbff to fasta format</span>
+$ conda install -c bioconda any2fasta
+
+$ kraken-db-builder --genomes-dir genbank --threads <span class="m">36</span> --db-name k2_argos
+</pre>
+<p>It took ~30 minutes to build the index.</p>
+<h4>Conclusion</h4>
+<p>We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.</p>
+<ul>
+<li><a href="https://github.com/ChillarAnand/avilpage.com/tree/master/scripts/kraken2_argos">FDA-ARGOS Library</a></li>
+<li>
+<a href="https://drive.google.com/file/d/1PbwriW3i3pkXJMFF5nq9OK_EqrwPiLWr/view">Kraken2 Gzipped Index file</a> (gzip size: 2.6GB, index size: 3.8GB, md5sum: 1dd946d2e405dfec35ed3e319e9dfeac)</li>
+<li><a href="https://github.com/ChillarAnand/avilpage.com/tree/master/scripts/kraken2_argos">Kraken2 Inspect file</a></li>
+</ul>
+<p>In the next post, we will look at the differences between regular and fast builds.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:argos">
+<p><a href="https://www.nature.com/articles/s41467-019-11306-6">https://www.nature.com/articles/s41467-019-11306-6</a> <a class="footnote-backref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fnref:argos" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ncbi">
+<p><a href="https://www.ncbi.nlm.nih.gov/bioproject/231221">https://www.ncbi.nlm.nih.gov/bioproject/231221</a> <a class="footnote-backref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fnref:ncbi" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:kdb">
+<p><a href="https://avilpage.com/kdb.html">https://avilpage.com/kdb.html</a> <a class="footnote-backref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fnref:kdb" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/08/midnight-coding-narendra-modi-ivanka-trump.html" class="u-url">Midnight Coding for Narendra Modi &amp; Ivanka Trump</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -190,9 +254,10 @@ $ sudo systemctl <span class="nb">enable</span> --now demo.timer
     <h4>Mastering Kraken2</h4>
 <p><a href="../2024/07/mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a></p>
 <p><a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Classification Performance Optimisation</a></p>
-<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Building custom databases</a> (this post)</p>
-<p>Part 4 - Regular vs Fast Builds (upcoming)</p>
-<p>Part 5 - Benchmarking (upcoming)</p>
+<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Build custom database indices</a> (this post)</p>
+<p><a href="../2024/08/mastering-kraken2-fda-argos-index.html">Part 4 - Buil FDA-ARGOS index</a> </p>
+<p>Part 5 - Regular vs Fast Builds (upcoming)</p>
+<p>Part 6 - Benchmarking (upcoming)</p>
 <h4>Introduction</h4>
 <p>In the previous post, we learned how to improve kraken2<sup id="fnref:k2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-build-custom-db.html#fn:k2">1</a></sup> classification performance. So far we have downloaded &amp; used pre-built genome indices(databases). </p>
 <p>In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes<sup id="fnref:rag"><a class="footnote-ref" href="../2024/07/mastering-kraken2-build-custom-db.html#fn:rag">2</a></sup> for building the index.</p>
@@ -430,7 +495,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <sp
     <h4>Mastering Kraken2</h4>
 <p><a href="../2024/07/mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a> (this post)</p>
 <p><a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Classification Performance Optimisation</a></p>
-<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Building custom databases</a></p>
+<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Building custom database indices</a></p>
 <p>Part 4 - Regular vs Fast Builds (upcoming)</p>
 <p>Part 5 - Benchmarking (upcoming)</p>
 <h4>Introduction</h4>
@@ -830,42 +895,6 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
 </li>
 </ol>
 </div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/04/how-to-setup-ftp-server-on-mac-os.html" class="u-url">Setup FTP server on Mac OS X</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2024/04/how-to-setup-ftp-server-on-mac-os.html" rel="bookmark">
-            <time class="published dt-published" datetime="2024-04-30T23:34:14+05:30" itemprop="datePublished" title="2024-04-30">2024-04-30</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/WmmB-6MXRYc" allowfullscreen>
-</iframe>
-</div>
-
-<p><br></p>
-<p>On Linux &amp; Mac OS X, Python comes pre-installed. On Windows, we can install it from Windows store or from <a href="https://python.org">https://python.org</a> website.</p>
-<p>We can verify the Python version using the below command.</p>
-<pre class="code literal-block">$ python --version
-Python <span class="m">3</span>.11.6
-</pre>
-<p>We can use the <code>pyftpdlib</code> library to create an FTP server. We can install the library using the below command.</p>
-<pre class="code literal-block">$ python -m pip install pyftpdlib
-<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> concurrency model: async
-<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> masquerade <span class="o">(</span>NAT<span class="o">)</span> address: None
-<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> passive ports: None
-<span class="o">[</span>I <span class="m">11</span>:28:21<span class="o">]</span> &gt;&gt;&gt; starting FTP server on :::2121, <span class="nv">pid</span><span class="o">=</span><span class="m">99951</span> <span class="o">&lt;&lt;&lt;</span>
-</pre>
-<p>Now, we can start the FTP server using the below command.</p>
-<pre class="code literal-block">$ python -m pyftpdlib
-</pre>
-<p>It will start the FTP server on port 2121. We can connect to the FTP server using the below command.</p>
-<pre class="code literal-block">$ ftp localhost <span class="m">2121</span>
-</pre>
     </div>
     </article>
 </div>
