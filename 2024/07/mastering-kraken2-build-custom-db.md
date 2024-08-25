@@ -2,7 +2,7 @@
 .. title: Mastering Kraken2 - Part 3 - Build Custom Database
 .. slug: mastering-kraken2-build-custom-db
 .. date: 2024-08-01 10:52:30 UTC+05:30
-.. tags: kraken2, metagenomics, devops
+.. tags: bioinformatics, metagenomics, kraken2
 .. category: 
 .. link: 
 .. description: How to create a custom database with kraken2
