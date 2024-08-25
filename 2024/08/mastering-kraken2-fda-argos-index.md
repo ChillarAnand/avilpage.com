@@ -2,7 +2,7 @@
 .. title: Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index
 .. slug: mastering-kraken2-fda-argos-index
 .. date: 2024-08-24 15:28:00 UTC+05:30
-.. tags: 
+.. tags: bioinformatics, metagenomics, kraken2
 .. category: bioinformatics
 .. link: 
 .. description: 

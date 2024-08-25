@@ -1,5 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about kraken2)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/kraken2.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 25 Aug 2024 09:30:26 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about kraken2)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/kraken2.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 25 Aug 2024 12:12:27 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</title><link>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Build custom database indices&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html"&gt;Part 4 - Buil FDA-ARGOS index&lt;/a&gt; (this post)&lt;/p&gt;
+&lt;p&gt;Part 5 - Regular vs Fast Builds (upcoming)&lt;/p&gt;
+&lt;p&gt;Part 6 - Benchmarking (upcoming)&lt;/p&gt;
+&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;In the previous post, we learnt how to build a custom index for Kraken2.&lt;/p&gt;
+&lt;p&gt;FDA-ARGOS&lt;sup id="fnref:argos"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:argos"&gt;1&lt;/a&gt;&lt;/sup&gt; is a popular database with quality reference genomes for diagnostic usage. Let's build an index for FDA-ARGOS.&lt;/p&gt;
+&lt;h4&gt;FDA-ARGOS Kraken2 Index&lt;/h4&gt;
+&lt;p&gt;FDA-ARGOS db is available at NCBI&lt;sup id="fnref:ncbi"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi"&gt;2&lt;/a&gt;&lt;/sup&gt; from which we can download the assembly file.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://avilpage.com/images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"&gt;&lt;/p&gt;
+&lt;p&gt;We can extract accession numbers from the assembly file and then download the genomes from these accession ids.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;$ grep -e &lt;span class="s2"&gt;"^#"&lt;/span&gt; -v PRJNA231221_AssemblyDetails.txt &lt;span class="p"&gt;|&lt;/span&gt; cut -d&lt;span class="s1"&gt;$'\t'&lt;/span&gt; -f1 &amp;gt; accessions.txt
+
+$ wc accessions.txt
+ &lt;span class="m"&gt;1428&lt;/span&gt;  &lt;span class="m"&gt;1428&lt;/span&gt; &lt;span class="m"&gt;22848&lt;/span&gt; accessions.txt
+
+$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel &lt;span class="m"&gt;40&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.&lt;/p&gt;
+&lt;p&gt;We can use kraken-db-builder&lt;sup id="fnref:kdb"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to build index from these genbank genome files.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
+$ conda install -c bioconda any2fasta
+
+$ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;/span&gt; --db-name k2_argos
+&lt;/pre&gt;
+&lt;p&gt;It took ~30 minutes to build the index.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/ChillarAnand/avilpage.com/tree/master/scripts/kraken2_argos"&gt;FDA-ARGOS Library&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://drive.google.com/file/d/1PbwriW3i3pkXJMFF5nq9OK_EqrwPiLWr/view"&gt;Kraken2 Gzipped Index file&lt;/a&gt; (gzip size: 2.6GB, index size: 3.8GB, md5sum: 1dd946d2e405dfec35ed3e319e9dfeac)&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/ChillarAnand/avilpage.com/tree/master/scripts/kraken2_argos"&gt;Kraken2 Inspect file&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the next post, we will look at the differences between regular and fast builds.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:argos"&gt;
+&lt;p&gt;&lt;a href="https://www.nature.com/articles/s41467-019-11306-6"&gt;https://www.nature.com/articles/s41467-019-11306-6&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fnref:argos" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:ncbi"&gt;
+&lt;p&gt;&lt;a href="https://www.ncbi.nlm.nih.gov/bioproject/231221"&gt;https://www.ncbi.nlm.nih.gov/bioproject/231221&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fnref:ncbi" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:kdb"&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/kdb.html"&gt;https://avilpage.com/kdb.html&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fnref:kdb" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>bioinformatics</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</guid><pubDate>Sat, 24 Aug 2024 09:58:00 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 3 - Build Custom Database</title><link>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Build custom database indices&lt;/a&gt; (this post)&lt;/p&gt;
@@ -97,7 +147,7 @@ lrwxrwxrwx   &lt;span class="m"&gt;20&lt;/span&gt; anand  &lt;span class="m"&gt;
 &lt;p&gt;&lt;a href="https://github.com/kblin/ncbi-genome-download"&gt;https://github.com/kblin/ncbi-genome-download&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fnref:ngd" title="Jump back to footnote 3 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</guid><pubDate>Thu, 01 Aug 2024 05:22:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;/div&gt;</description><category>bioinformatics</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html</guid><pubDate>Thu, 01 Aug 2024 05:22:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt; (this post)&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom databases&lt;/a&gt;&lt;/p&gt;
@@ -214,7 +264,7 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;p&gt;&lt;a href="https://hoytech.com/vmtouch/"&gt;https://hoytech.com/vmtouch/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fnref:vmt" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</guid><pubDate>Sun, 28 Jul 2024 05:21:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 1 - Initial Runs</title><link>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+&lt;/div&gt;</description><category>bioinformatics</category><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</guid><pubDate>Sun, 28 Jul 2024 05:21:30 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 1 - Initial Runs</title><link>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt; (this post)&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Building custom database indices&lt;/a&gt;&lt;/p&gt;
@@ -326,4 +376,4 @@ $ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class
 &lt;p&gt;&lt;a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz"&gt;SRR6915097_1.fastq.gz&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:srr2" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>bioinformatics</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item></channel></rss>

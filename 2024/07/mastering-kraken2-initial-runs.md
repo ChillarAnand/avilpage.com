@@ -2,7 +2,7 @@
 .. title: Mastering Kraken2 - Part 1 - Initial Runs
 .. slug: mastering-kraken2-initial-runs
 .. date: 2024-07-28 10:44:25 UTC+05:30
-.. tags: kraken2, metagenomics, devops
+.. tags: bioinformatics, metagenomics, kraken2
 .. category: 
 .. link: 
 .. description: How to speed up kraken2 classification process
