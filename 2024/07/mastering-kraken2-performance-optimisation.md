@@ -15,11 +15,14 @@
 
 [Part 2 - Classification Performance Optimisation](/2024/07/mastering-kraken2-performance-optimisation.html) (this post)
 
-[Part 3 - Building custom databases](/2024/07/mastering-kraken2-build-custom-db.html)
+[Part 3 - Build custom database indices](/2024/07/mastering-kraken2-build-custom-db.html)
 
-Part 4 - Regular vs Fast Builds (upcoming)
+[Part 4 - Build FDA-ARGOS index](/2024/08/mastering-kraken2-fda-argos-index.html) 
 
-Part 5 - Benchmarking (upcoming)
+Part 5 - Regular vs Fast Builds (upcoming)
+
+Part 6 - Benchmarking (upcoming)
+
 
 ### Introduction
 
