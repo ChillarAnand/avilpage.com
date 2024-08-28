@@ -17,7 +17,7 @@
 
 [Part 3 - Build custom database indices](/2024/07/mastering-kraken2-build-custom-db.html) (this post)
 
-[Part 4 - Buil FDA-ARGOS index](/2024/08/mastering-kraken2-fda-argos-index.html) 
+[Part 4 - Build FDA-ARGOS index](/2024/08/mastering-kraken2-fda-argos-index.html) 
 
 Part 5 - Regular vs Fast Builds (upcoming)
 
