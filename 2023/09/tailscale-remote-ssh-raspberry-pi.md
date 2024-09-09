@@ -2,7 +2,7 @@
 .. title: tailscale: Remote SSH Access to Pi or Any Device
 .. slug: tailscale-remote-ssh-raspberry-pi
 .. date: 2023-09-25 07:19:54 UTC+05:30
-.. tags: devops, command-line
+.. tags: devops, command-line, tailscale
 .. category: programming
 .. link:
 .. description: How to set up tailscale and access raspberry pi remotely anywhere.
