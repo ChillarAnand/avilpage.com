@@ -22,6 +22,7 @@ A decade is a significant time in humans life. I want to read blogs that have be
 | [https://reinout.vanrees.org/weblog](https://reinout.vanrees.org/weblog) | 2003-    | Reinout van Rees - Software Engineerin |
 | [https://bluesock.org/~willkg/blog](https://bluesock.org/~willkg/blog)   | 1999-    | Will Guaraldi Kahn-Greene              |
 
+https://www.jonashietala.se/archive/
 
 <br />
 <br />
