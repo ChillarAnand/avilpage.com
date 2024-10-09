@@ -64,7 +64,7 @@ $ ktImportTaxonomy k2_report.txt -o k2_report.html
 Download taxanomy
 
 ```shell
-$ k2 download-taxonomy --db k2_fungi
+$ kraken2-build --download-taxonomy --db k2_fungi
 ```
 
 Download required genomes
