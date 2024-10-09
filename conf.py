@@ -35,9 +35,9 @@ DEFAULT_LANG = "en"
 # The format is {"translationcode" : "path/to/translation" }
 # the path will be used as a prefix for the generated pages location
 TRANSLATIONS = {
-        DEFAULT_LANG: "",
-        # Example for another language:
-        # "es": "./es",
+    DEFAULT_LANG: "",
+    # Example for another language:
+    # "es": "./es",
 }
 
 # What will translated input files be named like?
@@ -76,35 +76,33 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 #          else they won’t be highlighted when active.
 
 NAVIGATION_LINKS = {
-        DEFAULT_LANG: (
-                ("/archive.html", "Blog"),
-                ("/books.html", "Books"),
-                ("/talks.html", "Talks"),
-                ("/projects.html", "Projects"),
-                # ("/top-10.html", "Top 10"),
-                # ("/non-tech.html", "Non-tech"),
-                # ("/p/projects.html", "Projects"),
-                # ("/tags", "Topics"),
-                # ("/p/talks.html", "Talks"),
-                # ("/p/pages.html", "Pages"),
-                # ("/p/about.html", "About"),
-                # ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
-                # ("/archive.html", "Archives"),
-                # ("/categories/index.html", "Tags"),
-                ("/rss.xml", "RSS"),
-        ),
+    DEFAULT_LANG: (
+        ("/archive.html", "Blog"),
+        ("/books.html", "Books"),
+        ("/talks.html", "Talks"),
+        ("/projects.html", "Projects"),
+        # ("/top-10.html", "Top 10"),
+        # ("/non-tech.html", "Non-tech"),
+        # ("/p/projects.html", "Projects"),
+        # ("/tags", "Topics"),
+        # ("/p/talks.html", "Talks"),
+        # ("/p/pages.html", "Pages"),
+        # ("/p/about.html", "About"),
+        # ("https://forms.gle/Hre4z4aLqJA5zYWe6", "Contact"),
+        # ("/archive.html", "Archives"),
+        # ("/categories/index.html", "Tags"),
+        ("/rss.xml", "RSS"),
+    ),
 }
 
 # Name of the theme to use.
 # THEME = 'avilpage'
 THEME = 'bootstrap4-jinja'
 
-
 # archive config
 INDEX_PATH = 'blog'
 ARCHIVE_PATH = ''
 ARCHIVE_FILENAME = 'archive.html'
-
 
 # Primary color of your theme. This will be used to customize your theme and
 # auto-generate related colors in POSTS_SECTION_COLORS. Must be a HEX value.
@@ -138,18 +136,17 @@ THEME_COLOR = '#5670d4'
 #
 
 POSTS = (
-        ("posts/*.html", "", "post.tmpl"),
-        ("posts/*.md", "", "post.tmpl"),
-        ("*.md", "", "post.tmpl"),
+    ("posts/*.html", "", "post.tmpl"),
+    ("posts/*.md", "", "post.tmpl"),
+    ("*.md", "", "post.tmpl"),
 )
 
 PAGES = (
-        ("articles/*.txt", "", "story.tmpl"),
-        ("articles/*.rst", "", "story.tmpl"),
-        ("articles/*.html", "", "story.tmpl"),
-        ("articles/*.md", "", "story.tmpl"),
+    ("articles/*.txt", "", "story.tmpl"),
+    ("articles/*.rst", "", "story.tmpl"),
+    ("articles/*.html", "", "story.tmpl"),
+    ("articles/*.md", "", "story.tmpl"),
 )
-
 
 # Below this point, everything is optional
 
@@ -177,7 +174,6 @@ DATE_FORMAT = 'YYYY-MM-dd'
 # MOMENTJS_DATE_FORMAT = JS_DATE_FORMAT
 MOMENTJS_DATE_FORMAT = 'YYYY-MM-DD'
 LUXON_DATE_FORMAT = {'en': {'preset': False, 'format': 'yyyy-MM-dd HH:mm'}}
-
 
 # Date fanciness.
 #
@@ -223,11 +219,10 @@ LUXON_DATE_FORMAT = {'en': {'preset': False, 'format': 'yyyy-MM-dd HH:mm'}}
 # 'markdown' is MarkDown
 # 'html' assumes the file is HTML and just copies it
 COMPILERS = {
-        "rest": ('.txt', '.rst'),
-        "markdown": ('.md', '.mdown', '.markdown', '.wp'),
-        "html": ('.html', '.htm')
+    "rest": ('.txt', '.rst'),
+    "markdown": ('.md', '.mdown', '.markdown', '.wp'),
+    "html": ('.html', '.htm')
 }
-
 
 # Create by default posts in one file format?
 # Set to False for two-file posts, with separate metadata.
@@ -434,7 +429,7 @@ HIDDEN_AUTHORS = ['Guest']
 # Optional HTML that displayed on “main” blog index.html files.
 # May be used for a greeting. (translatable)
 FRONT_INDEX_HEADER = {
-        DEFAULT_LANG: ''
+    DEFAULT_LANG: ''
 }
 
 # Create per-month archives instead of per-year
@@ -834,7 +829,6 @@ CONTENT_FOOTER = """
 <br />
 """
 
-
 # Things that will be passed to CONTENT_FOOTER.format().  This is done
 # for translatability, as dicts are not formattable.  Nikola will
 # intelligently format the setting properly.
@@ -847,15 +841,15 @@ CONTENT_FOOTER = """
 #          do not need formatting)
 # (translatable)
 CONTENT_FOOTER_FORMATS = {
-        DEFAULT_LANG: (
-                (),
-                {
-                        "email": BLOG_EMAIL,
-                        "author": BLOG_AUTHOR,
-                        "date": time.gmtime().tm_year,
-                        "license": LICENSE
-                }
-        )
+    DEFAULT_LANG: (
+        (),
+        {
+            "email": BLOG_EMAIL,
+            "author": BLOG_AUTHOR,
+            "date": time.gmtime().tm_year,
+            "license": LICENSE
+        }
+    )
 }
 
 # To use comments, you can choose between different third party comment
@@ -1208,113 +1202,110 @@ GLOBAL_CONTEXT = {}
 # rendered
 GLOBAL_CONTEXT_FILLER = []
 
-
 # redirections
 labels = [
-        'python',
-        'emacs',
-        'zen',
-        'django',
-        'chrome',
+    'python',
+    'emacs',
+    'zen',
+    'django',
+    'chrome',
 ]
 
 LABEL_REDIRECTIONS = []
 for label in labels:
-        LABEL_REDIRECTIONS.append((
-                '/search/label/{}'.format(label),
-                '/categories/{}.html'.format(label),
-        ))
+    LABEL_REDIRECTIONS.append((
+        '/search/label/{}'.format(label),
+        '/categories/{}.html'.format(label),
+    ))
 
 CUSTOM_REDIRECTIONS = [
-        ('/p/projects.html', '/projects.html'),
-        ('/p/talks.html', '/talks.html'),
+    ('/p/projects.html', '/projects.html'),
+    ('/p/talks.html', '/talks.html'),
+    ('/mg.html', '/metagenomics-machine-learning.html'),
+    ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html')
 ]
 
 REDIRECTIONS = CUSTOM_REDIRECTIONS + LABEL_REDIRECTIONS
 
-
 NEW_POST_DATE_PATH_FORMAT = '%Y/%m'
 
-
 RENDER_STATIC_TAG_CLOUDS = {
-        'tag-small': {
-                # Tag cloud's name (used as CSS class). {0} will be replaced
-                # by the language.
-                'name': 'tcs-{0}',
+    'tag-small': {
+        # Tag cloud's name (used as CSS class). {0} will be replaced
+        # by the language.
+        'name': 'tcs-{0}',
 
-                # Filename for the HTML fragment. {0} will be replaced by the
-                # language.
-                'filename': 'tagcloud-{0}-inc.html',
+        # Filename for the HTML fragment. {0} will be replaced by the
+        # language.
+        'filename': 'tagcloud-{0}-inc.html',
 
-                # The taxonomy type to obtain the classification ("tags")
-                # from.
-                'taxonomy_type': 'tag',
+        # The taxonomy type to obtain the classification ("tags")
+        # from.
+        'taxonomy_type': 'tag',
 
-                # Filename for the CSS. {0} will be replaced by the language.
-                'style_filename': 'assets/css/tagcloud-{0}-small.css',
+        # Filename for the CSS. {0} will be replaced by the language.
+        'style_filename': 'assets/css/tagcloud-{0}-small.css',
 
-                # Maximum number of levels to be generated
-                'max_number_of_levels': 15,
+        # Maximum number of levels to be generated
+        'max_number_of_levels': 15,
 
-                # Maximum number of tags in cloud. Negative values mean
-                # that all tags will appear.
-                'max_tags': 10,
+        # Maximum number of tags in cloud. Negative values mean
+        # that all tags will appear.
+        'max_tags': 10,
 
-                # Tags which appear less often than this number will be
-                # ignored.
-                'minimal_number_of_appearances': 10,
+        # Tags which appear less often than this number will be
+        # ignored.
+        'minimal_number_of_appearances': 10,
 
-                # Colors defining a gradient out of which the tag font colors
-                # are taken. The colors are specified as RGP triples with each
-                # component being a floating point number between 0.0 and 1.0.
-                'colors': ((0.6, 0.6, 0.6), (1.0, 1.0, 1.0)),
+        # Colors defining a gradient out of which the tag font colors
+        # are taken. The colors are specified as RGP triples with each
+        # component being a floating point number between 0.0 and 1.0.
+        'colors': ((0.6, 0.6, 0.6), (1.0, 1.0, 1.0)),
 
-                # Colors defining a gradient out of which the tag background
-                # colors are taken.
-                'background_colors': ((0.1, 0.43, 0.8), ),
+        # Colors defining a gradient out of which the tag background
+        # colors are taken.
+        'background_colors': ((0.1, 0.43, 0.8),),
 
-                # Colors defining a gradient out of which the tag border colors
-                # are taken.
-                'border_colors': ((0.4, 0.4, 0.4), ),
+        # Colors defining a gradient out of which the tag border colors
+        # are taken.
+        'border_colors': ((0.4, 0.4, 0.4),),
 
-                # Interval (min_value, max_value) for the font size
-                'font_sizes': (32, 10),
+        # Interval (min_value, max_value) for the font size
+        'font_sizes': (32, 10),
 
-                # If positive, will be multiplied by font size to yield the
-                # CSS border radius and the vertical margin. (The horizontal
-                # margin is set to zero.)
-                'round_factor': 0.6,
-        },
-        'tag-large': {
-                'name': 'tcl-{0}',
-                'filename': 'tagcloud-{0}-large.inc.html',
-                'taxonomy_type': 'tag',
-                'style_filename': 'assets/css/tagcloud-{0}-large.css',
-                'max_number_of_levels': 100,
-                'minimal_number_of_appearances': 1,
-                'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
-                'background_colors': ((0.1, 0.1, 0.1), ),
-                'border_colors': ((0.4, 0.4, 0.4), ),
-                'font_sizes': (8, 35),
-                'round_factor': 0.3,
-        },
-        'category-large': {
-                'name': 'ccl-{0}',
-                'filename': 'catcloud-{0}-large.inc',
-                'taxonomy_type': 'category',
-                'style_filename': 'assets/css/catcloud-{0}-large.css',
-                'max_number_of_levels': 100,
-                'minimal_number_of_appearances': 1,
-                'colors': ((0.6,0.6,0.6), (1.0,1.0,1.0)),
-                'background_colors': ((0.1, 0.1, 0.1), ),
-                'border_colors': ((0.4, 0.4, 0.4), ),
-                'font_sizes': (8, 35),
-                'round_factor': 0.3,
-        },
+        # If positive, will be multiplied by font size to yield the
+        # CSS border radius and the vertical margin. (The horizontal
+        # margin is set to zero.)
+        'round_factor': 0.6,
+    },
+    'tag-large': {
+        'name': 'tcl-{0}',
+        'filename': 'tagcloud-{0}-large.inc.html',
+        'taxonomy_type': 'tag',
+        'style_filename': 'assets/css/tagcloud-{0}-large.css',
+        'max_number_of_levels': 100,
+        'minimal_number_of_appearances': 1,
+        'colors': ((0.6, 0.6, 0.6), (1.0, 1.0, 1.0)),
+        'background_colors': ((0.1, 0.1, 0.1),),
+        'border_colors': ((0.4, 0.4, 0.4),),
+        'font_sizes': (8, 35),
+        'round_factor': 0.3,
+    },
+    'category-large': {
+        'name': 'ccl-{0}',
+        'filename': 'catcloud-{0}-large.inc',
+        'taxonomy_type': 'category',
+        'style_filename': 'assets/css/catcloud-{0}-large.css',
+        'max_number_of_levels': 100,
+        'minimal_number_of_appearances': 1,
+        'colors': ((0.6, 0.6, 0.6), (1.0, 1.0, 1.0)),
+        'background_colors': ((0.1, 0.1, 0.1),),
+        'border_colors': ((0.4, 0.4, 0.4),),
+        'font_sizes': (8, 35),
+        'round_factor': 0.3,
+    },
 }
 
-
 WARN_ABOUT_TAG_METADATA = False
-
 
 CATEGORY_DESTPATH_AS_DEFAULT = True
