@@ -106,6 +106,10 @@ Download sourcepredict
 $ python -m pip install git+https://github.com/AvilPage/sourcepredict;
 ```
 
+### jupyter notebooks
+
+[https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop](https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop)
+
 
 ### Useful links:
 
