@@ -1,6 +1,6 @@
 <!--
-.. title: Metagenomics Classification - Workshop
-.. slug: metagenomics-classification-workshop
+.. title: Metagenomics Machine Learning
+.. slug: metagenomics-machine-learning
 .. date: 2024-08-08 03:29:59 UTC
 .. updated: 2024-08-08 03:29:59 UTC
 .. tags: bioinformatics, metagenomics
@@ -9,6 +9,11 @@
 .. description: Metagenomics Classification - Workshop material
 .. type: text
 -->
+
+### Introduction
+
+This is the reference material for the "Machine Learning in Metagenomics" workshop. By the end of workshop, you will be able to classify metagenomic samples using Kraken2 and predict the source organism of the sample with simple ML methods.
+
 
 ### Running Kraken2
 
@@ -103,7 +108,7 @@ $ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/moder
 Download sourcepredict
 
 ```shell
-$ python -m pip install git+https://github.com/AvilPage/sourcepredict;
+$ python -m pip install git+https://github.com/AvilPage/sourcepredict
 ```
 
 ### jupyter notebooks
