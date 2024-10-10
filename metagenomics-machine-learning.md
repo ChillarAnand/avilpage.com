@@ -113,11 +113,10 @@ t-Stochastic Neighbor Embedding (t-SNE)
 k-Nearest Neighbors (k-NN)
 
 
-```shell
 Download sample data
 
 ```shell
-wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/test/dog_test_sink_sample.csv -O dog_example.csv
+$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/test/dog_test_sink_sample.csv -O dog_example.csv
 $ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_labels.csv -O sp_labels.csv
 $ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_sources.csv -O sp_sources.csv
 ```
