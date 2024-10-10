@@ -14,8 +14,15 @@
 
 This is the reference material for the "Machine Learning in Metagenomics" workshop. By the end of workshop, you will be able to classify metagenomic samples using Kraken2 and predict the source organism of the sample with simple ML methods.
 
+### Environment Setup
+
+We will be using Python, Jupyter notebook and command line tools for this workshop.
+
+If you are using Windows, you can install WSL2 and use Ubuntu. If you are using Mac, you can use the terminal.
 
 ### Running Kraken2
+
+In the first step, let's generate abundance report using Kraken2. Kraken2 is a taxonomic sequence classifier that assigns taxonomic labels to short DNA sequences.
 
 Install anaconda
 
@@ -95,8 +102,18 @@ $ pip install ncbi-genome-download kraken-db-builder
 $ kraken-db-builder --db-type fungi
 ```
 
-### Source Predict
+### Predicting Source of Metagenomic Sample
 
+Geometry Mean of Pairwise Ratios (GMPR)
+
+Bray-Curtis dissimilarity
+
+t-Stochastic Neighbor Embedding (t-SNE)
+
+k-Nearest Neighbors (k-NN)
+
+
+```shell
 Download sample data
 
 ```shell
@@ -111,7 +128,7 @@ Download sourcepredict
 $ python -m pip install git+https://github.com/AvilPage/sourcepredict
 ```
 
-### jupyter notebooks
+### Machine Learning Notebooks
 
 [https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop](https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop)
 
@@ -120,6 +137,9 @@ $ python -m pip install git+https://github.com/AvilPage/sourcepredict
 
 [https://benlangmead.github.io/aws-indexes/k2](https://benlangmead.github.io/aws-indexes/k2
 )
+
 [https://jszym.com/blog/dna_protein_complexity/](https://jszym.com/blog/dna_protein_complexity)
 
 [https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html](https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html)
+
+[https://github.com/maxibor/sourcepredict](https://github.com/maxibor/sourcepredict)
