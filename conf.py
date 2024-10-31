@@ -77,6 +77,7 @@ TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 
 NAVIGATION_LINKS = {
     DEFAULT_LANG: (
+        ("/guides.html", "Guides"),
         ("/archive.html", "Blog"),
         ("/books.html", "Books"),
         ("/talks.html", "Talks"),
@@ -1222,7 +1223,8 @@ CUSTOM_REDIRECTIONS = [
     ('/p/projects.html', '/projects.html'),
     ('/p/talks.html', '/talks.html'),
     ('/mg.html', '/metagenomics-machine-learning.html'),
-    ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html')
+    ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html'),
+    ('/p/poor-mans-covered-call-india.html', '/poor-mans-covered-call-india.html'),
 ]
 
 REDIRECTIONS = CUSTOM_REDIRECTIONS + LABEL_REDIRECTIONS
@@ -1309,3 +1311,16 @@ RENDER_STATIC_TAG_CLOUDS = {
 WARN_ABOUT_TAG_METADATA = False
 
 CATEGORY_DESTPATH_AS_DEFAULT = True
+
+# Name for the page with the list of all page tags
+TAGGED_PAGES_INDEX_PATH = "tagged_pages.html"
+# Folder where the files for each tag should be
+TAGGED_PAGES_PATH = "tagged_pages"
+# Similar to TAG_TITLES, defaults to it.
+TAGGED_PAGES_TITLES = {
+    DEFAULT_LANG: {
+        "blogging": "Pages about blogging",
+        "open source": "Pages about open source software",
+        "foo": "Pages about open source software",
+    },
+}
