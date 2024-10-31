@@ -47,6 +47,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             <div class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="navbar-nav mr-auto">
 <li class="nav-item">
+<a href="../guides.html" class="nav-link">Guides</a>
+                </li>
+<li class="nav-item">
 <a href="../archive.html" class="nav-link">Blog</a>
                 </li>
 <li class="nav-item">
@@ -77,7 +80,91 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/screen-time-alerts-from-activity-watch.html" class="u-url">Screen Time Alerts from Activity Watch</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" class="u-url">Automating Zscaler Connectivity on macOS</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/05/managing-zscaler-connectivity-from-command-line.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-05-14T07:49:53+05:30" itemprop="datePublished" title="2024-05-14">2024-05-14</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.</p>
+<h4>Automating Zscaler Connectivity</h4>
+<p>Once Zscaler is installed on macOS, if we search for <code>LaunchAgents</code> &amp; <code>LaunchDaemons</code> directories, we can find the Zscaler plist files. </p>
+<pre class="code literal-block">$ sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span>
+/Library/LaunchAgents/com.zscaler.tray.plist
+
+
+$ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span>
+/Library/LaunchDaemons/com.zscaler.service.plist
+/Library/LaunchDaemons/com.zscaler.tunnel.plist
+/Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
+</pre>
+<p>To connect to Zscaler, we can load these services.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+</pre>
+<p>To disconnect from Zscaler, we can unload all of them.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+</pre>
+<p>To automatically toggle the connectivity, we can create a shell script.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">fi</span>
+</pre>
+<p>Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.</p>
+<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Required parameters:</span>
+<span class="c1"># @raycast.schemaVersion 1</span>
+<span class="c1"># @raycast.title toggle zscaler</span>
+<span class="c1"># @raycast.mode silent</span>
+
+<span class="c1"># Optional parameters:</span>
+<span class="c1"># @raycast.icon ☁️</span>
+
+<span class="c1"># Documentation:</span>
+<span class="c1"># @raycast.author chillaranand</span>
+<span class="c1"># @raycast.authorURL https://avilpage.com/</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
+    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
+    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">fi</span>
+</pre>
+<p>Save this script to a folder. From <code>Raycast Settings</code> -&gt; <code>Extensions</code> -&gt; <code>Add Script Directory</code>, we can select this folder, and the script will be available in Raycast. </p>
+<p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect2.png"></p>
+<p>We can assign a shortcut key to the script for quick access.</p>
+<p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect.png"></p>
+<h4>Conclusion</h4>
+<p>Even though Zscaler does not provide a command-line interface, we can automate the connectivity using the above scripts.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/05/screen-time-alerts-from-activity-watch.html" class="u-url">Screen Time Alerts from Activity Watch</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -176,7 +263,23 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <li class="previous"><a href="." rel="prev">Newer posts</a></li>
             <li class="next"><a href="index-19.html" rel="next">Older posts</a></li>
         </ul>
-<!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+<!--End of body content--><footer id="footer"><div class="full-article-footer">
+    <div class="article-footer">
+
+        <div class="avatar-module">
+            <img class="avatar" height="100px" src="../images/chillaranand.jpg">
+</div>
+
+        <p class="avatar-module">
+            <b>Chillar Anand</b>
+            <br>
+            Improving Health &amp; Wealth with Technology
+            <br></p>
+
+    </div>
+</div>
+
+<div class="container align-items-center justify-content-center d-flex">
 
 <footer class="footer"><a href="https://github.com/ChillarAnand">
 <img src="../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
@@ -204,7 +307,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </footer>
 </div>
 
-<br><br></footer>
+<br></footer>
 </div>
     </div>
     </div>
