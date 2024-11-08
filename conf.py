@@ -843,6 +843,9 @@ CONTENT_FOOTER = """
 </div>
 
 <br />
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8127755709093749"
+     crossorigin="anonymous"></script>
 """
 
 # Things that will be passed to CONTENT_FOOTER.format().  This is done
@@ -1238,8 +1241,11 @@ CUSTOM_REDIRECTIONS = [
     ('/p/projects.html', '/projects.html'),
     ('/p/talks.html', '/talks.html'),
     ('/mg.html', '/metagenomics-machine-learning.html'),
+    ('/mml.html', '/metagenomics-machine-learning.html'),
+    ('/mdl.html', '/metagenomics-deep-learning.html'),
     ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html'),
     ('/p/poor-mans-covered-call-india.html', '/poor-mans-covered-call-india.html'),
+    ('/p/telugu-books-free-download-sites.html', '/telugu-books-free-download-sites.html'),
 ]
 
 REDIRECTIONS = CUSTOM_REDIRECTIONS + LABEL_REDIRECTIONS
