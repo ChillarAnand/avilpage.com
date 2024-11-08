@@ -19,6 +19,8 @@ If you are new here, you can explore the guides on various topics like software 
 
 [Machine Learning in Meta Genomics](/metagenomics-machine-learning.html)
 
+[Deep Learning in Meta Genomics](/metagenomics-deep-learning.html)
+
 
 
 ### Wealth

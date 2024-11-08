@@ -14,6 +14,8 @@
 
 This is the reference material for the "Machine Learning in Metagenomics" workshop. By the end of workshop, you will be able to classify metagenomic samples using Kraken2 and predict the source organism of the sample with simple ML methods.
 
+[Click here for "Metagenomics - Deep Learning" workshop](/metagenomics-deep-learning.html)
+
 ### Environment Setup
 
 We will be using Python, Jupyter notebook and command line tools for this workshop.

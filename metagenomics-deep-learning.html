@@ -4,9 +4,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 " lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="description" content="Metagenomics Classification - Workshop material">
+<meta name="description" content="Metagenomics Deep Learning - Workshop material">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metagenomics Machine Learning | Avil Page</title>
+<title>Metagenomics Deep Learning | Avil Page</title>
 <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
 <link href="assets/css/rst.css" rel="stylesheet" type="text/css">
@@ -15,14 +15,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="theme-color" content="#5670d4">
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
-<link rel="canonical" href="https://avilpage.com/metagenomics-machine-learning.html">
+<link rel="canonical" href="https://avilpage.com/metagenomics-deep-learning.html">
 <!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><meta name="author" content="Chillar Anand">
 <meta property="og:site_name" content="Avil Page">
-<meta property="og:title" content="Metagenomics Machine Learning">
-<meta property="og:url" content="https://avilpage.com/metagenomics-machine-learning.html">
-<meta property="og:description" content="Metagenomics Classification - Workshop material">
+<meta property="og:title" content="Metagenomics Deep Learning">
+<meta property="og:url" content="https://avilpage.com/metagenomics-deep-learning.html">
+<meta property="og:description" content="Metagenomics Deep Learning - Workshop material">
 <meta property="og:type" content="article">
-<meta property="article:published_time" content="2024-08-08T03:29:59Z">
+<meta property="article:published_time" content="2024-11-08T03:29:59Z">
 <meta property="article:tag" content="bioinformatics">
 <meta property="article:tag" content="metagenomics">
 <style>
@@ -144,83 +144,53 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         <div class="body-content col col-lg-6">
             <!--Body content-->
             
-<article class="post-text storypage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Metagenomics Machine Learning</a></h1>
+<article class="post-text storypage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Metagenomics Deep Learning</a></h1>
 
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <h4>Introduction</h4>
-<p>This is the reference material for the "Machine Learning in Metagenomics" workshop. By the end of workshop, you will be able to classify metagenomic samples using Kraken2 and predict the source organism of the sample with simple ML methods.</p>
-<p><a href="metagenomics-deep-learning.html">Click here for "Metagenomics - Deep Learning" workshop</a></p>
+<p>This is the reference material for the "Deep Learning in Metagenomics" workshop. By the end of workshop, you will be able to understand what is deep learning and how to apply to metagenomics taxanomic classification.</p>
+<p><a href="metagenomics-machine-learning.html">Click here for "Metagenomics - Machine Learning" workshop</a></p>
 <h4>Environment Setup</h4>
 <p>We will be using Python, Jupyter notebook and command line tools for this workshop.</p>
 <p>If you are using Windows, you can install WSL2 and use Ubuntu. If you are using Mac, you can use the terminal.</p>
-<h4>Running Kraken2</h4>
-<p>In the first step, let's generate abundance report using Kraken2. Kraken2 is a taxonomic sequence classifier that assigns taxonomic labels to short DNA sequences.</p>
-<p>Install anaconda</p>
+<ul>
+<li>Install anaconda</li>
+<li>Create new environment</li>
+<li>Install required packages</li>
+</ul>
 <pre class="code literal-block">$ wget https://repo.anaconda.com/archive/Anaconda3-2024.06-1-Linux-x86_64.sh
+
 $ bash Anaconda3-2021.05-Linux-x86_64.sh
-</pre>
-<p>Install kraken2</p>
-<pre class="code literal-block">$ conda install -c bioconda kraken2
-</pre>
-<p>Download pre-built viral database</p>
-<pre class="code literal-block">$ wget -c https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20240605.tar.gz
-$ mkdir -p k2_viral
-$ tar -xzvf k2_viral_20240605.tar.gz -C k2_viral
-</pre>
-<p>Download sample fastq files</p>
-<pre class="code literal-block">$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
-</pre>
-<p>Kraken2 classification</p>
-<pre class="code literal-block">$ kraken2 --db k2_viral ERR10359977.fastq.gz --report k2_report.txt --output k2_output.txt
-</pre>
-<h4>Generate Krona plot</h4>
-<p>Install Krona &amp; update taxonomy</p>
-<pre class="code literal-block">$ conda install -c bioconda krona
-$ ktUpdateTaxonomy.sh
-</pre>
-<p>Generate Krona plot</p>
-<pre class="code literal-block">$ ktImportTaxonomy k2_report.txt -o k2_report.html
-</pre>
-<h4>Building custom database</h4>
-<p>Download taxanomy</p>
-<pre class="code literal-block">$ kraken2-build --download-taxonomy --db k2_fungi
-</pre>
-<p>Download required genomes</p>
-<pre class="code literal-block">$ ncbi-genome-download --format fasta --section refseq --assembly-level <span class="nb">complete</span> fungi -v
-</pre>
-<p>Build kraken2 database</p>
-<pre class="code literal-block">$ find refseq -name <span class="s2">"*.gz"</span> -print0 <span class="p">|</span> parallel -0 gunzip
 
-$ find refseq -name <span class="s2">"*.fna"</span> -exec kraken2-build --add-to-library <span class="o">{}</span> --db custom_db <span class="se">\;</span>
+$ conda create -n mgdl -c fkretschmer bertax
 
-$ kraken2-build --db custom_db --build --threads <span class="m">36</span>
-</pre>
-<p>Using <code>kraken-db-builder</code> to build database</p>
-<pre class="code literal-block">$ pip install ncbi-genome-download kraken-db-builder
+$ conda activate mgdl
 
-$ kraken-db-builder --db-type fungi
-</pre>
-<h4>Predicting Source of Metagenomic Sample</h4>
-<p>Geometry Mean of Pairwise Ratios (GMPR)</p>
-<p>Bray-Curtis dissimilarity</p>
-<p>t-Stochastic Neighbor Embedding (t-SNE)</p>
-<p>k-Nearest Neighbors (k-NN)</p>
-<p>Download sample data</p>
-<pre class="code literal-block">$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/test/dog_test_sink_sample.csv -O dog_example.csv
-$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_labels.csv -O sp_labels.csv
-$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_sources.csv -O sp_sources.csv
-</pre>
-<p>Download sourcepredict</p>
-<pre class="code literal-block">$ python -m pip install git+https://github.com/AvilPage/sourcepredict
+$ pip install keras-bert<span class="o">==</span><span class="m">0</span>.86.0 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.23.0
+
+$ mkdir -p workshop<span class="p">;</span> <span class="nb">cd</span> workshop
+
+$ git clone https://github.com/rnajena/bertax
+
+$ pip install -e bertax
+
+$ <span class="nb">cd</span> bertax
+
+$ <span class="nb">cd</span> bertax/resources
+
+$ wget https://github.com/rnajena/bertax/releases/latest/download/big_trainingset_all_fix_classes_selection.h5
 </pre>
 <h4>Machine Learning Notebooks</h4>
 <p><a href="https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop">https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop</a></p>
-<h4>Useful links:</h4>
-<p><a href="https://benlangmead.github.io/aws-indexes/k2">https://benlangmead.github.io/aws-indexes/k2</a></p>
-<p><a href="https://jszym.com/blog/dna_protein_complexity">https://jszym.com/blog/dna_protein_complexity/</a></p>
-<p><a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html">https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</a></p>
-<p><a href="https://github.com/maxibor/sourcepredict">https://github.com/maxibor/sourcepredict</a></p>
+<h4>Resources</h4>
+<ul>
+<li><a href="https://keras.io/api/datasets/mnist/">https://keras.io/api/datasets/mnist/</a></li>
+<li><a href="https://github.com/MicrobeLab/DeepMicrobes">https://github.com/MicrobeLab/DeepMicrobes</a></li>
+<li><a href="https://github.com/rnajena/bertax">https://github.com/rnajena/bertax</a></li>
+</ul>
+<h4>Feedback</h4>
+<p>Please take a moment to <a href="https://forms.gle/qoVTm2RCnCXrsjrk9">provide your feedback here</a></p>
     </div>
     
 </article><!--End of body content--><footer id="footer"><div class="full-article-footer">
