@@ -55,6 +55,14 @@ $ wget https://github.com/rnajena/bertax/releases/latest/download/big_trainingse
 
 [https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop](https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop)
 
+We will build our own neural network to classify MNIST database.
+
+This will help use understand how MLP works.
+
+Then we will look into Transformers(these are used in ChatGPT and other LLMs).
+
+Finally we will run bertax model to do metagenomics taxanomic classification.
+
 
 ### Resources
 
