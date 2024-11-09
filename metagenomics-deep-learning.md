@@ -62,6 +62,10 @@ $ wget https://github.com/rnajena/bertax/releases/latest/download/big_trainingse
 - [https://github.com/MicrobeLab/DeepMicrobes](https://github.com/MicrobeLab/DeepMicrobes)
 - [https://github.com/rnajena/bertax](https://github.com/rnajena/bertax)
 
+Notebook:
+
+[https://themisto.tetra-bigeye.ts.net/tree?token=02697321a9cc05d07a57da03e9987e59d26e127c4027df35](https://themisto.tetra-bigeye.ts.net/tree?token=02697321a9cc05d07a57da03e9987e59d26e127c4027df35)
+
 
 ### Feedback
 
