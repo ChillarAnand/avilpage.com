@@ -1,5 +1,5 @@
 <!--
-.. title: Tech Talks
+.. title: Tech & Workshops
 .. slug: talks
 .. date: 2017-08-24 13:29:59 UTC
 .. tags: tech
@@ -11,6 +11,13 @@
 
 
 Here are some of the talks I have given at various conferences and events.
+
+### Metagenomics AI Workshop @ REVA University-2024
+
+<img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
+
+Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-machine-learning.html)
+
 
 ### Python Traceback For Humans @ PyCon India—2015
 
