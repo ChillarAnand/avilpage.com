@@ -407,7 +407,7 @@ Formatting /tmp/kafka-logs/ with metadata.version <span class="m">3</span>.3-IV3
 </ol>
 </div>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka Tutorial</a></h1>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2022/12/hands-on-apache-kafka-tutorial.html" class="u-url">Hands-on Apache Kafka | ZenTen Tutorials</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -439,7 +439,7 @@ data to consumers.</p>
 connect to ZooKeeper.</p>
 <p><b>Kraft</b>: Kraft(Apache Kafka Raft) is a consensus protocol that is used to manage the metadata of the Kafka cluster.
 It is introduced to remove dependency on ZooKeeper.</p>
-<h4>Installing Apache Kafka</h4>
+<h4>Setting up Apache Kafka</h4>
 <p>We can use cp-all-in-one<sup id="fnref:cp-all-in-one"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:cp-all-in-one">2</a></sup> docker compose files to run Apache Kafka locally. This image contains all the
 components of Confluent Platform including Apache Kafka, Apache Zookeeper, Confluent Schema Registry, Confluent REST
 Proxy, Confluent Control Center, and others.</p>
@@ -447,20 +447,17 @@ Proxy, Confluent Control Center, and others.</p>
 $ <span class="nb">cd</span> cp-all-in-one/cp-all-in-one
 $ docker-compose up
 </pre>
-<p>Confluent Control Center is a web UI to manage and monitor Apache Kafka.</p>
-<p><img src="../images/kafka-control-center.png" alt="Kafka Control Center"></p>
-<p>We can visit it <a href="http://localhost:9021">http://localhost:9021</a> and monitor the cluster from this UI.</p>
-<h4>Producing and Consuming Messages</h4>
+<h4>Kafka CLI Tools</h4>
 <p>Kafka stores messages in topics. A topic is a category or feed name to which messages are published/consumed.</p>
-<p>Let us create a topic called <code>test</code> with <code>kafka-topics</code> command.</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --create 
+<p>Let us create a topic called <code>demo</code> with <code>kafka-topics</code> command.</p>
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic demo --create 
 </pre>
-<p>This will create a topic called <code>test</code> with a single partition and a replication factor of 1. In multi-node cluster, we
+<p>This will create a topic called <code>demo</code> with a single partition and a replication factor of 1. In multi-node cluster, we
 can use <code>--replication-factor</code>, <code>--partitions</code> to specify the number of replicas/partitions for the topic.</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --partitions <span class="m">3</span> --replication-factor <span class="m">2</span> --create --if-not-exists
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --topic demo --partitions <span class="m">3</span> --replication-factor <span class="m">2</span> --create --if-not-exists
 </pre>
-<p>To produce messages to a topic named <code>test</code>, we can use <code>kafka-console-producer</code> and add messages to the topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-producer --broker-list localhost:9092 --topic <span class="nb">test</span>
+<p>To produce messages to a topic named <code>demo</code>, we can use <code>kafka-console-producer</code> and add messages to the topic:</p>
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-producer --broker-list localhost:9092 --topic demo
 
 &gt;order received
 &gt;order updated
@@ -469,7 +466,7 @@ can use <code>--replication-factor</code>, <code>--partitions</code> to specify 
 &gt;<span class="o">{</span><span class="s2">"status"</span>: <span class="s2">"completed"</span><span class="o">}</span>
 </pre>
 <p>To consume messages from the same topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-consumer --bootstrap-server localhost:9092 --topic <span class="nb">test</span> --from-beginning
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-console-consumer --bootstrap-server localhost:9092 --topic demo --from-beginning
 
 order received
 order updated
@@ -485,32 +482,43 @@ default_ksql_processing_log
 docker-connect-configs
 docker-connect-offsets
 docker-connect-status
-<span class="nb">test</span>
+demo
 </pre>
 <p>To show details of a topic:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --describe --topic <span class="nb">test</span>
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --describe --topic demo
 
-Topic: <span class="nb">test</span> TopicId: 7CckqkXsQXCNY0MNHYRv2w PartitionCount: <span class="m">1</span>   ReplicationFactor: <span class="m">1</span>    Configs: 
-    Topic: <span class="nb">test</span> Partition: <span class="m">0</span>    Leader: <span class="m">1</span>   Replicas: <span class="m">1</span> Isr: <span class="m">1</span>  Offline:         
+Topic: demo TopicId: 7CckqkXsQXCNY0MNHYRv2w PartitionCount: <span class="m">1</span>   ReplicationFactor: <span class="m">1</span>    Configs: 
+    Topic: demo Partition: <span class="m">0</span>    Leader: <span class="m">1</span>   Replicas: <span class="m">1</span> Isr: <span class="m">1</span>  Offline:         
 </pre>
-<p>By default all messages are stored in the topic for 7 days. We can change this retention period using <code>retention.ms</code> configuration:</p>
-<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --alter --topic <span class="nb">test</span> --config retention.ms<span class="o">=</span><span class="m">10000</span>
+<p>By default, all messages are stored in the topic for 7 days. We can change this retention period using <code>retention.ms</code> configuration:</p>
+<pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-topics --bootstrap-server localhost:9092 --alter --topic demo --config retention.ms<span class="o">=</span><span class="m">10000</span>
 </pre>
 <p>To see all the available consumer groups, we can use <code>kafka-consumer-groups</code>:</p>
 <pre class="code literal-block">$ docker-compose <span class="nb">exec</span> broker kafka-consumer-groups --bootstrap-server localhost:9092 --list
 </pre>
+<h4>Confluent Control Center</h4>
+<p>Confluent Control Center is a web UI to manage and monitor Apache Kafka.</p>
+<p><img src="../images/kafka-control-center.png" alt="Kafka Control Center"></p>
+<p>We can visit it <a href="http://localhost:9021">http://localhost:9021</a> and access the cluster from this UI.</p>
+<p>We can change topic configuration, view consumer groups, and monitor the cluster from this UI.</p>
 <h4>Kafka Rest Proxy</h4>
 <p>Kafka Rest Proxy<sup id="fnref:kafka rest proxy"><a class="footnote-ref" href="../2022/12/hands-on-apache-kafka-tutorial.html#fn:kafka%20rest%20proxy">3</a></sup> is a RESTful interface to Apache Kafka. It provides a RESTful interface to produce
 and consume messages, view the state of the cluster, and perform administrative actions without using the native Kafka
 protocol or clients.</p>
-<p>To produce messages to a <code>test</code> topic with curl:</p>
+<p>To list all topics in the cluster using Kafka Rest Proxy:</p>
+<pre class="code literal-block">$ curl -X GET <span class="s2">"http://localhost:8082/topics"</span>
+</pre>
+<p>To get config of a topic:</p>
+<pre class="code literal-block">$ curl -X GET <span class="s2">"http://localhost:8082/topics/demo"</span>
+</pre>
+<p>To produce messages to a <code>demo</code> topic with curl:</p>
 <pre class="code literal-block">$ curl -X POST -H <span class="s2">"Content-Type: application/vnd.kafka.json.v2+json"</span> <span class="se">\</span>
     --data <span class="s1">'{"records":[{"value":{"status": "completed"}}]}'</span> <span class="se">\</span>
-    <span class="s2">"http://localhost:8082/topics/test"</span>
+    <span class="s2">"http://localhost:8082/topics/demo"</span>
 </pre>
 <p>To consume messages from the same topic:</p>
 <pre class="code literal-block">$ curl -X GET -H <span class="s2">"Accept: application/vnd.kafka.json.v2+json"</span> <span class="se">\</span>
-    <span class="s2">"http://localhost:8082/topics/test"</span>
+    <span class="s2">"http://localhost:8082/topics/demo"</span>
 </pre>
 <p>We can dynamically configure Kafka cluster settings as well.</p>
 <p>To change log level of various components of Kafka cluster using Kafka Rest Proxy.</p>
@@ -519,6 +527,61 @@ protocol or clients.</p>
     <span class="s2">"http://localhost:8082/config"</span>
 </pre>
 <p>We can update the log level of various components of Kafka cluster and check the logs.</p>
+<h4>Kafka Connect</h4>
+<p>Kafka Connect is a framework to stream data between Apache Kafka and other systems. It is used to import/export data from/to Kafka.</p>
+<p>Lets use the <code>DataGenConnector</code> to generate random data and write it to a topic.</p>
+<pre class="code literal-block">curl --location <span class="s1">'http://localhost:8083/connectors'</span> <span class="se">\</span>
+--header <span class="s1">'Content-Type: application/json'</span> <span class="se">\</span>
+--data <span class="s1">'{</span>
+<span class="s1">  "name": "datagen-pageviews",</span>
+<span class="s1">  "config": {</span>
+<span class="s1">    "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",</span>
+<span class="s1">    "kafka.topic": "datagen-pageviews",</span>
+<span class="s1">    "quickstart": "pageviews",</span>
+<span class="s1">    "key.converter": "org.apache.kafka.connect.storage.StringConverter",</span>
+<span class="s1">    "value.converter": "org.apache.kafka.connect.json.JsonConverter",</span>
+<span class="s1">    "value.converter.schemas.enable": "false",</span>
+<span class="s1">    "max.interval": 100,</span>
+<span class="s1">    "iterations": 10000000,</span>
+<span class="s1">    "tasks.max": "1"</span>
+<span class="s1">  }</span>
+<span class="s1">}</span>
+<span class="s1">'</span>
+</pre>
+<p>This will create a connector called <code>datagen-pageviews</code> which will generate random data and write it to a topic called <code>datagen-pageviews</code>.</p>
+<h4>KsqlDB</h4>
+<p>KsqlDB is a streaming SQL engine for Apache Kafka. It provides a SQL interface to query, transform, and analyze data in Kafka.</p>
+<p>Lets create a stream called <code>pageviews</code> from the topic <code>datagen-pageviews</code>:</p>
+<pre class="code literal-block">$ curl -X <span class="s2">"POST"</span> <span class="s2">"http://localhost:8088/ksql"</span> <span class="se">\</span>
+     -H <span class="s2">"Content-Type: application/vnd.ksql.v1+json; charset=utf-8"</span> <span class="se">\</span>
+     -d <span class="s1">$'{</span>
+<span class="s1">  "ksql": "CREATE STREAM pageviews (viewtime BIGINT, userid VARCHAR, pageid VARCHAR) WITH (KAFKA_TOPIC=\'datagen-pageviews\', VALUE_FORMAT=\'JSON\');",</span>
+<span class="s1">  "streamsProperties": {}</span>
+<span class="s1">}'</span>
+</pre>
+<p>We can create a table to generate viewcount per pageid:</p>
+<pre class="code literal-block">$ curl -X <span class="s2">"POST"</span> <span class="s2">"http://localhost:8088/ksql"</span> <span class="se">\</span>
+     -H <span class="s2">"Content-Type: application/vnd.ksql.v1+json; charset=utf-8"</span> <span class="se">\</span>
+     -d <span class="s1">$'{</span>
+<span class="s1">  "ksql": "CREATE TABLE pageviews_count AS</span>
+<span class="s1">SELECT </span>
+<span class="s1">  pageid,</span>
+<span class="s1">  COUNT(*) AS page_views_count</span>
+<span class="s1">FROM pageviews_stream</span>
+<span class="s1">GROUP BY pageid</span>
+<span class="s1">EMIT CHANGES;</span>
+<span class="s1">",</span>
+<span class="s1">  "streamsProperties": {}</span>
+<span class="s1">}'</span>
+</pre>
+<p>We can query the table to get the viewcount per pageid:</p>
+<pre class="code literal-block">$ curl -X <span class="s2">"POST"</span> <span class="s2">"http://localhost:8088/ksql"</span> <span class="se">\</span>
+     -H <span class="s2">"Content-Type: application/vnd.ksql.v1+json; charset=utf-8"</span> <span class="se">\</span>
+     -d <span class="s1">$'{</span>
+<span class="s1">  "ksql": "SELECT * FROM pageviews_count EMIT CHANGES;",</span>
+<span class="s1">  "streamsProperties": {}</span>
+<span class="s1">}'</span>
+</pre>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to install Apache Kafka locally using Docker. We have also seen how to produce and consume messages using Kafka console commands and Kafka Rest Proxy.</p>
 <div class="footnote">
