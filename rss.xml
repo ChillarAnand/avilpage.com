@@ -1,5 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 29 Dec 2024 16:19:23 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering "Partial Covered Calls" - Part 1</title><link>https://avilpage.com/2024/11/mastering-partial-covered-calls.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Covered Calls&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 31 Dec 2024 06:10:51 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Install Cockpit on Remote Linux VM</title><link>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;p&gt;&lt;img alt="Cockpit" src="https://avilpage.com/images/cockpit-how-to.png"&gt;&lt;/p&gt;
+&lt;p&gt;Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.&lt;/p&gt;
+&lt;h4&gt;Setup&lt;/h4&gt;
+&lt;p&gt;Let's create a new Ubuntu VM and install Cockpit on it.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;sudo apt update
+. /etc/os-release
+sudo apt install -t &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports cockpit
+&lt;/pre&gt;
+&lt;p&gt;Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.&lt;/p&gt;
+&lt;p&gt;It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an &lt;code&gt;A&lt;/code&gt; record in DNS settings to point &lt;code&gt;cockpit.avilpage.com&lt;/code&gt; to the public ip of the VM.&lt;/p&gt;
+&lt;h4&gt;Reverse Proxy&lt;/h4&gt;
+&lt;p&gt;Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;sudo apt install caddy
+&lt;/pre&gt;
+&lt;p&gt;Add the below configuration to &lt;code&gt;/etc/caddy/Caddyfile&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;cockpit.avilpage.com &lt;span class="o"&gt;{&lt;/span&gt;
+    reverse_proxy localhost:9090
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;We need &lt;code&gt;Origins&lt;/code&gt; to Cockpit configuration at &lt;code&gt;/etc/cockpit/cockpit.conf&lt;/code&gt; to allow requests from the subdomain.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Origins&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; https://cockpit.avilpage.com
+&lt;/pre&gt;
+&lt;p&gt;Restart both services and open &lt;a href="https://cockpit.avilpage.com"&gt;https://cockpit.avilpage.com&lt;/a&gt; in browser.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;sudo systemctl restart cockpit
+sudo systemctl restart caddy
+&lt;/pre&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server&lt;/p&gt;</description><category>linux</category><category>productivity</category><guid>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</guid><pubDate>Mon, 30 Dec 2024 22:54:07 GMT</pubDate></item><item><title>Mastering "Partial Covered Calls" - Part 1</title><link>https://avilpage.com/2024/11/mastering-partial-covered-calls.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Covered Calls&lt;/h4&gt;
 &lt;p&gt;In a covered call strategy, we buy one lot of stocks (or 1 Future) and sell at the money call option. The payoff diagram looks like this:&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Covered Call" src="https://avilpage.com/images/covered-call.png"&gt;&lt;/p&gt;
 &lt;p&gt;There are 2 drawbacks of this strategy:&lt;/p&gt;
@@ -539,30 +568,4 @@ $ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class
 &lt;p&gt;&lt;a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz"&gt;SRR6915097_1.fastq.gz&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fnref:srr2" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>bioinformatics</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item><item><title>Headlamp - k8s Lens open source alternative</title><link>https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative.png"&gt;&lt;/p&gt;
-&lt;p&gt;Since Lens is not open source, I tried out monokle, octant, k9s, and headlamp&lt;sup id="fnref:headlamp"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html#fn:headlamp"&gt;1&lt;/a&gt;&lt;/sup&gt;. Among them, headlamp UI &amp;amp; features are closest to Lens. &lt;/p&gt;
-&lt;h4&gt;Headlamp&lt;/h4&gt;
-&lt;p&gt;Headlamp is CNCF sandbox project that provides cross-platform desktop application to manage Kubernetes clusters. It auto-detects clusters and provides cluster wide resource usage by default. &lt;/p&gt;
-&lt;p&gt;It can also be installed inside the cluster and can be accessed using a web browser. This is useful when we want to access the cluster from a mobile device.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ helm repo add headlamp https://headlamp-k8s.github.io/headlamp/
-
-$ helm install headlamp headlamp/headlamp
-&lt;/pre&gt;
-&lt;p&gt;Lets port-forward the service &amp;amp; copy the token to access it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl create token headlamp
-
-&lt;span class="c1"&gt;# we can do this via headlamp UI as well&lt;/span&gt;
-$ kubectl port-forward service/headlamp &lt;span class="m"&gt;8080&lt;/span&gt;:80
-&lt;/pre&gt;
-&lt;p&gt;Now, we can access the headlamp UI at &lt;a href="http://"&gt;http://localhost:8080&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative2.png"&gt;&lt;/p&gt;
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;If you are looking for an open source alternative to Lens, headlamp is a good choice. It provides a similar UI &amp;amp; features as Lens, and it is accessible via mobile devices as well. &lt;/p&gt;
-&lt;div class="footnote"&gt;
-&lt;hr&gt;
-&lt;ol&gt;
-&lt;li id="fn:headlamp"&gt;
-&lt;p&gt;&lt;a href="https://headlamp.dev/"&gt;https://headlamp.dev/&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html#fnref:headlamp" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>kubernetes</category><guid>https://avilpage.com/2024/06/headlamp-k8s-lens-open-source-alternative.html</guid><pubDate>Sun, 23 Jun 2024 20:18:02 GMT</pubDate></item></channel></rss>
+&lt;/div&gt;</description><category>bioinformatics</category><category>kraken2</category><category>metagenomics</category><guid>https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html</guid><pubDate>Sun, 28 Jul 2024 05:14:25 GMT</pubDate></item></channel></rss>
