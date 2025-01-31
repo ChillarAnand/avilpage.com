@@ -79,7 +79,73 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/12/install-cockpit-on-remote-linux-vm.html" class="u-url">Install Cockpit on Remote Linux VM</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/01/postman-auto-login-renew-oauth2-token.html" class="u-url">Postman - Auto Login &amp; Renew OAuth2 Token</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2025/01/postman-auto-login-renew-oauth2-token.html" rel="bookmark">
+            <time class="published dt-published" datetime="2025-01-31T22:50:17+05:30" itemprop="datePublished" title="2025-01-31">2025-01-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>When using Postman to interact with APIs behind an OAuth2 authentication, we need to login and renew the token manually. This can be automated using the following steps.</p>
+<ul>
+<li>Set credentials in environment variables</li>
+<li>Create a pre-request script to login and renew the token</li>
+<li>Use the token in the request headers</li>
+</ul>
+<h4>Automating Login &amp; Renewal</h4>
+<pre class="code literal-block"><span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">loginTimestamp</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span> <span class="o">||</span> <span class="mf">86400</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">loginDuration</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">loginTimestamp</span><span class="p">;</span>
+  <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="nx">loginDuration</span> <span class="o">&gt;=</span> <span class="nx">expiresInSeconds</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/auth/connect/token"</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+    <span class="nx">header</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
+      <span class="s1">'Accept'</span><span class="o">:</span> <span class="s1">'application/json'</span>
+    <span class="p">},</span>
+    <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">mode</span><span class="o">:</span> <span class="s1">'urlencoded'</span><span class="p">,</span>
+        <span class="nx">urlencoded</span><span class="o">:</span> <span class="p">[</span>
+          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"username"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"password"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"grant_type"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">"password"</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"client_id"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">jsonData</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span> <span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
+        <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span> <span class="o">*</span> <span class="mf">1000</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span> <span class="nx">expiresInSeconds</span><span class="p">);</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre>
+<p>We can copy this script to the pre-request script of the collection. </p>
+<p><img alt="Cockpit" src="../images/postman-auto-login.png"></p>
+<p>Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.</p>
+<h4>Conclusion</h4>
+<p>This is a one time setup for Postman collection and it saves a lot of time in the long run. The script can be modified to handle different grant types and token renewal strategies.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/12/install-cockpit-on-remote-linux-vm.html" class="u-url">Install Cockpit on Remote Linux VM</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -649,132 +715,6 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <sp
 </li>
 <li id="fn:vmt">
 <p><a href="https://hoytech.com/vmtouch/">https://hoytech.com/vmtouch/</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fnref:vmt" title="Jump back to footnote 5 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/07/mastering-kraken2-initial-runs.html" class="u-url">Mastering Kraken2 - Part 1 - Initial Runs</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2024/07/mastering-kraken2-initial-runs.html" rel="bookmark">
-            <time class="published dt-published" datetime="2024-07-28T10:44:25+05:30" itemprop="datePublished" title="2024-07-28">2024-07-28</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Mastering Kraken2</h4>
-<p><a href="../2024/07/mastering-kraken2-initial-runs.html">Part 1 - Initial Runs</a> (this post)</p>
-<p><a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Classification Performance Optimisation</a></p>
-<p><a href="../2024/07/mastering-kraken2-build-custom-db.html">Part 3 - Build custom database indices</a></p>
-<p><a href="../2024/08/mastering-kraken2-fda-argos-index.html">Part 4 - Build FDA-ARGOS index</a> (this post)</p>
-<p>Part 5 - Regular vs Fast Builds (upcoming)</p>
-<p>Part 6 - Benchmarking (upcoming)</p>
-<h4>Introduction</h4>
-<p>Kraken2<sup id="fnref:Kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:Kraken2">1</a></sup> is widely used for metagenomics taxonomic classification, and it has pre-built indexes for many organisms. In this series, we will learn</p>
-<ul>
-<li>How to set up kraken2, download pre-built indices</li>
-<li>Run kraken2 (8GB RAM) at ~0.19 Mbp/m (million base pairs per minute)</li>
-<li>Learn various ways to speed up the classification process</li>
-<li>Run kraken2 (128GB RAM) at ~1200 Mbp/m</li>
-<li>Build custom indices</li>
-</ul>
-<h4>Installation</h4>
-<p>We can install kraken2 from source using the <code>install_kraken2.sh</code> script as per the manual<sup id="fnref:install_kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2">2</a></sup>.</p>
-<pre class="code literal-block">$ git clone https://github.com/DerrickWood/kraken2
-$ <span class="nb">cd</span> kraken2
-$ ./install_kraken2.sh /usr/local/bin
-<span class="c1"># ensure kraken2 is in the PATH</span>
-$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/bin
-</pre>
-<p>If you already have conda installed, you can install kraken2 from conda as well.</p>
-<pre class="code literal-block">$ conda install -c bioconda kraken2
-</pre>
-<p>If you have <code>brew</code> installed on Linux or Mac(including M1), you can install kraken2 using <code>brew</code>.</p>
-<pre class="code literal-block">$ brew install brewsci/bio/kraken2
-</pre>
-<h4>Download pre-built indices</h4>
-<p>Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.</p>
-<p>Genomic Index Zone<sup id="fnref:GenomicIndexZone"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:GenomicIndexZone">3</a></sup> provides pre-built indices for kraken2. Let's download the standard database. It contains Refeq archaea, bacteria, viral, plasmid, human1, &amp; UniVec_Core. </p>
-<pre class="code literal-block">$ wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
-$ mkdir k2_standard
-$ tar -xvf k2_standard_20240605.tar.gz -C k2_standard
-</pre>
-<p>The extracted directory contains three files - <code>hash.k2d</code>, <code>opts.k2d</code>, <code>taxo.k2d</code> which are the kraken2 database files.</p>
-<pre class="code literal-block">$ ls -l *.k2d
-.rw-r--r--  83G anand <span class="m">13</span> Jul <span class="m">12</span>:34 hash.k2d
-.rw-r--r--   <span class="m">64</span> anand <span class="m">13</span> Jul <span class="m">12</span>:34 opts.k2d
-.rw-r--r-- <span class="m">4</span>.0M anand <span class="m">13</span> Jul <span class="m">12</span>:34 taxo.k2d
-</pre>
-<h4>Classification</h4>
-<p>To run the taxonomic classification, let's use <code>ERR10359977</code> human gut meta genome from NCBI SRA.</p>
-<pre class="code literal-block">$ wget https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
-$ kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
-<p>By default, the machine I have used has 8GB RAM and an additioinal 8GB swap. Since kraken2 needs entire db(~80GB) in memory, when the process tries to consume more than 16GB memory, the kernel will kill the process. </p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-Loading database information...Command terminated by signal <span class="m">9</span>
-<span class="m">0</span>.02user <span class="m">275</span>.83system <span class="m">8</span>:17.43elapsed <span class="m">55</span>%CPU 
-</pre>
-<p>To prevent this, let's increase the swap space to 128 GB.</p>
-<pre class="code literal-block"><span class="c1"># Create an empty swapfile of 128GB</span>
-sudo dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/swapfile <span class="nv">bs</span><span class="o">=</span>1G <span class="nv">count</span><span class="o">=</span><span class="m">128</span>
-
-<span class="c1"># Turn swap off - It might take several minutes</span>
-sudo swapoff -a
-
-<span class="c1"># Set the permissions for swapfile</span>
-sudo chmod <span class="m">0600</span> /swapfile
-
-<span class="c1"># make it a swap area</span>
-sudo mkswap /swapfile  
-
-<span class="c1"># Turn the swap on</span>
-sudo swapon /swapfile
-</pre>
-<p>We can time the classification process using the <code>time</code> command.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
-<p>If you have a machine with large RAM, the same scenario can be simulated using <code>systemd-run</code>. This will limit the memory usage of kraken2 to 6.5GB. </p>
-<pre class="code literal-block">$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span><span class="m">6</span>.5G --user <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
-<p>Depending on the CPU performance, this will take around ~40 minutes to complete.</p>
-<pre class="code literal-block">Loading database information... <span class="k">done</span>.
-<span class="m">95064</span> sequences <span class="o">(</span><span class="m">14</span>.35 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">1026</span>.994s <span class="o">(</span><span class="m">5</span>.6 Kseq/m, <span class="m">0</span>.84 Mbp/m<span class="o">)</span>.
-  <span class="m">94939</span> sequences classified <span class="o">(</span><span class="m">99</span>.87%<span class="o">)</span>
-  <span class="m">125</span> sequences unclassified <span class="o">(</span><span class="m">0</span>.13%<span class="o">)</span>
-  <span class="m">4</span>.24user <span class="m">658</span>.68system <span class="m">38</span>:26.78elapsed <span class="m">28</span>%CPU 
-</pre>
-<p>If we try gut WGS(Whole Genome Sequence) sample like <code>SRR6915097</code> <sup id="fnref:srr1"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr1">4</a></sup><sup id="fnref:srr2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr2">5</a></sup>. which contains ~3.3 Gbp, it will take weeks to complete.</p>
-<pre class="code literal-block">$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
-$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
-
-$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span>6G --user <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-</pre>
-<p>I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.</p>
-<p>If we have to process a large number of such samples, it takes months and this is not a practical solution. </p>
-<h4>Conclusion</h4>
-<p>In this post, we ran kraken2 on an 8GB machine and learned that it is not feasible to run kraken2 on large samples.</p>
-<p>In the next post, we will learn how to speed up the classification process and run classification at 1200 Mbp/m.</p>
-<p><strong>Next</strong>: <a href="../2024/07/mastering-kraken2-performance-optimisation.html">Part 2 - Performance Optimisation</a></p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:Kraken2">
-<p><a href="https://ccb.jhu.edu/software/kraken2/">Kraken2</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:Kraken2" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:install_kraken2">
-<p><a href="https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown#installation">Kraken2 - Manual - Install</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:install_kraken2" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:GenomicIndexZone">
-<p><a href="https://benlangmead.github.io/aws-indexes/k2">Genomic Index Zone - k2</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:GenomicIndexZone" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:srr1">
-<p><a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz">SRR6915097_1.fastq.gz</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:srr1" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-<li id="fn:srr2">
-<p><a href="https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz">SRR6915097_1.fastq.gz</a> <a class="footnote-backref" href="../2024/07/mastering-kraken2-initial-runs.html#fnref:srr2" title="Jump back to footnote 5 in the text">↩</a></p>
 </li>
 </ol>
 </div>
