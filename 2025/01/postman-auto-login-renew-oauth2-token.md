@@ -2,8 +2,8 @@
 .. title: Postman - Auto Login & Renew OAuth2 Token
 .. slug: postman-auto-login-renew-oauth2-token
 .. date: 2025-01-31 22:50:17 UTC+05:30
-.. tags: 
-.. category: 
+.. tags: postman, automation
+.. category: automation
 .. link: 
 .. description: How to automate login & renewal of JWT token in OAuth2 using Postman
 .. type: text
