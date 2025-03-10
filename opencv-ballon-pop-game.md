@@ -27,16 +27,17 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 Close the powershell and open it again. Now you can run `uv` command to install python packages.
 
-Install python 3.11 with the following command
+Install python 3.11 with 
 
 ```commandline
 uv venv --seed -p 3.11
 ```
-Download [zip file from this link](https://github.com/AvilPage/CameraBallonPop/archive/refs/heads/master.zip) and extract it.
+
+Download [zip file from this link](https://github.com/AvilPage/CameraBallonPop/archive/refs/heads/master.zip) and unzip it.
+
 
 ```shell
-cd CameraBallonPop-master
-uv install
+pip install cvzone mediapipe pygame
 ```
 
 
