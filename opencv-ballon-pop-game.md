@@ -29,6 +29,10 @@ Close the powershell and open it again. Now you can run `uv` command to install 
 
 Download [zip file from this link](https://github.com/AvilPage/CameraBallonPop/archive/refs/heads/master.zip) and extract it.
 
+```shell
+cd CameraBallonPop-master
+uv install
+```
 
 
 ### Resources
