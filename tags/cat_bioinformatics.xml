@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about bioinformatics)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_bioinformatics.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 10 Mar 2025 18:28:57 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</title><link>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about bioinformatics)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/cat_bioinformatics.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</title><link>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Build custom database indices&lt;/a&gt;&lt;/p&gt;
@@ -13,20 +13,22 @@
 &lt;p&gt;FDA-ARGOS db is available at NCBI&lt;sup id="fnref:ncbi"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi"&gt;2&lt;/a&gt;&lt;/sup&gt; from which we can download the assembly file.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"&gt;&lt;/p&gt;
 &lt;p&gt;We can extract accession numbers from the assembly file and then download the genomes from these accession ids.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ grep -e &lt;span class="s2"&gt;"^#"&lt;/span&gt; -v PRJNA231221_AssemblyDetails.txt &lt;span class="p"&gt;|&lt;/span&gt; cut -d&lt;span class="s1"&gt;$'\t'&lt;/span&gt; -f1 &amp;gt; accessions.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"^#"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;PRJNA231221_AssemblyDetails.txt&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="s1"&gt;$'\t'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f1&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ wc accessions.txt
- &lt;span class="m"&gt;1428&lt;/span&gt;  &lt;span class="m"&gt;1428&lt;/span&gt; &lt;span class="m"&gt;22848&lt;/span&gt; accessions.txt
+$&lt;span class="w"&gt; &lt;/span&gt;wc&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22848&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel &lt;span class="m"&gt;40&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download&lt;span class="w"&gt; &lt;/span&gt;--section&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--assembly-accessions&lt;span class="w"&gt; &lt;/span&gt;accessions.txt&lt;span class="w"&gt; &lt;/span&gt;--progress-bar&lt;span class="w"&gt; &lt;/span&gt;bacteria&lt;span class="w"&gt; &lt;/span&gt;--parallel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.&lt;/p&gt;
 &lt;p&gt;We can use kraken-db-builder&lt;sup id="fnref:kdb"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to build index from these genbank genome files.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
-$ conda install -c bioconda any2fasta
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;any2fasta
 
-$ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;/span&gt; --db-name k2_argos
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kraken-db-builder&lt;span class="w"&gt; &lt;/span&gt;--genomes-dir&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;36&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--db-name&lt;span class="w"&gt; &lt;/span&gt;k2_argos
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~30 minutes to build the index.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.&lt;/p&gt;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 27 Mar 2025 11:01:41 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Autoscale k8s pods with queue size (KEDA)</title><link>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="keda-postgreql-scaling" src="https://avilpage.com/images/keda-postgresql-scaling1.png"&gt;&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:38 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Autoscale k8s pods with queue size (KEDA)</title><link>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="keda-postgreql-scaling" src="https://avilpage.com/images/keda-postgresql-scaling1.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kubernetes(k8s) is a popular container orchestration tool, and it provides Horizontal Pod Autoscaler(HPA) to scale pods based on CPU and Memory usage. &lt;/p&gt;
 &lt;p&gt;To scale pods based on the queue size we can use &lt;a href="https://keda.sh/"&gt;KEDA&lt;/a&gt;.&lt;/p&gt;
@@ -157,11 +157,13 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;&lt;a href="https://gallery.ecr.aws/"&gt;AWS ECR Public Gallery&lt;/a&gt;&lt;sup id="fnref:ecr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:ecr"&gt;2&lt;/a&gt;&lt;/sup&gt; is a good alternative to DockerHub as of today(2025 Feb). It is free and does not have rate limits even for anonymous users. &lt;/p&gt;
 &lt;p&gt;&lt;img alt="public-ecr-gallery" src="https://avilpage.com/images/public-ecr-gallery.png"&gt;&lt;/p&gt;
 &lt;p&gt;Once we find the required image from the gallery, we can simply change the image name in the &lt;code&gt;docker pull&lt;/code&gt; command to pull the image from ECR Gallery.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;docker pull public.ecr.aws/ubuntu/ubuntu
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;docker&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;public.ecr.aws/ubuntu/ubuntu
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In &lt;code&gt;Dockerfile&lt;/code&gt;, we can use the image from ECR Gallery as follows:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="s"&gt;public.ecr.aws/ubuntu/ubuntu&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;public.ecr.aws/ubuntu/ubuntu&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;That is a quick way to avoid DockerHub rate limits.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
@@ -181,47 +183,48 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;li&gt;Use the token in the request headers&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4&gt;Automating Login &amp;amp; Renewal&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;isSessionExpired&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;isSessionExpired&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;loginTimestamp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"loginTimestamp"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"expiresInSeconds"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="mf"&gt;86400&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;loginTimestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"loginTimestamp"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;environment&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"expiresInSeconds"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;||&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;86400&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;loginTimestamp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-  &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;loginDuration&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="nx"&gt;loginTimestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-  &lt;span class="nx"&gt;isSessionExpired&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;loginDuration&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;=&lt;/span&gt; &lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;loginTimestamp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;loginDuration&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;loginTimestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nx"&gt;isSessionExpired&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;loginDuration&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
 
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;isSessionExpired&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-  &lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sendRequest&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
-    &lt;span class="nx"&gt;url&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'host'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s2"&gt;"/auth/connect/token"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="nx"&gt;method&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'POST'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="nx"&gt;header&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-      &lt;span class="s1"&gt;'Content-Type'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'application/x-www-form-urlencoded'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-      &lt;span class="s1"&gt;'Accept'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'application/json'&lt;/span&gt;
-    &lt;span class="p"&gt;},&lt;/span&gt;
-    &lt;span class="nx"&gt;body&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="nx"&gt;mode&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'urlencoded'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="nx"&gt;urlencoded&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-          &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"username"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
-          &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'password'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
-          &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"grant_type"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"password"&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt;
-          &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"client_id"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"client_id"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
-        &lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-  &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;err&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nx"&gt;jsonData&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;isSessionExpired&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nx"&gt;pm&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sendRequest&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;url&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'host'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"/auth/connect/token"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;method&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'POST'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;header&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s1"&gt;'Content-Type'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'application/x-www-form-urlencoded'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="s1"&gt;'Accept'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'application/json'&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;body&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;mode&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'urlencoded'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;urlencoded&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"username"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'username'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'password'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"grant_type"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"password"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"client_id"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"client_id"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;err&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;jsonData&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
 
-    &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"access_token"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;jsonData&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;access_token&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"access_token"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;jsonData&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;access_token&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 
-    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;expires_in&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
-        &lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;expires_in&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mf"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"expiresInSeconds"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
-    &lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"loginTimestamp"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;now&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
-  &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;expires_in&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;res&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;json&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;expires_in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"expiresInSeconds"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;expiresInSeconds&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"loginTimestamp"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;now&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;});&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can copy this script to the pre-request script of the collection. &lt;/p&gt;
 &lt;p&gt;&lt;img alt="Cockpit" src="https://avilpage.com/images/postman-auto-login.png"&gt;&lt;/p&gt;
 &lt;p&gt;Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.&lt;/p&gt;
@@ -231,29 +234,34 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Let's create a new Ubuntu VM and install Cockpit on it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt update
-. /etc/os-release
-sudo apt install -t &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports cockpit
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;update
+.&lt;span class="w"&gt; &lt;/span&gt;/etc/os-release
+sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports&lt;span class="w"&gt; &lt;/span&gt;cockpit
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.&lt;/p&gt;
 &lt;p&gt;It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an &lt;code&gt;A&lt;/code&gt; record in DNS settings to point &lt;code&gt;cockpit.avilpage.com&lt;/code&gt; to the public ip of the VM.&lt;/p&gt;
 &lt;h4&gt;Reverse Proxy&lt;/h4&gt;
 &lt;p&gt;Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt install caddy
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;caddy
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Add the below configuration to &lt;code&gt;/etc/caddy/Caddyfile&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;cockpit.avilpage.com &lt;span class="o"&gt;{&lt;/span&gt;
-    reverse_proxy localhost:9090
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;cockpit.avilpage.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;reverse_proxy&lt;span class="w"&gt; &lt;/span&gt;localhost:9090
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We need &lt;code&gt;Origins&lt;/code&gt; to Cockpit configuration at &lt;code&gt;/etc/cockpit/cockpit.conf&lt;/code&gt; to allow requests from the subdomain.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Origins&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; https://cockpit.avilpage.com
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Origins&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;https://cockpit.avilpage.com
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Restart both services and open &lt;a href="https://cockpit.avilpage.com"&gt;https://cockpit.avilpage.com&lt;/a&gt; in browser.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo systemctl restart cockpit
-sudo systemctl restart caddy
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;cockpit
+sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;caddy
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server&lt;/p&gt;</description><category>linux</category><category>productivity</category><guid>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</guid><pubDate>Mon, 30 Dec 2024 22:54:07 GMT</pubDate></item><item><title>Mastering "Partial Covered Calls" - Part 1</title><link>https://avilpage.com/2024/11/mastering-partial-covered-calls.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Covered Calls&lt;/h4&gt;
 &lt;p&gt;In a covered call strategy, we buy one lot of stocks (or 1 Future) and sell at the money call option. The payoff diagram looks like this:&lt;/p&gt;
@@ -291,22 +299,23 @@ Luckily, I got hired.&lt;/p&gt;
 &lt;p&gt;In the above scenario, node C1 will be able to connect C2 &amp;amp; C3 as they are in the same network.&lt;/p&gt;
 &lt;p&gt;Once we start tailscale on node C1, it will get a 100.x.y.z IP address from tailscale subnet. Now, node C1 will not be able to connect to node C2 &amp;amp; C3.&lt;/p&gt;
 &lt;p&gt;To avoid conflicts with the existing network, we can configure tailscale to use a "smaller" subnet using "ipPool".&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="nt"&gt;"acls"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-        &lt;span class="s2"&gt;"..."&lt;/span&gt;
-    &lt;span class="p"&gt;],&lt;/span&gt;
-    &lt;span class="nt"&gt;"nodeAttrs"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-        &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="nt"&gt;"target"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-                &lt;span class="s2"&gt;"autogroup:admin"&lt;/span&gt;
-            &lt;span class="p"&gt;],&lt;/span&gt;
-            &lt;span class="nt"&gt;"ipPool"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-                &lt;span class="s2"&gt;"100.100.96.0/20"&lt;/span&gt;
-            &lt;span class="p"&gt;]&lt;/span&gt;
-        &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;"acls"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="s2"&gt;"..."&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;"nodeAttrs"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nt"&gt;"target"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;"autogroup:admin"&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nt"&gt;"ipPool"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="s2"&gt;"100.100.96.0/20"&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once it is configured, taiscale will start assigning IP addresses from the new subnet. Even though ip address allocation is limited, we can't still access nodes in other subnets due to a bug&lt;sup id="fnref:tsb"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html#fn:tsb"&gt;5&lt;/a&gt;&lt;/sup&gt; in tailscale.&lt;/p&gt;
 &lt;p&gt;As a workaround, we can manually update the iptables to route traffic to the correct subnet.&lt;/p&gt;
 &lt;p&gt;Lets look at the iptables rules added by tailscale by stopping it and then starting it.&lt;/p&gt;
@@ -314,9 +323,10 @@ Luckily, I got hired.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/tailscale-cgnat4.png" alt="tailscale iptables rules"&gt;&lt;/p&gt;
 &lt;p&gt;The highlighted rule drops any incoming packet that doesn't originate from tailscale0 interface, and source IP is 100.64.0.0/10 (100.64.0.0 to 100.127.255.255).&lt;/p&gt;
 &lt;p&gt;Let's delete this rule and add a new rule to restrict the source IP to 100.100.96.0/20 (100.100.96.1 to 100.100.111.254).&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo iptables --delete ts-input --source &lt;span class="m"&gt;100&lt;/span&gt;.64.0.0/10 ! -i tailscale0 -j DROP
-$ sudo iptables --insert ts-input &lt;span class="m"&gt;3&lt;/span&gt; --source &lt;span class="m"&gt;100&lt;/span&gt;.100.96.0/20 ! -i tailscale0 -j DROP
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;iptables&lt;span class="w"&gt; &lt;/span&gt;--delete&lt;span class="w"&gt; &lt;/span&gt;ts-input&lt;span class="w"&gt; &lt;/span&gt;--source&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;.64.0.0/10&lt;span class="w"&gt; &lt;/span&gt;!&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;tailscale0&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;DROP
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;iptables&lt;span class="w"&gt; &lt;/span&gt;--insert&lt;span class="w"&gt; &lt;/span&gt;ts-input&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--source&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;.100.96.0/20&lt;span class="w"&gt; &lt;/span&gt;!&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;tailscale0&lt;span class="w"&gt; &lt;/span&gt;-j&lt;span class="w"&gt; &lt;/span&gt;DROP
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src="https://avilpage.com/images/tailscale-cgnat5.png" alt="tailscale iptables rules"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;By configuring tailscale to use a smaller subnet, we can avoid conflicts with existing networks. Even though there is a bug in tailscale, we can manually update iptables to route traffic to the correct subnet.&lt;/p&gt;
@@ -353,20 +363,22 @@ $ sudo iptables --insert ts-input &lt;span class="m"&gt;3&lt;/span&gt; --source 
 &lt;p&gt;FDA-ARGOS db is available at NCBI&lt;sup id="fnref:ncbi"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi"&gt;2&lt;/a&gt;&lt;/sup&gt; from which we can download the assembly file.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"&gt;&lt;/p&gt;
 &lt;p&gt;We can extract accession numbers from the assembly file and then download the genomes from these accession ids.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ grep -e &lt;span class="s2"&gt;"^#"&lt;/span&gt; -v PRJNA231221_AssemblyDetails.txt &lt;span class="p"&gt;|&lt;/span&gt; cut -d&lt;span class="s1"&gt;$'\t'&lt;/span&gt; -f1 &amp;gt; accessions.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"^#"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;PRJNA231221_AssemblyDetails.txt&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="s1"&gt;$'\t'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f1&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ wc accessions.txt
- &lt;span class="m"&gt;1428&lt;/span&gt;  &lt;span class="m"&gt;1428&lt;/span&gt; &lt;span class="m"&gt;22848&lt;/span&gt; accessions.txt
+$&lt;span class="w"&gt; &lt;/span&gt;wc&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22848&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel &lt;span class="m"&gt;40&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download&lt;span class="w"&gt; &lt;/span&gt;--section&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--assembly-accessions&lt;span class="w"&gt; &lt;/span&gt;accessions.txt&lt;span class="w"&gt; &lt;/span&gt;--progress-bar&lt;span class="w"&gt; &lt;/span&gt;bacteria&lt;span class="w"&gt; &lt;/span&gt;--parallel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.&lt;/p&gt;
 &lt;p&gt;We can use kraken-db-builder&lt;sup id="fnref:kdb"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to build index from these genbank genome files.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
-$ conda install -c bioconda any2fasta
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;any2fasta
 
-$ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;/span&gt; --db-name k2_argos
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kraken-db-builder&lt;span class="w"&gt; &lt;/span&gt;--genomes-dir&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;36&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--db-name&lt;span class="w"&gt; &lt;/span&gt;k2_argos
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~30 minutes to build the index.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.&lt;/p&gt;
@@ -412,21 +424,23 @@ $ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>musings</category><guid>https://avilpage.com/2024/08/midnight-coding-narendra-modi-ivanka-trump.html</guid><pubDate>Sun, 18 Aug 2024 00:25:43 GMT</pubDate></item><item><title>How (and when) to use systemd timer instead of cronjob</title><link>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;* * * * * bash demo.sh
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;demo.sh
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.&lt;/p&gt;
 &lt;h4&gt;How to use systemd timer&lt;/h4&gt;
 &lt;p&gt;We need to create a service file(contains the script to be run) and a timer(contains the schedule).&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo service
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo&lt;span class="w"&gt; &lt;/span&gt;service
 
 &lt;span class="o"&gt;[&lt;/span&gt;Service&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash demo.sh
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
+&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;demo.sh
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run myscript.service every &lt;span class="m"&gt;1&lt;/span&gt; minutes
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run&lt;span class="w"&gt; &lt;/span&gt;myscript.service&lt;span class="w"&gt; &lt;/span&gt;every&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;minutes
 
 &lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
@@ -434,17 +448,20 @@ $ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;
 
 &lt;span class="o"&gt;[&lt;/span&gt;Install&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;multi-user.target
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can copy these files to &lt;code&gt;/etc/systemd/system/&lt;/code&gt; and enable the timer.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo cp demo.service demo.timer /etc/systemd/system/
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;demo.service&lt;span class="w"&gt; &lt;/span&gt;demo.timer&lt;span class="w"&gt; &lt;/span&gt;/etc/systemd/system/
 
-$ sudo systemctl daemon-reload
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;daemon-reload
 
-$ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;enable&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--now&lt;span class="w"&gt; &lt;/span&gt;demo.timer
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can use &lt;code&gt;systemctl&lt;/code&gt; to see when the task is executed last and when it will be executed next.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo systemctl list-timers --all
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;list-timers&lt;span class="w"&gt; &lt;/span&gt;--all
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src="https://avilpage.com/images/systemd-timer-cronjob.png" alt="systemd timer"&gt;&lt;/p&gt;
 &lt;h4&gt;Use Cases&lt;/h4&gt;
 &lt;ul&gt;
@@ -458,12 +475,14 @@ $ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
 &lt;p&gt;Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till &lt;code&gt;second&lt;/code&gt; level precision. &lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-* &lt;span class="m"&gt;15&lt;/span&gt;:30:15
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-*&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15&lt;/span&gt;:30:15
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;15min
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</guid><pubDate>Mon, 05 Aug 2024 07:37:50 GMT</pubDate></item></channel></rss>

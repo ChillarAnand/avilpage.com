@@ -261,11 +261,13 @@ helm<span class="w"> </span>install<span class="w"> </span>keda<span class="w"> 
 <p><a href="https://gallery.ecr.aws/">AWS ECR Public Gallery</a><sup id="fnref:ecr"><a class="footnote-ref" href="../2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:ecr">2</a></sup> is a good alternative to DockerHub as of today(2025 Feb). It is free and does not have rate limits even for anonymous users. </p>
 <p><img alt="public-ecr-gallery" src="../images/public-ecr-gallery.png"></p>
 <p>Once we find the required image from the gallery, we can simply change the image name in the <code>docker pull</code> command to pull the image from ECR Gallery.</p>
-<pre class="code literal-block">docker pull public.ecr.aws/ubuntu/ubuntu
-</pre>
+<div class="code"><pre class="code literal-block">docker<span class="w"> </span>pull<span class="w"> </span>public.ecr.aws/ubuntu/ubuntu
+</pre></div>
+
 <p>In <code>Dockerfile</code>, we can use the image from ECR Gallery as follows:</p>
-<pre class="code literal-block"><span class="k">FROM</span> <span class="s">public.ecr.aws/ubuntu/ubuntu</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="k">FROM</span><span class="w"> </span><span class="s">public.ecr.aws/ubuntu/ubuntu</span>
+</pre></div>
+
 <p>That is a quick way to avoid DockerHub rate limits.</p>
 <div class="footnote">
 <hr>
@@ -298,47 +300,48 @@ helm<span class="w"> </span>install<span class="w"> </span>keda<span class="w"> 
 <li>Use the token in the request headers</li>
 </ul>
 <h4>Automating Login &amp; Renewal</h4>
-<pre class="code literal-block"><span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="kd">var</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 
-<span class="kd">var</span> <span class="nx">loginTimestamp</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span> <span class="o">||</span> <span class="mf">86400</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mf">86400</span><span class="p">;</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">loginDuration</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">loginTimestamp</span><span class="p">;</span>
-  <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="nx">loginDuration</span> <span class="o">&gt;=</span> <span class="nx">expiresInSeconds</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
-    <span class="nx">url</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/auth/connect/token"</span><span class="p">,</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
-    <span class="nx">header</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
-      <span class="s1">'Accept'</span><span class="o">:</span> <span class="s1">'application/json'</span>
-    <span class="p">},</span>
-    <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">mode</span><span class="o">:</span> <span class="s1">'urlencoded'</span><span class="p">,</span>
-        <span class="nx">urlencoded</span><span class="o">:</span> <span class="p">[</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"username"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"password"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"grant_type"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">"password"</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"client_id"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span> <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-  <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">jsonData</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">"/auth/connect/token"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">header</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">'Accept'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/json'</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">mode</span><span class="o">:</span><span class="w"> </span><span class="s1">'urlencoded'</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">urlencoded</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"grant_type"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"client_id"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">jsonData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
 
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span> <span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span><span class="w"> </span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
 
-    <span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
-        <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span> <span class="o">*</span> <span class="mf">1000</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span> <span class="nx">expiresInSeconds</span><span class="p">);</span>
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
-  <span class="p">});</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
+<span class="w">        </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
+<span class="w">  </span><span class="p">});</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>We can copy this script to the pre-request script of the collection. </p>
 <p><img alt="Cockpit" src="../images/postman-auto-login.png"></p>
 <p>Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.</p>
@@ -361,29 +364,34 @@ helm<span class="w"> </span>install<span class="w"> </span>keda<span class="w"> 
 <p>Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.</p>
 <h4>Setup</h4>
 <p>Let's create a new Ubuntu VM and install Cockpit on it.</p>
-<pre class="code literal-block">sudo apt update
-. /etc/os-release
-sudo apt install -t <span class="si">${</span><span class="nv">VERSION_CODENAME</span><span class="si">}</span>-backports cockpit
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>update
+.<span class="w"> </span>/etc/os-release
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span><span class="si">${</span><span class="nv">VERSION_CODENAME</span><span class="si">}</span>-backports<span class="w"> </span>cockpit
+</pre></div>
+
 <p>Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.</p>
 <p>It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an <code>A</code> record in DNS settings to point <code>cockpit.avilpage.com</code> to the public ip of the VM.</p>
 <h4>Reverse Proxy</h4>
 <p>Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.</p>
-<pre class="code literal-block">sudo apt install caddy
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>caddy
+</pre></div>
+
 <p>Add the below configuration to <code>/etc/caddy/Caddyfile</code>.</p>
-<pre class="code literal-block">cockpit.avilpage.com <span class="o">{</span>
-    reverse_proxy localhost:9090
+<div class="code"><pre class="code literal-block">cockpit.avilpage.com<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>reverse_proxy<span class="w"> </span>localhost:9090
 <span class="o">}</span>
-</pre>
+</pre></div>
+
 <p>We need <code>Origins</code> to Cockpit configuration at <code>/etc/cockpit/cockpit.conf</code> to allow requests from the subdomain.</p>
-<pre class="code literal-block"><span class="o">[</span>WebService<span class="o">]</span>
-<span class="nv">Origins</span> <span class="o">=</span> https://cockpit.avilpage.com
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>WebService<span class="o">]</span>
+<span class="nv">Origins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>https://cockpit.avilpage.com
+</pre></div>
+
 <p>Restart both services and open <a href="https://cockpit.avilpage.com">https://cockpit.avilpage.com</a> in browser.</p>
-<pre class="code literal-block">sudo systemctl restart cockpit
-sudo systemctl restart caddy
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>cockpit
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>caddy
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server</p>
     </div>
@@ -460,22 +468,23 @@ Luckily, I got hired.</p>
 <p>In the above scenario, node C1 will be able to connect C2 &amp; C3 as they are in the same network.</p>
 <p>Once we start tailscale on node C1, it will get a 100.x.y.z IP address from tailscale subnet. Now, node C1 will not be able to connect to node C2 &amp; C3.</p>
 <p>To avoid conflicts with the existing network, we can configure tailscale to use a "smaller" subnet using "ipPool".</p>
-<pre class="code literal-block"><span class="p">{</span>
-    <span class="nt">"acls"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">"..."</span>
-    <span class="p">],</span>
-    <span class="nt">"nodeAttrs"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">"target"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">"autogroup:admin"</span>
-            <span class="p">],</span>
-            <span class="nt">"ipPool"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">"100.100.96.0/20"</span>
-            <span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="p">{</span>
+<span class="w">    </span><span class="nt">"acls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"..."</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"nodeAttrs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"autogroup:admin"</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">"ipPool"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"100.100.96.0/20"</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>Once it is configured, taiscale will start assigning IP addresses from the new subnet. Even though ip address allocation is limited, we can't still access nodes in other subnets due to a bug<sup id="fnref:tsb"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:tsb">5</a></sup> in tailscale.</p>
 <p>As a workaround, we can manually update the iptables to route traffic to the correct subnet.</p>
 <p>Lets look at the iptables rules added by tailscale by stopping it and then starting it.</p>
@@ -483,9 +492,10 @@ Luckily, I got hired.</p>
 <p><img src="../images/tailscale-cgnat4.png" alt="tailscale iptables rules"></p>
 <p>The highlighted rule drops any incoming packet that doesn't originate from tailscale0 interface, and source IP is 100.64.0.0/10 (100.64.0.0 to 100.127.255.255).</p>
 <p>Let's delete this rule and add a new rule to restrict the source IP to 100.100.96.0/20 (100.100.96.1 to 100.100.111.254).</p>
-<pre class="code literal-block">$ sudo iptables --delete ts-input --source <span class="m">100</span>.64.0.0/10 ! -i tailscale0 -j DROP
-$ sudo iptables --insert ts-input <span class="m">3</span> --source <span class="m">100</span>.100.96.0/20 ! -i tailscale0 -j DROP
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--delete<span class="w"> </span>ts-input<span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.64.0.0/10<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--insert<span class="w"> </span>ts-input<span class="w"> </span><span class="m">3</span><span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.100.96.0/20<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+</pre></div>
+
 <p><img src="../images/tailscale-cgnat5.png" alt="tailscale iptables rules"></p>
 <h4>Conclusion</h4>
 <p>By configuring tailscale to use a smaller subnet, we can avoid conflicts with existing networks. Even though there is a bug in tailscale, we can manually update iptables to route traffic to the correct subnet.</p>
@@ -535,20 +545,22 @@ $ sudo iptables --insert ts-input <span class="m">3</span> --source <span class=
 <p>FDA-ARGOS db is available at NCBI<sup id="fnref:ncbi"><a class="footnote-ref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi">2</a></sup> from which we can download the assembly file.</p>
 <p><img src="../images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"></p>
 <p>We can extract accession numbers from the assembly file and then download the genomes from these accession ids.</p>
-<pre class="code literal-block">$ grep -e <span class="s2">"^#"</span> -v PRJNA231221_AssemblyDetails.txt <span class="p">|</span> cut -d<span class="s1">$'\t'</span> -f1 &gt; accessions.txt
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>grep<span class="w"> </span>-e<span class="w"> </span><span class="s2">"^#"</span><span class="w"> </span>-v<span class="w"> </span>PRJNA231221_AssemblyDetails.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s1">$'\t'</span><span class="w"> </span>-f1<span class="w"> </span>&gt;<span class="w"> </span>accessions.txt
 
-$ wc accessions.txt
- <span class="m">1428</span>  <span class="m">1428</span> <span class="m">22848</span> accessions.txt
+$<span class="w"> </span>wc<span class="w"> </span>accessions.txt
+<span class="w"> </span><span class="m">1428</span><span class="w">  </span><span class="m">1428</span><span class="w"> </span><span class="m">22848</span><span class="w"> </span>accessions.txt
 
-$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel <span class="m">40</span>
-</pre>
+$<span class="w"> </span>ncbi-genome-download<span class="w"> </span>--section<span class="w"> </span>genbank<span class="w"> </span>--assembly-accessions<span class="w"> </span>accessions.txt<span class="w"> </span>--progress-bar<span class="w"> </span>bacteria<span class="w"> </span>--parallel<span class="w"> </span><span class="m">40</span>
+</pre></div>
+
 <p>It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.</p>
 <p>We can use kraken-db-builder<sup id="fnref:kdb"><a class="footnote-ref" href="../2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb">3</a></sup> tool to build index from these genbank genome files.</p>
-<pre class="code literal-block"><span class="c1"># kraken-db-builder needs this to convert gbff to fasta format</span>
-$ conda install -c bioconda any2fasta
+<div class="code"><pre class="code literal-block"><span class="c1"># kraken-db-builder needs this to convert gbff to fasta format</span>
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>any2fasta
 
-$ kraken-db-builder --genomes-dir genbank --threads <span class="m">36</span> --db-name k2_argos
-</pre>
+$<span class="w"> </span>kraken-db-builder<span class="w"> </span>--genomes-dir<span class="w"> </span>genbank<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span><span class="w"> </span>--db-name<span class="w"> </span>k2_argos
+</pre></div>
+
 <p>It took ~30 minutes to build the index.</p>
 <h4>Conclusion</h4>
 <p>We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.</p>
@@ -621,21 +633,23 @@ $ kraken-db-builder --genomes-dir genbank --threads <span class="m">36</span> --
         </div>
     </header><div class="e-content entry-content">
     <h4>Introduction</h4>
-<pre class="code literal-block">* * * * * bash demo.sh
-</pre>
+<div class="code"><pre class="code literal-block">*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>bash<span class="w"> </span>demo.sh
+</pre></div>
+
 <p>Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.</p>
 <h4>How to use systemd timer</h4>
 <p>We need to create a service file(contains the script to be run) and a timer(contains the schedule).</p>
-<pre class="code literal-block"><span class="c1"># demo.service</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># demo.service</span>
 <span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>Demo service
+<span class="nv">Description</span><span class="o">=</span>Demo<span class="w"> </span>service
 
 <span class="o">[</span>Service<span class="o">]</span>
-<span class="nv">ExecStart</span><span class="o">=</span>bash demo.sh
-</pre>
-<pre class="code literal-block"><span class="c1"># demo.timer</span>
+<span class="nv">ExecStart</span><span class="o">=</span>bash<span class="w"> </span>demo.sh
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="c1"># demo.timer</span>
 <span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>Run myscript.service every <span class="m">1</span> minutes
+<span class="nv">Description</span><span class="o">=</span>Run<span class="w"> </span>myscript.service<span class="w"> </span>every<span class="w"> </span><span class="m">1</span><span class="w"> </span>minutes
 
 <span class="o">[</span>Timer<span class="o">]</span>
 <span class="nv">OnBootSec</span><span class="o">=</span>1min
@@ -643,17 +657,20 @@ $ kraken-db-builder --genomes-dir genbank --threads <span class="m">36</span> --
 
 <span class="o">[</span>Install<span class="o">]</span>
 <span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</pre>
+</pre></div>
+
 <p>We can copy these files to <code>/etc/systemd/system/</code> and enable the timer.</p>
-<pre class="code literal-block">$ sudo cp demo.service demo.timer /etc/systemd/system/
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>cp<span class="w"> </span>demo.service<span class="w"> </span>demo.timer<span class="w"> </span>/etc/systemd/system/
 
-$ sudo systemctl daemon-reload
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
 
-$ sudo systemctl <span class="nb">enable</span> --now demo.timer
-</pre>
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>demo.timer
+</pre></div>
+
 <p>We can use <code>systemctl</code> to see when the task is executed last and when it will be executed next.</p>
-<pre class="code literal-block">$ sudo systemctl list-timers --all
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>list-timers<span class="w"> </span>--all
+</pre></div>
+
 <p><img src="../images/systemd-timer-cronjob.png" alt="systemd timer"></p>
 <h4>Use Cases</h4>
 <ul>
@@ -667,13 +684,15 @@ $ sudo systemctl <span class="nb">enable</span> --now demo.timer
 <p>Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till <code>second</code> level precision. </p>
 </li>
 </ul>
-<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
-<span class="nv">OnCalendar</span><span class="o">=</span>*-*-* <span class="m">15</span>:30:15
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<span class="nv">OnCalendar</span><span class="o">=</span>*-*-*<span class="w"> </span><span class="m">15</span>:30:15
+</pre></div>
+
 <p>In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.</p>
-<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
 <span class="nv">OnBootSec</span><span class="o">=</span>15min
-</pre>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.</p>
     </div>

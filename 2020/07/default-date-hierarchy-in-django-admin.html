@@ -172,43 +172,46 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>One problem with this drill down navigation is, we have to navigate to todays date every time we open a model in admin. Since we are interested in todays events most of the time, setting todays date as default filtered date will solve the problem.</p>
 <h4>Set Default Date For Date Hierarchy</h4>
 <p>Let us create an admin page to show all the users who logged in today. Since User model is already registered in admin by default, let us create a proxy model to register it again.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
 
 
-<span class="k">class</span> <span class="nc">DjangoUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DjangoUser</span><span class="p">(</span><span class="n">User</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">proxy</span> <span class="o">=</span> <span class="kc">True</span>
-</pre>
+</pre></div>
+
 <p>Lets register this model in admin to show logged in users details along with date hierarchy.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
 
 <span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">MetaUserAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetaUserAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
     <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'username'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">,</span> <span class="s1">'last_login'</span><span class="p">)</span>
     <span class="n">date_hierarchy</span> <span class="o">=</span> <span class="s1">'last_login'</span>
-</pre>
+</pre></div>
+
 <p>If we open <code>DjangoUser</code> model in admin page, it will show drill down navigation bar like this.</p>
 <p><img src="../../images/django-admin-date.png"></p>
 <p>Now, if we drill down to a particular date, django adds additional query params to the admin url. For example, if we visit 2020-06-26 date, corresponding query params are <code>/?last_login__day=26&amp;last_login__month=6&amp;last_login__year=2020</code>.</p>
 <p>We can override changelist view and set default params to todays date if there are no query params. If there are query params then render the original response.</p>
-<pre class="code literal-block"><span class="nv">@admin</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span><span class="w"></span>
-<span class="k">class</span><span class="w"> </span><span class="n">MetaUserAdmin</span><span class="p">(</span><span class="k">admin</span><span class="p">.</span><span class="n">ModelAdmin</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">list_display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s1">'username'</span><span class="p">,</span><span class="w"> </span><span class="s1">'is_active'</span><span class="p">,</span><span class="w"> </span><span class="s1">'last_login'</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="n">date_hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'last_login'</span><span class="w"></span>
+<div class="code"><pre class="code literal-block"><span class="nv">@admin</span><span class="p">.</span><span class="n">register</span><span class="p">(</span><span class="n">DjangoUser</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="n">MetaUserAdmin</span><span class="p">(</span><span class="k">admin</span><span class="p">.</span><span class="n">ModelAdmin</span><span class="p">)</span><span class="err">:</span>
+<span class="w">    </span><span class="n">list_display</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s1">'username'</span><span class="p">,</span><span class="w"> </span><span class="s1">'is_active'</span><span class="p">,</span><span class="w"> </span><span class="s1">'last_login'</span><span class="p">)</span>
+<span class="w">    </span><span class="n">date_hierarchy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'last_login'</span>
 
-<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">changelist_view</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="k">None</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="k">GET</span><span class="err">:</span><span class="w"></span>
-<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">super</span><span class="p">().</span><span class="n">changelist_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="n">extra_context</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="n">def</span><span class="w"> </span><span class="n">changelist_view</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="k">None</span><span class="p">)</span><span class="err">:</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="k">GET</span><span class="err">:</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">super</span><span class="p">().</span><span class="n">changelist_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">extra_context</span><span class="o">=</span><span class="n">extra_context</span><span class="p">)</span>
 
-<span class="w">        </span><span class="nc">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">().</span><span class="nc">date</span><span class="p">()</span><span class="w"></span>
-<span class="w">        </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'day', 'month', 'year'</span><span class="o">]</span><span class="w"></span>
-<span class="w">        </span><span class="n">field_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'{}__{}'.format(self.date_hierarchy, i) for i in params</span><span class="o">]</span><span class="w"></span>
-<span class="w">        </span><span class="n">field_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">getattr(date, i) for i in params</span><span class="o">]</span><span class="w"></span>
-<span class="w">        </span><span class="n">query_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">field_keys</span><span class="p">,</span><span class="w"> </span><span class="n">field_values</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'{}?{}'</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="k">path</span><span class="p">,</span><span class="w"> </span><span class="n">urlencode</span><span class="p">(</span><span class="n">query_params</span><span class="p">))</span><span class="w"></span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redirect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="w"></span>
-</pre>
+<span class="w">        </span><span class="nc">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">().</span><span class="nc">date</span><span class="p">()</span>
+<span class="w">        </span><span class="n">params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'day', 'month', 'year'</span><span class="o">]</span>
+<span class="w">        </span><span class="n">field_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">'{}__{}'.format(self.date_hierarchy, i) for i in params</span><span class="o">]</span>
+<span class="w">        </span><span class="n">field_values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">getattr(date, i) for i in params</span><span class="o">]</span>
+<span class="w">        </span><span class="n">query_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">field_keys</span><span class="p">,</span><span class="w"> </span><span class="n">field_values</span><span class="p">))</span>
+<span class="w">        </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'{}?{}'</span><span class="p">.</span><span class="nf">format</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="k">path</span><span class="p">,</span><span class="w"> </span><span class="n">urlencode</span><span class="p">(</span><span class="n">query_params</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redirect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</pre></div>
+
 <p>Now if we open the same admin page, it will redirect to todays date by default.</p>
 <p><img src="../../images/django-admin-date2.png"></p>
 <h4>Conclusion</h4>

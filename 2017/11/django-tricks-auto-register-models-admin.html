@@ -157,7 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    7 min read
             </p>
 
             <p class="dateline">
@@ -171,50 +171,52 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <p>Inbuilt <a href="https://docs.djangoproject.com/en/1.11/ref/contrib/admin/">admin interface</a> is one the most powerful &amp; popular feature of Django. Once we create the models, we need to register them with admin, so that it can read metadata and populate interface for it.</p>
 <p>If the django project has too many models or if it has a legacy database, then adding all those models to admin becomes a tedious task. To automate this process, we can programatically fetch all the models in the project and register them with admin.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span>
 
 
 <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
     <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>This works well if we are just auto registering all the models. However if we try some customisations and try to register them in <code>admin.py</code> files in our apps, there will be conflicts as Django doesn't allow registering the same model twice.</p>
 <p>So, we need to make sure this piece of code runs after all <code>admin.py</code> files are loaded and it should ignore models which are already registered. We can safely hook this code in appconfig.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
 
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
 
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre>
+</pre></div>
+
 <p>Now all models will get registed automatically. If we go to a model page in admin, it will just show 1 column like this.</p>
 <p align="center">
 <img src="../../images/django-admin-auto.png" width="600px"></p>
 
 <p>This is not informative for the users who want to see the data. We can create a <code>ListAdminMixin</code>,  which will populate <code>list_display</code> with all the fields in the model. We can create a new admin class which will subclass <code>ListAdminMixin</code> &amp; <code>ModelAdmin</code>. We can use this admin class when we are registering the model so that all the fields in the model will show up in the admin.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span><span class="p">,</span> <span class="n">AppConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
 
-<span class="k">class</span> <span class="nc">ListAdminMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ListAdminMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">"id"</span><span class="p">]</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_site</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomApp</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">'foo'</span>
 
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">models</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_models</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
             <span class="n">admin_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">'AdminClass'</span><span class="p">,</span> <span class="p">(</span><span class="n">ListAdminMixin</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">),</span> <span class="p">{})</span>
@@ -222,7 +224,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
                 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">admin_class</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">admin</span><span class="o">.</span><span class="n">sites</span><span class="o">.</span><span class="n">AlreadyRegistered</span><span class="p">:</span>
                 <span class="k">pass</span>
-</pre>
+</pre></div>
+
 <p>Now whenever we create a new model or add a new field to an existing model, it will get reflected in the admin automatically.</p>
 <p align="center">
 <img src="../../images/django-admin-auto-2.png" width="600px"></p>

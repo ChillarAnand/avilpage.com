@@ -157,63 +157,76 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Running Kraken2</h4>
 <p>In the first step, let's generate abundance report using Kraken2. Kraken2 is a taxonomic sequence classifier that assigns taxonomic labels to short DNA sequences.</p>
 <p>Install anaconda</p>
-<pre class="code literal-block">$ wget https://repo.anaconda.com/archive/Anaconda3-2024.06-1-Linux-x86_64.sh
-$ bash Anaconda3-2021.05-Linux-x86_64.sh
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/archive/Anaconda3-2024.06-1-Linux-x86_64.sh
+$<span class="w"> </span>bash<span class="w"> </span>Anaconda3-2021.05-Linux-x86_64.sh
+</pre></div>
+
 <p>Install kraken2</p>
-<pre class="code literal-block">$ conda install -c bioconda kraken2
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>kraken2
+</pre></div>
+
 <p>Download pre-built viral database</p>
-<pre class="code literal-block">$ wget -c https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20240605.tar.gz
-$ mkdir -p k2_viral
-$ tar -xzvf k2_viral_20240605.tar.gz -C k2_viral
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>-c<span class="w"> </span>https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20240605.tar.gz
+$<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>k2_viral
+$<span class="w"> </span>tar<span class="w"> </span>-xzvf<span class="w"> </span>k2_viral_20240605.tar.gz<span class="w"> </span>-C<span class="w"> </span>k2_viral
+</pre></div>
+
 <p>Download sample fastq files</p>
-<pre class="code literal-block">$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>-c<span class="w"> </span>https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
+</pre></div>
+
 <p>Kraken2 classification</p>
-<pre class="code literal-block">$ kraken2 --db k2_viral ERR10359977.fastq.gz --report k2_report.txt --output k2_output.txt
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_viral<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>--report<span class="w"> </span>k2_report.txt<span class="w"> </span>--output<span class="w"> </span>k2_output.txt
+</pre></div>
+
 <h4>Generate Krona plot</h4>
 <p>Install Krona &amp; update taxonomy</p>
-<pre class="code literal-block">$ conda install -c bioconda krona
-$ ktUpdateTaxonomy.sh
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>krona
+$<span class="w"> </span>ktUpdateTaxonomy.sh
+</pre></div>
+
 <p>Generate Krona plot</p>
-<pre class="code literal-block">$ ktImportTaxonomy k2_report.txt -o k2_report.html
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ktImportTaxonomy<span class="w"> </span>k2_report.txt<span class="w"> </span>-o<span class="w"> </span>k2_report.html
+</pre></div>
+
 <h4>Building custom database</h4>
 <p>Download taxanomy</p>
-<pre class="code literal-block">$ kraken2-build --download-taxonomy --db k2_fungi
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kraken2-build<span class="w"> </span>--download-taxonomy<span class="w"> </span>--db<span class="w"> </span>k2_fungi
+</pre></div>
+
 <p>Download required genomes</p>
-<pre class="code literal-block">$ ncbi-genome-download --format fasta --section refseq --assembly-level <span class="nb">complete</span> fungi -v
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ncbi-genome-download<span class="w"> </span>--format<span class="w"> </span>fasta<span class="w"> </span>--section<span class="w"> </span>refseq<span class="w"> </span>--assembly-level<span class="w"> </span><span class="nb">complete</span><span class="w"> </span>fungi<span class="w"> </span>-v
+</pre></div>
+
 <p>Build kraken2 database</p>
-<pre class="code literal-block">$ find refseq -name <span class="s2">"*.gz"</span> -print0 <span class="p">|</span> parallel -0 gunzip
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.gz"</span><span class="w"> </span>-print0<span class="w"> </span><span class="p">|</span><span class="w"> </span>parallel<span class="w"> </span>-0<span class="w"> </span>gunzip
 
-$ find refseq -name <span class="s2">"*.fna"</span> -exec kraken2-build --add-to-library <span class="o">{}</span> --db custom_db <span class="se">\;</span>
+$<span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.fna"</span><span class="w"> </span>-exec<span class="w"> </span>kraken2-build<span class="w"> </span>--add-to-library<span class="w"> </span><span class="o">{}</span><span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span><span class="se">\;</span>
 
-$ kraken2-build --db custom_db --build --threads <span class="m">36</span>
-</pre>
+$<span class="w"> </span>kraken2-build<span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span>--build<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span>
+</pre></div>
+
 <p>Using <code>kraken-db-builder</code> to build database</p>
-<pre class="code literal-block">$ pip install ncbi-genome-download kraken-db-builder
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>ncbi-genome-download<span class="w"> </span>kraken-db-builder
 
-$ kraken-db-builder --db-type fungi
-</pre>
+$<span class="w"> </span>kraken-db-builder<span class="w"> </span>--db-type<span class="w"> </span>fungi
+</pre></div>
+
 <h4>Predicting Source of Metagenomic Sample</h4>
 <p>Geometry Mean of Pairwise Ratios (GMPR)</p>
 <p>Bray-Curtis dissimilarity</p>
 <p>t-Stochastic Neighbor Embedding (t-SNE)</p>
 <p>k-Nearest Neighbors (k-NN)</p>
 <p>Download sample data</p>
-<pre class="code literal-block">$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/test/dog_test_sink_sample.csv -O dog_example.csv
-$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_labels.csv -O sp_labels.csv
-$ wget https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_sources.csv -O sp_sources.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/test/dog_test_sink_sample.csv<span class="w"> </span>-O<span class="w"> </span>dog_example.csv
+$<span class="w"> </span>wget<span class="w"> </span>https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_labels.csv<span class="w"> </span>-O<span class="w"> </span>sp_labels.csv
+$<span class="w"> </span>wget<span class="w"> </span>https://raw.githubusercontent.com/maxibor/sourcepredict/master/data/modern_gut_microbiomes_sources.csv<span class="w"> </span>-O<span class="w"> </span>sp_sources.csv
+</pre></div>
+
 <p>Download sourcepredict</p>
-<pre class="code literal-block">$ python -m pip install git+https://github.com/AvilPage/sourcepredict
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/AvilPage/sourcepredict
+</pre></div>
+
 <h4>Machine Learning Notebooks</h4>
 <p><a href="https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop">https://github.com/ChillarAnand/avilpage.com/tree/master/mg_workshop</a></p>
 <h4>Useful links:</h4>

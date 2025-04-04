@@ -157,7 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    8 min read
             </p>
 
             <p class="dateline">
@@ -174,92 +174,97 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Collecting data</h4>
 <p>Let's download data from above sources and extract domain names. The data format is different for each source. We can use <code>awk</code> tool to extract domains column from the source. After extracting data, sort it and save it to a file.</p>
 <p>Extracting domains from alexa.</p>
-<pre class="code literal-block"><span class="c1"># alexa</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># alexa</span>
 
-$ wget http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+$<span class="w"> </span>wget<span class="w"> </span>http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
 
-$ unzip top-1m.csv.zip
+$<span class="w"> </span>unzip<span class="w"> </span>top-1m.csv.zip
 
 <span class="c1"># data sorted by ranking</span>
-$ head -n <span class="m">5</span> top-1m.csv
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>top-1m.csv
 <span class="m">1</span>,google.com
 <span class="m">2</span>,youtube.com
 <span class="m">3</span>,facebook.com
 <span class="m">4</span>,baidu.com
 <span class="m">5</span>,wikipedia.org
 
-$ awk -F <span class="s2">","</span> <span class="s1">'{print $2}'</span> top-1m.csv <span class="p">|</span> sort &gt; alexa
+$<span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">","</span><span class="w"> </span><span class="s1">'{print $2}'</span><span class="w"> </span>top-1m.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>&gt;<span class="w"> </span>alexa
 
 <span class="c1"># domains after sorting alphabetically</span>
-$ head -n <span class="m">5</span> alexa
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>alexa
 <span class="m">00000</span>.life
 <span class="m">00</span>-000.pl
 <span class="m">00004</span>.tel
 <span class="m">00008888</span>.tumblr.com
 0002rick.tumblr.com
-</pre>
+</pre></div>
+
 <p>Extracting domain names from domcop.</p>
-<pre class="code literal-block"><span class="c1"># Domcop</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># Domcop</span>
 
-$ wget https://www.domcop.com/files/top/top10milliondomains.csv.zip
+$<span class="w"> </span>wget<span class="w"> </span>https://www.domcop.com/files/top/top10milliondomains.csv.zip
 
-$ unzip top10milliondomains.csv.zip
+$<span class="w"> </span>unzip<span class="w"> </span>top10milliondomains.csv.zip
 
 <span class="c1"># data sorted by ranking</span>
-$ head -n <span class="m">5</span> top10milliondomains.csv
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>top10milliondomains.csv
 <span class="s2">"Rank"</span>,<span class="s2">"Domain"</span>,<span class="s2">"Open Page Rank"</span>
 <span class="s2">"1"</span>,<span class="s2">"fonts.googleapis.com"</span>,<span class="s2">"10.00"</span>
 <span class="s2">"2"</span>,<span class="s2">"facebook.com"</span>,<span class="s2">"10.00"</span>
 <span class="s2">"3"</span>,<span class="s2">"youtube.com"</span>,<span class="s2">"10.00"</span>
 <span class="s2">"4"</span>,<span class="s2">"twitter.com"</span>,<span class="s2">"10.00"</span>
 
-$ awk -F <span class="s2">"\"*,\"*"</span> <span class="s1">'{if(NR&gt;1)print $2}'</span> top10milliondomains.csv.zip <span class="p">|</span> sort &gt; domcop
+$<span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">"\"*,\"*"</span><span class="w"> </span><span class="s1">'{if(NR&gt;1)print $2}'</span><span class="w"> </span>top10milliondomains.csv.zip<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>&gt;<span class="w"> </span>domcop
 
 <span class="c1"># domains after sorting alphabetically</span>
-$ head -n <span class="m">5</span> domcop
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>domcop
 00000000b.com
 000000book.com
 <span class="m">0000180</span>.fortunecity.com
 <span class="m">000139418</span>.wixsite.com
 000fashions.blogspot.com
-</pre>
-<p>Extracting domain names from majestic.</p>
-<pre class="code literal-block"><span class="c1"># Majestic</span>
+</pre></div>
 
-$ wget http://downloads.majestic.com/majestic_million.csv
+<p>Extracting domain names from majestic.</p>
+<div class="code"><pre class="code literal-block"><span class="c1"># Majestic</span>
+
+$<span class="w"> </span>wget<span class="w"> </span>http://downloads.majestic.com/majestic_million.csv
 
 <span class="c1"># data sorted by ranking</span>
-$ head -n <span class="m">5</span> majestic_million.csv
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>majestic_million.csv
 GlobalRank,TldRank,Domain,TLD,RefSubNets,RefIPs,IDN_Domain,IDN_TLD,PrevGlobalRank,PrevTldRank,PrevRefSubNets,PrevRefIPs
 <span class="m">1</span>,1,google.com,com,474277,3016409,google.com,com,1,1,474577,3012875
 <span class="m">2</span>,2,facebook.com,com,462854,3093315,facebook.com,com,2,2,462860,3090006
 <span class="m">3</span>,3,youtube.com,com,422434,2504924,youtube.com,com,3,3,422377,2501555
 <span class="m">4</span>,4,twitter.com,com,412950,2497935,twitter.com,com,4,4,413220,2495261
 
-$ awk -F <span class="s2">"\"*,\"*"</span> <span class="s1">'{if(NR&gt;1)print $2}'</span> majestic_million.csv <span class="p">|</span> sort &gt; majestic
+$<span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">"\"*,\"*"</span><span class="w"> </span><span class="s1">'{if(NR&gt;1)print $2}'</span><span class="w"> </span>majestic_million.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>&gt;<span class="w"> </span>majestic
 
 <span class="c1"># domains after sorting alphabetically</span>
-$ head -n <span class="m">5</span> majestic
+$<span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>majestic
 <span class="m">00000</span>.xn--p1ai
 <span class="m">0000666</span>.com
 <span class="m">0000</span>.jp
 0000www.com
 <span class="m">0000</span>.xn--p1ai
-</pre>
+</pre></div>
+
 <h4>Comparing Data</h4>
 <p>We have collected and extracted domains from above sources. Let's compare the domains to see how similar they are using <code>comm</code> tool.</p>
-<pre class="code literal-block">$ comm -123 alexa domcop --total
-<span class="m">871851</span>  <span class="m">871851</span>  <span class="m">128149</span>  total
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>comm<span class="w"> </span>-123<span class="w"> </span>alexa<span class="w"> </span>domcop<span class="w"> </span>--total
+<span class="m">871851</span><span class="w">  </span><span class="m">871851</span><span class="w">  </span><span class="m">128149</span><span class="w">  </span>total
 
-$ comm -123 alexa majestic --total
-<span class="m">788454</span>  <span class="m">788454</span>  <span class="m">211546</span>  total
+$<span class="w"> </span>comm<span class="w"> </span>-123<span class="w"> </span>alexa<span class="w"> </span>majestic<span class="w"> </span>--total
+<span class="m">788454</span><span class="w">  </span><span class="m">788454</span><span class="w">  </span><span class="m">211546</span><span class="w">  </span>total
 
-$ comm -123 domcop majestic --total
-<span class="m">784388</span>  <span class="m">784388</span>  <span class="m">215612</span>  total
-</pre>
-<pre class="code literal-block">$ comm -12 alexa domcop <span class="p">|</span> comm -123 - majestic --total
-<span class="m">31314</span>   <span class="m">903165</span>  <span class="m">96835</span>   total
-</pre>
+$<span class="w"> </span>comm<span class="w"> </span>-123<span class="w"> </span>domcop<span class="w"> </span>majestic<span class="w"> </span>--total
+<span class="m">784388</span><span class="w">  </span><span class="m">784388</span><span class="w">  </span><span class="m">215612</span><span class="w">  </span>total
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>comm<span class="w"> </span>-12<span class="w"> </span>alexa<span class="w"> </span>domcop<span class="w"> </span><span class="p">|</span><span class="w"> </span>comm<span class="w"> </span>-123<span class="w"> </span>-<span class="w"> </span>majestic<span class="w"> </span>--total
+<span class="m">31314</span><span class="w">   </span><span class="m">903165</span><span class="w">  </span><span class="m">96835</span><span class="w">   </span>total
+</pre></div>
+
 <p>So, only 96,835(9.6%) domains are common between all the datasets and the overlap between any two sources is ~20%. Here is a venn diagram showing the overlap between them.</p>
 <p align="center">
 <img src="../../images/million-alexa-majestic-domcop.png"></p>

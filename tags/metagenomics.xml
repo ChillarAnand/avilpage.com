@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about metagenomics)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/metagenomics.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 10 Mar 2025 18:28:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</title><link>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about metagenomics)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/metagenomics.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Mastering Kraken2 - Part 4 - Build FDA-ARGOS Index</title><link>https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html"&gt;Part 2 - Classification Performance Optimisation&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html"&gt;Part 3 - Build custom database indices&lt;/a&gt;&lt;/p&gt;
@@ -13,20 +13,22 @@
 &lt;p&gt;FDA-ARGOS db is available at NCBI&lt;sup id="fnref:ncbi"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:ncbi"&gt;2&lt;/a&gt;&lt;/sup&gt; from which we can download the assembly file.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://avilpage.com/images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"&gt;&lt;/p&gt;
 &lt;p&gt;We can extract accession numbers from the assembly file and then download the genomes from these accession ids.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ grep -e &lt;span class="s2"&gt;"^#"&lt;/span&gt; -v PRJNA231221_AssemblyDetails.txt &lt;span class="p"&gt;|&lt;/span&gt; cut -d&lt;span class="s1"&gt;$'\t'&lt;/span&gt; -f1 &amp;gt; accessions.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;grep&lt;span class="w"&gt; &lt;/span&gt;-e&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"^#"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-v&lt;span class="w"&gt; &lt;/span&gt;PRJNA231221_AssemblyDetails.txt&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cut&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="s1"&gt;$'\t'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f1&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ wc accessions.txt
- &lt;span class="m"&gt;1428&lt;/span&gt;  &lt;span class="m"&gt;1428&lt;/span&gt; &lt;span class="m"&gt;22848&lt;/span&gt; accessions.txt
+$&lt;span class="w"&gt; &lt;/span&gt;wc&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
+&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1428&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22848&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;accessions.txt
 
-$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel &lt;span class="m"&gt;40&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download&lt;span class="w"&gt; &lt;/span&gt;--section&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--assembly-accessions&lt;span class="w"&gt; &lt;/span&gt;accessions.txt&lt;span class="w"&gt; &lt;/span&gt;--progress-bar&lt;span class="w"&gt; &lt;/span&gt;bacteria&lt;span class="w"&gt; &lt;/span&gt;--parallel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.&lt;/p&gt;
 &lt;p&gt;We can use kraken-db-builder&lt;sup id="fnref:kdb"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/08/mastering-kraken2-fda-argos-index.html#fn:kdb"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to build index from these genbank genome files.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
-$ conda install -c bioconda any2fasta
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# kraken-db-builder needs this to convert gbff to fasta format&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;any2fasta
 
-$ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;/span&gt; --db-name k2_argos
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kraken-db-builder&lt;span class="w"&gt; &lt;/span&gt;--genomes-dir&lt;span class="w"&gt; &lt;/span&gt;genbank&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;36&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--db-name&lt;span class="w"&gt; &lt;/span&gt;k2_argos
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It took ~30 minutes to build the index.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.&lt;/p&gt;
@@ -61,76 +63,84 @@ $ kraken-db-builder --genomes-dir genbank --threads &lt;span class="m"&gt;36&lt;
 &lt;p&gt;In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes&lt;sup id="fnref:rag"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fn:rag"&gt;2&lt;/a&gt;&lt;/sup&gt; for building the index.&lt;/p&gt;
 &lt;h4&gt;Building Custom Database&lt;/h4&gt;
 &lt;p&gt;First, we need to download the taxonomy files. We can use the &lt;code&gt;k2&lt;/code&gt; script provided by kraken2.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k2 download-taxonomy --db custom_db
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k2&lt;span class="w"&gt; &lt;/span&gt;download-taxonomy&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This takes ~30 minutes depending on the network speed. The taxonomy files are downloaded to the &lt;code&gt;custom_db/taxonomy&lt;/code&gt; directory.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ls custom_db/taxonomy
-citations.dmp  division.dmp  gencode.dmp  merged.dmp  nodes.dmp
-nucl_wgs.accession2taxid delnodes.dmp  gc.prt 
-images.dmp  names.dmp  nucl_gb.accession2taxid  readme.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;custom_db/taxonomy
+citations.dmp&lt;span class="w"&gt;  &lt;/span&gt;division.dmp&lt;span class="w"&gt;  &lt;/span&gt;gencode.dmp&lt;span class="w"&gt;  &lt;/span&gt;merged.dmp&lt;span class="w"&gt;  &lt;/span&gt;nodes.dmp
+nucl_wgs.accession2taxid&lt;span class="w"&gt; &lt;/span&gt;delnodes.dmp&lt;span class="w"&gt;  &lt;/span&gt;gc.prt&lt;span class="w"&gt; &lt;/span&gt;
+images.dmp&lt;span class="w"&gt;  &lt;/span&gt;names.dmp&lt;span class="w"&gt;  &lt;/span&gt;nucl_gb.accession2taxid&lt;span class="w"&gt;  &lt;/span&gt;readme.txt
 
-$ du -hs custom_db/taxonomy
-43G     custom_db/taxonomy
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;custom_db/taxonomy
+43G&lt;span class="w"&gt;     &lt;/span&gt;custom_db/taxonomy
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;For simplicity, let's use the archaea refseq genomes. We can use &lt;code&gt;kraken2-build&lt;/code&gt; to download the refseq genomes.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k2 download-library --library archaea --db custom_db
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k2&lt;span class="w"&gt; &lt;/span&gt;download-library&lt;span class="w"&gt; &lt;/span&gt;--library&lt;span class="w"&gt; &lt;/span&gt;archaea&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This runs on a single thread. Instead of using &lt;code&gt;kraken2-build&lt;/code&gt;, we can use &lt;code&gt;ncbi-genome-download&lt;/code&gt;&lt;sup id="fnref:ngd"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-build-custom-db.html#fn:ngd"&gt;3&lt;/a&gt;&lt;/sup&gt; tool to download the genomes. This provides much granular control over the download process. For example, we can download only &lt;code&gt;--assembly-levels complete&lt;/code&gt; genomes. We can also download multiple genomes in parallel.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ pip install ncbi-genome-download
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download
 
-$ conda install -c bioconda ncbi-genome-download
+$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download
 
-$ ncbi-genome-download -s refseq -F fasta --parallel &lt;span class="m"&gt;40&lt;/span&gt; -P archaea
-Checking assemblies: &lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2184&lt;/span&gt;/2184 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;00&lt;/span&gt;:19&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00, &lt;span class="m"&gt;111&lt;/span&gt;.60entries/s&lt;span class="o"&gt;]&lt;/span&gt;
-Downloading assemblies: &lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2184&lt;/span&gt;/2184  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:04&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00,  &lt;span class="m"&gt;4&lt;/span&gt;.54s/files&lt;span class="o"&gt;]&lt;/span&gt;
-Downloading assemblies: 2184files &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:23, 2184files/s&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ncbi-genome-download&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;refseq&lt;span class="w"&gt; &lt;/span&gt;-F&lt;span class="w"&gt; &lt;/span&gt;fasta&lt;span class="w"&gt; &lt;/span&gt;--parallel&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-P&lt;span class="w"&gt; &lt;/span&gt;archaea
+Checking&lt;span class="w"&gt; &lt;/span&gt;assemblies:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2184&lt;/span&gt;/2184&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;00&lt;/span&gt;:19&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;111&lt;/span&gt;.60entries/s&lt;span class="o"&gt;]&lt;/span&gt;
+Downloading&lt;span class="w"&gt; &lt;/span&gt;assemblies:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;100&lt;/span&gt;%&lt;span class="p"&gt;|&lt;/span&gt;███&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2184&lt;/span&gt;/2184&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:04&amp;lt;&lt;span class="m"&gt;00&lt;/span&gt;:00,&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;.54s/files&lt;span class="o"&gt;]&lt;/span&gt;
+Downloading&lt;span class="w"&gt; &lt;/span&gt;assemblies:&lt;span class="w"&gt; &lt;/span&gt;2184files&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;02&lt;/span&gt;:23,&lt;span class="w"&gt; &lt;/span&gt;2184files/s&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In just 2 minutes, it has downloaded all the files. Lets gunzip the files.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ find refseq -name &lt;span class="s2"&gt;"*.gz"&lt;/span&gt; -print0 &lt;span class="p"&gt;|&lt;/span&gt; parallel -0 gunzip
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;find&lt;span class="w"&gt; &lt;/span&gt;refseq&lt;span class="w"&gt; &lt;/span&gt;-name&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"*.gz"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-print0&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;parallel&lt;span class="w"&gt; &lt;/span&gt;-0&lt;span class="w"&gt; &lt;/span&gt;gunzip
 
-$ du -hs refseq
-&lt;span class="m"&gt;5&lt;/span&gt;.9G    refseq
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;du&lt;span class="w"&gt; &lt;/span&gt;-hs&lt;span class="w"&gt; &lt;/span&gt;refseq
+&lt;span class="m"&gt;5&lt;/span&gt;.9G&lt;span class="w"&gt;    &lt;/span&gt;refseq
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Lets add all fasta genome files to the custom database&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; find refseq -name &lt;span class="s2"&gt;"*.fna"&lt;/span&gt; -exec kraken2-build --add-to-library &lt;span class="o"&gt;{}&lt;/span&gt; --db custom_db &lt;span class="se"&gt;\;&lt;/span&gt;
-&lt;span class="m"&gt;667&lt;/span&gt;.46s user &lt;span class="m"&gt;90&lt;/span&gt;.78s system &lt;span class="m"&gt;106&lt;/span&gt;% cpu &lt;span class="m"&gt;12&lt;/span&gt;:54.80 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;find&lt;span class="w"&gt; &lt;/span&gt;refseq&lt;span class="w"&gt; &lt;/span&gt;-name&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"*.fna"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-exec&lt;span class="w"&gt; &lt;/span&gt;kraken2-build&lt;span class="w"&gt; &lt;/span&gt;--add-to-library&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="m"&gt;667&lt;/span&gt;.46s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;90&lt;/span&gt;.78s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;106&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:54.80&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;code&gt;kraken2-build&lt;/code&gt; doesn't use multiple threads for adding genomes to the database. In addition to that, it also doesn't check if the genome is already present in the database. &lt;/p&gt;
 &lt;p&gt;Let's use &lt;code&gt;k2&lt;/code&gt; for adding genomes to the database.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;KRAKEN_NUM_THREADS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;KRAKEN_NUM_THREADS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;40&lt;/span&gt;
 
-$ find . -name &lt;span class="s2"&gt;"*.fna"&lt;/span&gt; -exec k2 add-to-library --files &lt;span class="o"&gt;{}&lt;/span&gt; --db custom_db &lt;span class="se"&gt;\;&lt;/span&gt;
-&lt;span class="m"&gt;668&lt;/span&gt;.37s user &lt;span class="m"&gt;88&lt;/span&gt;.44s system &lt;span class="m"&gt;159&lt;/span&gt;% cpu &lt;span class="m"&gt;7&lt;/span&gt;:54.40 total
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;find&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-name&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"*.fna"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-exec&lt;span class="w"&gt; &lt;/span&gt;k2&lt;span class="w"&gt; &lt;/span&gt;add-to-library&lt;span class="w"&gt; &lt;/span&gt;--files&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\;&lt;/span&gt;
+&lt;span class="m"&gt;668&lt;/span&gt;.37s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;88&lt;/span&gt;.44s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;159&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;:54.40&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This took only half the time compared to &lt;code&gt;kraken2-build&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Let's build the index from the library.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2-build --db custom_db --build --threads &lt;span class="m"&gt;36&lt;/span&gt;
-Creating sequence ID to taxonomy ID map &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
-Found &lt;span class="m"&gt;0&lt;/span&gt;/125783 targets, searched through &lt;span class="m"&gt;60000000&lt;/span&gt; accession IDs...
-Found &lt;span class="m"&gt;59923&lt;/span&gt;/125783 targets, searched through &lt;span class="m"&gt;822105735&lt;/span&gt; accession IDs, search complete.
-lookup_accession_numbers: &lt;span class="m"&gt;65860&lt;/span&gt;/125783 accession numbers remain unmapped, see unmapped.txt &lt;span class="k"&gt;in&lt;/span&gt; DB directory
-Sequence ID to taxonomy ID map complete. &lt;span class="o"&gt;[&lt;/span&gt;2m1.950s&lt;span class="o"&gt;]&lt;/span&gt;
-Estimating required capacity &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
-Estimated &lt;span class="nb"&gt;hash&lt;/span&gt; table requirement: &lt;span class="m"&gt;5340021028&lt;/span&gt; bytes
-Capacity estimation complete. &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;23&lt;/span&gt;.875s&lt;span class="o"&gt;]&lt;/span&gt;
-Building database files &lt;span class="o"&gt;(&lt;/span&gt;step &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
-Taxonomy parsed and converted.
-CHT created with &lt;span class="m"&gt;11&lt;/span&gt; bits reserved &lt;span class="k"&gt;for&lt;/span&gt; taxid.
-Completed processing of &lt;span class="m"&gt;59911&lt;/span&gt; sequences, &lt;span class="m"&gt;3572145823&lt;/span&gt; bp
-Writing data to disk...  complete.
-Database files completed. &lt;span class="o"&gt;[&lt;/span&gt;12m3.368s&lt;span class="o"&gt;]&lt;/span&gt;
-Database construction complete. &lt;span class="o"&gt;[&lt;/span&gt;Total: 14m29.666s&lt;span class="o"&gt;]&lt;/span&gt;
-kraken2-build --db custom_db --build --threads &lt;span class="m"&gt;36&lt;/span&gt;  &lt;span class="m"&gt;24534&lt;/span&gt;.98s user &lt;span class="m"&gt;90&lt;/span&gt;.50s system &lt;span class="m"&gt;2831&lt;/span&gt;% cpu &lt;span class="m"&gt;14&lt;/span&gt;:29.75 total
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2-build&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db&lt;span class="w"&gt; &lt;/span&gt;--build&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;36&lt;/span&gt;
+Creating&lt;span class="w"&gt; &lt;/span&gt;sequence&lt;span class="w"&gt; &lt;/span&gt;ID&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;taxonomy&lt;span class="w"&gt; &lt;/span&gt;ID&lt;span class="w"&gt; &lt;/span&gt;map&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;step&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Found&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;/125783&lt;span class="w"&gt; &lt;/span&gt;targets,&lt;span class="w"&gt; &lt;/span&gt;searched&lt;span class="w"&gt; &lt;/span&gt;through&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;60000000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;accession&lt;span class="w"&gt; &lt;/span&gt;IDs...
+Found&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;59923&lt;/span&gt;/125783&lt;span class="w"&gt; &lt;/span&gt;targets,&lt;span class="w"&gt; &lt;/span&gt;searched&lt;span class="w"&gt; &lt;/span&gt;through&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;822105735&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;accession&lt;span class="w"&gt; &lt;/span&gt;IDs,&lt;span class="w"&gt; &lt;/span&gt;search&lt;span class="w"&gt; &lt;/span&gt;complete.
+lookup_accession_numbers:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;65860&lt;/span&gt;/125783&lt;span class="w"&gt; &lt;/span&gt;accession&lt;span class="w"&gt; &lt;/span&gt;numbers&lt;span class="w"&gt; &lt;/span&gt;remain&lt;span class="w"&gt; &lt;/span&gt;unmapped,&lt;span class="w"&gt; &lt;/span&gt;see&lt;span class="w"&gt; &lt;/span&gt;unmapped.txt&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;DB&lt;span class="w"&gt; &lt;/span&gt;directory
+Sequence&lt;span class="w"&gt; &lt;/span&gt;ID&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;taxonomy&lt;span class="w"&gt; &lt;/span&gt;ID&lt;span class="w"&gt; &lt;/span&gt;map&lt;span class="w"&gt; &lt;/span&gt;complete.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;2m1.950s&lt;span class="o"&gt;]&lt;/span&gt;
+Estimating&lt;span class="w"&gt; &lt;/span&gt;required&lt;span class="w"&gt; &lt;/span&gt;capacity&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;step&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Estimated&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;hash&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;table&lt;span class="w"&gt; &lt;/span&gt;requirement:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5340021028&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bytes
+Capacity&lt;span class="w"&gt; &lt;/span&gt;estimation&lt;span class="w"&gt; &lt;/span&gt;complete.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;23&lt;/span&gt;.875s&lt;span class="o"&gt;]&lt;/span&gt;
+Building&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;files&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;step&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;...
+Taxonomy&lt;span class="w"&gt; &lt;/span&gt;parsed&lt;span class="w"&gt; &lt;/span&gt;and&lt;span class="w"&gt; &lt;/span&gt;converted.
+CHT&lt;span class="w"&gt; &lt;/span&gt;created&lt;span class="w"&gt; &lt;/span&gt;with&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bits&lt;span class="w"&gt; &lt;/span&gt;reserved&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;taxid.
+Completed&lt;span class="w"&gt; &lt;/span&gt;processing&lt;span class="w"&gt; &lt;/span&gt;of&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;59911&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3572145823&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bp
+Writing&lt;span class="w"&gt; &lt;/span&gt;data&lt;span class="w"&gt; &lt;/span&gt;to&lt;span class="w"&gt; &lt;/span&gt;disk...&lt;span class="w"&gt;  &lt;/span&gt;complete.
+Database&lt;span class="w"&gt; &lt;/span&gt;files&lt;span class="w"&gt; &lt;/span&gt;completed.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;12m3.368s&lt;span class="o"&gt;]&lt;/span&gt;
+Database&lt;span class="w"&gt; &lt;/span&gt;construction&lt;span class="w"&gt; &lt;/span&gt;complete.&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;Total:&lt;span class="w"&gt; &lt;/span&gt;14m29.666s&lt;span class="o"&gt;]&lt;/span&gt;
+kraken2-build&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;custom_db&lt;span class="w"&gt; &lt;/span&gt;--build&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;36&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;24534&lt;/span&gt;.98s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;90&lt;/span&gt;.50s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2831&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;:29.75&lt;span class="w"&gt; &lt;/span&gt;total
 
-$ ls -ll
-.rw-rw-r-- &lt;span class="m"&gt;5&lt;/span&gt;.3G anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:35 hash.k2d
-drwxrwxr-x    - anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;12&lt;/span&gt;:32 library
-.rw-rw-r--   &lt;span class="m"&gt;64&lt;/span&gt; anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:35 opts.k2d
-.rw-rw-r-- &lt;span class="m"&gt;1&lt;/span&gt;.5M anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:22 seqid2taxid.map
-.rw-rw-r-- 115k anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:23 taxo.k2d
-lrwxrwxrwx   &lt;span class="m"&gt;20&lt;/span&gt; anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;12&lt;/span&gt;:31 taxonomy
-.rw-rw-r-- &lt;span class="m"&gt;1&lt;/span&gt;.2M anand  &lt;span class="m"&gt;1&lt;/span&gt; Aug &lt;span class="m"&gt;16&lt;/span&gt;:22 unmapped.txt
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;-ll
+.rw-rw-r--&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.3G&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:35&lt;span class="w"&gt; &lt;/span&gt;hash.k2d
+drwxrwxr-x&lt;span class="w"&gt;    &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:32&lt;span class="w"&gt; &lt;/span&gt;library
+.rw-rw-r--&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:35&lt;span class="w"&gt; &lt;/span&gt;opts.k2d
+.rw-rw-r--&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.5M&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:22&lt;span class="w"&gt; &lt;/span&gt;seqid2taxid.map
+.rw-rw-r--&lt;span class="w"&gt; &lt;/span&gt;115k&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:23&lt;span class="w"&gt; &lt;/span&gt;taxo.k2d
+lrwxrwxrwx&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:31&lt;span class="w"&gt; &lt;/span&gt;taxonomy
+.rw-rw-r--&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.2M&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Aug&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;16&lt;/span&gt;:22&lt;span class="w"&gt; &lt;/span&gt;unmapped.txt
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We are able to build index for ~6GB input files in ~15 minutes.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;We learnt some useful tips to speed up the custom database creation process. In the next post, we will learn about regular vs. fast builds.&lt;/p&gt;
@@ -158,91 +168,100 @@ lrwxrwxrwx   &lt;span class="m"&gt;20&lt;/span&gt; anand  &lt;span class="m"&gt;
 &lt;p&gt;In the previous post, we learned how to set up kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt;, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.&lt;/p&gt;
 &lt;h4&gt;Increasing RAM&lt;/h4&gt;
 &lt;p&gt;Kraken2 standard database is ~80GB in size. It is recommended to have at least db size RAM to run kraken2 efficiently&lt;sup id="fnref:ksr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:ksr"&gt;2&lt;/a&gt;&lt;/sup&gt;. Let's use 128GB RAM machine and run kraken2 with ERR10359977&lt;sup id="fnref:err"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:err"&gt;3&lt;/a&gt;&lt;/sup&gt; sample.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;95064&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;.142s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2662&lt;/span&gt;.9 Kseq/m, &lt;span class="m"&gt;402&lt;/span&gt;.02 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;94816&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.74%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;248&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.26%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt;   &lt;span class="m"&gt;1&lt;/span&gt;.68s user &lt;span class="m"&gt;152&lt;/span&gt;.19s system &lt;span class="m"&gt;35&lt;/span&gt;% cpu &lt;span class="m"&gt;7&lt;/span&gt;:17.55 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;95064&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.142s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2662&lt;/span&gt;.9&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;402&lt;/span&gt;.02&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;94816&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.74%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;248&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.26%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.68s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;152&lt;/span&gt;.19s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;35&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;:17.55&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the time taken has come down from 40 minutes to 7 minutes. The classification speed has also increased from 0.19 Mbp/m to 402.02 Mbp/m.&lt;/p&gt;
 &lt;p&gt;The previous sample had only a few reads, and the speed is not a good indicator. Let's run kraken2 with a larger sample.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-Processed &lt;span class="m"&gt;14980000&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2972330207&lt;/span&gt; bp&lt;span class="o"&gt;)&lt;/span&gt; ...
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;797&lt;/span&gt;.424s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1288&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;255&lt;/span&gt;.61 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired &amp;gt; output.txt  &lt;span class="m"&gt;526&lt;/span&gt;.39s user &lt;span class="m"&gt;308&lt;/span&gt;.24s system &lt;span class="m"&gt;68&lt;/span&gt;% cpu &lt;span class="m"&gt;20&lt;/span&gt;:23.86 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+Processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;14980000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2972330207&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;...
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;797&lt;/span&gt;.424s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1288&lt;/span&gt;.2&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;255&lt;/span&gt;.61&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;526&lt;/span&gt;.39s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;308&lt;/span&gt;.24s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;68&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;:23.86&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This took almost 20 minutes to classify ~3 Gbp of data. Out of 20 minutes, 13 minutes was spent in classification. The remaining time in loading the db into memory.&lt;/p&gt;
 &lt;p&gt;Let's use k2_plusPF&lt;sup id="fnref:k2p"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2p"&gt;4&lt;/a&gt;&lt;/sup&gt; db, which is twice the size of k2_standard and run kraken2.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_plusfp --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information...done.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;755&lt;/span&gt;.290s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1360&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;269&lt;/span&gt;.87 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9903824&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.85%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7217421&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.15%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &amp;gt;   &lt;span class="m"&gt;509&lt;/span&gt;.71s user &lt;span class="m"&gt;509&lt;/span&gt;.51s system &lt;span class="m"&gt;55&lt;/span&gt;% cpu &lt;span class="m"&gt;30&lt;/span&gt;:35.49 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_plusfp&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...done.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;755&lt;/span&gt;.290s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1360&lt;/span&gt;.1&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;269&lt;/span&gt;.87&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9903824&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.85%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7217421&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.15%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_plusfp/&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;  &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;509&lt;/span&gt;.71s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;509&lt;/span&gt;.51s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;55&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;:35.49&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This took ~30 minutes to complete, but the classification took only 13 minutes similar to k2_standard. The remaining time was spent in loading the db into memory.&lt;/p&gt;
 &lt;h4&gt;Preloading db into RAM&lt;/h4&gt;
 &lt;p&gt;We can use vmtouch&lt;sup id="fnref:vmt"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:vmt"&gt;5&lt;/a&gt;&lt;/sup&gt; to preload db into RAM. kraken2 provides &lt;code&gt;--memory-mapping&lt;/code&gt; option to use preloaded db. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
-           Files: &lt;span class="m"&gt;3&lt;/span&gt;
-     Directories: &lt;span class="m"&gt;0&lt;/span&gt;
-   Touched Pages: &lt;span class="m"&gt;20382075&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
-         Elapsed: &lt;span class="m"&gt;434&lt;/span&gt;.77 seconds
-&lt;/pre&gt;
-&lt;p&gt;When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ cp -r k2_standard /dev/shm
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;vmtouch&lt;span class="w"&gt; &lt;/span&gt;-vt&lt;span class="w"&gt; &lt;/span&gt;k2_standard/hash.k2d&lt;span class="w"&gt; &lt;/span&gt;k2_standard/opts.k2d&lt;span class="w"&gt; &lt;/span&gt;k2_standard/taxo.k2d
+&lt;span class="w"&gt;           &lt;/span&gt;Files:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="w"&gt;     &lt;/span&gt;Directories:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;span class="w"&gt;   &lt;/span&gt;Touched&lt;span class="w"&gt; &lt;/span&gt;Pages:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20382075&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;         &lt;/span&gt;Elapsed:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;434&lt;/span&gt;.77&lt;span class="w"&gt; &lt;/span&gt;seconds
+&lt;/pre&gt;&lt;/div&gt;
 
-$ vmtouch -t /dev/shm/*.k2d
-&lt;/pre&gt;
+&lt;p&gt;When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;/dev/shm
+
+$&lt;span class="w"&gt; &lt;/span&gt;vmtouch&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;/dev/shm/*.k2d
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now, let's run kraken2 with &lt;code&gt;--memory-mapping&lt;/code&gt; option.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;532&lt;/span&gt;.486s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1929&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;382&lt;/span&gt;.79 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-  kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz   &amp;gt;  &lt;span class="m"&gt;424&lt;/span&gt;.20s user &lt;span class="m"&gt;11&lt;/span&gt;.76s system &lt;span class="m"&gt;81&lt;/span&gt;% cpu &lt;span class="m"&gt;8&lt;/span&gt;:54.98 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;532&lt;/span&gt;.486s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1929&lt;/span&gt;.2&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;382&lt;/span&gt;.79&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;   &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;424&lt;/span&gt;.20s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;.76s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;81&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8&lt;/span&gt;:54.98&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification took only ~10 minutes.&lt;/p&gt;
 &lt;h4&gt;Multi threading&lt;/h4&gt;
 &lt;p&gt;kraken2 supports multiple threads. I am using a machine with 40 threads.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz --memory-mapping --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;71&lt;/span&gt;.675s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14332&lt;/span&gt;.5 Kseq/m, &lt;span class="m"&gt;2843&lt;/span&gt;.81 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz      &lt;span class="m"&gt;556&lt;/span&gt;.58s user &lt;span class="m"&gt;22&lt;/span&gt;.85s system &lt;span class="m"&gt;762&lt;/span&gt;% cpu &lt;span class="m"&gt;1&lt;/span&gt;:16.02 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;71&lt;/span&gt;.675s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14332&lt;/span&gt;.5&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2843&lt;/span&gt;.81&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="m"&gt;556&lt;/span&gt;.58s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.85s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;762&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;:16.02&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;With 32 threads, the classification took only 1 minute. Beyond 32 threads, the classification time did not decrease significantly.&lt;/p&gt;
 &lt;h4&gt;Optimising input files&lt;/h4&gt;
 &lt;p&gt;So far we have used gzipped input files. Let's use unzipped input files and run kraken2.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ gunzip SRR6915097_1.fastq.gz
-$ gunzip SRR6915097_2.fastq.gz
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;gunzip&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz
+$&lt;span class="w"&gt; &lt;/span&gt;gunzip&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz
 
-$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq SRR6915097_2.fastq --memory-mapping --threads &lt;span class="m"&gt;30&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;34&lt;/span&gt;.809s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;29512&lt;/span&gt;.0 Kseq/m, &lt;span class="m"&gt;5855&lt;/span&gt;.68 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq    &lt;span class="m"&gt;30&lt;/span&gt;   &lt;span class="m"&gt;565&lt;/span&gt;.03s user &lt;span class="m"&gt;17&lt;/span&gt;.12s system &lt;span class="m"&gt;1530&lt;/span&gt;% cpu &lt;span class="m"&gt;38&lt;/span&gt;.047 total
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;34&lt;/span&gt;.809s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;29512&lt;/span&gt;.0&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5855&lt;/span&gt;.68&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;565&lt;/span&gt;.03s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;17&lt;/span&gt;.12s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1530&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;38&lt;/span&gt;.047&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification time has come down to 40 seconds.&lt;/p&gt;
 &lt;p&gt;Since the input fastq files are paired, interleaving the files also takes time. Lets interleave the files and run kraken2.&lt;/p&gt;
 &lt;p&gt;To interleave the files, lets use &lt;code&gt;seqfu&lt;/code&gt; tool.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ conda install -y -c conda-forge -c bioconda &lt;span class="s2"&gt;"seqfu&amp;gt;1.10"&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-y&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;conda-forge&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"seqfu&amp;gt;1.10"&lt;/span&gt;
 
-$ seqfu interleave -1 SRR6915097_1.fastq.gz -2 SRR6915097_2.fastq.gz &amp;gt; SRR6915097.fastq
+$&lt;span class="w"&gt; &lt;/span&gt;seqfu&lt;span class="w"&gt; &lt;/span&gt;interleave&lt;span class="w"&gt; &lt;/span&gt;-1&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;-2&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fastq
 
-$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;34242490&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;.199s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;101714&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;10090&lt;/span&gt;.91 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;17983321&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;52&lt;/span&gt;.52%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;16259169&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;47&lt;/span&gt;.48%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt;span class="m"&gt;32&lt;/span&gt;  &lt;span class="m"&gt;618&lt;/span&gt;.96s user &lt;span class="m"&gt;18&lt;/span&gt;.24s system &lt;span class="m"&gt;2653&lt;/span&gt;% cpu &lt;span class="m"&gt;24&lt;/span&gt;.013 total
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fq&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;34242490&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.199s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;101714&lt;/span&gt;.1&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;10090&lt;/span&gt;.91&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;17983321&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;52&lt;/span&gt;.52%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;16259169&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;47&lt;/span&gt;.48%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fq&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;618&lt;/span&gt;.96s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;18&lt;/span&gt;.24s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2653&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;24&lt;/span&gt;.013&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification time has come down to 24 seconds. &lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In terms of classification speed, we have come a long way from 0.1 Mbp/m to 1200 Mbp/m. In the next post, we will learn how to optimise the creation of custom indices.&lt;/p&gt;
@@ -283,76 +302,88 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;/ul&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;We can install kraken2 from source using the &lt;code&gt;install_kraken2.sh&lt;/code&gt; script as per the manual&lt;sup id="fnref:install_kraken2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2"&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ git clone https://github.com/DerrickWood/kraken2
-$ &lt;span class="nb"&gt;cd&lt;/span&gt; kraken2
-$ ./install_kraken2.sh /usr/local/bin
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/DerrickWood/kraken2
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2
+$&lt;span class="w"&gt; &lt;/span&gt;./install_kraken2.sh&lt;span class="w"&gt; &lt;/span&gt;/usr/local/bin
 &lt;span class="c1"&gt;# ensure kraken2 is in the PATH&lt;/span&gt;
-$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$PATH&lt;/span&gt;:/usr/local/bin
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$PATH&lt;/span&gt;:/usr/local/bin
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If you already have conda installed, you can install kraken2 from conda as well.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ conda install -c bioconda kraken2
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;kraken2
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If you have &lt;code&gt;brew&lt;/code&gt; installed on Linux or Mac(including M1), you can install kraken2 using &lt;code&gt;brew&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install brewsci/bio/kraken2
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;brewsci/bio/kraken2
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Download pre-built indices&lt;/h4&gt;
 &lt;p&gt;Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.&lt;/p&gt;
 &lt;p&gt;Genomic Index Zone&lt;sup id="fnref:GenomicIndexZone"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:GenomicIndexZone"&gt;3&lt;/a&gt;&lt;/sup&gt; provides pre-built indices for kraken2. Let's download the standard database. It contains Refeq archaea, bacteria, viral, plasmid, human1, &amp;amp; UniVec_Core. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
-$ mkdir k2_standard
-$ tar -xvf k2_standard_20240605.tar.gz -C k2_standard
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
+$&lt;span class="w"&gt; &lt;/span&gt;mkdir&lt;span class="w"&gt; &lt;/span&gt;k2_standard
+$&lt;span class="w"&gt; &lt;/span&gt;tar&lt;span class="w"&gt; &lt;/span&gt;-xvf&lt;span class="w"&gt; &lt;/span&gt;k2_standard_20240605.tar.gz&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;k2_standard
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;The extracted directory contains three files - &lt;code&gt;hash.k2d&lt;/code&gt;, &lt;code&gt;opts.k2d&lt;/code&gt;, &lt;code&gt;taxo.k2d&lt;/code&gt; which are the kraken2 database files.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ls -l *.k2d
-.rw-r--r--  83G anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 hash.k2d
-.rw-r--r--   &lt;span class="m"&gt;64&lt;/span&gt; anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 opts.k2d
-.rw-r--r-- &lt;span class="m"&gt;4&lt;/span&gt;.0M anand &lt;span class="m"&gt;13&lt;/span&gt; Jul &lt;span class="m"&gt;12&lt;/span&gt;:34 taxo.k2d
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ls&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;*.k2d
+.rw-r--r--&lt;span class="w"&gt;  &lt;/span&gt;83G&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;13&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Jul&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:34&lt;span class="w"&gt; &lt;/span&gt;hash.k2d
+.rw-r--r--&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;13&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Jul&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:34&lt;span class="w"&gt; &lt;/span&gt;opts.k2d
+.rw-r--r--&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;.0M&lt;span class="w"&gt; &lt;/span&gt;anand&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;13&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;Jul&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;12&lt;/span&gt;:34&lt;span class="w"&gt; &lt;/span&gt;taxo.k2d
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Classification&lt;/h4&gt;
 &lt;p&gt;To run the taxonomic classification, let's use &lt;code&gt;ERR10359977&lt;/code&gt; human gut meta genome from NCBI SRA.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ wget https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
-$ kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
+$&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;By default, the machine I have used has 8GB RAM and an additioinal 8GB swap. Since kraken2 needs entire db(~80GB) in memory, when the process tries to consume more than 16GB memory, the kernel will kill the process. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information...Command terminated by signal &lt;span class="m"&gt;9&lt;/span&gt;
-&lt;span class="m"&gt;0&lt;/span&gt;.02user &lt;span class="m"&gt;275&lt;/span&gt;.83system &lt;span class="m"&gt;8&lt;/span&gt;:17.43elapsed &lt;span class="m"&gt;55&lt;/span&gt;%CPU 
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...Command&lt;span class="w"&gt; &lt;/span&gt;terminated&lt;span class="w"&gt; &lt;/span&gt;by&lt;span class="w"&gt; &lt;/span&gt;signal&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;9&lt;/span&gt;
+&lt;span class="m"&gt;0&lt;/span&gt;.02user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;275&lt;/span&gt;.83system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8&lt;/span&gt;:17.43elapsed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;55&lt;/span&gt;%CPU&lt;span class="w"&gt; &lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;To prevent this, let's increase the swap space to 128 GB.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Create an empty swapfile of 128GB&lt;/span&gt;
-sudo dd &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/dev/zero &lt;span class="nv"&gt;of&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/swapfile &lt;span class="nv"&gt;bs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1G &lt;span class="nv"&gt;count&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;128&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# Create an empty swapfile of 128GB&lt;/span&gt;
+sudo&lt;span class="w"&gt; &lt;/span&gt;dd&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/dev/zero&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;of&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/swapfile&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;bs&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1G&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;count&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;128&lt;/span&gt;
 
 &lt;span class="c1"&gt;# Turn swap off - It might take several minutes&lt;/span&gt;
-sudo swapoff -a
+sudo&lt;span class="w"&gt; &lt;/span&gt;swapoff&lt;span class="w"&gt; &lt;/span&gt;-a
 
 &lt;span class="c1"&gt;# Set the permissions for swapfile&lt;/span&gt;
-sudo chmod &lt;span class="m"&gt;0600&lt;/span&gt; /swapfile
+sudo&lt;span class="w"&gt; &lt;/span&gt;chmod&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0600&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;/swapfile
 
 &lt;span class="c1"&gt;# make it a swap area&lt;/span&gt;
-sudo mkswap /swapfile  
+sudo&lt;span class="w"&gt; &lt;/span&gt;mkswap&lt;span class="w"&gt; &lt;/span&gt;/swapfile&lt;span class="w"&gt;  &lt;/span&gt;
 
 &lt;span class="c1"&gt;# Turn the swap on&lt;/span&gt;
-sudo swapon /swapfile
-&lt;/pre&gt;
-&lt;p&gt;We can time the classification process using the &lt;code&gt;time&lt;/code&gt; command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
-&lt;/pre&gt;
-&lt;p&gt;If you have a machine with large RAM, the same scenario can be simulated using &lt;code&gt;systemd-run&lt;/code&gt;. This will limit the memory usage of kraken2 to 6.5GB. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;.5G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
-&lt;/pre&gt;
-&lt;p&gt;Depending on the CPU performance, this will take around ~40 minutes to complete.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;95064&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;1026&lt;/span&gt;.994s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.6 Kseq/m, &lt;span class="m"&gt;0&lt;/span&gt;.84 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;94939&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.87%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;125&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.13%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;4&lt;/span&gt;.24user &lt;span class="m"&gt;658&lt;/span&gt;.68system &lt;span class="m"&gt;38&lt;/span&gt;:26.78elapsed &lt;span class="m"&gt;28&lt;/span&gt;%CPU 
-&lt;/pre&gt;
-&lt;p&gt;If we try gut WGS(Whole Genome Sequence) sample like &lt;code&gt;SRR6915097&lt;/code&gt; &lt;sup id="fnref:srr1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr1"&gt;4&lt;/a&gt;&lt;/sup&gt; &lt;sup id="fnref:srr2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr2"&gt;5&lt;/a&gt;&lt;/sup&gt;. which contains ~3.3 Gbp, it will take weeks to complete.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
-$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+sudo&lt;span class="w"&gt; &lt;/span&gt;swapon&lt;span class="w"&gt; &lt;/span&gt;/swapfile
+&lt;/pre&gt;&lt;/div&gt;
 
-$ &lt;span class="nb"&gt;time&lt;/span&gt; systemd-run --scope -p &lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;6G --user &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-&lt;/pre&gt;
+&lt;p&gt;We can time the classification process using the &lt;code&gt;time&lt;/code&gt; command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you have a machine with large RAM, the same scenario can be simulated using &lt;code&gt;systemd-run&lt;/code&gt;. This will limit the memory usage of kraken2 to 6.5GB. &lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;systemd-run&lt;span class="w"&gt; &lt;/span&gt;--scope&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;6&lt;/span&gt;.5G&lt;span class="w"&gt; &lt;/span&gt;--user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Depending on the CPU performance, this will take around ~40 minutes to complete.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;95064&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1026&lt;/span&gt;.994s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.6&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.84&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;94939&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.87%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;125&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.13%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;.24user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;658&lt;/span&gt;.68system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;38&lt;/span&gt;:26.78elapsed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;28&lt;/span&gt;%CPU&lt;span class="w"&gt; &lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If we try gut WGS(Whole Genome Sequence) sample like &lt;code&gt;SRR6915097&lt;/code&gt; &lt;sup id="fnref:srr1"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr1"&gt;4&lt;/a&gt;&lt;/sup&gt; &lt;sup id="fnref:srr2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html#fn:srr2"&gt;5&lt;/a&gt;&lt;/sup&gt;. which contains ~3.3 Gbp, it will take weeks to complete.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$&lt;span class="w"&gt; &lt;/span&gt;wget&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;systemd-run&lt;span class="w"&gt; &lt;/span&gt;--scope&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;MemoryMax&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;6G&lt;span class="w"&gt; &lt;/span&gt;--user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.&lt;/p&gt;
 &lt;p&gt;If we have to process a large number of such samples, it takes months and this is not a practical solution. &lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;

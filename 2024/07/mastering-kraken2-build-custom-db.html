@@ -157,7 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    7 min read
+                    13 min read
             </p>
 
             <p class="dateline">
@@ -181,76 +181,84 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes<sup id="fnref:rag"><a class="footnote-ref" href="mastering-kraken2-build-custom-db.html#fn:rag">2</a></sup> for building the index.</p>
 <h4>Building Custom Database</h4>
 <p>First, we need to download the taxonomy files. We can use the <code>k2</code> script provided by kraken2.</p>
-<pre class="code literal-block">$ k2 download-taxonomy --db custom_db
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k2<span class="w"> </span>download-taxonomy<span class="w"> </span>--db<span class="w"> </span>custom_db
+</pre></div>
+
 <p>This takes ~30 minutes depending on the network speed. The taxonomy files are downloaded to the <code>custom_db/taxonomy</code> directory.</p>
-<pre class="code literal-block">$ ls custom_db/taxonomy
-citations.dmp  division.dmp  gencode.dmp  merged.dmp  nodes.dmp
-nucl_wgs.accession2taxid delnodes.dmp  gc.prt 
-images.dmp  names.dmp  nucl_gb.accession2taxid  readme.txt
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ls<span class="w"> </span>custom_db/taxonomy
+citations.dmp<span class="w">  </span>division.dmp<span class="w">  </span>gencode.dmp<span class="w">  </span>merged.dmp<span class="w">  </span>nodes.dmp
+nucl_wgs.accession2taxid<span class="w"> </span>delnodes.dmp<span class="w">  </span>gc.prt<span class="w"> </span>
+images.dmp<span class="w">  </span>names.dmp<span class="w">  </span>nucl_gb.accession2taxid<span class="w">  </span>readme.txt
 
-$ du -hs custom_db/taxonomy
-43G     custom_db/taxonomy
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>custom_db/taxonomy
+43G<span class="w">     </span>custom_db/taxonomy
+</pre></div>
+
 <p>For simplicity, let's use the archaea refseq genomes. We can use <code>kraken2-build</code> to download the refseq genomes.</p>
-<pre class="code literal-block">$ k2 download-library --library archaea --db custom_db
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k2<span class="w"> </span>download-library<span class="w"> </span>--library<span class="w"> </span>archaea<span class="w"> </span>--db<span class="w"> </span>custom_db
+</pre></div>
+
 <p>This runs on a single thread. Instead of using <code>kraken2-build</code>, we can use <code>ncbi-genome-download</code><sup id="fnref:ngd"><a class="footnote-ref" href="mastering-kraken2-build-custom-db.html#fn:ngd">3</a></sup> tool to download the genomes. This provides much granular control over the download process. For example, we can download only <code>--assembly-levels complete</code> genomes. We can also download multiple genomes in parallel.</p>
-<pre class="code literal-block">$ pip install ncbi-genome-download
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>ncbi-genome-download
 
-$ conda install -c bioconda ncbi-genome-download
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>ncbi-genome-download
 
-$ ncbi-genome-download -s refseq -F fasta --parallel <span class="m">40</span> -P archaea
-Checking assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184 <span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00, <span class="m">111</span>.60entries/s<span class="o">]</span>
-Downloading assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184  <span class="o">[</span><span class="m">02</span>:04&lt;<span class="m">00</span>:00,  <span class="m">4</span>.54s/files<span class="o">]</span>
-Downloading assemblies: 2184files <span class="o">[</span><span class="m">02</span>:23, 2184files/s<span class="o">]</span>
-</pre>
+$<span class="w"> </span>ncbi-genome-download<span class="w"> </span>-s<span class="w"> </span>refseq<span class="w"> </span>-F<span class="w"> </span>fasta<span class="w"> </span>--parallel<span class="w"> </span><span class="m">40</span><span class="w"> </span>-P<span class="w"> </span>archaea
+Checking<span class="w"> </span>assemblies:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span><span class="w"> </span><span class="m">2184</span>/2184<span class="w"> </span><span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">111</span>.60entries/s<span class="o">]</span>
+Downloading<span class="w"> </span>assemblies:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span><span class="w"> </span><span class="m">2184</span>/2184<span class="w">  </span><span class="o">[</span><span class="m">02</span>:04&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.54s/files<span class="o">]</span>
+Downloading<span class="w"> </span>assemblies:<span class="w"> </span>2184files<span class="w"> </span><span class="o">[</span><span class="m">02</span>:23,<span class="w"> </span>2184files/s<span class="o">]</span>
+</pre></div>
+
 <p>In just 2 minutes, it has downloaded all the files. Lets gunzip the files.</p>
-<pre class="code literal-block">$ find refseq -name <span class="s2">"*.gz"</span> -print0 <span class="p">|</span> parallel -0 gunzip
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.gz"</span><span class="w"> </span>-print0<span class="w"> </span><span class="p">|</span><span class="w"> </span>parallel<span class="w"> </span>-0<span class="w"> </span>gunzip
 
-$ du -hs refseq
-<span class="m">5</span>.9G    refseq
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>refseq
+<span class="m">5</span>.9G<span class="w">    </span>refseq
+</pre></div>
+
 <p>Lets add all fasta genome files to the custom database</p>
-<pre class="code literal-block">$ <span class="nb">time</span> find refseq -name <span class="s2">"*.fna"</span> -exec kraken2-build --add-to-library <span class="o">{}</span> --db custom_db <span class="se">\;</span>
-<span class="m">667</span>.46s user <span class="m">90</span>.78s system <span class="m">106</span>% cpu <span class="m">12</span>:54.80 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.fna"</span><span class="w"> </span>-exec<span class="w"> </span>kraken2-build<span class="w"> </span>--add-to-library<span class="w"> </span><span class="o">{}</span><span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span><span class="se">\;</span>
+<span class="m">667</span>.46s<span class="w"> </span>user<span class="w"> </span><span class="m">90</span>.78s<span class="w"> </span>system<span class="w"> </span><span class="m">106</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">12</span>:54.80<span class="w"> </span>total
+</pre></div>
+
 <p><code>kraken2-build</code> doesn't use multiple threads for adding genomes to the database. In addition to that, it also doesn't check if the genome is already present in the database. </p>
 <p>Let's use <code>k2</code> for adding genomes to the database.</p>
-<pre class="code literal-block"><span class="nb">export</span> <span class="nv">KRAKEN_NUM_THREADS</span><span class="o">=</span><span class="m">40</span>
+<div class="code"><pre class="code literal-block"><span class="nb">export</span><span class="w"> </span><span class="nv">KRAKEN_NUM_THREADS</span><span class="o">=</span><span class="m">40</span>
 
-$ find . -name <span class="s2">"*.fna"</span> -exec k2 add-to-library --files <span class="o">{}</span> --db custom_db <span class="se">\;</span>
-<span class="m">668</span>.37s user <span class="m">88</span>.44s system <span class="m">159</span>% cpu <span class="m">7</span>:54.40 total
-</pre>
+$<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.fna"</span><span class="w"> </span>-exec<span class="w"> </span>k2<span class="w"> </span>add-to-library<span class="w"> </span>--files<span class="w"> </span><span class="o">{}</span><span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span><span class="se">\;</span>
+<span class="m">668</span>.37s<span class="w"> </span>user<span class="w"> </span><span class="m">88</span>.44s<span class="w"> </span>system<span class="w"> </span><span class="m">159</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">7</span>:54.40<span class="w"> </span>total
+</pre></div>
+
 <p>This took only half the time compared to <code>kraken2-build</code>.</p>
 <p>Let's build the index from the library.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2-build --db custom_db --build --threads <span class="m">36</span>
-Creating sequence ID to taxonomy ID map <span class="o">(</span>step <span class="m">1</span><span class="o">)</span>...
-Found <span class="m">0</span>/125783 targets, searched through <span class="m">60000000</span> accession IDs...
-Found <span class="m">59923</span>/125783 targets, searched through <span class="m">822105735</span> accession IDs, search complete.
-lookup_accession_numbers: <span class="m">65860</span>/125783 accession numbers remain unmapped, see unmapped.txt <span class="k">in</span> DB directory
-Sequence ID to taxonomy ID map complete. <span class="o">[</span>2m1.950s<span class="o">]</span>
-Estimating required capacity <span class="o">(</span>step <span class="m">2</span><span class="o">)</span>...
-Estimated <span class="nb">hash</span> table requirement: <span class="m">5340021028</span> bytes
-Capacity estimation complete. <span class="o">[</span><span class="m">23</span>.875s<span class="o">]</span>
-Building database files <span class="o">(</span>step <span class="m">3</span><span class="o">)</span>...
-Taxonomy parsed and converted.
-CHT created with <span class="m">11</span> bits reserved <span class="k">for</span> taxid.
-Completed processing of <span class="m">59911</span> sequences, <span class="m">3572145823</span> bp
-Writing data to disk...  complete.
-Database files completed. <span class="o">[</span>12m3.368s<span class="o">]</span>
-Database construction complete. <span class="o">[</span>Total: 14m29.666s<span class="o">]</span>
-kraken2-build --db custom_db --build --threads <span class="m">36</span>  <span class="m">24534</span>.98s user <span class="m">90</span>.50s system <span class="m">2831</span>% cpu <span class="m">14</span>:29.75 total
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2-build<span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span>--build<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span>
+Creating<span class="w"> </span>sequence<span class="w"> </span>ID<span class="w"> </span>to<span class="w"> </span>taxonomy<span class="w"> </span>ID<span class="w"> </span>map<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">1</span><span class="o">)</span>...
+Found<span class="w"> </span><span class="m">0</span>/125783<span class="w"> </span>targets,<span class="w"> </span>searched<span class="w"> </span>through<span class="w"> </span><span class="m">60000000</span><span class="w"> </span>accession<span class="w"> </span>IDs...
+Found<span class="w"> </span><span class="m">59923</span>/125783<span class="w"> </span>targets,<span class="w"> </span>searched<span class="w"> </span>through<span class="w"> </span><span class="m">822105735</span><span class="w"> </span>accession<span class="w"> </span>IDs,<span class="w"> </span>search<span class="w"> </span>complete.
+lookup_accession_numbers:<span class="w"> </span><span class="m">65860</span>/125783<span class="w"> </span>accession<span class="w"> </span>numbers<span class="w"> </span>remain<span class="w"> </span>unmapped,<span class="w"> </span>see<span class="w"> </span>unmapped.txt<span class="w"> </span><span class="k">in</span><span class="w"> </span>DB<span class="w"> </span>directory
+Sequence<span class="w"> </span>ID<span class="w"> </span>to<span class="w"> </span>taxonomy<span class="w"> </span>ID<span class="w"> </span>map<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span>2m1.950s<span class="o">]</span>
+Estimating<span class="w"> </span>required<span class="w"> </span>capacity<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">2</span><span class="o">)</span>...
+Estimated<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>table<span class="w"> </span>requirement:<span class="w"> </span><span class="m">5340021028</span><span class="w"> </span>bytes
+Capacity<span class="w"> </span>estimation<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span><span class="m">23</span>.875s<span class="o">]</span>
+Building<span class="w"> </span>database<span class="w"> </span>files<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">3</span><span class="o">)</span>...
+Taxonomy<span class="w"> </span>parsed<span class="w"> </span>and<span class="w"> </span>converted.
+CHT<span class="w"> </span>created<span class="w"> </span>with<span class="w"> </span><span class="m">11</span><span class="w"> </span>bits<span class="w"> </span>reserved<span class="w"> </span><span class="k">for</span><span class="w"> </span>taxid.
+Completed<span class="w"> </span>processing<span class="w"> </span>of<span class="w"> </span><span class="m">59911</span><span class="w"> </span>sequences,<span class="w"> </span><span class="m">3572145823</span><span class="w"> </span>bp
+Writing<span class="w"> </span>data<span class="w"> </span>to<span class="w"> </span>disk...<span class="w">  </span>complete.
+Database<span class="w"> </span>files<span class="w"> </span>completed.<span class="w"> </span><span class="o">[</span>12m3.368s<span class="o">]</span>
+Database<span class="w"> </span>construction<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span>Total:<span class="w"> </span>14m29.666s<span class="o">]</span>
+kraken2-build<span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span>--build<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span><span class="w">  </span><span class="m">24534</span>.98s<span class="w"> </span>user<span class="w"> </span><span class="m">90</span>.50s<span class="w"> </span>system<span class="w"> </span><span class="m">2831</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">14</span>:29.75<span class="w"> </span>total
 
-$ ls -ll
-.rw-rw-r-- <span class="m">5</span>.3G anand  <span class="m">1</span> Aug <span class="m">16</span>:35 hash.k2d
-drwxrwxr-x    - anand  <span class="m">1</span> Aug <span class="m">12</span>:32 library
-.rw-rw-r--   <span class="m">64</span> anand  <span class="m">1</span> Aug <span class="m">16</span>:35 opts.k2d
-.rw-rw-r-- <span class="m">1</span>.5M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 seqid2taxid.map
-.rw-rw-r-- 115k anand  <span class="m">1</span> Aug <span class="m">16</span>:23 taxo.k2d
-lrwxrwxrwx   <span class="m">20</span> anand  <span class="m">1</span> Aug <span class="m">12</span>:31 taxonomy
-.rw-rw-r-- <span class="m">1</span>.2M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 unmapped.txt
-</pre>
+$<span class="w"> </span>ls<span class="w"> </span>-ll
+.rw-rw-r--<span class="w"> </span><span class="m">5</span>.3G<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:35<span class="w"> </span>hash.k2d
+drwxrwxr-x<span class="w">    </span>-<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">12</span>:32<span class="w"> </span>library
+.rw-rw-r--<span class="w">   </span><span class="m">64</span><span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:35<span class="w"> </span>opts.k2d
+.rw-rw-r--<span class="w"> </span><span class="m">1</span>.5M<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:22<span class="w"> </span>seqid2taxid.map
+.rw-rw-r--<span class="w"> </span>115k<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:23<span class="w"> </span>taxo.k2d
+lrwxrwxrwx<span class="w">   </span><span class="m">20</span><span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">12</span>:31<span class="w"> </span>taxonomy
+.rw-rw-r--<span class="w"> </span><span class="m">1</span>.2M<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:22<span class="w"> </span>unmapped.txt
+</pre></div>
+
 <p>We are able to build index for ~6GB input files in ~15 minutes.</p>
 <h4>Conclusion</h4>
 <p>We learnt some useful tips to speed up the custom database creation process. In the next post, we will learn about regular vs. fast builds.</p>
