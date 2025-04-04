@@ -173,29 +173,34 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.</p>
 <h4>Setup</h4>
 <p>Let's create a new Ubuntu VM and install Cockpit on it.</p>
-<pre class="code literal-block">sudo apt update
-. /etc/os-release
-sudo apt install -t <span class="si">${</span><span class="nv">VERSION_CODENAME</span><span class="si">}</span>-backports cockpit
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>update
+.<span class="w"> </span>/etc/os-release
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span><span class="si">${</span><span class="nv">VERSION_CODENAME</span><span class="si">}</span>-backports<span class="w"> </span>cockpit
+</pre></div>
+
 <p>Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.</p>
 <p>It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an <code>A</code> record in DNS settings to point <code>cockpit.avilpage.com</code> to the public ip of the VM.</p>
 <h4>Reverse Proxy</h4>
 <p>Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.</p>
-<pre class="code literal-block">sudo apt install caddy
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>caddy
+</pre></div>
+
 <p>Add the below configuration to <code>/etc/caddy/Caddyfile</code>.</p>
-<pre class="code literal-block">cockpit.avilpage.com <span class="o">{</span>
-    reverse_proxy localhost:9090
+<div class="code"><pre class="code literal-block">cockpit.avilpage.com<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>reverse_proxy<span class="w"> </span>localhost:9090
 <span class="o">}</span>
-</pre>
+</pre></div>
+
 <p>We need <code>Origins</code> to Cockpit configuration at <code>/etc/cockpit/cockpit.conf</code> to allow requests from the subdomain.</p>
-<pre class="code literal-block"><span class="o">[</span>WebService<span class="o">]</span>
-<span class="nv">Origins</span> <span class="o">=</span> https://cockpit.avilpage.com
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>WebService<span class="o">]</span>
+<span class="nv">Origins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>https://cockpit.avilpage.com
+</pre></div>
+
 <p>Restart both services and open <a href="https://cockpit.avilpage.com">https://cockpit.avilpage.com</a> in browser.</p>
-<pre class="code literal-block">sudo systemctl restart cockpit
-sudo systemctl restart caddy
-</pre>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>cockpit
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>caddy
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server</p>
         </div>

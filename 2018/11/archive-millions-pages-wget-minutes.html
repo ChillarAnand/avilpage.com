@@ -155,7 +155,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    7 min read
             </p>
 
             <p class="dateline">
@@ -174,64 +174,69 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Archiving with wget</h4>
 <p>In previous article we have extracted a <a href="comparision-alexa-majestic-domcorp-top-million-sites.html">superset of top 1 million domains</a>. We can use that list or urls to archive. Save this list to a file called <code>urls.txt</code>.</p>
 <p>This can be archived with the following command.</p>
-<pre class="code literal-block"><span class="nv">file</span><span class="o">=</span>urls.txt
-wget -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null
-</pre>
+<div class="code"><pre class="code literal-block"><span class="nv">file</span><span class="o">=</span>urls.txt
+wget<span class="w"> </span>-i<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>--warc-file<span class="o">=</span><span class="nv">$file</span><span class="w"> </span>-t<span class="w"> </span><span class="m">3</span><span class="w"> </span>--timeout<span class="o">=</span><span class="m">4</span><span class="w"> </span>-q<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-O<span class="w"> </span>/dev/null
+</pre></div>
+
 <p>wget has the ability to continue partially downloaded files. But this option won't work with warc output. So, it is better to split this list into small chunks and process them. One added advantage of this approach is we can parallely download multiple chunks with wget.</p>
-<pre class="code literal-block">mkdir -p chunks
-split -l <span class="m">1000</span> urls.txt chunks/ -d --additional-suffix<span class="o">=</span>.txt -a <span class="m">3</span>
-</pre>
+<div class="code"><pre class="code literal-block">mkdir<span class="w"> </span>-p<span class="w"> </span>chunks
+split<span class="w"> </span>-l<span class="w"> </span><span class="m">1000</span><span class="w"> </span>urls.txt<span class="w"> </span>chunks/<span class="w"> </span>-d<span class="w"> </span>--additional-suffix<span class="o">=</span>.txt<span class="w"> </span>-a<span class="w"> </span><span class="m">3</span>
+</pre></div>
+
 <p>This will split the file into several chunks each containing 1000 urls. wget doesn't have multithreading support. We can write a for loop to schedule a seperate process for each chunk.</p>
-<pre class="code literal-block"><span class="k">for</span> <span class="nv">file</span> <span class="nv">in</span> `<span class="nv">ls</span> <span class="o">-</span><span class="nv">r</span> <span class="nv">chunks</span><span class="cm">/*.txt`</span>
-<span class="cm">do</span>
-<span class="cm">   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;</span>
-<span class="cm">done</span>
-</pre>
+<div class="code"><pre class="code literal-block">for file in <span class="sb">`ls -r chunks/*.txt`</span>
+do
+   wget -i $file --warc-file=$file -t 3 --timeout=4 -q -o /dev/null -O /dev/null &amp;
+done
+</pre></div>
+
 <p>To archive 1000 urls, it takes ~15 minutes. In less than 20 minutes, it will download entire million pages.</p>
 <p>Also, each process takes ~8MB of memory. To run 1000 process, a system needs 8GB+ memory. Otherwise, number of parallel processes should be reduced which increases overall run time.</p>
 <p>Each archive chunk will be ~150MB and consume lot of storage. All downloaded acrhives can be zipped to reduce storage.</p>
-<pre class="code literal-block">gzip *.warc
-</pre>
-<p>Here is an idempotent shell script to download and archive files in batches.</p>
-<pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+<div class="code"><pre class="code literal-block">gzip<span class="w"> </span>*.warc
+</pre></div>
 
-<span class="nb">set</span> -x
+<p>Here is an idempotent shell script to download and archive files in batches.</p>
+<div class="code"><pre class="code literal-block"><span class="ch">#! /bin/sh</span>
+
+<span class="nb">set</span><span class="w"> </span>-x
 
 <span class="nv">batch</span><span class="o">=</span><span class="m">1000</span>
-<span class="nv">size</span><span class="o">=</span><span class="sb">`</span>expr <span class="si">${#</span><span class="nv">batch</span><span class="si">}</span> - <span class="m">1</span><span class="sb">`</span>
+<span class="nv">size</span><span class="o">=</span><span class="sb">`</span>expr<span class="w"> </span><span class="si">${#</span><span class="nv">batch</span><span class="si">}</span><span class="w"> </span>-<span class="w"> </span><span class="m">1</span><span class="sb">`</span>
 <span class="nv">maxproc</span><span class="o">=</span><span class="m">50</span>
 <span class="nv">file</span><span class="o">=</span>urls.txt
 <span class="nv">dir</span><span class="o">=</span><span class="nv">$HOME</span><span class="s1">'/projects/chunks'</span><span class="nv">$batch</span>
 
 
-mkdir -p <span class="nv">$dir</span>
-split -l <span class="nv">$batch</span> <span class="nv">$file</span> <span class="nv">$dir</span><span class="s1">'/'</span> -d --additional-suffix<span class="o">=</span>.txt -a <span class="nv">$size</span>
-sleep <span class="m">1</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$dir</span>
+split<span class="w"> </span>-l<span class="w"> </span><span class="nv">$batch</span><span class="w"> </span><span class="nv">$file</span><span class="w"> </span><span class="nv">$dir</span><span class="s1">'/'</span><span class="w"> </span>-d<span class="w"> </span>--additional-suffix<span class="o">=</span>.txt<span class="w"> </span>-a<span class="w"> </span><span class="nv">$size</span>
+sleep<span class="w"> </span><span class="m">1</span>
 
 <span class="nv">useragent</span><span class="o">=</span><span class="s1">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'</span>
 
 
-<span class="k">for</span> file <span class="k">in</span> <span class="sb">`</span>ls -r <span class="nv">$dir</span>/*.txt<span class="sb">`</span>
+<span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>ls<span class="w"> </span>-r<span class="w"> </span><span class="nv">$dir</span>/*.txt<span class="sb">`</span>
 <span class="k">do</span>
-    <span class="nv">warcfile</span><span class="o">=</span><span class="nv">$file</span><span class="s1">'.warc'</span>
-    <span class="nv">warczip</span><span class="o">=</span><span class="nv">$warcfile</span><span class="s1">'.gz'</span>
-    <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$warczip</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> -f <span class="nv">$warcfile</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        <span class="k">continue</span>
-    <span class="k">fi</span>
+<span class="w">    </span><span class="nv">warcfile</span><span class="o">=</span><span class="nv">$file</span><span class="s1">'.warc'</span>
+<span class="w">    </span><span class="nv">warczip</span><span class="o">=</span><span class="nv">$warcfile</span><span class="s1">'.gz'</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="nv">$warczip</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="nv">$warcfile</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span><span class="k">continue</span>
+<span class="w">    </span><span class="k">fi</span>
 
-    <span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>pgrep wget -c<span class="k">)</span> -lt <span class="nv">$maxproc</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        <span class="nb">echo</span> <span class="nv">$file</span>
-        wget -H <span class="s2">"user-agent: </span><span class="nv">$useragent</span><span class="s2">"</span> -i <span class="nv">$file</span> --warc-file<span class="o">=</span><span class="nv">$file</span> -t <span class="m">3</span> --timeout<span class="o">=</span><span class="m">4</span> -q -o /dev/null -O /dev/null <span class="p">&amp;</span>
-        sleep <span class="m">2</span>
-    <span class="k">else</span>
-        sleep <span class="m">300</span>
-        <span class="k">for</span> filename <span class="k">in</span> <span class="sb">`</span>find <span class="nv">$dir</span> -name <span class="s1">'*.warc'</span> -mmin +5<span class="sb">`</span>
-        <span class="k">do</span>
-            gzip <span class="nv">$filename</span> -9
-        <span class="k">done</span>
-    <span class="k">fi</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>wget<span class="w"> </span>-c<span class="k">)</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$maxproc</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file</span>
+<span class="w">        </span>wget<span class="w"> </span>-H<span class="w"> </span><span class="s2">"user-agent: </span><span class="nv">$useragent</span><span class="s2">"</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>--warc-file<span class="o">=</span><span class="nv">$file</span><span class="w"> </span>-t<span class="w"> </span><span class="m">3</span><span class="w"> </span>--timeout<span class="o">=</span><span class="m">4</span><span class="w"> </span>-q<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-O<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">&amp;</span>
+<span class="w">        </span>sleep<span class="w"> </span><span class="m">2</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">        </span>sleep<span class="w"> </span><span class="m">300</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span>filename<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>find<span class="w"> </span><span class="nv">$dir</span><span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.warc'</span><span class="w"> </span>-mmin<span class="w"> </span>+5<span class="sb">`</span>
+<span class="w">        </span><span class="k">do</span>
+<span class="w">            </span>gzip<span class="w"> </span><span class="nv">$filename</span><span class="w"> </span>-9
+<span class="w">        </span><span class="k">done</span>
+<span class="w">    </span><span class="k">fi</span>
 <span class="k">done</span>
-</pre>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In this article, we have seen how to archive million pages with wget in few minutes.</p>
 <p>wget2 has multithreading support and <a href="https://gitlab.com/gnuwget/wget2/issues/65">it might have warc output soon</a>. With that, archiving with wget becomes much easier.</p>

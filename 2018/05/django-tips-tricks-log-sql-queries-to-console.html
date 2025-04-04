@@ -156,7 +156,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    7 min read
+                    12 min read
             </p>
 
             <p class="dateline">
@@ -177,11 +177,12 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>When building REST APIs or micro services where django templating engine is not used, <a href="https://github.com/jazzband/django-debug-toolbar/issues/1059" target="_blank">this method won't work</a>. In these situations, we have to log SQL queries to console.</p>
 <h4>Using django-extensions</h4>
 <p><a href="https://pypi.org/project/django-extensions/">Django-extensions</a> provides lot of utilities for productive development. For <code>runserver_plus</code> and <code>shell_plus</code> commands, it accepts and optional <code>--print-sql</code> argument, which prints all the SQL queries that are being executed.</p>
-<pre class="code literal-block">./manage.py runserver_plus --print-sql
-./manage.py shell_plus --print-sql
-</pre>
+<div class="code"><pre class="code literal-block">./manage.py<span class="w"> </span>runserver_plus<span class="w"> </span>--print-sql
+./manage.py<span class="w"> </span>shell_plus<span class="w"> </span>--print-sql
+</pre></div>
+
 <p>Whenever an SQL query gets executed, it prints the query and time taken for it in console.</p>
-<pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_staff</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">42</span><span class="p">]:</span> <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -201,38 +202,42 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.002107</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
 
 <span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">chillar</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
-</pre>
+</pre></div>
+
 <h4>Using django-querycount</h4>
 <p><a href="https://pypi.org/project/django-querycount/">Django-querycount</a> provides a middleware to show SQL query count and show duplicate queries on console.</p>
-<pre class="code literal-block"><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-<span class="p">|</span> Type <span class="p">|</span> Database  <span class="p">|</span>   Reads  <span class="p">|</span>  Writes  <span class="p">|</span>  Totals  <span class="p">|</span> Duplicates <span class="p">|</span>
+<div class="code"><pre class="code literal-block"><span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>Type<span class="w"> </span><span class="p">|</span><span class="w"> </span>Database<span class="w">  </span><span class="p">|</span><span class="w">   </span>Reads<span class="w">  </span><span class="p">|</span><span class="w">  </span>Writes<span class="w">  </span><span class="p">|</span><span class="w">  </span>Totals<span class="w">  </span><span class="p">|</span><span class="w"> </span>Duplicates<span class="w"> </span><span class="p">|</span>
 <span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-<span class="p">|</span> RESP <span class="p">|</span>  default  <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>    <span class="m">0</span>     <span class="p">|</span>    <span class="m">3</span>     <span class="p">|</span>     <span class="m">1</span>      <span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>RESP<span class="w"> </span><span class="p">|</span><span class="w">  </span>default<span class="w">  </span><span class="p">|</span><span class="w">    </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="p">|</span><span class="w">    </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w">     </span><span class="m">1</span><span class="w">      </span><span class="p">|</span>
 <span class="p">|</span>------<span class="p">|</span>-----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>----------<span class="p">|</span>------------<span class="p">|</span>
-Total queries: <span class="m">3</span> <span class="k">in</span> <span class="m">1</span>.7738s
+Total<span class="w"> </span>queries:<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span>.7738s
 
 
-Repeated <span class="m">1</span> times.
-SELECT <span class="s2">"django_session"</span>.<span class="s2">"session_key"</span>,
-<span class="s2">"django_session"</span>.<span class="s2">"session_data"</span>, <span class="s2">"django_session"</span>.<span class="s2">"expire_date"</span> FROM
-<span class="s2">"django_session"</span> WHERE <span class="o">(</span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span> <span class="o">=</span>
+Repeated<span class="w"> </span><span class="m">1</span><span class="w"> </span>times.
+SELECT<span class="w"> </span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span>,
+<span class="s2">"django_session"</span>.<span class="s2">"session_data"</span>,<span class="w"> </span><span class="s2">"django_session"</span>.<span class="s2">"expire_date"</span><span class="w"> </span>FROM
+<span class="s2">"django_session"</span><span class="w"> </span>WHERE<span class="w"> </span><span class="o">(</span><span class="s2">"django_session"</span>.<span class="s2">"session_key"</span><span class="w"> </span><span class="o">=</span>
 <span class="s1">'dummy_key AND "django_session"."expire_date"</span>
 <span class="s1">&gt; '</span><span class="m">2018</span>-05-31T09:38:56.369469+00:00<span class="err">'</span>::timestamptz<span class="o">)</span>
-</pre>
+</pre></div>
+
 <p>This package provides <a href="https://github.com/bradmontgomery/django-querycount#settings">additional settings</a> to customize output.</p>
 <h4>Django logging</h4>
 <p>Instead of using any 3rd party package, we can use <code>django.db.backends</code> logger to print all the SQL queries.</p>
 <p>Add <code>django.db.backends</code> to loggers list and set log level and handlers.</p>
-<pre class="code literal-block">    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
+<div class="code"><pre class="code literal-block">    <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span>
         <span class="s1">'django.db.backends'</span><span class="p">:</span> <span class="p">{</span>
             <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
             <span class="s1">'handlers'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'console'</span><span class="p">,</span> <span class="p">],</span>
         <span class="p">},</span>
-</pre>
+</pre></div>
+
 <p>In runserver console, we can see all SQL queries that are being executed.</p>
-<pre class="code literal-block">(0.001) SELECT "django_admin_log"."id", "django_admin_log"."action_time", "django_admin_log"."user_id", "django_admin_log"."content_type_id", "django_admin_log"."object_id", "django_admin_log"."object_repr", "django_admin_log"."action_flag", "django_admin_log"."change_message", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined", "django_content_type"."id", "django_content_type"."app_label", "django_content_type"."model" FROM "django_admin_log" INNER JOIN "auth_user" ON ("django_admin_log"."user_id" = "auth_user"."id") LEFT OUTER JOIN "django_content_type" ON ("django_admin_log"."content_type_id" = "django_content_type"."id") WHERE "django_admin_log"."user_id" = 4 ORDER BY "django_admin_log"."action_time" DESC LIMIT 10; args=(4,)
-[2018/06/03 15:06:59] HTTP GET /admin/ 200 [1.69, 127.0.0.1:47734]
-</pre>
+<div class="code"><pre class="code literal-block"><span class="p">(</span><span class="m m-Double">0.001</span><span class="p">)</span><span class="w"> </span><span class="nx">SELECT</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"id"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"action_time"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"user_id"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"content_type_id"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"object_id"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"object_repr"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"action_flag"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"change_message"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"id"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"password"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"last_login"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"is_superuser"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"username"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"first_name"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"last_name"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"email"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"is_staff"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"is_active"</span><span class="p">,</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"date_joined"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_content_type"</span><span class="p">.</span><span class="s">"id"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_content_type"</span><span class="p">.</span><span class="s">"app_label"</span><span class="p">,</span><span class="w"> </span><span class="s">"django_content_type"</span><span class="p">.</span><span class="s">"model"</span><span class="w"> </span><span class="nx">FROM</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="w"> </span><span class="nx">INNER</span><span class="w"> </span><span class="nx">JOIN</span><span class="w"> </span><span class="s">"auth_user"</span><span class="w"> </span><span class="nx">ON</span><span class="w"> </span><span class="p">(</span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"user_id"</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"auth_user"</span><span class="p">.</span><span class="s">"id"</span><span class="p">)</span><span class="w"> </span><span class="nx">LEFT</span><span class="w"> </span><span class="nx">OUTER</span><span class="w"> </span><span class="nx">JOIN</span><span class="w"> </span><span class="s">"django_content_type"</span><span class="w"> </span><span class="nx">ON</span><span class="w"> </span><span class="p">(</span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"content_type_id"</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">"django_content_type"</span><span class="p">.</span><span class="s">"id"</span><span class="p">)</span><span class="w"> </span><span class="nx">WHERE</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"user_id"</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="nx">ORDER</span><span class="w"> </span><span class="nx">BY</span><span class="w"> </span><span class="s">"django_admin_log"</span><span class="p">.</span><span class="s">"action_time"</span><span class="w"> </span><span class="nx">DESC</span><span class="w"> </span><span class="nx">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="nx">args</span><span class="p">=(</span><span class="mi">4</span><span class="p">,)</span>
+<span class="p">[</span><span class="mi">2018</span><span class="o">/</span><span class="mi">06</span><span class="o">/</span><span class="mi">03</span><span class="w"> </span><span class="mi">15</span><span class="p">:</span><span class="mi">06</span><span class="p">:</span><span class="mi">59</span><span class="p">]</span><span class="w"> </span><span class="nx">HTTP</span><span class="w"> </span><span class="nx">GET</span><span class="w"> </span><span class="o">/</span><span class="nx">admin</span><span class="o">/</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="p">[</span><span class="m m-Double">1.69</span><span class="p">,</span><span class="w"> </span><span class="m m-Double">127.0.0.1</span><span class="p">:</span><span class="mi">47734</span><span class="p">]</span>
+</pre></div>
+
 <p>These are few ways to log all SQL queries to console. We can also write a custom middleware for better logging of these queries and get some insights.</p>
         </div>
 

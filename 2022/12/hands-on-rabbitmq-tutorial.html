@@ -156,7 +156,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    5 min read
+                    7 min read
             </p>
 
             <p class="dateline">
@@ -182,8 +182,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p><b>Binding</b>: A binding is a link between an exchange and a queue. It is created with a routing key. The producer sends messages to the exchange with a routing key. The exchange routes the message to the queues that are bound with a matching routing key.</p>
 <h4>RabbitMQ Setup</h4>
 <p>We can use the official RabbitMQ docker image to run RabbitMQ locally. We can run the following command to start a RabbitMQ container:</p>
-<pre class="code literal-block">$ docker run --rm --name<span class="o">=</span>rabbitmq -p <span class="m">15672</span>:15672 -p <span class="m">5672</span>:5672 rabbitmq:3-management
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--name<span class="o">=</span>rabbitmq<span class="w"> </span>-p<span class="w"> </span><span class="m">15672</span>:15672<span class="w"> </span>-p<span class="w"> </span><span class="m">5672</span>:5672<span class="w"> </span>rabbitmq:3-management
+</pre></div>
+
 <p>This image has rabbitmq management plugin enabled. We can access the management UI at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and password are both <code>guest</code>.</p>
 <p>It also has <code>rabbitmqadmin</code> command line tool installed, which can manage RabbitMQ. </p>
 <h4>Passing Messages from UI</h4>
@@ -193,32 +194,40 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p><img src="../../images/rabbitmq-publish.png" alt="RabbitMQ Publish"></p>
 <h4>Passing Messages from CLI</h4>
 <p>Instead of using web UI, we can use <code>rabbitmqadmin</code> CLI tool<sup id="fnref:rabbitmq-cli"><a class="footnote-ref" href="hands-on-rabbitmq-tutorial.html#fn:rabbitmq-cli">2</a></sup> to send and receive messages. Let's create a topic exchange and a queue. </p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> exchange <span class="nv">type</span><span class="o">=</span>direct <span class="nv">name</span><span class="o">=</span>orders
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>exchange<span class="w"> </span><span class="nv">type</span><span class="o">=</span>direct<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
 <span class="c1"># =&gt; exchange declared</span>
-</pre>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin <span class="nb">declare</span> queue <span class="nv">name</span><span class="o">=</span>orders
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span><span class="nb">declare</span><span class="w"> </span>queue<span class="w"> </span><span class="nv">name</span><span class="o">=</span>orders
 <span class="c1"># =&gt; queue declared</span>
-</pre>
+</pre></div>
+
 <p>Let's publish a message to the exchange:</p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin publish <span class="nv">routing_key</span><span class="o">=</span>orders <span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>publish<span class="w"> </span><span class="nv">routing_key</span><span class="o">=</span>orders<span class="w"> </span><span class="nv">payload</span><span class="o">=</span><span class="s1">'dummy message'</span>
 <span class="c1"># =&gt; Message published</span>
-</pre>
+</pre></div>
+
 <p>To receive messages from the queue, we can use the following command:</p>
-<pre class="code literal-block">$ docker <span class="nb">exec</span> rabbitmq rabbitmqadmin get <span class="nv">queue</span><span class="o">=</span>orders
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>rabbitmq<span class="w"> </span>rabbitmqadmin<span class="w"> </span>get<span class="w"> </span><span class="nv">queue</span><span class="o">=</span>orders
+</pre></div>
+
 <p><img src="../../images/rabbitmq-get-message.png" alt="RabbitMQ CLI"></p>
 <h4>Passing Messages from REST API</h4>
 <p>We can also use REST API to send and receive messages. Let's create a new exchange and queue:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"direct"}'</span> http://localhost:15672/api/exchanges/%2f/orders
-</pre>
-<pre class="code literal-block">$ curl -u guest:guest -X PUT -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"type":"topic", "durable": true}'</span> http://localhost:15672/api/queues/%2f/orders
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"direct"}'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"type":"topic", "durable": true}'</span><span class="w"> </span>http://localhost:15672/api/queues/%2f/orders
+</pre></div>
+
 <p>We can publish a message to the exchange:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X POST -H <span class="s2">"content-type:application/json"</span> -d <span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span> http://localhost:15672/api/exchanges/%2f/orders/publish
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">"content-type:application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"routing_key":"orders","payload":"dummy message","payload_encoding":"string", "properties": {} }'</span><span class="w"> </span>http://localhost:15672/api/exchanges/%2f/orders/publish
+</pre></div>
+
 <p>To receive messages from the queue, we can use the following command:</p>
-<pre class="code literal-block">$ curl -u guest:guest -X GET http://localhost:15672/api/queues/%2f/orders/get
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-u<span class="w"> </span>guest:guest<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>http://localhost:15672/api/queues/%2f/orders/get
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>In this post, we have seen how to get started with RabbitMQ. We have seen how to use the management UI, CLI and REST API to send and receive messages.</p>
 <div class="footnote">

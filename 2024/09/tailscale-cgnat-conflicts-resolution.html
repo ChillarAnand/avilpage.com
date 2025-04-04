@@ -157,7 +157,7 @@ When a tailscale ">
             </p>
 
             <p class="dateline">
-                    4 min read
+                    5 min read
             </p>
 
             <p class="dateline">
@@ -177,22 +177,23 @@ When a tailscale ">
 <p>In the above scenario, node C1 will be able to connect C2 &amp; C3 as they are in the same network.</p>
 <p>Once we start tailscale on node C1, it will get a 100.x.y.z IP address from tailscale subnet. Now, node C1 will not be able to connect to node C2 &amp; C3.</p>
 <p>To avoid conflicts with the existing network, we can configure tailscale to use a "smaller" subnet using "ipPool".</p>
-<pre class="code literal-block"><span class="p">{</span>
-    <span class="nt">"acls"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">"..."</span>
-    <span class="p">],</span>
-    <span class="nt">"nodeAttrs"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="nt">"target"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">"autogroup:admin"</span>
-            <span class="p">],</span>
-            <span class="nt">"ipPool"</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">"100.100.96.0/20"</span>
-            <span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="p">{</span>
+<span class="w">    </span><span class="nt">"acls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"..."</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"nodeAttrs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"autogroup:admin"</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">"ipPool"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"100.100.96.0/20"</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>Once it is configured, taiscale will start assigning IP addresses from the new subnet. Even though ip address allocation is limited, we can't still access nodes in other subnets due to a bug<sup id="fnref:tsb"><a class="footnote-ref" href="tailscale-cgnat-conflicts-resolution.html#fn:tsb">5</a></sup> in tailscale.</p>
 <p>As a workaround, we can manually update the iptables to route traffic to the correct subnet.</p>
 <p>Lets look at the iptables rules added by tailscale by stopping it and then starting it.</p>
@@ -200,9 +201,10 @@ When a tailscale ">
 <p><img src="../../images/tailscale-cgnat4.png" alt="tailscale iptables rules"></p>
 <p>The highlighted rule drops any incoming packet that doesn't originate from tailscale0 interface, and source IP is 100.64.0.0/10 (100.64.0.0 to 100.127.255.255).</p>
 <p>Let's delete this rule and add a new rule to restrict the source IP to 100.100.96.0/20 (100.100.96.1 to 100.100.111.254).</p>
-<pre class="code literal-block">$ sudo iptables --delete ts-input --source <span class="m">100</span>.64.0.0/10 ! -i tailscale0 -j DROP
-$ sudo iptables --insert ts-input <span class="m">3</span> --source <span class="m">100</span>.100.96.0/20 ! -i tailscale0 -j DROP
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--delete<span class="w"> </span>ts-input<span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.64.0.0/10<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--insert<span class="w"> </span>ts-input<span class="w"> </span><span class="m">3</span><span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.100.96.0/20<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+</pre></div>
+
 <p><img src="../../images/tailscale-cgnat5.png" alt="tailscale iptables rules"></p>
 <h4>Conclusion</h4>
 <p>By configuring tailscale to use a smaller subnet, we can avoid conflicts with existing networks. Even though there is a bug in tailscale, we can manually update iptables to route traffic to the correct subnet.</p>

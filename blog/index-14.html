@@ -93,60 +93,65 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     </header><div class="e-content entry-content">
     <p>This will be a series of articles on exploring the internals of Dart &amp; Flutter stateful hot reload. In the first article, lets write a simple dart program to see stateful hot reload in action. Then lets delve into details on what is happening.</p>
 <h4>Stateful Hot Reload</h4>
-<pre class="code literal-block"><span class="k">import</span> <span class="s1">'dart:async'</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="k">import</span><span class="w"> </span><span class="s1">'dart:async'</span><span class="p">;</span>
 
-<span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
-  <span class="n">total</span> <span class="o">+=</span> <span class="n">delta</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">adder</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">total</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">delta</span><span class="p">;</span>
 
-  <span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">print</span><span class="p">(</span><span class="s2">"Total is </span><span class="si">$</span><span class="n">total</span><span class="s2">. Adding </span><span class="si">$</span><span class="n">delta</span><span class="s2">"</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">2</span><span class="p">),</span> <span class="n">adder</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">Timer</span><span class="p">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">adder</span><span class="p">);</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>In the above program<sup id="fnref:program"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:program">1</a></sup>, we are using a <code>Timer.periodic</code><sup id="fnref:periodic"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:periodic">2</a></sup> to create a timer which calls <code>adder</code> function every 2 seconds.</p>
 <p>We can run this program from command line using</p>
-<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
-<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">d42KmW4LknU</span><span class="o">=/</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
+<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">d42KmW4LknU</span><span class="o">=/</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">4.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">8.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
 <span class="o">...</span>
-</pre>
+</pre></div>
+
 <p>This will start executing the program and will provide a link to observatory<sup id="fnref:observatory"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:observatory">3</a></sup>, a tool to profile/debug Dart applications.</p>
 <p>As the program is executing, lets open the program in an editor, change delta from 2 to 3.</p>
-<pre class="code literal-block">  <span class="err">#</span> <span class="n">change</span> <span class="k">this</span>
-  <span class="err">#</span> <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">2</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="k">this</span>
+<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">;</span>
 
-  <span class="err">#</span> <span class="n">change</span> <span class="n">to</span>
-  <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="m">3</span><span class="p">;</span>
-</pre>
+<span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="n">change</span><span class="w"> </span><span class="n">to</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">;</span>
+</pre></div>
+
 <p>If we restart the program, it will start executing from the beginning and it will lose the state of the program.</p>
-<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
-<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">eoP2lpC2ZWw</span><span class="o">=/</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">3.</span> <span class="n">Adding</span> <span class="mi">3</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">3</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">9.</span> <span class="n">Adding</span> <span class="mi">3</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">eoP2lpC2ZWw</span><span class="o">=/</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">3.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">9.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+</pre></div>
+
 <p>Instead of restart, we can open the observatory link in browser, open main isolate and click on <code>Reload Source</code> button.</p>
 <p><img src="../images/dart-vm.png"></p>
 <p>As we can see from the below output, it did a stateful hot reload and state of the program is preserved instead of starting from the beginning.</p>
-<pre class="code literal-block"><span class="o">$</span> <span class="n">dart</span> <span class="o">--</span><span class="n">observe</span> <span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
-<span class="n">Observatory</span> <span class="n">listening</span> <span class="n">on</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">n_GSAKsyr5s</span><span class="o">=/</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">2.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">4.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">6.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">8.</span> <span class="n">Adding</span> <span class="mi">2</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">11.</span> <span class="n">Adding</span> <span class="mi">3</span> <span class="c1"># after hot reload</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">14.</span> <span class="n">Adding</span> <span class="mi">3</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">17.</span> <span class="n">Adding</span> <span class="mi">3</span>
-<span class="n">Total</span> <span class="k">is</span> <span class="mf">20.</span> <span class="n">Adding</span> <span class="mi">3</span>
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">$</span><span class="w"> </span><span class="n">dart</span><span class="w"> </span><span class="o">--</span><span class="n">observe</span><span class="w"> </span><span class="n">hot_reload</span><span class="o">.</span><span class="n">dart</span>
+<span class="n">Observatory</span><span class="w"> </span><span class="n">listening</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8181</span><span class="o">/</span><span class="n">n_GSAKsyr5s</span><span class="o">=/</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">4.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">6.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">8.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">2</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">11.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c1"># after hot reload</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">14.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">17.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+<span class="n">Total</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="mf">20.</span><span class="w"> </span><span class="n">Adding</span><span class="w"> </span><span class="mi">3</span>
+</pre></div>
+
 <p>During a hot reload, Dart VM will apply changes to a live program<sup id="fnref:hot"><a class="footnote-ref" href="../2020/06/how-dart-flutter-hot-reload-work-part-1.html#fn:hot">4</a></sup>. If the source code of a method is changed, VM will replace the methods with the new updated methods. Next time, when the program looks up for a particular method, it will find the updated method and use it.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen how hot reload works by writing a simple program in Dart. In the upcoming articles, lets dive into the Dart VM internals, Flutter architecture and other nitty gritties of hot reload.</p>
@@ -184,71 +189,77 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <h4>Aliases</h4>
 <p>Aliases in general improve the productivity when using a shell.</p>
 <p>kubectl provides shortcuts for commands. For example,</p>
-<pre class="code literal-block"><span class="c1"># instead of running full command</span>
-$ kubectl get services
+<div class="code"><pre class="code literal-block"><span class="c1"># instead of running full command</span>
+$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>services
 
 <span class="c1"># we can use short hand version</span>
-$ kubectl get svc
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>svc
+</pre></div>
+
 <p>It also provides completion for commands.</p>
-<pre class="code literal-block"><span class="c1"># enable completion for zsh</span>
-$ <span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion zsh<span class="o">)</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># enable completion for zsh</span>
+$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>&lt;<span class="o">(</span>kubectl<span class="w"> </span>completion<span class="w"> </span>zsh<span class="o">)</span>
 
 <span class="c1"># type `kubectl ` and hit `&lt;TAB&gt;` will show possible options</span>
-$ kubectl
-annotate       attach         cluster-info
-api-resources  auth           completion
-api-versions   autoscale      config
-apply          certificate    convert
+$<span class="w"> </span>kubectl
+annotate<span class="w">       </span>attach<span class="w">         </span>cluster-info
+api-resources<span class="w">  </span>auth<span class="w">           </span>completion
+api-versions<span class="w">   </span>autoscale<span class="w">      </span>config
+apply<span class="w">          </span>certificate<span class="w">    </span>convert
 
 <span class="c1"># type `kubectl g`, and hit `&lt;TAB&gt;` will show possible options</span>
-$ kubectl get
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>get
+</pre></div>
+
 <p>Even though completions are helpful, setting up up aliases for most commanly used commands will save a lot of time.</p>
-<pre class="code literal-block"><span class="nb">alias</span> <span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
+<div class="code"><pre class="code literal-block"><span class="nb">alias</span><span class="w"> </span><span class="nv">k</span><span class="o">=</span><span class="s1">'kubectl'</span>
 
-<span class="nb">alias</span> <span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
-<span class="nb">alias</span> <span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
-<span class="nb">alias</span> <span class="nv">kgpa</span><span class="o">=</span><span class="s1">'kubectl get pods --all-namespaces'</span>
-<span class="nb">alias</span> <span class="nv">ket</span><span class="o">=</span><span class="s1">'kubectl exec -it'</span>
-<span class="nb">alias</span> <span class="nv">wkgp</span><span class="o">=</span><span class="s1">'watch -n1 kubectl getp pods'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kdp</span><span class="o">=</span><span class="s1">'kubectl describe pod'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgp</span><span class="o">=</span><span class="s1">'kubectl get pods'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgpa</span><span class="o">=</span><span class="s1">'kubectl get pods --all-namespaces'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ket</span><span class="o">=</span><span class="s1">'kubectl exec -it'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">wkgp</span><span class="o">=</span><span class="s1">'watch -n1 kubectl getp pods'</span>
 
-<span class="nb">alias</span> <span class="nv">kga</span><span class="o">=</span><span class="s1">'kubectl get all'</span>
-<span class="nb">alias</span> <span class="nv">kgaa</span><span class="o">=</span><span class="s1">'kubectl get all --all-namespaces'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kga</span><span class="o">=</span><span class="s1">'kubectl get all'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kgaa</span><span class="o">=</span><span class="s1">'kubectl get all --all-namespaces'</span>
 
-<span class="nb">alias</span> <span class="nv">kaf</span><span class="o">=</span><span class="s1">'kubectl apply -f'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kaf</span><span class="o">=</span><span class="s1">'kubectl apply -f'</span>
 
-<span class="nb">alias</span> <span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
-<span class="nb">alias</span> <span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
-</pre>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kcgc</span><span class="o">=</span><span class="s1">'kubectl config get-contexts'</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">kccc</span><span class="o">=</span><span class="s1">'kubectl config current-context'</span>
+</pre></div>
+
 <p>If you don't write your own aliases, there is <a href="https://github.com/ahmetb/kubectl-aliases">kubectl-aliases</a> which provides exhuastive list of aliases. We can source this file in rc file and start using them.</p>
 <h4>Use Functions</h4>
 <p>Even though aliases help us to run lengthy commands with an alias, there are times where we have to run multiple commands to get things done for a single task.</p>
 <p>For example, to view kubenetes dashboard, we have to get the token, start proxy server and then open the url in browser. We can write a simple function as shown below to do all of that.</p>
-<pre class="code literal-block">kp<span class="o">()</span> <span class="o">{</span>
-    kubectl -n kubernetes-dashboard describe secret <span class="k">$(</span>kubectl -n kubernetes-dashboard get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">'{print $1}'</span><span class="k">)</span> <span class="p">|</span> grep <span class="s1">'token:'</span> <span class="p">|</span> awk <span class="s1">'{print $2}'</span> <span class="p">|</span> pbcopy
-    open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
-    kubectl proxy
+<div class="code"><pre class="code literal-block">kp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>kubectl<span class="w"> </span>-n<span class="w"> </span>kubernetes-dashboard<span class="w"> </span>describe<span class="w"> </span>secret<span class="w"> </span><span class="k">$(</span>kubectl<span class="w"> </span>-n<span class="w"> </span>kubernetes-dashboard<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>admin-user<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'{print $1}'</span><span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">'token:'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'{print $2}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>pbcopy
+<span class="w">    </span>open<span class="w"> </span>http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+<span class="w">    </span>kubectl<span class="w"> </span>proxy
 <span class="o">}</span>
-</pre>
+</pre></div>
+
 <p>Now from the shell, when we run <code>kp</code>, it function will copy the token to clipboard, open kubernetes dashboard in browser and will start the proxy server.</p>
 <h4>Use Labels</h4>
 <p>To describe a pod or tail logs from a pod, we can use pod names.</p>
-<pre class="code literal-block">$ kubectl get pods
-NAME                             READY   STATUS
-hello-world-79d794c659-tpfv2     <span class="m">1</span>/1     Running
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods
+NAME<span class="w">                             </span>READY<span class="w">   </span>STATUS
+hello-world-79d794c659-tpfv2<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running
 
 
-$ kubectl describe pod hello-world-79d794c659-tpfv2
+$<span class="w"> </span>kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>hello-world-79d794c659-tpfv2
 
-$ kubectl logs -f pod/hello-world-79d794c659-tpfv2
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>pod/hello-world-79d794c659-tpfv2
+</pre></div>
+
 <p>When the app gets updated, the name of pod also updates. If your shell has auto completion feature, it will autocomplete to previous name.</p>
 <p>So, instead of using pod name, we can use pod labels as mentioned below.</p>
-<pre class="code literal-block">$ kubectl describe pod -l<span class="o">=</span>hello-world
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>describe<span class="w"> </span>pod<span class="w"> </span>-l<span class="o">=</span>hello-world
 
-$ kubectl logs -f -l<span class="o">=</span>pod/hello-world
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>-l<span class="o">=</span>pod/hello-world
+</pre></div>
+
 <p>We run the command once and next time shell will show autocomplete and we can use that directly.</p>
 <h4>Kubectl Tools</h4>
 <p>k8s has a good ecosystem and the following packages are aimed to make certain k8s tasks easier.</p>
@@ -278,89 +289,95 @@ $ kubectl logs -f -l<span class="o">=</span>pod/hello-world
     <p>In this article, let us see how to set up a continuous deployment pipeline to Kubernetes in CircleCI using Skaffold.</p>
 <h4>Prerequisites</h4>
 <p>You should have a kubernetes cluster in a cloud environment or in your local machine. Check your cluster status with the following commands.</p>
-<pre class="code literal-block">$ kubectl cluster-info
-$ kubectl config get-contexts
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>cluster-info
+$<span class="w"> </span>kubectl<span class="w"> </span>config<span class="w"> </span>get-contexts
+</pre></div>
+
 <p>You should know how to manually deploy your application to kubernetes.</p>
-<pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
-$ docker push chillaranand/library
+<div class="code"><pre class="code literal-block"><span class="c1"># push latest docker image to container registry</span>
+$<span class="w"> </span>docker<span class="w"> </span>push<span class="w"> </span>chillaranand/library
 
 <span class="c1"># deploy latest image to k8s</span>
-$ kubectl apply -f app/deployment.yaml
-$ kubectl apply -f app/service.yaml
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>app/deployment.yaml
+$<span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>app/service.yaml
+</pre></div>
+
 <h4>Skaffold</h4>
 <p><a href="https://github.com/GoogleContainerTools/skaffold">Skaffold</a> is a CLI tool to facilitate continuous development and deployment workflows for Kubernetes applications.</p>
 <p>Skaffold binaries are available for all platforms. Download the binary file for your OS and move it to bin folder.</p>
-<pre class="code literal-block">$ curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
-$ chmod +x skaffold
-$ sudo mv skaffold /usr/local/bin
-</pre>
-<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
-<pre class="code literal-block">$ skaffold init
-Configuration skaffold.yaml was written
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>curl<span class="w"> </span>-Lo<span class="w"> </span>skaffold<span class="w"> </span>https://storage.googleapis.com/skaffold/releases/latest/skaffold-darwin-amd64
+$<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>skaffold
+$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>skaffold<span class="w"> </span>/usr/local/bin
+</pre></div>
 
-$ cat skaffold.yaml
-apiVersion: skaffold/v2beta1
-kind: Config
+<p>Inside your project root, run <code>init</code> command to generate a config file. If your project has k8s manifests, it will detect them and include it in the configuration file.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>skaffold<span class="w"> </span>init
+Configuration<span class="w"> </span>skaffold.yaml<span class="w"> </span>was<span class="w"> </span>written
+
+$<span class="w"> </span>cat<span class="w"> </span>skaffold.yaml
+apiVersion:<span class="w"> </span>skaffold/v2beta1
+kind:<span class="w"> </span>Config
 metadata:
-  name: library
+<span class="w">  </span>name:<span class="w"> </span>library
 build:
-  artifacts:
-  - image: docker.io/chillaranand/library
+<span class="w">  </span>artifacts:
+<span class="w">  </span>-<span class="w"> </span>image:<span class="w"> </span>docker.io/chillaranand/library
 deploy:
-  kubectl:
-    manifests:
-    - kubernetes/deployment.yaml
-    - kubernetes/service.yaml
-</pre>
+<span class="w">  </span>kubectl:
+<span class="w">    </span>manifests:
+<span class="w">    </span>-<span class="w"> </span>kubernetes/deployment.yaml
+<span class="w">    </span>-<span class="w"> </span>kubernetes/service.yaml
+</pre></div>
+
 <p>To deploy latest changes to your cluster, run</p>
-<pre class="code literal-block">$ skaffold run
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>skaffold<span class="w"> </span>run
+</pre></div>
+
 <p>This will build the docker image, push to registry and will apply the manifests in the clusters. Now, k8s will pull the latest image from the registry and create a new deployment.</p>
 <h4>CircleCI Workflow</h4>
-<pre class="code literal-block">version: <span class="m">2</span>.1
+<div class="code"><pre class="code literal-block">version:<span class="w"> </span><span class="m">2</span>.1
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.19
-  kubernetes: circleci/kubernetes@0.11.0
+<span class="w">  </span>aws-cli:<span class="w"> </span>circleci/aws-cli@0.1.19
+<span class="w">  </span>kubernetes:<span class="w"> </span>circleci/kubernetes@0.11.0
 
 commands:
-  kubernetes-deploy:
+<span class="w">  </span>kubernetes-deploy:
 
-    steps:
-      - setup_remote_docker
+<span class="w">    </span>steps:
+<span class="w">      </span>-<span class="w"> </span>setup_remote_docker
 
-      - aws-cli/setup:
-          profile-name: default
+<span class="w">      </span>-<span class="w"> </span>aws-cli/setup:
+<span class="w">          </span>profile-name:<span class="w"> </span>default
 
-      - kubernetes/install-kubectl:
-          kubectl-version: v1.15.10
+<span class="w">      </span>-<span class="w"> </span>kubernetes/install-kubectl:
+<span class="w">          </span>kubectl-version:<span class="w"> </span>v1.15.10
 
-      - checkout
+<span class="w">      </span>-<span class="w"> </span>checkout
 
-      - run:
-          name: container registry log <span class="k">in</span>
-          command: <span class="p">|</span>
-            sudo <span class="k">$(</span>aws ecr get-login --region ap-south-1 --no-include-email<span class="k">)</span>
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>container<span class="w"> </span>registry<span class="w"> </span>log<span class="w"> </span><span class="k">in</span>
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>sudo<span class="w"> </span><span class="k">$(</span>aws<span class="w"> </span>ecr<span class="w"> </span>get-login<span class="w"> </span>--region<span class="w"> </span>ap-south-1<span class="w"> </span>--no-include-email<span class="k">)</span>
 
-      - run:
-          name: install skaffold
-          command: <span class="p">|</span>
-            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-            chmod +x skaffold
-            sudo mv skaffold /usr/local/bin
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>install<span class="w"> </span>skaffold
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>curl<span class="w"> </span>-Lo<span class="w"> </span>skaffold<span class="w"> </span>https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+<span class="w">            </span>chmod<span class="w"> </span>+x<span class="w"> </span>skaffold
+<span class="w">            </span>sudo<span class="w"> </span>mv<span class="w"> </span>skaffold<span class="w"> </span>/usr/local/bin
 
-      - run:
-          name: update kube config to connect to the required cluster
-          command: <span class="p">|</span>
-            aws eks --region ap-south-1 update-kubeconfig --name demo-cluster
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>update<span class="w"> </span>kube<span class="w"> </span>config<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>required<span class="w"> </span>cluster
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>aws<span class="w"> </span>eks<span class="w"> </span>--region<span class="w"> </span>ap-south-1<span class="w"> </span>update-kubeconfig<span class="w"> </span>--name<span class="w"> </span>demo-cluster
 
-      - run:
-          name: deploy to k8s
-          command: <span class="p">|</span>
-            skaffold run
-</pre>
+<span class="w">      </span>-<span class="w"> </span>run:
+<span class="w">          </span>name:<span class="w"> </span>deploy<span class="w"> </span>to<span class="w"> </span>k8s
+<span class="w">          </span>command:<span class="w"> </span><span class="p">|</span>
+<span class="w">            </span>skaffold<span class="w"> </span>run
+</pre></div>
+
 <p>CircleCI orbs are shareable packages to speed up CI setup. Here we are using aws-cli, kubernetes orbs to easily install/setup them inside the CI environment.</p>
 <p>Since CircleCI builds run in a docker container, to run docker commands inside container, we have to specify <code>setup_remote_docker</code> key so that a separate environment is created for it.</p>
 <p>Remaining steps are self explainatory.</p>
@@ -428,45 +445,50 @@ Image Credit:
     <p>PyPi<sup id="fnref:1"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:1">1</a></sup> hosts over 210K+ projects and the average size of Python package is less than 1MB. However some of the most used packages in scientific computing like NumPy, SciPy has large footprint as they bundle shared libraries<sup id="fnref:2"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:2">2</a></sup> along with the package.</p>
 <h4>Build From Source</h4>
 <p>If a project needs to be deployed in AWS Lambda, the total size of deployment package should be less than 250MB<sup id="fnref:3"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:3">3</a></sup>.</p>
-<pre class="code literal-block">$ pip install numpy
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>numpy
 
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 85M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+<span class="w"> </span>85M<span class="w">    </span>/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+</pre></div>
+
 <p>Just numpy occupies 85MB space on Mac machine. If we include a couple of other packages like scipy &amp; pandas, overall size of the package crosses 250MB.</p>
 <p>An easy way reduce the size of python packages is to build from source instead of use pre-compiled wheels.</p>
-<pre class="code literal-block">$ <span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span> pip install numpy --global-option<span class="o">=</span>build_ext
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nv">CLFAGS</span><span class="o">=</span><span class="s1">'-g0 -Wl -I/usr/include:/usr/local/include -L/usr/lib:/usr/local/lib'</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>--global-option<span class="o">=</span>build_ext
 
-$ du -hs ~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
- 23M    /Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>~/.virtualenvs/py37/lib/python3.7/site-packages/numpy/
+<span class="w"> </span>23M<span class="w">    </span>/Users/avilpage/.virtualenvs/all3/lib/python3.7/site-packages/numpy/
+</pre></div>
+
 <p>We can see the footprint has reduced by ~70% when using sdist instead of wheel. This<sup id="fnref:4"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:4">4</a></sup> article provides more details about these CFLAG optimization when installing a package from source.</p>
 <h4>Shared Packages</h4>
 <p>When using a laptop with low storage for multiple projects with conflicting dependencies, a seperate virtual environment is needed for each project. This will lead to installing same version of the package in multiple places which increases the footprint.</p>
 <p>To avoid this, we can create a shared virtual environment which has most commonly used packages and share it across all the enviroments. For example, we can create a shared virtual enviroment with all the packages required for scientific computing.</p>
 <p>For each project, we can create a virtual enviroment and share all packages of the common enviroment. If any project requires a specific version of the package, the same package can be install in project enviroment.</p>
-<pre class="code literal-block">$ cat common-requirements.txt  <span class="c1"># shared across all enviroments</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cat<span class="w"> </span>common-requirements.txt<span class="w">  </span><span class="c1"># shared across all enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.1
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
 
-$ cat project1-requirements.txt  <span class="c1"># project1 requirements</span>
+$<span class="w"> </span>cat<span class="w"> </span>project1-requirements.txt<span class="w">  </span><span class="c1"># project1 requirements</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.18.1
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
 
-$ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
+$<span class="w"> </span>cat<span class="w"> </span>project2-requirements.txt<span class="w">  </span><span class="c1"># project2 enviroments</span>
 <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.17
 <span class="nv">pandas</span><span class="o">==</span><span class="m">1</span>.0.0
 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.4.1
-</pre>
+</pre></div>
+
 <p>After creating a virtual enviroment for a project, we can create a <code>.pth</code> file with the path of site-packages of common virtual enviroment so that all those packages are readily available in the new project.</p>
-<pre class="code literal-block">$ <span class="nb">echo</span> <span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span> &gt;
- ~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">'/users/avilpage/.virtualenvs/common/lib/python3.7/site-packages'</span><span class="w"> </span>&gt;
+<span class="w"> </span>~/.virtualenvs/project1/lib/python3.7/site-packages/common.pth
+</pre></div>
+
 <p>Then we can install the project requirements which will install only missing packages.</p>
-<pre class="code literal-block">$ pip install -r project1-requirements.txt
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>project1-requirements.txt
+</pre></div>
+
 <h4>Global Store</h4>
 <p>The above shared packages solution has couple issues.</p>
 <ol>
@@ -475,13 +497,14 @@ $ cat project2-requirements.txt  <span class="c1"># project2 enviroments</span>
 </ol>
 <p>To solve this<sup id="fnref:5"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:5">5</a></sup>, we can have a global store of packages in a single location segregated by python and package version. Whenever a user tries to install a package, check if the package is in global store. If not install it in global store. If present, just link the package to virtualenvs.</p>
 <p>For example, numpy1.17 for Python 3.7 and numpy1.18 for Python 3.6 can be stored in the global store as follows.</p>
-<pre class="code literal-block">$ python3.6 -m pip install --target ~/.mpip/numpy/3.6_1.18 numpy
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python3.6<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--target<span class="w"> </span>~/.mpip/numpy/3.6_1.18<span class="w"> </span>numpy
 
-$ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
+$<span class="w"> </span>python3.7<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--target<span class="w"> </span>~/.mpip/numpy/3.7_1.17<span class="w"> </span>numpy
 
 <span class="c1"># in project venv</span>
-<span class="nb">echo</span> <span class="s1">'~/.mpip/numpy/3.7_1.17'</span> &gt; PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
-</pre>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">'~/.mpip/numpy/3.7_1.17'</span><span class="w"> </span>&gt;<span class="w"> </span>PATH_TO_ENV/lib/python3.7/site-packages/numpy.pth
+</pre></div>
+
 <p>With this, we can ensure one version of the package is stored in the disk only once. I have created a simple package manager called mpip<sup id="fnref:6"><a class="footnote-ref" href="../2020/02/reduce-python-package-footprint.html#fn:6">6</a></sup> as a POC to test this and it seems to work as expected.</p>
 <p>These are couple of ways to reduce to footprint of Python packages in a single environment as well as muliple enviroments.</p>
 <div class="footnote">
@@ -523,77 +546,83 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <p>In this article, we will see where these atomic blocks create problems and find ways to disable it.</p>
 <h4>Select for update</h4>
 <p>Django provides <a href="https://docs.djangoproject.com/en/3.0/ref/models/querysets/#select-for-update">select_for_update()</a> method on model managers which returns a queryset that will lock rows till the end of transaction.</p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">update_book</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
         <span class="n">book</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
         <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">book</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>When writing test case for a piece of code that uses <code>select_for_update</code>, Django recomends not to use TestCase as it might not raise <code>TransactionManagementError</code>.</p>
 <h4>Threads</h4>
 <p>Let us take a view which uses threads to get data from database.</p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">get_books</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="n">queryset</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="n">BookSerializer</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
     <span class="k">return</span> <span class="n">response</span>
 
-<span class="k">class</span> <span class="nc">BookViewSet</span><span class="p">(</span><span class="n">ViewSet</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BookViewSet</span><span class="p">(</span><span class="n">ViewSet</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
             <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">get_books</span><span class="p">,</span> <span class="p">())</span>
             <span class="n">return_value</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">return_value</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>A test which writes some data to db and then calls this API will fail to fetch the data.</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'test book'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">()</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">'books-list'</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>Threads in the view create a new connection to the database and they don't see the created test data as the transaction is not yet commited.</p>
 <h4>Transaction Test Case</h4>
 <p>To handle above 2 scenarios or other scenarios where database transaction behaviour needs to be tested, Django recommends to use <code>TransactionTestCase</code> instead of TestCase.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TransactionTestCase</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionTestCase</span>
 
 <span class="n">Class</span> <span class="n">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">TransactionTestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_books</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
-</pre>
+</pre></div>
+
 <p>With TransactionTestCase, db will be in auto commit mode and threads will be able to fetch the data commited earlier.</p>
 <p>Consider a scenario, where there are other utility classes which are subclassed from TestCase.</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">LibraryTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="o">...</span>
 
-<span class="k">class</span> <span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LibraryUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="o">...</span>
 
-<span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="o">...</span>
-</pre>
+</pre></div>
+
 <p>If we subclass LibraryTestCase with TransactionTestCase, it will slow down the entire test suite as all the tests run in autocommit mode.</p>
 <p>If we subclass LibraryUserTestCase with TransactionTestCase, we will miss the functionality in LibraryTestCase. To prevent this, we can override the custom methods to call TransactionTestCase.</p>
 <p>If we look at the source code of TestCase, it has 4 methods to handle atomic transactions. We can override them to prevent creation of atomic transactions.</p>
-<pre class="code literal-block"><span class="k">class</span> <span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">class</span><span class="w"> </span><span class="nc">LibraryPaidUserTestCase</span><span class="p">(</span><span class="n">LibraryTestCase</span><span class="p">):</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_fixture_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fixture_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_setup</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fixture_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_fixture_teardown</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>We can also create a mixin with the above methods and subclass it wherever this functionality is needed.</p>
 <h4>Conclusion</h4>
 <p>Django wraps tests in TestCase inside atomic transactions to speed up the run time. When we are testing for db transaction behaviours, we have to disable this using appropriate methods.</p>
@@ -659,57 +688,60 @@ $ python3.7 -m pip install --target ~/.mpip/numpy/3.7_1.17 numpy
 <h4>Chain of Trust</h4>
 <p>TLS certificate chain typically consists of server certificate which is signed by intermediate certificate of CA which is inturn signed with CA root certificate.</p>
 <p>Using OpenSSL, we can gather the server and intermediate certificates sent by a server using the following command.</p>
-<pre class="code literal-block">$ openssl s_client -showcerts -connect avilpage.com:443
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>openssl<span class="w"> </span>s_client<span class="w"> </span>-showcerts<span class="w"> </span>-connect<span class="w"> </span>avilpage.com:443
 
 CONNECTED<span class="o">(</span><span class="m">00000006</span><span class="o">)</span>
-<span class="nv">depth</span><span class="o">=</span><span class="m">2</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert High Assurance EV Root CA
-verify <span class="k">return</span>:1
-<span class="nv">depth</span><span class="o">=</span><span class="m">1</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">O</span> <span class="o">=</span> DigiCert Inc, <span class="nv">OU</span> <span class="o">=</span> www.digicert.com, <span class="nv">CN</span> <span class="o">=</span> DigiCert SHA2 High Assurance Server CA
-verify <span class="k">return</span>:1
-<span class="nv">depth</span><span class="o">=</span><span class="m">0</span> <span class="nv">C</span> <span class="o">=</span> US, <span class="nv">ST</span> <span class="o">=</span> California, <span class="nv">L</span> <span class="o">=</span> San Francisco, <span class="nv">O</span> <span class="o">=</span> <span class="s2">"GitHub, Inc."</span>, <span class="nv">CN</span> <span class="o">=</span> www.github.com
-verify <span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>US,<span class="w"> </span><span class="nv">O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>DigiCert<span class="w"> </span>Inc,<span class="w"> </span><span class="nv">OU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>www.digicert.com,<span class="w"> </span><span class="nv">CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>DigiCert<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>EV<span class="w"> </span>Root<span class="w"> </span>CA
+verify<span class="w"> </span><span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>US,<span class="w"> </span><span class="nv">O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>DigiCert<span class="w"> </span>Inc,<span class="w"> </span><span class="nv">OU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>www.digicert.com,<span class="w"> </span><span class="nv">CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>DigiCert<span class="w"> </span>SHA2<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>Server<span class="w"> </span>CA
+verify<span class="w"> </span><span class="k">return</span>:1
+<span class="nv">depth</span><span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>US,<span class="w"> </span><span class="nv">ST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>California,<span class="w"> </span><span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>San<span class="w"> </span>Francisco,<span class="w"> </span><span class="nv">O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GitHub, Inc."</span>,<span class="w"> </span><span class="nv">CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>www.github.com
+verify<span class="w"> </span><span class="k">return</span>:1
 ---
-Certificate chain
- <span class="m">0</span> s:/C<span class="o">=</span>US/ST<span class="o">=</span>California/L<span class="o">=</span>San Francisco/O<span class="o">=</span>GitHub, Inc./CN<span class="o">=</span>www.github.com
-   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
------BEGIN CERTIFICATE-----
+Certificate<span class="w"> </span>chain
+<span class="w"> </span><span class="m">0</span><span class="w"> </span>s:/C<span class="o">=</span>US/ST<span class="o">=</span>California/L<span class="o">=</span>San<span class="w"> </span>Francisco/O<span class="o">=</span>GitHub,<span class="w"> </span>Inc./CN<span class="o">=</span>www.github.com
+<span class="w">   </span>i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert<span class="w"> </span>Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert<span class="w"> </span>SHA2<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>Server<span class="w"> </span>CA
+-----BEGIN<span class="w"> </span>CERTIFICATE-----
 MIIHMTCCBhmgAwIBAgIQDf56dauo4GsS0tOc8
 MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlna
 0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHvF
 aTrrJ67dru040my
------END CERTIFICATE-----
- <span class="m">1</span> s:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert SHA2 High Assurance Server CA
-   i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert High Assurance EV Root CA
------BEGIN CERTIFICATE-----
+-----END<span class="w"> </span>CERTIFICATE-----
+<span class="w"> </span><span class="m">1</span><span class="w"> </span>s:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert<span class="w"> </span>Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert<span class="w"> </span>SHA2<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>Server<span class="w"> </span>CA
+<span class="w">   </span>i:/C<span class="o">=</span>US/O<span class="o">=</span>DigiCert<span class="w"> </span>Inc/OU<span class="o">=</span>www.digicert.com/CN<span class="o">=</span>DigiCert<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>EV<span class="w"> </span>Root<span class="w"> </span>CA
+-----BEGIN<span class="w"> </span>CERTIFICATE-----
 MIIEsTCCA5mgAwIBAgIQBOHnpNxc8vNtwCtC
 MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGln
 0wGjIChBWUMo0oHjqvbsezt3tkBigAVBRQHv
 <span class="nv">cPUeybQ</span><span class="o">=</span>
------END CERTIFICATE-----
+-----END<span class="w"> </span>CERTIFICATE-----
 
-    Verify <span class="k">return</span> code: <span class="m">0</span> <span class="o">(</span>ok<span class="o">)</span>
-</pre>
+<span class="w">    </span>Verify<span class="w"> </span><span class="k">return</span><span class="w"> </span>code:<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>ok<span class="o">)</span>
+</pre></div>
+
 <p>This command internally verfies if the certificate chain is valid. The output contains the server certificate and the intermediate certificate along with their issuer and subject. Copy both the certificates into <code>server.pem</code> and <code>intermediate.pem</code> files.</p>
 <p>We can decode these pem files and see the information in these certificates using</p>
-<pre class="code literal-block">$ openssl x509 -noout -text -in server.crt
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>openssl<span class="w"> </span>x509<span class="w"> </span>-noout<span class="w"> </span>-text<span class="w"> </span>-in<span class="w"> </span>server.crt
 
 Certificate:
-    Data:
-        Version: <span class="m">3</span> <span class="o">(</span>0x2<span class="o">)</span>
-    Signature Algorithm: sha256WithRSAEncryption
-    ----
-</pre>
+<span class="w">    </span>Data:
+<span class="w">        </span>Version:<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>0x2<span class="o">)</span>
+<span class="w">    </span>Signature<span class="w"> </span>Algorithm:<span class="w"> </span>sha256WithRSAEncryption
+<span class="w">    </span>----
+</pre></div>
+
 <p>We can also get only the subject and issuer of the certificate with</p>
-<pre class="code literal-block">$ openssl x509 -noout -subject -noout -issuer -in server.pem
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>openssl<span class="w"> </span>x509<span class="w"> </span>-noout<span class="w"> </span>-subject<span class="w"> </span>-noout<span class="w"> </span>-issuer<span class="w"> </span>-in<span class="w"> </span>server.pem
 
-<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>www.github.com
-<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
+<span class="nv">subject</span><span class="o">=</span><span class="w"> </span><span class="nv">CN</span><span class="o">=</span>www.github.com
+<span class="nv">issuer</span><span class="o">=</span><span class="w"> </span><span class="nv">CN</span><span class="o">=</span>DigiCert<span class="w"> </span>SHA2<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>Server<span class="w"> </span>CA
 
-$ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
+$<span class="w"> </span>openssl<span class="w"> </span>x509<span class="w"> </span>-noout<span class="w"> </span>-subject<span class="w"> </span>-noout<span class="w"> </span>-issuer<span class="w"> </span>-in<span class="w"> </span>intermediate.pem
 
-<span class="nv">subject</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert SHA2 High Assurance Server CA
-<span class="nv">issuer</span><span class="o">=</span> <span class="nv">CN</span><span class="o">=</span>DigiCert High Assurance EV Root CA
-</pre>
+<span class="nv">subject</span><span class="o">=</span><span class="w"> </span><span class="nv">CN</span><span class="o">=</span>DigiCert<span class="w"> </span>SHA2<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>Server<span class="w"> </span>CA
+<span class="nv">issuer</span><span class="o">=</span><span class="w"> </span><span class="nv">CN</span><span class="o">=</span>DigiCert<span class="w"> </span>High<span class="w"> </span>Assurance<span class="w"> </span>EV<span class="w"> </span>Root<span class="w"> </span>CA
+</pre></div>
+
 <p>Now that we have both server and intermediate certificates at hand, we need to look for the relevant root certificate (in this case DigiCert High Assurance EV Root CA) in our system to verify these.</p>
 <p>If you are using a Linux machine, all the root certificate will readily available in <code>.pem</code> format in <code>/etc/ssl/certs</code> directory.</p>
 <p>If you are using a Mac, open <code>Keychain Access</code>, search and export the relevant root certificate in <code>.pem</code> format.</p>
@@ -717,9 +749,10 @@ $ openssl x509 -noout -subject -noout -issuer -in intermediate.pem
 <img src="../images/tls-openssl1.png"></p>
 
 <p>We have all the 3 certificates in the chain of trust and we can validate them with</p>
-<pre class="code literal-block">$ openssl verify -verbose -CAfile root.pem -untrusted intermediate.pem server.pem
-server.pem: OK
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>openssl<span class="w"> </span>verify<span class="w"> </span>-verbose<span class="w"> </span>-CAfile<span class="w"> </span>root.pem<span class="w"> </span>-untrusted<span class="w"> </span>intermediate.pem<span class="w"> </span>server.pem
+server.pem:<span class="w"> </span>OK
+</pre></div>
+
 <p>If there is some issue with validation OpenSSL will throw an error with relevant information.</p>
 <h4>Conclusion</h4>
 <p>In this article, we learnt how to get certificates from the server and validate them with the root certificate using OpenSSL.</p>
@@ -738,34 +771,37 @@ server.pem: OK
     <p>In Python community, metaprogramming is often used in conjunction with metaclasses. In this article, we will learn about metaprogramming, where programs have the ability to treat other programs as data.</p>
 <h4>Metaprogramming</h4>
 <p>When we start writing programs that write programs, it opens up a lot of possibilities. For example, here is a metaprogramme that generates a program to print numbers from 1 to 100.</p>
-<pre class="code literal-block"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+<div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'num.py'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'print(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-</pre>
+</pre></div>
+
 <p>This 3 lines of program generates a hundred line of program which produces the desired output on executing it.</p>
 <p>This is a trivial example and is not of much use. Let us see practical examples where metaprogramming is used in Django for admin, ORM, inspectdb and other places.</p>
 <h4>Metaprogramming In Django</h4>
 <p>Django provides a management command called <code>inspectdb</code> which generates Python code based on SQL schema of the database.</p>
-<pre class="code literal-block">$ ./manage.py inspectdb
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>./manage.py<span class="w"> </span>inspectdb
 
-from django.db import models
+from<span class="w"> </span>django.db<span class="w"> </span>import<span class="w"> </span>models
 
-class Book<span class="o">(</span>models.Model<span class="o">)</span>:
-    <span class="nv">name</span> <span class="o">=</span> models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    <span class="nv">slug</span> <span class="o">=</span> models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
-    ...
-</pre>
+class<span class="w"> </span>Book<span class="o">(</span>models.Model<span class="o">)</span>:
+<span class="w">    </span><span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>models.CharField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
+<span class="w">    </span><span class="nv">slug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>models.SlugField<span class="o">(</span><span class="nv">max_length</span><span class="o">=</span><span class="m">100</span><span class="o">)</span>
+<span class="w">    </span>...
+</pre></div>
+
 <p>In django admin, models can be registered like this.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
 
-<span class="kn">from</span> <span class="nn">book.models</span> <span class="kn">import</span> <span class="n">Book</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">book.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Book</span>
 
 
 <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Book</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>Eventhough, we have not written any HTML, Django will generate entire CRUD interface for the model in the admin. Django Admin interface is a kind of metaprogramme which inspects a model and generates a CRUD interface.</p>
 <p>Django ORM generates SQL statements for given ORM statements in Python.</p>
-<pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<div class="code"><pre class="code literal-block"><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
 <span class="n">SELECT</span> <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"id"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"password"</span><span class="p">,</span>
        <span class="s2">"auth_user"</span><span class="o">.</span><span class="s2">"last_login"</span><span class="p">,</span>
@@ -785,7 +821,8 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <span class="n">Execution</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.050304</span><span class="n">s</span> <span class="p">[</span><span class="n">Database</span><span class="p">:</span> <span class="n">default</span><span class="p">]</span>
 
 <span class="n">Out</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">User</span><span class="p">:</span> <span class="n">anand</span><span class="o">&gt;</span>
-</pre>
+</pre></div>
+
 <p>Some frameworks/libraries use metaprogramming to solve problems realted to generating, modifying and transforming code.</p>
 <p>We can also use these techniques in everyday programming. Here are some use cases.</p>
 <ol>
@@ -812,12 +849,12 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
 <h4>Use Management Commands</h4>
 <p>Applications can register custom actions with <code>manage.py</code> by creating a file in <code>management/commands</code> directory of the application. This makes it easy to (re)run and test data migrations.</p>
 <p>Here is a management command which migrates the <code>status</code> column of a <code>Task</code> model.</p>
-<pre class="code literal-block"><span class="kn">from</span> <span class="nn">django.core.management.base</span> <span class="kn">import</span> <span class="n">BaseCommand</span>
-<span class="kn">from</span> <span class="nn">library.tasks</span> <span class="kn">import</span> <span class="n">Task</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">library.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span>
 
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="n">status_map</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">'valid'</span><span class="p">:</span> <span class="s1">'ACTIVE'</span><span class="p">,</span>
             <span class="s1">'invalid'</span><span class="p">:</span> <span class="s1">'ERROR'</span><span class="p">,</span>
@@ -827,17 +864,18 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
         <span class="k">for</span> <span class="n">tasks</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
             <span class="n">task</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status_map</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">status</span><span class="p">]</span>
             <span class="n">task</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>If the migration is included in Django migration files directly, we have to rollback and re-apply the entire migration which becomes cubersome.</p>
 <h4>Link Data Migrations &amp; Schema Migrations</h4>
 <p>If a data migration needs to happen before/after a specific schema migration, include the migration command using <a href="https://docs.djangoproject.com/en/dev/ref/migration-operations/#django.db.migrations.operations.RunPython">RunPython</a> in the same schema migration or create seperate schema migration file and add schema migration as a dependency.</p>
-<pre class="code literal-block"><span class="k">def</span> <span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">library.core.management.commands</span> <span class="kn">import</span> <span class="n">migrate_task_status</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">run_migrate_task_status</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">library.core.management.commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">migrate_task_status</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">migrate_task_status</span><span class="o">.</span><span class="n">Command</span><span class="p">()</span>
     <span class="n">cmd</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
 
 
-<span class="k">class</span> <span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
 
     <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">]</span>
@@ -845,17 +883,19 @@ class Book<span class="o">(</span>models.Model<span class="o">)</span>:
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span><span class="n">run_migrate_task_status</span><span class="p">,</span> <span class="n">RunSQL</span><span class="o">.</span><span class="n">noop</span><span class="p">),</span>
     <span class="p">]</span>
-</pre>
+</pre></div>
+
 <h4>Watch Out For DB Queries</h4>
 <p>When working on a major feature that involves a series of migrations, we have to be careful with data migrations(which use ORM) coming in between schema migrations.</p>
 <p>For example, if we write a data migration script and then make schema changes to the same table in one go, then the migration script fails as Django ORM will be in invalid state for that data migration.</p>
 <p>To overcome this, we can explicitly select only required fields and process them while ignoring all other fields.</p>
-<pre class="code literal-block"><span class="c1"># instead of</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># instead of</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 
 <span class="c1"># use</span>
 <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">only</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'is_active'</span><span class="p">)</span>
-</pre>
+</pre></div>
+
 <p>As an alternative, we can use raw SQL queries for data migrations.</p>
 <h4>Conclusion</h4>
 <p>In this article, we have seen some of the problems which occur during data migrations in Django applications and tips to alleviate them.</p>

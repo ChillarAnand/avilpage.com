@@ -157,7 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    2 min read
+                    3 min read
             </p>
 
             <p class="dateline">
@@ -174,27 +174,32 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Now install <a href="https://play.google.com/store/apps/details?id=org.qpython.qpy">QPython</a>. This comes bundled with pip, which will install required python packages.</p>
 <p>Instead of installing these two apps, we can use <a href="https://github.com/termux/termux-app/">Termux</a>, <a href="https://github.com/corbinlc/GNURootDebian">GNURoot Debian</a> or some other app which provides Linux environment in Android. These apps will provide <code>apt</code> package manager, which can install <code>python</code> and <code>openssh-server</code> packages.</p>
 <p>I have used <a href="https://github.com/ChillarAnand/django-bookmarks">django-bookmarks</a>, a simple CRUD app to test this setup. We can use rsync or adb shell to copy django project to android.</p>
-<pre class="code literal-block">rsync -razP django-bookmarks :<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
-</pre>
-<p>Now ssh into android, install django and start django server.</p>
-<pre class="code literal-block">$ ssh -v <span class="nv">$USER</span>@<span class="nv">$HOST</span>
-</pre>
-<pre class="code literal-block">$ python -m pip install django
-$ <span class="nb">cd</span> /data/local/django-bookmarks
-$ python manage.py runvserver
-</pre>
-<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
-<pre class="code literal-block">$ ssh -R <span class="m">80</span>:localhost:8000 serveo.net
+<div class="code"><pre class="code literal-block">rsync<span class="w"> </span>-razP<span class="w"> </span>django-bookmarks<span class="w"> </span>:<span class="nv">$USER</span>@<span class="nv">$HOST</span>:/data/local/
+</pre></div>
 
-Forwarding HTTP traffic from https://incepro.serveo.net
-Press g to start a GUI session and ctrl-c to quit.
-</pre>
+<p>Now ssh into android, install django and start django server.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>-v<span class="w"> </span><span class="nv">$USER</span>@<span class="nv">$HOST</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>django
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/data/local/django-bookmarks
+$<span class="w"> </span>python<span class="w"> </span>manage.py<span class="w"> </span>runvserver
+</pre></div>
+
+<p>This will start development server on port 8000. To share this webapp with others, we will expose it with <a href="https://serveo.net/">serveo</a>.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ssh<span class="w"> </span>-R<span class="w"> </span><span class="m">80</span>:localhost:8000<span class="w"> </span>serveo.net
+
+Forwarding<span class="w"> </span>HTTP<span class="w"> </span>traffic<span class="w"> </span>from<span class="w"> </span>https://incepro.serveo.net
+Press<span class="w"> </span>g<span class="w"> </span>to<span class="w"> </span>start<span class="w"> </span>a<span class="w"> </span>GUI<span class="w"> </span>session<span class="w"> </span>and<span class="w"> </span>ctrl-c<span class="w"> </span>to<span class="w"> </span>quit.
+</pre></div>
+
 <p>Now we can share our django app with anyone.</p>
 <p>I have used Moto G4 Plus phone to run this app. I have done a quick load test with Apache Bench.</p>
-<pre class="code literal-block">ab -k -c <span class="m">50</span> -n <span class="m">1000</span>  <span class="se">\</span>
--H <span class="s2">"Accept-Encoding: gzip, deflate"</span> <span class="se">\</span>
+<div class="code"><pre class="code literal-block">ab<span class="w"> </span>-k<span class="w"> </span>-c<span class="w"> </span><span class="m">50</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1000</span><span class="w">  </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s2">"Accept-Encoding: gzip, deflate"</span><span class="w"> </span><span class="se">\</span>
 http://incepro.serveo/list/
-</pre>
+</pre></div>
+
 <p>It is able to server 15+ requests concurrently with an average response time of 800ms.</p>
 <p>We can write a simple shell script or ansible playbook to automate this deployment process and we can host a low traffic website on an android phone if required.</p>
         </div>

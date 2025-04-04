@@ -156,7 +156,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    4 min read
+                    7 min read
             </p>
 
             <p class="dateline">
@@ -172,44 +172,48 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.</p>
 <h4>Automating Zscaler Connectivity</h4>
 <p>Once Zscaler is installed on macOS, if we search for <code>LaunchAgents</code> &amp; <code>LaunchDaemons</code> directories, we can find the Zscaler plist files. </p>
-<pre class="code literal-block">$ sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
 /Library/LaunchAgents/com.zscaler.tray.plist
 
 
-$ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span>
+$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
 /Library/LaunchDaemons/com.zscaler.service.plist
 /Library/LaunchDaemons/com.zscaler.tunnel.plist
 /Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
-</pre>
+</pre></div>
+
 <p>To connect to Zscaler, we can load these services.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-</pre>
+/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+
 <p>To disconnect from Zscaler, we can unload all of them.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-</pre>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+
 <p>To automatically toggle the connectivity, we can create a shell script.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">else</span>
-    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
-    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
+<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">fi</span>
-</pre>
+</pre></div>
+
 <p>Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
 <span class="c1"># Required parameters:</span>
 <span class="c1"># @raycast.schemaVersion 1</span>
@@ -223,17 +227,18 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
 <span class="c1"># @raycast.author chillaranand</span>
 <span class="c1"># @raycast.authorURL https://avilpage.com/</span>
 
-<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">else</span>
-    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
-    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
+<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">fi</span>
-</pre>
+</pre></div>
+
 <p>Save this script to a folder. From <code>Raycast Settings</code> -&gt; <code>Extensions</code> -&gt; <code>Add Script Directory</code>, we can select this folder, and the script will be available in Raycast. </p>
 <p><img alt="raycast-connect-toggle" src="../../images/automate-zscaler-connect2.png"></p>
 <p>We can assign a shortcut key to the script for quick access.</p>

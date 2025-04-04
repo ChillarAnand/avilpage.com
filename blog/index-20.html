@@ -103,76 +103,84 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>In this post, let's build a custom database for kraken2. For simplicity, let's use only refseq archaea genomes<sup id="fnref:rag"><a class="footnote-ref" href="../2024/07/mastering-kraken2-build-custom-db.html#fn:rag">2</a></sup> for building the index.</p>
 <h4>Building Custom Database</h4>
 <p>First, we need to download the taxonomy files. We can use the <code>k2</code> script provided by kraken2.</p>
-<pre class="code literal-block">$ k2 download-taxonomy --db custom_db
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k2<span class="w"> </span>download-taxonomy<span class="w"> </span>--db<span class="w"> </span>custom_db
+</pre></div>
+
 <p>This takes ~30 minutes depending on the network speed. The taxonomy files are downloaded to the <code>custom_db/taxonomy</code> directory.</p>
-<pre class="code literal-block">$ ls custom_db/taxonomy
-citations.dmp  division.dmp  gencode.dmp  merged.dmp  nodes.dmp
-nucl_wgs.accession2taxid delnodes.dmp  gc.prt 
-images.dmp  names.dmp  nucl_gb.accession2taxid  readme.txt
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ls<span class="w"> </span>custom_db/taxonomy
+citations.dmp<span class="w">  </span>division.dmp<span class="w">  </span>gencode.dmp<span class="w">  </span>merged.dmp<span class="w">  </span>nodes.dmp
+nucl_wgs.accession2taxid<span class="w"> </span>delnodes.dmp<span class="w">  </span>gc.prt<span class="w"> </span>
+images.dmp<span class="w">  </span>names.dmp<span class="w">  </span>nucl_gb.accession2taxid<span class="w">  </span>readme.txt
 
-$ du -hs custom_db/taxonomy
-43G     custom_db/taxonomy
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>custom_db/taxonomy
+43G<span class="w">     </span>custom_db/taxonomy
+</pre></div>
+
 <p>For simplicity, let's use the archaea refseq genomes. We can use <code>kraken2-build</code> to download the refseq genomes.</p>
-<pre class="code literal-block">$ k2 download-library --library archaea --db custom_db
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k2<span class="w"> </span>download-library<span class="w"> </span>--library<span class="w"> </span>archaea<span class="w"> </span>--db<span class="w"> </span>custom_db
+</pre></div>
+
 <p>This runs on a single thread. Instead of using <code>kraken2-build</code>, we can use <code>ncbi-genome-download</code><sup id="fnref:ngd"><a class="footnote-ref" href="../2024/07/mastering-kraken2-build-custom-db.html#fn:ngd">3</a></sup> tool to download the genomes. This provides much granular control over the download process. For example, we can download only <code>--assembly-levels complete</code> genomes. We can also download multiple genomes in parallel.</p>
-<pre class="code literal-block">$ pip install ncbi-genome-download
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>ncbi-genome-download
 
-$ conda install -c bioconda ncbi-genome-download
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>ncbi-genome-download
 
-$ ncbi-genome-download -s refseq -F fasta --parallel <span class="m">40</span> -P archaea
-Checking assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184 <span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00, <span class="m">111</span>.60entries/s<span class="o">]</span>
-Downloading assemblies: <span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span> <span class="m">2184</span>/2184  <span class="o">[</span><span class="m">02</span>:04&lt;<span class="m">00</span>:00,  <span class="m">4</span>.54s/files<span class="o">]</span>
-Downloading assemblies: 2184files <span class="o">[</span><span class="m">02</span>:23, 2184files/s<span class="o">]</span>
-</pre>
+$<span class="w"> </span>ncbi-genome-download<span class="w"> </span>-s<span class="w"> </span>refseq<span class="w"> </span>-F<span class="w"> </span>fasta<span class="w"> </span>--parallel<span class="w"> </span><span class="m">40</span><span class="w"> </span>-P<span class="w"> </span>archaea
+Checking<span class="w"> </span>assemblies:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span><span class="w"> </span><span class="m">2184</span>/2184<span class="w"> </span><span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">111</span>.60entries/s<span class="o">]</span>
+Downloading<span class="w"> </span>assemblies:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>███<span class="p">|</span><span class="w"> </span><span class="m">2184</span>/2184<span class="w">  </span><span class="o">[</span><span class="m">02</span>:04&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.54s/files<span class="o">]</span>
+Downloading<span class="w"> </span>assemblies:<span class="w"> </span>2184files<span class="w"> </span><span class="o">[</span><span class="m">02</span>:23,<span class="w"> </span>2184files/s<span class="o">]</span>
+</pre></div>
+
 <p>In just 2 minutes, it has downloaded all the files. Lets gunzip the files.</p>
-<pre class="code literal-block">$ find refseq -name <span class="s2">"*.gz"</span> -print0 <span class="p">|</span> parallel -0 gunzip
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.gz"</span><span class="w"> </span>-print0<span class="w"> </span><span class="p">|</span><span class="w"> </span>parallel<span class="w"> </span>-0<span class="w"> </span>gunzip
 
-$ du -hs refseq
-<span class="m">5</span>.9G    refseq
-</pre>
+$<span class="w"> </span>du<span class="w"> </span>-hs<span class="w"> </span>refseq
+<span class="m">5</span>.9G<span class="w">    </span>refseq
+</pre></div>
+
 <p>Lets add all fasta genome files to the custom database</p>
-<pre class="code literal-block">$ <span class="nb">time</span> find refseq -name <span class="s2">"*.fna"</span> -exec kraken2-build --add-to-library <span class="o">{}</span> --db custom_db <span class="se">\;</span>
-<span class="m">667</span>.46s user <span class="m">90</span>.78s system <span class="m">106</span>% cpu <span class="m">12</span>:54.80 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>find<span class="w"> </span>refseq<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.fna"</span><span class="w"> </span>-exec<span class="w"> </span>kraken2-build<span class="w"> </span>--add-to-library<span class="w"> </span><span class="o">{}</span><span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span><span class="se">\;</span>
+<span class="m">667</span>.46s<span class="w"> </span>user<span class="w"> </span><span class="m">90</span>.78s<span class="w"> </span>system<span class="w"> </span><span class="m">106</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">12</span>:54.80<span class="w"> </span>total
+</pre></div>
+
 <p><code>kraken2-build</code> doesn't use multiple threads for adding genomes to the database. In addition to that, it also doesn't check if the genome is already present in the database. </p>
 <p>Let's use <code>k2</code> for adding genomes to the database.</p>
-<pre class="code literal-block"><span class="nb">export</span> <span class="nv">KRAKEN_NUM_THREADS</span><span class="o">=</span><span class="m">40</span>
+<div class="code"><pre class="code literal-block"><span class="nb">export</span><span class="w"> </span><span class="nv">KRAKEN_NUM_THREADS</span><span class="o">=</span><span class="m">40</span>
 
-$ find . -name <span class="s2">"*.fna"</span> -exec k2 add-to-library --files <span class="o">{}</span> --db custom_db <span class="se">\;</span>
-<span class="m">668</span>.37s user <span class="m">88</span>.44s system <span class="m">159</span>% cpu <span class="m">7</span>:54.40 total
-</pre>
+$<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">"*.fna"</span><span class="w"> </span>-exec<span class="w"> </span>k2<span class="w"> </span>add-to-library<span class="w"> </span>--files<span class="w"> </span><span class="o">{}</span><span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span><span class="se">\;</span>
+<span class="m">668</span>.37s<span class="w"> </span>user<span class="w"> </span><span class="m">88</span>.44s<span class="w"> </span>system<span class="w"> </span><span class="m">159</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">7</span>:54.40<span class="w"> </span>total
+</pre></div>
+
 <p>This took only half the time compared to <code>kraken2-build</code>.</p>
 <p>Let's build the index from the library.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2-build --db custom_db --build --threads <span class="m">36</span>
-Creating sequence ID to taxonomy ID map <span class="o">(</span>step <span class="m">1</span><span class="o">)</span>...
-Found <span class="m">0</span>/125783 targets, searched through <span class="m">60000000</span> accession IDs...
-Found <span class="m">59923</span>/125783 targets, searched through <span class="m">822105735</span> accession IDs, search complete.
-lookup_accession_numbers: <span class="m">65860</span>/125783 accession numbers remain unmapped, see unmapped.txt <span class="k">in</span> DB directory
-Sequence ID to taxonomy ID map complete. <span class="o">[</span>2m1.950s<span class="o">]</span>
-Estimating required capacity <span class="o">(</span>step <span class="m">2</span><span class="o">)</span>...
-Estimated <span class="nb">hash</span> table requirement: <span class="m">5340021028</span> bytes
-Capacity estimation complete. <span class="o">[</span><span class="m">23</span>.875s<span class="o">]</span>
-Building database files <span class="o">(</span>step <span class="m">3</span><span class="o">)</span>...
-Taxonomy parsed and converted.
-CHT created with <span class="m">11</span> bits reserved <span class="k">for</span> taxid.
-Completed processing of <span class="m">59911</span> sequences, <span class="m">3572145823</span> bp
-Writing data to disk...  complete.
-Database files completed. <span class="o">[</span>12m3.368s<span class="o">]</span>
-Database construction complete. <span class="o">[</span>Total: 14m29.666s<span class="o">]</span>
-kraken2-build --db custom_db --build --threads <span class="m">36</span>  <span class="m">24534</span>.98s user <span class="m">90</span>.50s system <span class="m">2831</span>% cpu <span class="m">14</span>:29.75 total
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2-build<span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span>--build<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span>
+Creating<span class="w"> </span>sequence<span class="w"> </span>ID<span class="w"> </span>to<span class="w"> </span>taxonomy<span class="w"> </span>ID<span class="w"> </span>map<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">1</span><span class="o">)</span>...
+Found<span class="w"> </span><span class="m">0</span>/125783<span class="w"> </span>targets,<span class="w"> </span>searched<span class="w"> </span>through<span class="w"> </span><span class="m">60000000</span><span class="w"> </span>accession<span class="w"> </span>IDs...
+Found<span class="w"> </span><span class="m">59923</span>/125783<span class="w"> </span>targets,<span class="w"> </span>searched<span class="w"> </span>through<span class="w"> </span><span class="m">822105735</span><span class="w"> </span>accession<span class="w"> </span>IDs,<span class="w"> </span>search<span class="w"> </span>complete.
+lookup_accession_numbers:<span class="w"> </span><span class="m">65860</span>/125783<span class="w"> </span>accession<span class="w"> </span>numbers<span class="w"> </span>remain<span class="w"> </span>unmapped,<span class="w"> </span>see<span class="w"> </span>unmapped.txt<span class="w"> </span><span class="k">in</span><span class="w"> </span>DB<span class="w"> </span>directory
+Sequence<span class="w"> </span>ID<span class="w"> </span>to<span class="w"> </span>taxonomy<span class="w"> </span>ID<span class="w"> </span>map<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span>2m1.950s<span class="o">]</span>
+Estimating<span class="w"> </span>required<span class="w"> </span>capacity<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">2</span><span class="o">)</span>...
+Estimated<span class="w"> </span><span class="nb">hash</span><span class="w"> </span>table<span class="w"> </span>requirement:<span class="w"> </span><span class="m">5340021028</span><span class="w"> </span>bytes
+Capacity<span class="w"> </span>estimation<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span><span class="m">23</span>.875s<span class="o">]</span>
+Building<span class="w"> </span>database<span class="w"> </span>files<span class="w"> </span><span class="o">(</span>step<span class="w"> </span><span class="m">3</span><span class="o">)</span>...
+Taxonomy<span class="w"> </span>parsed<span class="w"> </span>and<span class="w"> </span>converted.
+CHT<span class="w"> </span>created<span class="w"> </span>with<span class="w"> </span><span class="m">11</span><span class="w"> </span>bits<span class="w"> </span>reserved<span class="w"> </span><span class="k">for</span><span class="w"> </span>taxid.
+Completed<span class="w"> </span>processing<span class="w"> </span>of<span class="w"> </span><span class="m">59911</span><span class="w"> </span>sequences,<span class="w"> </span><span class="m">3572145823</span><span class="w"> </span>bp
+Writing<span class="w"> </span>data<span class="w"> </span>to<span class="w"> </span>disk...<span class="w">  </span>complete.
+Database<span class="w"> </span>files<span class="w"> </span>completed.<span class="w"> </span><span class="o">[</span>12m3.368s<span class="o">]</span>
+Database<span class="w"> </span>construction<span class="w"> </span>complete.<span class="w"> </span><span class="o">[</span>Total:<span class="w"> </span>14m29.666s<span class="o">]</span>
+kraken2-build<span class="w"> </span>--db<span class="w"> </span>custom_db<span class="w"> </span>--build<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span><span class="w">  </span><span class="m">24534</span>.98s<span class="w"> </span>user<span class="w"> </span><span class="m">90</span>.50s<span class="w"> </span>system<span class="w"> </span><span class="m">2831</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">14</span>:29.75<span class="w"> </span>total
 
-$ ls -ll
-.rw-rw-r-- <span class="m">5</span>.3G anand  <span class="m">1</span> Aug <span class="m">16</span>:35 hash.k2d
-drwxrwxr-x    - anand  <span class="m">1</span> Aug <span class="m">12</span>:32 library
-.rw-rw-r--   <span class="m">64</span> anand  <span class="m">1</span> Aug <span class="m">16</span>:35 opts.k2d
-.rw-rw-r-- <span class="m">1</span>.5M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 seqid2taxid.map
-.rw-rw-r-- 115k anand  <span class="m">1</span> Aug <span class="m">16</span>:23 taxo.k2d
-lrwxrwxrwx   <span class="m">20</span> anand  <span class="m">1</span> Aug <span class="m">12</span>:31 taxonomy
-.rw-rw-r-- <span class="m">1</span>.2M anand  <span class="m">1</span> Aug <span class="m">16</span>:22 unmapped.txt
-</pre>
+$<span class="w"> </span>ls<span class="w"> </span>-ll
+.rw-rw-r--<span class="w"> </span><span class="m">5</span>.3G<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:35<span class="w"> </span>hash.k2d
+drwxrwxr-x<span class="w">    </span>-<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">12</span>:32<span class="w"> </span>library
+.rw-rw-r--<span class="w">   </span><span class="m">64</span><span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:35<span class="w"> </span>opts.k2d
+.rw-rw-r--<span class="w"> </span><span class="m">1</span>.5M<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:22<span class="w"> </span>seqid2taxid.map
+.rw-rw-r--<span class="w"> </span>115k<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:23<span class="w"> </span>taxo.k2d
+lrwxrwxrwx<span class="w">   </span><span class="m">20</span><span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">12</span>:31<span class="w"> </span>taxonomy
+.rw-rw-r--<span class="w"> </span><span class="m">1</span>.2M<span class="w"> </span>anand<span class="w">  </span><span class="m">1</span><span class="w"> </span>Aug<span class="w"> </span><span class="m">16</span>:22<span class="w"> </span>unmapped.txt
+</pre></div>
+
 <p>We are able to build index for ~6GB input files in ~15 minutes.</p>
 <h4>Conclusion</h4>
 <p>We learnt some useful tips to speed up the custom database creation process. In the next post, we will learn about regular vs. fast builds.</p>
@@ -213,91 +221,100 @@ lrwxrwxrwx   <span class="m">20</span> anand  <span class="m">1</span> Aug <span
 <p>In the previous post, we learned how to set up kraken2<sup id="fnref:k2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:k2">1</a></sup>, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.</p>
 <h4>Increasing RAM</h4>
 <p>Kraken2 standard database is ~80GB in size. It is recommended to have at least db size RAM to run kraken2 efficiently<sup id="fnref:ksr"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:ksr">2</a></sup>. Let's use 128GB RAM machine and run kraken2 with ERR10359977<sup id="fnref:err"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:err">3</a></sup> sample.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-Loading database information... <span class="k">done</span>.
-<span class="m">95064</span> sequences <span class="o">(</span><span class="m">14</span>.35 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">2</span>.142s <span class="o">(</span><span class="m">2662</span>.9 Kseq/m, <span class="m">402</span>.02 Mbp/m<span class="o">)</span>.
-  <span class="m">94816</span> sequences classified <span class="o">(</span><span class="m">99</span>.74%<span class="o">)</span>
-  <span class="m">248</span> sequences unclassified <span class="o">(</span><span class="m">0</span>.26%<span class="o">)</span>
-kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt;   <span class="m">1</span>.68s user <span class="m">152</span>.19s system <span class="m">35</span>% cpu <span class="m">7</span>:17.55 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">95064</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">14</span>.35<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">2</span>.142s<span class="w"> </span><span class="o">(</span><span class="m">2662</span>.9<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">402</span>.02<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">94816</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">99</span>.74%<span class="o">)</span>
+<span class="w">  </span><span class="m">248</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">0</span>.26%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>&gt;<span class="w">   </span><span class="m">1</span>.68s<span class="w"> </span>user<span class="w"> </span><span class="m">152</span>.19s<span class="w"> </span>system<span class="w"> </span><span class="m">35</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">7</span>:17.55<span class="w"> </span>total
+</pre></div>
+
 <p>Now the time taken has come down from 40 minutes to 7 minutes. The classification speed has also increased from 0.19 Mbp/m to 402.02 Mbp/m.</p>
 <p>The previous sample had only a few reads, and the speed is not a good indicator. Let's run kraken2 with a larger sample.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-Loading database information... <span class="k">done</span>.
-Processed <span class="m">14980000</span> sequences <span class="o">(</span><span class="m">2972330207</span> bp<span class="o">)</span> ...
-<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">797</span>.424s <span class="o">(</span><span class="m">1288</span>.2 Kseq/m, <span class="m">255</span>.61 Mbp/m<span class="o">)</span>.
-  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
-  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
-kraken2 --db k2_standard --report report.txt --paired &gt; output.txt  <span class="m">526</span>.39s user <span class="m">308</span>.24s system <span class="m">68</span>% cpu <span class="m">20</span>:23.86 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+Processed<span class="w"> </span><span class="m">14980000</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">2972330207</span><span class="w"> </span>bp<span class="o">)</span><span class="w"> </span>...
+<span class="m">17121245</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">797</span>.424s<span class="w"> </span><span class="o">(</span><span class="m">1288</span>.2<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">255</span>.61<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">9826671</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+<span class="w">  </span><span class="m">7294574</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>&gt;<span class="w"> </span>output.txt<span class="w">  </span><span class="m">526</span>.39s<span class="w"> </span>user<span class="w"> </span><span class="m">308</span>.24s<span class="w"> </span>system<span class="w"> </span><span class="m">68</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">20</span>:23.86<span class="w"> </span>total
+</pre></div>
+
 <p>This took almost 20 minutes to classify ~3 Gbp of data. Out of 20 minutes, 13 minutes was spent in classification. The remaining time in loading the db into memory.</p>
 <p>Let's use k2_plusPF<sup id="fnref:k2p"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:k2p">4</a></sup> db, which is twice the size of k2_standard and run kraken2.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_plusfp --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-Loading database information...done.
-<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">755</span>.290s <span class="o">(</span><span class="m">1360</span>.1 Kseq/m, <span class="m">269</span>.87 Mbp/m<span class="o">)</span>.
-  <span class="m">9903824</span> sequences classified <span class="o">(</span><span class="m">57</span>.85%<span class="o">)</span>
-  <span class="m">7217421</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.15%<span class="o">)</span>
-kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &gt;   <span class="m">509</span>.71s user <span class="m">509</span>.51s system <span class="m">55</span>% cpu <span class="m">30</span>:35.49 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_plusfp<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...done.
+<span class="m">17121245</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">755</span>.290s<span class="w"> </span><span class="o">(</span><span class="m">1360</span>.1<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">269</span>.87<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">9903824</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">57</span>.85%<span class="o">)</span>
+<span class="w">  </span><span class="m">7217421</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">42</span>.15%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_plusfp/<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w">  </span>&gt;<span class="w">   </span><span class="m">509</span>.71s<span class="w"> </span>user<span class="w"> </span><span class="m">509</span>.51s<span class="w"> </span>system<span class="w"> </span><span class="m">55</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">30</span>:35.49<span class="w"> </span>total
+</pre></div>
+
 <p>This took ~30 minutes to complete, but the classification took only 13 minutes similar to k2_standard. The remaining time was spent in loading the db into memory.</p>
 <h4>Preloading db into RAM</h4>
 <p>We can use vmtouch<sup id="fnref:vmt"><a class="footnote-ref" href="../2024/07/mastering-kraken2-performance-optimisation.html#fn:vmt">5</a></sup> to preload db into RAM. kraken2 provides <code>--memory-mapping</code> option to use preloaded db. </p>
-<pre class="code literal-block">$ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
-           Files: <span class="m">3</span>
-     Directories: <span class="m">0</span>
-   Touched Pages: <span class="m">20382075</span> <span class="o">(</span>77G<span class="o">)</span>
-         Elapsed: <span class="m">434</span>.77 seconds
-</pre>
-<p>When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.</p>
-<pre class="code literal-block">$ cp -r k2_standard /dev/shm
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>vmtouch<span class="w"> </span>-vt<span class="w"> </span>k2_standard/hash.k2d<span class="w"> </span>k2_standard/opts.k2d<span class="w"> </span>k2_standard/taxo.k2d
+<span class="w">           </span>Files:<span class="w"> </span><span class="m">3</span>
+<span class="w">     </span>Directories:<span class="w"> </span><span class="m">0</span>
+<span class="w">   </span>Touched<span class="w"> </span>Pages:<span class="w"> </span><span class="m">20382075</span><span class="w"> </span><span class="o">(</span>77G<span class="o">)</span>
+<span class="w">         </span>Elapsed:<span class="w"> </span><span class="m">434</span>.77<span class="w"> </span>seconds
+</pre></div>
 
-$ vmtouch -t /dev/shm/*.k2d
-</pre>
+<p>When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>k2_standard<span class="w"> </span>/dev/shm
+
+$<span class="w"> </span>vmtouch<span class="w"> </span>-t<span class="w"> </span>/dev/shm/*.k2d
+</pre></div>
+
 <p>Now, let's run kraken2 with <code>--memory-mapping</code> option.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-Loading database information... <span class="k">done</span>.
-<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">532</span>.486s <span class="o">(</span><span class="m">1929</span>.2 Kseq/m, <span class="m">382</span>.79 Mbp/m<span class="o">)</span>.
-  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
-  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
-  kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz   &gt;  <span class="m">424</span>.20s user <span class="m">11</span>.76s system <span class="m">81</span>% cpu <span class="m">8</span>:54.98 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--memory-mapping<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">17121245</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">532</span>.486s<span class="w"> </span><span class="o">(</span><span class="m">1929</span>.2<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">382</span>.79<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">9826671</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+<span class="w">  </span><span class="m">7294574</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+<span class="w">  </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w">   </span>&gt;<span class="w">  </span><span class="m">424</span>.20s<span class="w"> </span>user<span class="w"> </span><span class="m">11</span>.76s<span class="w"> </span>system<span class="w"> </span><span class="m">81</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">8</span>:54.98<span class="w"> </span>total
+</pre></div>
+
 <p>Now the classification took only ~10 minutes.</p>
 <h4>Multi threading</h4>
 <p>kraken2 supports multiple threads. I am using a machine with 40 threads.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz --memory-mapping --threads <span class="m">32</span> &gt; output.txt
-Loading database information... <span class="k">done</span>.
-<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">71</span>.675s <span class="o">(</span><span class="m">14332</span>.5 Kseq/m, <span class="m">2843</span>.81 Mbp/m<span class="o">)</span>.
-  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
-  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz      <span class="m">556</span>.58s user <span class="m">22</span>.85s system <span class="m">762</span>% cpu <span class="m">1</span>:16.02 total
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>--memory-mapping<span class="w"> </span>--threads<span class="w"> </span><span class="m">32</span><span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">17121245</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">71</span>.675s<span class="w"> </span><span class="o">(</span><span class="m">14332</span>.5<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">2843</span>.81<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">9826671</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+<span class="w">  </span><span class="m">7294574</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w">      </span><span class="m">556</span>.58s<span class="w"> </span>user<span class="w"> </span><span class="m">22</span>.85s<span class="w"> </span>system<span class="w"> </span><span class="m">762</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">1</span>:16.02<span class="w"> </span>total
+</pre></div>
+
 <p>With 32 threads, the classification took only 1 minute. Beyond 32 threads, the classification time did not decrease significantly.</p>
 <h4>Optimising input files</h4>
 <p>So far we have used gzipped input files. Let's use unzipped input files and run kraken2.</p>
-<pre class="code literal-block">$ gunzip SRR6915097_1.fastq.gz
-$ gunzip SRR6915097_2.fastq.gz
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>gunzip<span class="w"> </span>SRR6915097_1.fastq.gz
+$<span class="w"> </span>gunzip<span class="w"> </span>SRR6915097_2.fastq.gz
 
-$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq SRR6915097_2.fastq --memory-mapping --threads <span class="m">30</span> &gt; output.txt
-Loading database information... <span class="k">done</span>.
-<span class="m">17121245</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">34</span>.809s <span class="o">(</span><span class="m">29512</span>.0 Kseq/m, <span class="m">5855</span>.68 Mbp/m<span class="o">)</span>.
-  <span class="m">9826671</span> sequences classified <span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
-  <span class="m">7294574</span> sequences unclassified <span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq    <span class="m">30</span>   <span class="m">565</span>.03s user <span class="m">17</span>.12s system <span class="m">1530</span>% cpu <span class="m">38</span>.047 total
-</pre>
+$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq<span class="w"> </span>SRR6915097_2.fastq<span class="w"> </span>--memory-mapping<span class="w"> </span>--threads<span class="w"> </span><span class="m">30</span><span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">17121245</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">34</span>.809s<span class="w"> </span><span class="o">(</span><span class="m">29512</span>.0<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">5855</span>.68<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">9826671</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">57</span>.39%<span class="o">)</span>
+<span class="w">  </span><span class="m">7294574</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">42</span>.61%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq<span class="w">    </span><span class="m">30</span><span class="w">   </span><span class="m">565</span>.03s<span class="w"> </span>user<span class="w"> </span><span class="m">17</span>.12s<span class="w"> </span>system<span class="w"> </span><span class="m">1530</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">38</span>.047<span class="w"> </span>total
+</pre></div>
+
 <p>Now the classification time has come down to 40 seconds.</p>
 <p>Since the input fastq files are paired, interleaving the files also takes time. Lets interleave the files and run kraken2.</p>
 <p>To interleave the files, lets use <code>seqfu</code> tool.</p>
-<pre class="code literal-block">$ conda install -y -c conda-forge -c bioconda <span class="s2">"seqfu&gt;1.10"</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span><span class="s2">"seqfu&gt;1.10"</span>
 
-$ seqfu interleave -1 SRR6915097_1.fastq.gz -2 SRR6915097_2.fastq.gz &gt; SRR6915097.fastq
+$<span class="w"> </span>seqfu<span class="w"> </span>interleave<span class="w"> </span>-1<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>-2<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>SRR6915097.fastq
 
-$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq --threads <span class="m">32</span> &gt; output.txt
-Loading database information... <span class="k">done</span>.
-<span class="m">34242490</span> sequences <span class="o">(</span><span class="m">3397</span>.15 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">20</span>.199s <span class="o">(</span><span class="m">101714</span>.1 Kseq/m, <span class="m">10090</span>.91 Mbp/m<span class="o">)</span>.
-  <span class="m">17983321</span> sequences classified <span class="o">(</span><span class="m">52</span>.52%<span class="o">)</span>
-  <span class="m">16259169</span> sequences unclassified <span class="o">(</span><span class="m">47</span>.48%<span class="o">)</span>
-kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <span class="m">32</span>  <span class="m">618</span>.96s user <span class="m">18</span>.24s system <span class="m">2653</span>% cpu <span class="m">24</span>.013 total
-</pre>
+$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--memory-mapping<span class="w"> </span>SRR6915097.fq<span class="w"> </span>--threads<span class="w"> </span><span class="m">32</span><span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">34242490</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">3397</span>.15<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">20</span>.199s<span class="w"> </span><span class="o">(</span><span class="m">101714</span>.1<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">10090</span>.91<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">17983321</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">52</span>.52%<span class="o">)</span>
+<span class="w">  </span><span class="m">16259169</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">47</span>.48%<span class="o">)</span>
+kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>--memory-mapping<span class="w"> </span>SRR6915097.fq<span class="w">  </span><span class="m">32</span><span class="w">  </span><span class="m">618</span>.96s<span class="w"> </span>user<span class="w"> </span><span class="m">18</span>.24s<span class="w"> </span>system<span class="w"> </span><span class="m">2653</span>%<span class="w"> </span>cpu<span class="w"> </span><span class="m">24</span>.013<span class="w"> </span>total
+</pre></div>
+
 <p>Now the classification time has come down to 24 seconds. </p>
 <h4>Conclusion</h4>
 <p>In terms of classification speed, we have come a long way from 0.1 Mbp/m to 1200 Mbp/m. In the next post, we will learn how to optimise the creation of custom indices.</p>
@@ -351,76 +368,88 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  <sp
 </ul>
 <h4>Installation</h4>
 <p>We can install kraken2 from source using the <code>install_kraken2.sh</code> script as per the manual<sup id="fnref:install_kraken2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:install_kraken2">2</a></sup>.</p>
-<pre class="code literal-block">$ git clone https://github.com/DerrickWood/kraken2
-$ <span class="nb">cd</span> kraken2
-$ ./install_kraken2.sh /usr/local/bin
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/DerrickWood/kraken2
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>kraken2
+$<span class="w"> </span>./install_kraken2.sh<span class="w"> </span>/usr/local/bin
 <span class="c1"># ensure kraken2 is in the PATH</span>
-$ <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/bin
-</pre>
+$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/bin
+</pre></div>
+
 <p>If you already have conda installed, you can install kraken2 from conda as well.</p>
-<pre class="code literal-block">$ conda install -c bioconda kraken2
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>kraken2
+</pre></div>
+
 <p>If you have <code>brew</code> installed on Linux or Mac(including M1), you can install kraken2 using <code>brew</code>.</p>
-<pre class="code literal-block">$ brew install brewsci/bio/kraken2
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>brewsci/bio/kraken2
+</pre></div>
+
 <h4>Download pre-built indices</h4>
 <p>Building kraken2 indices take a lot of time and resources. For now, let's download and use the pre-built indices. In the final post, we will learn how to build the indices.</p>
 <p>Genomic Index Zone<sup id="fnref:GenomicIndexZone"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:GenomicIndexZone">3</a></sup> provides pre-built indices for kraken2. Let's download the standard database. It contains Refeq archaea, bacteria, viral, plasmid, human1, &amp; UniVec_Core. </p>
-<pre class="code literal-block">$ wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
-$ mkdir k2_standard
-$ tar -xvf k2_standard_20240605.tar.gz -C k2_standard
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20240605.tar.gz
+$<span class="w"> </span>mkdir<span class="w"> </span>k2_standard
+$<span class="w"> </span>tar<span class="w"> </span>-xvf<span class="w"> </span>k2_standard_20240605.tar.gz<span class="w"> </span>-C<span class="w"> </span>k2_standard
+</pre></div>
+
 <p>The extracted directory contains three files - <code>hash.k2d</code>, <code>opts.k2d</code>, <code>taxo.k2d</code> which are the kraken2 database files.</p>
-<pre class="code literal-block">$ ls -l *.k2d
-.rw-r--r--  83G anand <span class="m">13</span> Jul <span class="m">12</span>:34 hash.k2d
-.rw-r--r--   <span class="m">64</span> anand <span class="m">13</span> Jul <span class="m">12</span>:34 opts.k2d
-.rw-r--r-- <span class="m">4</span>.0M anand <span class="m">13</span> Jul <span class="m">12</span>:34 taxo.k2d
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>*.k2d
+.rw-r--r--<span class="w">  </span>83G<span class="w"> </span>anand<span class="w"> </span><span class="m">13</span><span class="w"> </span>Jul<span class="w"> </span><span class="m">12</span>:34<span class="w"> </span>hash.k2d
+.rw-r--r--<span class="w">   </span><span class="m">64</span><span class="w"> </span>anand<span class="w"> </span><span class="m">13</span><span class="w"> </span>Jul<span class="w"> </span><span class="m">12</span>:34<span class="w"> </span>opts.k2d
+.rw-r--r--<span class="w"> </span><span class="m">4</span>.0M<span class="w"> </span>anand<span class="w"> </span><span class="m">13</span><span class="w"> </span>Jul<span class="w"> </span><span class="m">12</span>:34<span class="w"> </span>taxo.k2d
+</pre></div>
+
 <h4>Classification</h4>
 <p>To run the taxonomic classification, let's use <code>ERR10359977</code> human gut meta genome from NCBI SRA.</p>
-<pre class="code literal-block">$ wget https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
-$ kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR103/077/ERR10359977/ERR10359977.fastq.gz
+$<span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+</pre></div>
+
 <p>By default, the machine I have used has 8GB RAM and an additioinal 8GB swap. Since kraken2 needs entire db(~80GB) in memory, when the process tries to consume more than 16GB memory, the kernel will kill the process. </p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-Loading database information...Command terminated by signal <span class="m">9</span>
-<span class="m">0</span>.02user <span class="m">275</span>.83system <span class="m">8</span>:17.43elapsed <span class="m">55</span>%CPU 
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+Loading<span class="w"> </span>database<span class="w"> </span>information...Command<span class="w"> </span>terminated<span class="w"> </span>by<span class="w"> </span>signal<span class="w"> </span><span class="m">9</span>
+<span class="m">0</span>.02user<span class="w"> </span><span class="m">275</span>.83system<span class="w"> </span><span class="m">8</span>:17.43elapsed<span class="w"> </span><span class="m">55</span>%CPU<span class="w"> </span>
+</pre></div>
+
 <p>To prevent this, let's increase the swap space to 128 GB.</p>
-<pre class="code literal-block"><span class="c1"># Create an empty swapfile of 128GB</span>
-sudo dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/swapfile <span class="nv">bs</span><span class="o">=</span>1G <span class="nv">count</span><span class="o">=</span><span class="m">128</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># Create an empty swapfile of 128GB</span>
+sudo<span class="w"> </span>dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>/swapfile<span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1G<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">128</span>
 
 <span class="c1"># Turn swap off - It might take several minutes</span>
-sudo swapoff -a
+sudo<span class="w"> </span>swapoff<span class="w"> </span>-a
 
 <span class="c1"># Set the permissions for swapfile</span>
-sudo chmod <span class="m">0600</span> /swapfile
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">0600</span><span class="w"> </span>/swapfile
 
 <span class="c1"># make it a swap area</span>
-sudo mkswap /swapfile  
+sudo<span class="w"> </span>mkswap<span class="w"> </span>/swapfile<span class="w">  </span>
 
 <span class="c1"># Turn the swap on</span>
-sudo swapon /swapfile
-</pre>
-<p>We can time the classification process using the <code>time</code> command.</p>
-<pre class="code literal-block">$ <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
-<p>If you have a machine with large RAM, the same scenario can be simulated using <code>systemd-run</code>. This will limit the memory usage of kraken2 to 6.5GB. </p>
-<pre class="code literal-block">$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span><span class="m">6</span>.5G --user <span class="nb">time</span> kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &gt; output.txt
-</pre>
-<p>Depending on the CPU performance, this will take around ~40 minutes to complete.</p>
-<pre class="code literal-block">Loading database information... <span class="k">done</span>.
-<span class="m">95064</span> sequences <span class="o">(</span><span class="m">14</span>.35 Mbp<span class="o">)</span> processed <span class="k">in</span> <span class="m">1026</span>.994s <span class="o">(</span><span class="m">5</span>.6 Kseq/m, <span class="m">0</span>.84 Mbp/m<span class="o">)</span>.
-  <span class="m">94939</span> sequences classified <span class="o">(</span><span class="m">99</span>.87%<span class="o">)</span>
-  <span class="m">125</span> sequences unclassified <span class="o">(</span><span class="m">0</span>.13%<span class="o">)</span>
-  <span class="m">4</span>.24user <span class="m">658</span>.68system <span class="m">38</span>:26.78elapsed <span class="m">28</span>%CPU 
-</pre>
-<p>If we try gut WGS(Whole Genome Sequence) sample like <code>SRR6915097</code> <sup id="fnref:srr1"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr1">4</a></sup><sup id="fnref:srr2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr2">5</a></sup>. which contains ~3.3 Gbp, it will take weeks to complete.</p>
-<pre class="code literal-block">$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
-$ wget -c https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+sudo<span class="w"> </span>swapon<span class="w"> </span>/swapfile
+</pre></div>
 
-$ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax</span><span class="o">=</span>6G --user <span class="nb">time</span> kraken2 --db k2_standard --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &gt; output.txt
-</pre>
+<p>We can time the classification process using the <code>time</code> command.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+</pre></div>
+
+<p>If you have a machine with large RAM, the same scenario can be simulated using <code>systemd-run</code>. This will limit the memory usage of kraken2 to 6.5GB. </p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>systemd-run<span class="w"> </span>--scope<span class="w"> </span>-p<span class="w"> </span><span class="nv">MemoryMax</span><span class="o">=</span><span class="m">6</span>.5G<span class="w"> </span>--user<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--report<span class="w"> </span>report.txt<span class="w"> </span>ERR10359977.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+</pre></div>
+
+<p>Depending on the CPU performance, this will take around ~40 minutes to complete.</p>
+<div class="code"><pre class="code literal-block">Loading<span class="w"> </span>database<span class="w"> </span>information...<span class="w"> </span><span class="k">done</span>.
+<span class="m">95064</span><span class="w"> </span>sequences<span class="w"> </span><span class="o">(</span><span class="m">14</span>.35<span class="w"> </span>Mbp<span class="o">)</span><span class="w"> </span>processed<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1026</span>.994s<span class="w"> </span><span class="o">(</span><span class="m">5</span>.6<span class="w"> </span>Kseq/m,<span class="w"> </span><span class="m">0</span>.84<span class="w"> </span>Mbp/m<span class="o">)</span>.
+<span class="w">  </span><span class="m">94939</span><span class="w"> </span>sequences<span class="w"> </span>classified<span class="w"> </span><span class="o">(</span><span class="m">99</span>.87%<span class="o">)</span>
+<span class="w">  </span><span class="m">125</span><span class="w"> </span>sequences<span class="w"> </span>unclassified<span class="w"> </span><span class="o">(</span><span class="m">0</span>.13%<span class="o">)</span>
+<span class="w">  </span><span class="m">4</span>.24user<span class="w"> </span><span class="m">658</span>.68system<span class="w"> </span><span class="m">38</span>:26.78elapsed<span class="w"> </span><span class="m">28</span>%CPU<span class="w"> </span>
+</pre></div>
+
+<p>If we try gut WGS(Whole Genome Sequence) sample like <code>SRR6915097</code> <sup id="fnref:srr1"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr1">4</a></sup><sup id="fnref:srr2"><a class="footnote-ref" href="../2024/07/mastering-kraken2-initial-runs.html#fn:srr2">5</a></sup>. which contains ~3.3 Gbp, it will take weeks to complete.</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>wget<span class="w"> </span>-c<span class="w"> </span>https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_1.fastq.gz
+$<span class="w"> </span>wget<span class="w"> </span>-c<span class="w"> </span>https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR691/007/SRR6915097/SRR6915097_2.fastq.gz
+
+$<span class="w"> </span><span class="nb">time</span><span class="w"> </span>systemd-run<span class="w"> </span>--scope<span class="w"> </span>-p<span class="w"> </span><span class="nv">MemoryMax</span><span class="o">=</span>6G<span class="w"> </span>--user<span class="w"> </span><span class="nb">time</span><span class="w"> </span>kraken2<span class="w"> </span>--db<span class="w"> </span>k2_standard<span class="w"> </span>--paired<span class="w"> </span>SRR6915097_1.fastq.gz<span class="w"> </span>SRR6915097_2.fastq.gz<span class="w"> </span>&gt;<span class="w"> </span>output.txt
+</pre></div>
+
 <p>I tried running this on 8 GB machine. Even after 10 days, it processed only 10% of the data.</p>
 <p>If we have to process a large number of such samples, it takes months and this is not a practical solution. </p>
 <h4>Conclusion</h4>
@@ -464,16 +493,18 @@ $ <span class="nb">time</span> systemd-run --scope -p <span class="nv">MemoryMax
 <h4>Headlamp</h4>
 <p>Headlamp is CNCF sandbox project that provides cross-platform desktop application to manage Kubernetes clusters. It auto-detects clusters and provides cluster wide resource usage by default. </p>
 <p>It can also be installed inside the cluster and can be accessed using a web browser. This is useful when we want to access the cluster from a mobile device.</p>
-<pre class="code literal-block">$ helm repo add headlamp https://headlamp-k8s.github.io/headlamp/
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>headlamp<span class="w"> </span>https://headlamp-k8s.github.io/headlamp/
 
-$ helm install headlamp headlamp/headlamp
-</pre>
+$<span class="w"> </span>helm<span class="w"> </span>install<span class="w"> </span>headlamp<span class="w"> </span>headlamp/headlamp
+</pre></div>
+
 <p>Lets port-forward the service &amp; copy the token to access it.</p>
-<pre class="code literal-block">$ kubectl create token headlamp
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>token<span class="w"> </span>headlamp
 
 <span class="c1"># we can do this via headlamp UI as well</span>
-$ kubectl port-forward service/headlamp <span class="m">8080</span>:80
-</pre>
+$<span class="w"> </span>kubectl<span class="w"> </span>port-forward<span class="w"> </span>service/headlamp<span class="w"> </span><span class="m">8080</span>:80
+</pre></div>
+
 <p>Now, we can access the headlamp UI at <a href="http://">http://localhost:8080</a>.</p>
 <p><img alt="headlamp - Open source Kubernetes Lens alternator" src="../images/headlamp-k8s-lens-open-source-alternative2.png"></p>
 <h4>Conclusion</h4>
@@ -506,26 +537,29 @@ $ kubectl port-forward service/headlamp <span class="m">8080</span>:80
 <h4>Glances</h4>
 <p>Glances<sup id="fnref:Glances"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances">3</a></sup> is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.</p>
 <p>We can install it using Brew or pip.</p>
-<pre class="code literal-block">$ brew install glances
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>glances
 
-$ pip install glances
-</pre>
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>glances
+</pre></div>
+
 <p>Once it is installed, we can monitor the resource usage using the below command.</p>
-<pre class="code literal-block">$ glances
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances
+</pre></div>
+
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-glances.png"></p>
 <p>Glances can log historical data to a file using the below command.</p>
-<pre class="code literal-block">$ glances --export-csv /tmp/glances.csv
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>glances<span class="w"> </span>--export-csv<span class="w"> </span>/tmp/glances.csv
+</pre></div>
+
 <p>In addition to that, it can log data to services like influxdb, prometheus, etc.</p>
 <p>Let's install influxdb and export stats to it.</p>
-<pre class="code literal-block">$ brew install influxdb
-$ brew services start influxdb
-$ influx setup
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>influxdb
+$<span class="w"> </span>brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>influxdb
+$<span class="w"> </span>influx<span class="w"> </span>setup
 
-$ python -m pip install influxdb-client
+$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>influxdb-client
 
-$ cat glances.conf
+$<span class="w"> </span>cat<span class="w"> </span>glances.conf
 <span class="o">[</span>influxdb<span class="o">]</span>
 <span class="nv">host</span><span class="o">=</span>localhost
 <span class="nv">port</span><span class="o">=</span><span class="m">8086</span>
@@ -534,8 +568,9 @@ $ cat glances.conf
 <span class="nv">bucket</span><span class="o">=</span>glances
 <span class="nv">token</span><span class="o">=</span>secret_token
 
-$ glances --export-influxdb -C glances.conf
-</pre>
+$<span class="w"> </span>glances<span class="w"> </span>--export-influxdb<span class="w"> </span>-C<span class="w"> </span>glances.conf
+</pre></div>
+
 <p>We can view stats in the influxdb from Data Explorer web UI at <a href="http://localhost:8086">http://localhost:8086</a>.</p>
 <p><img alt="macOS - Log CPU &amp; RAM history" src="../images/mac-log-cpu-ram-influxdb.png"></p>
 <p>Glances provides a prebuilt Grafana dashboard<sup id="fnref:grafana_dashboard"><a class="footnote-ref" href="../2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard">4</a></sup> that we can import to visualize the stats. </p>
@@ -576,44 +611,48 @@ $ glances --export-influxdb -C glances.conf
 <p>Zscaler is a cloud-based security service that provides secure internet access via VPN. Unfortunately, Zscaler does not provide a command-line interface to connect to the VPN. We can't use AppleScript to automate the connectivity as well.</p>
 <h4>Automating Zscaler Connectivity</h4>
 <p>Once Zscaler is installed on macOS, if we search for <code>LaunchAgents</code> &amp; <code>LaunchDaemons</code> directories, we can find the Zscaler plist files. </p>
-<pre class="code literal-block">$ sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
 /Library/LaunchAgents/com.zscaler.tray.plist
 
 
-$ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span>
+$<span class="w"> </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span>
 /Library/LaunchDaemons/com.zscaler.service.plist
 /Library/LaunchDaemons/com.zscaler.tunnel.plist
 /Library/LaunchDaemons/com.zscaler.UPMServiceController.plist
-</pre>
+</pre></div>
+
 <p>To connect to Zscaler, we can load these services.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-/usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-</pre>
+/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+
 <p>To disconnect from Zscaler, we can unload all of them.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-</pre>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+
 <p>To automatically toggle the connectivity, we can create a shell script.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
-<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">else</span>
-    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
-    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
+<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">fi</span>
-</pre>
+</pre></div>
+
 <p>Raycast is an alternative to default spotlight search on macOS. We can create a script to toggle connectivity to Zscaler.</p>
-<pre class="code literal-block"><span class="ch">#!/bin/bash</span>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/bin/bash</span>
 
 <span class="c1"># Required parameters:</span>
 <span class="c1"># @raycast.schemaVersion 1</span>
@@ -627,17 +666,18 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
 <span class="c1"># @raycast.author chillaranand</span>
 <span class="c1"># @raycast.authorURL https://avilpage.com/</span>
 
-<span class="k">if</span> <span class="o">[[</span> <span class="k">$(</span>pgrep -x Zscaler<span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">"Disconnecting from Zscaler"</span>
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl unload <span class="o">{}</span> <span class="se">\;</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>Zscaler<span class="k">)</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Disconnecting from Zscaler"</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">else</span>
-    <span class="nb">echo</span> <span class="s2">"Connecting to Zscaler"</span>
-    /usr/bin/open -a /Applications/Zscaler/Zscaler.app --hide
-    sudo find /Library/LaunchAgents -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
-    sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec launchctl load <span class="o">{}</span> <span class="se">\;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Connecting to Zscaler"</span>
+<span class="w">    </span>/usr/bin/open<span class="w"> </span>-a<span class="w"> </span>/Applications/Zscaler/Zscaler.app<span class="w"> </span>--hide
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchAgents<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+<span class="w">    </span>sudo<span class="w"> </span>find<span class="w"> </span>/Library/LaunchDaemons<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*zscaler*'</span><span class="w"> </span>-exec<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
 <span class="k">fi</span>
-</pre>
+</pre></div>
+
 <p>Save this script to a folder. From <code>Raycast Settings</code> -&gt; <code>Extensions</code> -&gt; <code>Add Script Directory</code>, we can select this folder, and the script will be available in Raycast. </p>
 <p><img alt="raycast-connect-toggle" src="../images/automate-zscaler-connect2.png"></p>
 <p>We can assign a shortcut key to the script for quick access.</p>
@@ -668,14 +708,14 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
 <p>At the moment, Activity Watch doesn't have any feature to show screen time alerts. In this post, we will see how to show screen time alerts using Activity Watch.</p>
 <h4>Python Script</h4>
 <p>Activity Watch provides an API to interact with the Activity Watch server. We can use the API to get the screen time data and show alerts.</p>
-<pre class="code literal-block"><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 
-<span class="k">def</span> <span class="nf">get_nonafk_events</span><span class="p">(</span><span class="n">timeperiods</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_nonafk_events</span><span class="p">(</span><span class="n">timeperiods</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Content-type"</span><span class="p">:</span> <span class="s2">"application/json"</span><span class="p">,</span> <span class="s2">"charset"</span><span class="p">:</span> <span class="s2">"utf-8"</span><span class="p">}</span>
     <span class="n">query</span> <span class="o">=</span> <span class="s2">"""afk_events = query_bucket(find_bucket('aw-watcher-afk_'));</span>
 <span class="s2">window_events = query_bucket(find_bucket('aw-watcher-window_'));</span>
@@ -694,7 +734,7 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
     <span class="n">timeperiods</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span> <span class="n">now</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()])</span>
@@ -714,15 +754,18 @@ sudo find /Library/LaunchDaemons -name <span class="s1">'*zscaler*'</span> -exec
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre>
+</pre></div>
+
 <p>This script<sup id="fnref:github"><a class="footnote-ref" href="../2024/05/screen-time-alerts-from-activity-watch.html#fn:github">2</a></sup> will show the screen time alerts using the Activity Watch API. We can run this script using the below command.</p>
-<pre class="code literal-block">$ python screen_time_alerts.py
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>python<span class="w"> </span>screen_time_alerts.py
+</pre></div>
+
 <p><img alt="Screen Time Alerts" src="../images/activity-watch-alerts2.png"></p>
 <p>We can set up a cron job to run this script every hour to show screen time alerts.</p>
-<pre class="code literal-block">$ crontab -e
-<span class="m">0</span> * * * * python screen_time_alerts.py
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>crontab<span class="w"> </span>-e
+<span class="m">0</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>python<span class="w"> </span>screen_time_alerts.py
+</pre></div>
+
 <p>We can also modify the script to show alerts only when the screen time exceeds a certain limit.</p>
 <h4>Conclusion</h4>
 <p>Since Actvity Watch is open-source and provides an API, we can extend its functionality to show screen time alerts. We can also use the API to create custom reports and dashboards.</p>

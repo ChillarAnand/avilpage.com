@@ -157,7 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    8 min read
             </p>
 
             <p class="dateline">
@@ -176,50 +176,52 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p>Finally, I stumbled upon xplr a TUI file manager, and it was a breeze to write a lua script to show the line count column.</p>
 <h4>xplr - line count</h4>
 <p>xplr can be installed via <code>brew</code>. </p>
-<pre class="code literal-block">$ brew install xplr
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>xplr
 
-$ xplr --version
-xplr <span class="m">0</span>.21.3
-</pre>
+$<span class="w"> </span>xplr<span class="w"> </span>--version
+xplr<span class="w"> </span><span class="m">0</span>.21.3
+</pre></div>
+
 <p>xplr reads the default configuration from <code>~/.config/xplr/init.lua</code>. The following configuration shows the line count column in xplr.</p>
-<pre class="code literal-block"><span class="n">version</span> <span class="o">=</span> <span class="s1">'0.21.3'</span>
+<div class="code"><pre class="code literal-block"><span class="nv">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'0.21.3'</span>
 
-<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">fmt_simple_column</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-  <span class="kr">return</span> <span class="n">m</span><span class="p">.</span><span class="n">prefix</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">relative_path</span> <span class="o">..</span> <span class="n">m</span><span class="p">.</span><span class="n">suffix</span>
+<span class="nv">xplr</span><span class="p">.</span><span class="py">fn</span><span class="p">.</span><span class="py">custom</span><span class="p">.</span><span class="py">fmt_simple_column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">prefix</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">relative_path</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">suffix</span>
 <span class="kr">end</span>
 
-<span class="n">xplr</span><span class="p">.</span><span class="n">fn</span><span class="p">.</span><span class="n">custom</span><span class="p">.</span><span class="n">row_count</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="ow">not</span> <span class="n">app</span><span class="p">.</span><span class="n">is_file</span> <span class="kr">then</span>
-    <span class="kr">return</span> <span class="s2">"---"</span>
-  <span class="kr">end</span>
+<span class="nv">xplr</span><span class="p">.</span><span class="py">fn</span><span class="p">.</span><span class="py">custom</span><span class="p">.</span><span class="py">row_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">app</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">app</span><span class="p">.</span><span class="py">is_file</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="s2">"---"</span>
+<span class="w">  </span><span class="kr">end</span>
 
-  <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">io.open</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">absolute_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span>
-  <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span>
-    <span class="kd">local</span> <span class="n">row_count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="kr">for</span> <span class="n">_</span> <span class="kr">in</span> <span class="n">file</span><span class="p">:</span><span class="n">lines</span><span class="p">()</span> <span class="kr">do</span>
-      <span class="n">row_count</span> <span class="o">=</span> <span class="n">row_count</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="kr">end</span>
-    <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
-    <span class="kr">return</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">row_count</span><span class="p">)</span>
-  <span class="kr">end</span>
+<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">app</span><span class="p">.</span><span class="py">absolute_path</span><span class="p">,</span><span class="w"> </span><span class="s2">"r"</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">file</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">row_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">file</span><span class="p">:</span><span class="nf">lines</span><span class="p">()</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="nv">row_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">row_count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">file</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">row_count</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">end</span>
 <span class="kr">end</span>
 
 
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">header</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"  path"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"line_count"</span> <span class="p">},</span>
+<span class="nv">xplr</span><span class="p">.</span><span class="py">config</span><span class="p">.</span><span class="py">general</span><span class="p">.</span><span class="py">table</span><span class="p">.</span><span class="py">header</span><span class="p">.</span><span class="py">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"  path"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"line_count"</span><span class="w"> </span><span class="p">},</span>
 <span class="p">}</span>
 
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">row</span><span class="p">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.fmt_simple_column"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">format</span> <span class="o">=</span> <span class="s2">"custom.row_count"</span> <span class="p">},</span>
+<span class="nv">xplr</span><span class="p">.</span><span class="py">config</span><span class="p">.</span><span class="py">general</span><span class="p">.</span><span class="py">table</span><span class="p">.</span><span class="py">row</span><span class="p">.</span><span class="py">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"custom.fmt_simple_column"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"custom.row_count"</span><span class="w"> </span><span class="p">},</span>
 <span class="p">}</span>
 
-<span class="n">xplr</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">general</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">col_widths</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">30</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="n">Percentage</span> <span class="o">=</span> <span class="mi">20</span> <span class="p">},</span>
+<span class="nv">xplr</span><span class="p">.</span><span class="py">config</span><span class="p">.</span><span class="py">general</span><span class="p">.</span><span class="py">table</span><span class="p">.</span><span class="py">col_widths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">Percentage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nv">Percentage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="p">},</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>This will show a row count on launch.</p>
 <p><img alt="xplr - line count" src="../../images/xplr-line-count-column.png"></p>
 <h4>Conclusion</h4>

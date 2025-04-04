@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about productivity)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/productivity.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 10 Mar 2025 18:28:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Install Cockpit on Remote Linux VM</title><link>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about productivity)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/productivity.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Install Cockpit on Remote Linux VM</title><link>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;&lt;img alt="Cockpit" src="https://avilpage.com/images/cockpit-how-to.png"&gt;&lt;/p&gt;
 &lt;p&gt;Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Let's create a new Ubuntu VM and install Cockpit on it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt update
-. /etc/os-release
-sudo apt install -t &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports cockpit
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;update
+.&lt;span class="w"&gt; &lt;/span&gt;/etc/os-release
+sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports&lt;span class="w"&gt; &lt;/span&gt;cockpit
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.&lt;/p&gt;
 &lt;p&gt;It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an &lt;code&gt;A&lt;/code&gt; record in DNS settings to point &lt;code&gt;cockpit.avilpage.com&lt;/code&gt; to the public ip of the VM.&lt;/p&gt;
 &lt;h4&gt;Reverse Proxy&lt;/h4&gt;
 &lt;p&gt;Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo apt install caddy
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;caddy
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Add the below configuration to &lt;code&gt;/etc/caddy/Caddyfile&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;cockpit.avilpage.com &lt;span class="o"&gt;{&lt;/span&gt;
-    reverse_proxy localhost:9090
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;cockpit.avilpage.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;reverse_proxy&lt;span class="w"&gt; &lt;/span&gt;localhost:9090
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We need &lt;code&gt;Origins&lt;/code&gt; to Cockpit configuration at &lt;code&gt;/etc/cockpit/cockpit.conf&lt;/code&gt; to allow requests from the subdomain.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Origins&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; https://cockpit.avilpage.com
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;Origins&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;https://cockpit.avilpage.com
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Restart both services and open &lt;a href="https://cockpit.avilpage.com"&gt;https://cockpit.avilpage.com&lt;/a&gt; in browser.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;sudo systemctl restart cockpit
-sudo systemctl restart caddy
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;cockpit
+sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;caddy
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server&lt;/p&gt;</description><category>linux</category><category>productivity</category><guid>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</guid><pubDate>Mon, 30 Dec 2024 22:54:07 GMT</pubDate></item><item><title>Screen Time Alerts from Activity Watch</title><link>https://avilpage.com/2024/05/screen-time-alerts-from-activity-watch.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;div class="embed-responsive embed-responsive-16by9"&gt;
@@ -40,14 +45,14 @@ sudo systemctl restart caddy
 &lt;p&gt;At the moment, Activity Watch doesn't have any feature to show screen time alerts. In this post, we will see how to show screen time alerts using Activity Watch.&lt;/p&gt;
 &lt;h4&gt;Python Script&lt;/h4&gt;
 &lt;p&gt;Activity Watch provides an API to interact with the Activity Watch server. We can use the API to get the screen time data and show alerts.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;json&lt;/span&gt;
-&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;datetime&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datetime&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;json&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;datetime&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datetime&lt;/span&gt;
 
-&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;requests&lt;/span&gt;
 
 
-&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_nonafk_events&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;timeperiods&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;get_nonafk_events&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;timeperiods&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
     &lt;span class="n"&gt;headers&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"Content-type"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"application/json"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"charset"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"utf-8"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
     &lt;span class="n"&gt;query&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"""afk_events = query_bucket(find_bucket('aw-watcher-afk_'));&lt;/span&gt;
 &lt;span class="s2"&gt;window_events = query_bucket(find_bucket('aw-watcher-window_'));&lt;/span&gt;
@@ -66,7 +71,7 @@ sudo systemctl restart caddy
     &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;)[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
 
 
-&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
     &lt;span class="n"&gt;now&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
     &lt;span class="n"&gt;timeperiods&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
         &lt;span class="s2"&gt;"/"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hour&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;minute&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;second&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isoformat&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;isoformat&lt;/span&gt;&lt;span class="p"&gt;()])&lt;/span&gt;
@@ -86,15 +91,18 @@ sudo systemctl restart caddy
 
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"__main__"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This script&lt;sup id="fnref:github"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/05/screen-time-alerts-from-activity-watch.html#fn:github"&gt;2&lt;/a&gt;&lt;/sup&gt; will show the screen time alerts using the Activity Watch API. We can run this script using the below command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python screen_time_alerts.py
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;screen_time_alerts.py
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img alt="Screen Time Alerts" src="https://avilpage.com/images/activity-watch-alerts2.png"&gt;&lt;/p&gt;
 &lt;p&gt;We can set up a cron job to run this script every hour to show screen time alerts.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ crontab -e
-&lt;span class="m"&gt;0&lt;/span&gt; * * * * python screen_time_alerts.py
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;screen_time_alerts.py
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can also modify the script to show alerts only when the screen time exceeds a certain limit.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Since Actvity Watch is open-source and provides an API, we can extend its functionality to show screen time alerts. We can also use the API to create custom reports and dashboards.&lt;/p&gt;

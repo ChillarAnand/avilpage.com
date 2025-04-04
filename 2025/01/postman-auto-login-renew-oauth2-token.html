@@ -156,7 +156,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             </p>
 
             <p class="dateline">
-                    6 min read
+                    8 min read
             </p>
 
             <p class="dateline">
@@ -176,47 +176,48 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <li>Use the token in the request headers</li>
 </ul>
 <h4>Automating Login &amp; Renewal</h4>
-<pre class="code literal-block"><span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<div class="code"><pre class="code literal-block"><span class="kd">var</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 
-<span class="kd">var</span> <span class="nx">loginTimestamp</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span> <span class="o">||</span> <span class="mf">86400</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mf">86400</span><span class="p">;</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">loginDuration</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">loginTimestamp</span><span class="p">;</span>
-  <span class="nx">isSessionExpired</span> <span class="o">=</span> <span class="nx">loginDuration</span> <span class="o">&gt;=</span> <span class="nx">expiresInSeconds</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="k">if</span> <span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
-    <span class="nx">url</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/auth/connect/token"</span><span class="p">,</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
-    <span class="nx">header</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
-      <span class="s1">'Accept'</span><span class="o">:</span> <span class="s1">'application/json'</span>
-    <span class="p">},</span>
-    <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">mode</span><span class="o">:</span> <span class="s1">'urlencoded'</span><span class="p">,</span>
-        <span class="nx">urlencoded</span><span class="o">:</span> <span class="p">[</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"username"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"password"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"grant_type"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">"password"</span> <span class="p">},</span>
-          <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="s2">"client_id"</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span> <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-  <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">jsonData</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">"/auth/connect/token"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">header</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
+<span class="w">      </span><span class="s1">'Accept'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/json'</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">mode</span><span class="o">:</span><span class="w"> </span><span class="s1">'urlencoded'</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">urlencoded</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"grant_type"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"client_id"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">jsonData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
 
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span> <span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span><span class="w"> </span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
 
-    <span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
-        <span class="nx">expiresInSeconds</span> <span class="o">=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span> <span class="o">*</span> <span class="mf">1000</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span> <span class="nx">expiresInSeconds</span><span class="p">);</span>
-    <span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
-  <span class="p">});</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
+<span class="w">        </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
+<span class="w">  </span><span class="p">});</span>
 <span class="p">}</span>
-</pre>
+</pre></div>
+
 <p>We can copy this script to the pre-request script of the collection. </p>
 <p><img alt="Cockpit" src="../../images/postman-auto-login.png"></p>
 <p>Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.</p>

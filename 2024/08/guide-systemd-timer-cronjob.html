@@ -169,21 +169,23 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
             <h4>Introduction</h4>
-<pre class="code literal-block">* * * * * bash demo.sh
-</pre>
+<div class="code"><pre class="code literal-block">*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>bash<span class="w"> </span>demo.sh
+</pre></div>
+
 <p>Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.</p>
 <h4>How to use systemd timer</h4>
 <p>We need to create a service file(contains the script to be run) and a timer(contains the schedule).</p>
-<pre class="code literal-block"><span class="c1"># demo.service</span>
+<div class="code"><pre class="code literal-block"><span class="c1"># demo.service</span>
 <span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>Demo service
+<span class="nv">Description</span><span class="o">=</span>Demo<span class="w"> </span>service
 
 <span class="o">[</span>Service<span class="o">]</span>
-<span class="nv">ExecStart</span><span class="o">=</span>bash demo.sh
-</pre>
-<pre class="code literal-block"><span class="c1"># demo.timer</span>
+<span class="nv">ExecStart</span><span class="o">=</span>bash<span class="w"> </span>demo.sh
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="c1"># demo.timer</span>
 <span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>Run myscript.service every <span class="m">1</span> minutes
+<span class="nv">Description</span><span class="o">=</span>Run<span class="w"> </span>myscript.service<span class="w"> </span>every<span class="w"> </span><span class="m">1</span><span class="w"> </span>minutes
 
 <span class="o">[</span>Timer<span class="o">]</span>
 <span class="nv">OnBootSec</span><span class="o">=</span>1min
@@ -191,17 +193,20 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <span class="o">[</span>Install<span class="o">]</span>
 <span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
-</pre>
+</pre></div>
+
 <p>We can copy these files to <code>/etc/systemd/system/</code> and enable the timer.</p>
-<pre class="code literal-block">$ sudo cp demo.service demo.timer /etc/systemd/system/
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>cp<span class="w"> </span>demo.service<span class="w"> </span>demo.timer<span class="w"> </span>/etc/systemd/system/
 
-$ sudo systemctl daemon-reload
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
 
-$ sudo systemctl <span class="nb">enable</span> --now demo.timer
-</pre>
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>demo.timer
+</pre></div>
+
 <p>We can use <code>systemctl</code> to see when the task is executed last and when it will be executed next.</p>
-<pre class="code literal-block">$ sudo systemctl list-timers --all
-</pre>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>list-timers<span class="w"> </span>--all
+</pre></div>
+
 <p><img src="../../images/systemd-timer-cronjob.png" alt="systemd timer"></p>
 <h4>Use Cases</h4>
 <ul>
@@ -215,13 +220,15 @@ $ sudo systemctl <span class="nb">enable</span> --now demo.timer
 <p>Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till <code>second</code> level precision. </p>
 </li>
 </ul>
-<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
-<span class="nv">OnCalendar</span><span class="o">=</span>*-*-* <span class="m">15</span>:30:15
-</pre>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<span class="nv">OnCalendar</span><span class="o">=</span>*-*-*<span class="w"> </span><span class="m">15</span>:30:15
+</pre></div>
+
 <p>In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.</p>
-<pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>Timer<span class="o">]</span>
 <span class="nv">OnBootSec</span><span class="o">=</span>15min
-</pre>
+</pre></div>
+
 <h4>Conclusion</h4>
 <p>Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.</p>
         </div>

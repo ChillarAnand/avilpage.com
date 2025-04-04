@@ -161,7 +161,7 @@ Part 5 - Regular vs Fast Buil">
             </p>
 
             <p class="dateline">
-                    3 min read
+                    4 min read
             </p>
 
             <p class="dateline">
@@ -187,20 +187,22 @@ Part 5 - Regular vs Fast Buil">
 <p>FDA-ARGOS db is available at NCBI<sup id="fnref:ncbi"><a class="footnote-ref" href="mastering-kraken2-fda-argos-index.html#fn:ncbi">2</a></sup> from which we can download the assembly file.</p>
 <p><img src="../../images/fda-argos-kraken2-index.png" alt="FDA-ARGOS NCBI" class="img-fluid"></p>
 <p>We can extract accession numbers from the assembly file and then download the genomes from these accession ids.</p>
-<pre class="code literal-block">$ grep -e <span class="s2">"^#"</span> -v PRJNA231221_AssemblyDetails.txt <span class="p">|</span> cut -d<span class="s1">$'\t'</span> -f1 &gt; accessions.txt
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>grep<span class="w"> </span>-e<span class="w"> </span><span class="s2">"^#"</span><span class="w"> </span>-v<span class="w"> </span>PRJNA231221_AssemblyDetails.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s1">$'\t'</span><span class="w"> </span>-f1<span class="w"> </span>&gt;<span class="w"> </span>accessions.txt
 
-$ wc accessions.txt
- <span class="m">1428</span>  <span class="m">1428</span> <span class="m">22848</span> accessions.txt
+$<span class="w"> </span>wc<span class="w"> </span>accessions.txt
+<span class="w"> </span><span class="m">1428</span><span class="w">  </span><span class="m">1428</span><span class="w"> </span><span class="m">22848</span><span class="w"> </span>accessions.txt
 
-$ ncbi-genome-download --section genbank --assembly-accessions accessions.txt --progress-bar bacteria --parallel <span class="m">40</span>
-</pre>
+$<span class="w"> </span>ncbi-genome-download<span class="w"> </span>--section<span class="w"> </span>genbank<span class="w"> </span>--assembly-accessions<span class="w"> </span>accessions.txt<span class="w"> </span>--progress-bar<span class="w"> </span>bacteria<span class="w"> </span>--parallel<span class="w"> </span><span class="m">40</span>
+</pre></div>
+
 <p>It took ~8 minutes to download all the genomes, and the downloaded file size is ~4GB.</p>
 <p>We can use kraken-db-builder<sup id="fnref:kdb"><a class="footnote-ref" href="mastering-kraken2-fda-argos-index.html#fn:kdb">3</a></sup> tool to build index from these genbank genome files.</p>
-<pre class="code literal-block"><span class="c1"># kraken-db-builder needs this to convert gbff to fasta format</span>
-$ conda install -c bioconda any2fasta
+<div class="code"><pre class="code literal-block"><span class="c1"># kraken-db-builder needs this to convert gbff to fasta format</span>
+$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>bioconda<span class="w"> </span>any2fasta
 
-$ kraken-db-builder --genomes-dir genbank --threads <span class="m">36</span> --db-name k2_argos
-</pre>
+$<span class="w"> </span>kraken-db-builder<span class="w"> </span>--genomes-dir<span class="w"> </span>genbank<span class="w"> </span>--threads<span class="w"> </span><span class="m">36</span><span class="w"> </span>--db-name<span class="w"> </span>k2_argos
+</pre></div>
+
 <p>It took ~30 minutes to build the index.</p>
 <h4>Conclusion</h4>
 <p>We have built a Kraken2 index for the FDA-ARGOS database on 2024-Aug-24.</p>

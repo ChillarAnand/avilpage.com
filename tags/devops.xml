@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 10 Mar 2025 18:28:55 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Free DockerHub Alternative - ECR Public Gallery</title><link>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="docker-rate-limits" src="https://avilpage.com/images/docker-rate-limits.png"&gt;&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about devops)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Free DockerHub Alternative - ECR Public Gallery</title><link>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="docker-rate-limits" src="https://avilpage.com/images/docker-rate-limits.png"&gt;&lt;/p&gt;
 &lt;p&gt;DockerHub started rate limiting&lt;sup id="fnref:rate"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:rate"&gt;1&lt;/a&gt;&lt;/sup&gt; anonymous docker pulls. When testing out a new CI/CD setup, I hit the rate limit and had to wait for an hour to pull the image. This was a good time to look for alternatives.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://gallery.ecr.aws/"&gt;AWS ECR Public Gallery&lt;/a&gt;&lt;sup id="fnref:ecr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:ecr"&gt;2&lt;/a&gt;&lt;/sup&gt; is a good alternative to DockerHub as of today(2025 Feb). It is free and does not have rate limits even for anonymous users. &lt;/p&gt;
 &lt;p&gt;&lt;img alt="public-ecr-gallery" src="https://avilpage.com/images/public-ecr-gallery.png"&gt;&lt;/p&gt;
 &lt;p&gt;Once we find the required image from the gallery, we can simply change the image name in the &lt;code&gt;docker pull&lt;/code&gt; command to pull the image from ECR Gallery.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;docker pull public.ecr.aws/ubuntu/ubuntu
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;docker&lt;span class="w"&gt; &lt;/span&gt;pull&lt;span class="w"&gt; &lt;/span&gt;public.ecr.aws/ubuntu/ubuntu
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In &lt;code&gt;Dockerfile&lt;/code&gt;, we can use the image from ECR Gallery as follows:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;FROM&lt;/span&gt; &lt;span class="s"&gt;public.ecr.aws/ubuntu/ubuntu&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;public.ecr.aws/ubuntu/ubuntu&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;That is a quick way to avoid DockerHub rate limits.&lt;/p&gt;
 &lt;div class="footnote"&gt;
 &lt;hr&gt;
@@ -21,21 +23,23 @@
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>devops</category><category>docker</category><guid>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</guid><pubDate>Sun, 09 Feb 2025 16:08:34 GMT</pubDate></item><item><title>How (and when) to use systemd timer instead of cronjob</title><link>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;pre class="code literal-block"&gt;* * * * * bash demo.sh
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;*&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;demo.sh
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Just a single line of code is sufficient to schedule a cron job. However, there are some scenarios where I find systemd timer more useful than cronjob.&lt;/p&gt;
 &lt;h4&gt;How to use systemd timer&lt;/h4&gt;
 &lt;p&gt;We need to create a service file(contains the script to be run) and a timer(contains the schedule).&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.service&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo service
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Demo&lt;span class="w"&gt; &lt;/span&gt;service
 
 &lt;span class="o"&gt;[&lt;/span&gt;Service&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash demo.sh
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
+&lt;span class="nv"&gt;ExecStart&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;demo.sh
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# demo.timer&lt;/span&gt;
 &lt;span class="o"&gt;[&lt;/span&gt;Unit&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run myscript.service every &lt;span class="m"&gt;1&lt;/span&gt; minutes
+&lt;span class="nv"&gt;Description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Run&lt;span class="w"&gt; &lt;/span&gt;myscript.service&lt;span class="w"&gt; &lt;/span&gt;every&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;minutes
 
 &lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1min
@@ -43,17 +47,20 @@
 
 &lt;span class="o"&gt;[&lt;/span&gt;Install&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;WantedBy&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;multi-user.target
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can copy these files to &lt;code&gt;/etc/systemd/system/&lt;/code&gt; and enable the timer.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo cp demo.service demo.timer /etc/systemd/system/
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;demo.service&lt;span class="w"&gt; &lt;/span&gt;demo.timer&lt;span class="w"&gt; &lt;/span&gt;/etc/systemd/system/
 
-$ sudo systemctl daemon-reload
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;daemon-reload
 
-$ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;enable&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--now&lt;span class="w"&gt; &lt;/span&gt;demo.timer
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can use &lt;code&gt;systemctl&lt;/code&gt; to see when the task is executed last and when it will be executed next.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo systemctl list-timers --all
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;list-timers&lt;span class="w"&gt; &lt;/span&gt;--all
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img src="https://avilpage.com/images/systemd-timer-cronjob.png" alt="systemd timer"&gt;&lt;/p&gt;
 &lt;h4&gt;Use Cases&lt;/h4&gt;
 &lt;ul&gt;
@@ -67,13 +74,15 @@ $ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
 &lt;p&gt;Timer - With cron, we can run tasks upto a minute precision. Timer can run tasks till &lt;code&gt;second&lt;/code&gt; level precision. &lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-* &lt;span class="m"&gt;15&lt;/span&gt;:30:15
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;OnCalendar&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;*-*-*&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;15&lt;/span&gt;:30:15
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In addition to that, we can run tasks based on system events. For example, we can run a script 15 minutes from reboot.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;Timer&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;OnBootSec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;15min
-&lt;/pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Systemd timer is a powerful tool that can replace cronjob in many scenarios. It provides more control and flexibility over cronjob. However, cronjob is still a good choice for simple scheduling tasks.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2024/08/guide-systemd-timer-cronjob.html</guid><pubDate>Mon, 05 Aug 2024 07:37:50 GMT</pubDate></item><item><title>Mastering Kraken2 - Part 2 - Performance Optimisation</title><link>https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Mastering Kraken2&lt;/h4&gt;
 &lt;p&gt;&lt;a href="https://avilpage.com/2024/07/mastering-kraken2-initial-runs.html"&gt;Part 1 - Initial Runs&lt;/a&gt;&lt;/p&gt;
@@ -86,91 +95,100 @@ $ sudo systemctl &lt;span class="nb"&gt;enable&lt;/span&gt; --now demo.timer
 &lt;p&gt;In the previous post, we learned how to set up kraken2&lt;sup id="fnref:k2"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2"&gt;1&lt;/a&gt;&lt;/sup&gt;, download pre-built indices, and run kraken2. In this post, we will learn various ways to speed up the classification process.&lt;/p&gt;
 &lt;h4&gt;Increasing RAM&lt;/h4&gt;
 &lt;p&gt;Kraken2 standard database is ~80GB in size. It is recommended to have at least db size RAM to run kraken2 efficiently&lt;sup id="fnref:ksr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:ksr"&gt;2&lt;/a&gt;&lt;/sup&gt;. Let's use 128GB RAM machine and run kraken2 with ERR10359977&lt;sup id="fnref:err"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:err"&gt;3&lt;/a&gt;&lt;/sup&gt; sample.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;95064&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;.142s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2662&lt;/span&gt;.9 Kseq/m, &lt;span class="m"&gt;402&lt;/span&gt;.02 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;94816&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.74%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;248&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.26%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt ERR10359977.fastq.gz &amp;gt;   &lt;span class="m"&gt;1&lt;/span&gt;.68s user &lt;span class="m"&gt;152&lt;/span&gt;.19s system &lt;span class="m"&gt;35&lt;/span&gt;% cpu &lt;span class="m"&gt;7&lt;/span&gt;:17.55 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;95064&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14&lt;/span&gt;.35&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;.142s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2662&lt;/span&gt;.9&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;402&lt;/span&gt;.02&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;94816&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;99&lt;/span&gt;.74%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;248&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.26%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;ERR10359977.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.68s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;152&lt;/span&gt;.19s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;35&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;7&lt;/span&gt;:17.55&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the time taken has come down from 40 minutes to 7 minutes. The classification speed has also increased from 0.19 Mbp/m to 402.02 Mbp/m.&lt;/p&gt;
 &lt;p&gt;The previous sample had only a few reads, and the speed is not a good indicator. Let's run kraken2 with a larger sample.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-Processed &lt;span class="m"&gt;14980000&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2972330207&lt;/span&gt; bp&lt;span class="o"&gt;)&lt;/span&gt; ...
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;797&lt;/span&gt;.424s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1288&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;255&lt;/span&gt;.61 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired &amp;gt; output.txt  &lt;span class="m"&gt;526&lt;/span&gt;.39s user &lt;span class="m"&gt;308&lt;/span&gt;.24s system &lt;span class="m"&gt;68&lt;/span&gt;% cpu &lt;span class="m"&gt;20&lt;/span&gt;:23.86 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+Processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;14980000&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;2972330207&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;...
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;797&lt;/span&gt;.424s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1288&lt;/span&gt;.2&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;255&lt;/span&gt;.61&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;526&lt;/span&gt;.39s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;308&lt;/span&gt;.24s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;68&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;:23.86&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This took almost 20 minutes to classify ~3 Gbp of data. Out of 20 minutes, 13 minutes was spent in classification. The remaining time in loading the db into memory.&lt;/p&gt;
 &lt;p&gt;Let's use k2_plusPF&lt;sup id="fnref:k2p"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:k2p"&gt;4&lt;/a&gt;&lt;/sup&gt; db, which is twice the size of k2_standard and run kraken2.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_plusfp --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information...done.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;755&lt;/span&gt;.290s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1360&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;269&lt;/span&gt;.87 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9903824&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.85%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7217421&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.15%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_plusfp/ --report report.txt --paired SRR6915097_1.fastq.gz  &amp;gt;   &lt;span class="m"&gt;509&lt;/span&gt;.71s user &lt;span class="m"&gt;509&lt;/span&gt;.51s system &lt;span class="m"&gt;55&lt;/span&gt;% cpu &lt;span class="m"&gt;30&lt;/span&gt;:35.49 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_plusfp&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...done.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;755&lt;/span&gt;.290s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1360&lt;/span&gt;.1&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;269&lt;/span&gt;.87&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9903824&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.85%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7217421&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.15%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_plusfp/&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;  &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;509&lt;/span&gt;.71s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;509&lt;/span&gt;.51s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;55&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;:35.49&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This took ~30 minutes to complete, but the classification took only 13 minutes similar to k2_standard. The remaining time was spent in loading the db into memory.&lt;/p&gt;
 &lt;h4&gt;Preloading db into RAM&lt;/h4&gt;
 &lt;p&gt;We can use vmtouch&lt;sup id="fnref:vmt"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/07/mastering-kraken2-performance-optimisation.html#fn:vmt"&gt;5&lt;/a&gt;&lt;/sup&gt; to preload db into RAM. kraken2 provides &lt;code&gt;--memory-mapping&lt;/code&gt; option to use preloaded db. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ vmtouch -vt k2_standard/hash.k2d k2_standard/opts.k2d k2_standard/taxo.k2d
-           Files: &lt;span class="m"&gt;3&lt;/span&gt;
-     Directories: &lt;span class="m"&gt;0&lt;/span&gt;
-   Touched Pages: &lt;span class="m"&gt;20382075&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
-         Elapsed: &lt;span class="m"&gt;434&lt;/span&gt;.77 seconds
-&lt;/pre&gt;
-&lt;p&gt;When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ cp -r k2_standard /dev/shm
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;vmtouch&lt;span class="w"&gt; &lt;/span&gt;-vt&lt;span class="w"&gt; &lt;/span&gt;k2_standard/hash.k2d&lt;span class="w"&gt; &lt;/span&gt;k2_standard/opts.k2d&lt;span class="w"&gt; &lt;/span&gt;k2_standard/taxo.k2d
+&lt;span class="w"&gt;           &lt;/span&gt;Files:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="w"&gt;     &lt;/span&gt;Directories:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+&lt;span class="w"&gt;   &lt;/span&gt;Touched&lt;span class="w"&gt; &lt;/span&gt;Pages:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20382075&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;77G&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;         &lt;/span&gt;Elapsed:&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;434&lt;/span&gt;.77&lt;span class="w"&gt; &lt;/span&gt;seconds
+&lt;/pre&gt;&lt;/div&gt;
 
-$ vmtouch -t /dev/shm/*.k2d
-&lt;/pre&gt;
+&lt;p&gt;When Linux requires RAM, it will incrementally evict the db from memory. To prevent this, we can copy the db to shared memory (/dev/shm) and then use vmtouch to preload the db.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;cp&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;/dev/shm
+
+$&lt;span class="w"&gt; &lt;/span&gt;vmtouch&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;/dev/shm/*.k2d
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now, let's run kraken2 with &lt;code&gt;--memory-mapping&lt;/code&gt; option.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;532&lt;/span&gt;.486s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1929&lt;/span&gt;.2 Kseq/m, &lt;span class="m"&gt;382&lt;/span&gt;.79 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-  kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz   &amp;gt;  &lt;span class="m"&gt;424&lt;/span&gt;.20s user &lt;span class="m"&gt;11&lt;/span&gt;.76s system &lt;span class="m"&gt;81&lt;/span&gt;% cpu &lt;span class="m"&gt;8&lt;/span&gt;:54.98 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;532&lt;/span&gt;.486s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1929&lt;/span&gt;.2&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;382&lt;/span&gt;.79&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;   &lt;/span&gt;&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;424&lt;/span&gt;.20s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;11&lt;/span&gt;.76s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;81&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8&lt;/span&gt;:54.98&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification took only ~10 minutes.&lt;/p&gt;
 &lt;h4&gt;Multi threading&lt;/h4&gt;
 &lt;p&gt;kraken2 supports multiple threads. I am using a machine with 40 threads.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz SRR6915097_2.fastq.gz --memory-mapping --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;71&lt;/span&gt;.675s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14332&lt;/span&gt;.5 Kseq/m, &lt;span class="m"&gt;2843&lt;/span&gt;.81 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq.gz      &lt;span class="m"&gt;556&lt;/span&gt;.58s user &lt;span class="m"&gt;22&lt;/span&gt;.85s system &lt;span class="m"&gt;762&lt;/span&gt;% cpu &lt;span class="m"&gt;1&lt;/span&gt;:16.02 total
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;71&lt;/span&gt;.675s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;14332&lt;/span&gt;.5&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2843&lt;/span&gt;.81&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="m"&gt;556&lt;/span&gt;.58s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt;.85s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;762&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;:16.02&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;With 32 threads, the classification took only 1 minute. Beyond 32 threads, the classification time did not decrease significantly.&lt;/p&gt;
 &lt;h4&gt;Optimising input files&lt;/h4&gt;
 &lt;p&gt;So far we have used gzipped input files. Let's use unzipped input files and run kraken2.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ gunzip SRR6915097_1.fastq.gz
-$ gunzip SRR6915097_2.fastq.gz
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;gunzip&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz
+$&lt;span class="w"&gt; &lt;/span&gt;gunzip&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz
 
-$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq SRR6915097_2.fastq --memory-mapping --threads &lt;span class="m"&gt;30&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;17121245&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;34&lt;/span&gt;.809s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;29512&lt;/span&gt;.0 Kseq/m, &lt;span class="m"&gt;5855&lt;/span&gt;.68 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;9826671&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;7294574&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --paired SRR6915097_1.fastq    &lt;span class="m"&gt;30&lt;/span&gt;   &lt;span class="m"&gt;565&lt;/span&gt;.03s user &lt;span class="m"&gt;17&lt;/span&gt;.12s system &lt;span class="m"&gt;1530&lt;/span&gt;% cpu &lt;span class="m"&gt;38&lt;/span&gt;.047 total
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;17121245&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;34&lt;/span&gt;.809s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;29512&lt;/span&gt;.0&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;5855&lt;/span&gt;.68&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;9826671&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;57&lt;/span&gt;.39%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;7294574&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;42&lt;/span&gt;.61%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--paired&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="m"&gt;30&lt;/span&gt;&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;565&lt;/span&gt;.03s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;17&lt;/span&gt;.12s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1530&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;38&lt;/span&gt;.047&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification time has come down to 40 seconds.&lt;/p&gt;
 &lt;p&gt;Since the input fastq files are paired, interleaving the files also takes time. Lets interleave the files and run kraken2.&lt;/p&gt;
 &lt;p&gt;To interleave the files, lets use &lt;code&gt;seqfu&lt;/code&gt; tool.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ conda install -y -c conda-forge -c bioconda &lt;span class="s2"&gt;"seqfu&amp;gt;1.10"&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;conda&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-y&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;conda-forge&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;bioconda&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"seqfu&amp;gt;1.10"&lt;/span&gt;
 
-$ seqfu interleave -1 SRR6915097_1.fastq.gz -2 SRR6915097_2.fastq.gz &amp;gt; SRR6915097.fastq
+$&lt;span class="w"&gt; &lt;/span&gt;seqfu&lt;span class="w"&gt; &lt;/span&gt;interleave&lt;span class="w"&gt; &lt;/span&gt;-1&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_1.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;-2&lt;span class="w"&gt; &lt;/span&gt;SRR6915097_2.fastq.gz&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fastq
 
-$ &lt;span class="nb"&gt;time&lt;/span&gt; kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq --threads &lt;span class="m"&gt;32&lt;/span&gt; &amp;gt; output.txt
-Loading database information... &lt;span class="k"&gt;done&lt;/span&gt;.
-&lt;span class="m"&gt;34242490&lt;/span&gt; sequences &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15 Mbp&lt;span class="o"&gt;)&lt;/span&gt; processed &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;.199s &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;101714&lt;/span&gt;.1 Kseq/m, &lt;span class="m"&gt;10090&lt;/span&gt;.91 Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
-  &lt;span class="m"&gt;17983321&lt;/span&gt; sequences classified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;52&lt;/span&gt;.52%&lt;span class="o"&gt;)&lt;/span&gt;
-  &lt;span class="m"&gt;16259169&lt;/span&gt; sequences unclassified &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;47&lt;/span&gt;.48%&lt;span class="o"&gt;)&lt;/span&gt;
-kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt;span class="m"&gt;32&lt;/span&gt;  &lt;span class="m"&gt;618&lt;/span&gt;.96s user &lt;span class="m"&gt;18&lt;/span&gt;.24s system &lt;span class="m"&gt;2653&lt;/span&gt;% cpu &lt;span class="m"&gt;24&lt;/span&gt;.013 total
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fq&lt;span class="w"&gt; &lt;/span&gt;--threads&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;output.txt
+Loading&lt;span class="w"&gt; &lt;/span&gt;database&lt;span class="w"&gt; &lt;/span&gt;information...&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;done&lt;/span&gt;.
+&lt;span class="m"&gt;34242490&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;3397&lt;/span&gt;.15&lt;span class="w"&gt; &lt;/span&gt;Mbp&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;processed&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;in&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.199s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;101714&lt;/span&gt;.1&lt;span class="w"&gt; &lt;/span&gt;Kseq/m,&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;10090&lt;/span&gt;.91&lt;span class="w"&gt; &lt;/span&gt;Mbp/m&lt;span class="o"&gt;)&lt;/span&gt;.
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;17983321&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;classified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;52&lt;/span&gt;.52%&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;16259169&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sequences&lt;span class="w"&gt; &lt;/span&gt;unclassified&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="m"&gt;47&lt;/span&gt;.48%&lt;span class="o"&gt;)&lt;/span&gt;
+kraken2&lt;span class="w"&gt; &lt;/span&gt;--db&lt;span class="w"&gt; &lt;/span&gt;k2_standard&lt;span class="w"&gt; &lt;/span&gt;--report&lt;span class="w"&gt; &lt;/span&gt;report.txt&lt;span class="w"&gt; &lt;/span&gt;--memory-mapping&lt;span class="w"&gt; &lt;/span&gt;SRR6915097.fq&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;32&lt;/span&gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="m"&gt;618&lt;/span&gt;.96s&lt;span class="w"&gt; &lt;/span&gt;user&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;18&lt;/span&gt;.24s&lt;span class="w"&gt; &lt;/span&gt;system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2653&lt;/span&gt;%&lt;span class="w"&gt; &lt;/span&gt;cpu&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;24&lt;/span&gt;.013&lt;span class="w"&gt; &lt;/span&gt;total
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now the classification time has come down to 24 seconds. &lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In terms of classification speed, we have come a long way from 0.1 Mbp/m to 1200 Mbp/m. In the next post, we will learn how to optimise the creation of custom indices.&lt;/p&gt;
@@ -198,16 +216,18 @@ kraken2 --db k2_standard --report report.txt --memory-mapping SRR6915097.fq  &lt
 &lt;h4&gt;Headlamp&lt;/h4&gt;
 &lt;p&gt;Headlamp is CNCF sandbox project that provides cross-platform desktop application to manage Kubernetes clusters. It auto-detects clusters and provides cluster wide resource usage by default. &lt;/p&gt;
 &lt;p&gt;It can also be installed inside the cluster and can be accessed using a web browser. This is useful when we want to access the cluster from a mobile device.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ helm repo add headlamp https://headlamp-k8s.github.io/headlamp/
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;helm&lt;span class="w"&gt; &lt;/span&gt;repo&lt;span class="w"&gt; &lt;/span&gt;add&lt;span class="w"&gt; &lt;/span&gt;headlamp&lt;span class="w"&gt; &lt;/span&gt;https://headlamp-k8s.github.io/headlamp/
 
-$ helm install headlamp headlamp/headlamp
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;headlamp&lt;span class="w"&gt; &lt;/span&gt;headlamp/headlamp
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Lets port-forward the service &amp;amp; copy the token to access it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl create token headlamp
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;token&lt;span class="w"&gt; &lt;/span&gt;headlamp
 
 &lt;span class="c1"&gt;# we can do this via headlamp UI as well&lt;/span&gt;
-$ kubectl port-forward service/headlamp &lt;span class="m"&gt;8080&lt;/span&gt;:80
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;port-forward&lt;span class="w"&gt; &lt;/span&gt;service/headlamp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8080&lt;/span&gt;:80
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Now, we can access the headlamp UI at &lt;a href="http://"&gt;http://localhost:8080&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="headlamp - Open source Kubernetes Lens alternator" src="https://avilpage.com/images/headlamp-k8s-lens-open-source-alternative2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -227,26 +247,29 @@ $ kubectl port-forward service/headlamp &lt;span class="m"&gt;8080&lt;/span&gt;:
 &lt;h4&gt;Glances&lt;/h4&gt;
 &lt;p&gt;Glances&lt;sup id="fnref:Glances"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:Glances"&gt;3&lt;/a&gt;&lt;/sup&gt; is a cross-platform monitoring tool that can monitor CPU, RAM, network, disk usage. It can also track the historical data.&lt;/p&gt;
 &lt;p&gt;We can install it using Brew or pip.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install glances
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;glances
 
-$ pip install glances
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;glances
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once it is installed, we can monitor the resource usage using the below command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ glances
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;glances
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-glances.png"&gt;&lt;/p&gt;
 &lt;p&gt;Glances can log historical data to a file using the below command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ glances --export-csv /tmp/glances.csv
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;--export-csv&lt;span class="w"&gt; &lt;/span&gt;/tmp/glances.csv
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In addition to that, it can log data to services like influxdb, prometheus, etc.&lt;/p&gt;
 &lt;p&gt;Let's install influxdb and export stats to it.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install influxdb
-$ brew services start influxdb
-$ influx setup
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;influxdb
+$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;services&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;influxdb
+$&lt;span class="w"&gt; &lt;/span&gt;influx&lt;span class="w"&gt; &lt;/span&gt;setup
 
-$ python -m pip install influxdb-client
+$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;influxdb-client
 
-$ cat glances.conf
+$&lt;span class="w"&gt; &lt;/span&gt;cat&lt;span class="w"&gt; &lt;/span&gt;glances.conf
 &lt;span class="o"&gt;[&lt;/span&gt;influxdb&lt;span class="o"&gt;]&lt;/span&gt;
 &lt;span class="nv"&gt;host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;localhost
 &lt;span class="nv"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;8086&lt;/span&gt;
@@ -255,8 +278,9 @@ $ cat glances.conf
 &lt;span class="nv"&gt;bucket&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;glances
 &lt;span class="nv"&gt;token&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;secret_token
 
-$ glances --export-influxdb -C glances.conf
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;glances&lt;span class="w"&gt; &lt;/span&gt;--export-influxdb&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;glances.conf
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can view stats in the influxdb from Data Explorer web UI at &lt;a href="http://localhost:8086"&gt;http://localhost:8086&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="macOS - Log CPU &amp;amp; RAM history" src="https://avilpage.com/images/mac-log-cpu-ram-influxdb.png"&gt;&lt;/p&gt;
 &lt;p&gt;Glances provides a prebuilt Grafana dashboard&lt;sup id="fnref:grafana_dashboard"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/06/macos-log-track-cpu-ram-usage.html#fn:grafana_dashboard"&gt;4&lt;/a&gt;&lt;/sup&gt; that we can import to visualize the stats. &lt;/p&gt;
@@ -285,22 +309,23 @@ $ glances --export-influxdb -C glances.conf
 &lt;p&gt;Kibana provides a feature called scripted fields to create new fields in the index pattern. We can use this feature to convert the timestamp to a relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time1.png"&gt;&lt;/p&gt;
 &lt;p&gt;Go to &lt;code&gt;Stack Management&lt;/code&gt; -&amp;gt; &lt;code&gt;Index Patterns&lt;/code&gt; -&amp;gt; &lt;code&gt;Create index pattern&lt;/code&gt; -&amp;gt; Select the index pattern -&amp;gt; &lt;code&gt;Scripted fields&lt;/code&gt;, click on &lt;code&gt;Add scripted field&lt;/code&gt;, add the below script.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Date&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;getTime&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
 
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
-&lt;/pre&gt;
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;doc&lt;/span&gt;&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="n"&gt;'@timestamp'&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;value&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;toInstant&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;toEpochMilli&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="n"&gt;long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;timestamp&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7200000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hours ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3600000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" hour ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;120000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minutes ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" minute ago"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Math&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;round&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;diff&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="ss"&gt;" seconds ago"&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once the field is saved, we can go back to &lt;code&gt;Discover&lt;/code&gt; and see the new field in the logs. We can toggle the visibility of the &lt;code&gt;Relative Time&lt;/code&gt; field to see the relative time.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="kibana-relative-time" src="https://avilpage.com/images/kibana-relative-time2.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
@@ -308,27 +333,32 @@ $ glances --export-influxdb -C glances.conf
 &lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ curl -fsSL https://tailscale.com/install.sh &lt;span class="p"&gt;|&lt;/span&gt; sh
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-fsSL&lt;span class="w"&gt; &lt;/span&gt;https://tailscale.com/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Once the installation is done, I run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="tailscale dashboard" src="https://avilpage.com/images/tailscale-pi.png"&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tailscale&lt;/code&gt; has CLI tool as well and status can be viewed with the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ tailscale status
-&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75   m1                    avilpage@  macOS   -
-&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92   rpi1.tailscale.ts.net avilpage@  linux   offline
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;status
+&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75&lt;span class="w"&gt;   &lt;/span&gt;m1&lt;span class="w"&gt;                    &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;macOS&lt;span class="w"&gt;   &lt;/span&gt;-
+&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92&lt;span class="w"&gt;   &lt;/span&gt;rpi1.tailscale.ts.net&lt;span class="w"&gt; &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;linux&lt;span class="w"&gt;   &lt;/span&gt;offline
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;I also set up a cron job to start tailscale daemon on boot.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ crontab -e
-@reboot tailscale up
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+@reboot&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;up
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Access&lt;/h4&gt;
 &lt;p&gt;Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. I can ssh into the device using the following command.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ssh pi@100.81.12.92
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@100.81.12.92
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ ssh pi@raspberry3.tailscale.net
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@raspberry3.tailscale.net
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp;amp; Linux as well.&lt;/p&gt;
 &lt;div class="footnote"&gt;
@@ -340,42 +370,47 @@ $ glances --export-influxdb -C glances.conf
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>command-line</category><category>devops</category><category>tailscale</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item><item><title>Record Resource Usage of Single Process</title><link>https://avilpage.com/2023/04/record-resource-usage-per-process.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;On Linux &amp;amp; Mac, we can use an inbuilt &lt;code&gt;top&lt;/code&gt; command line tool to monitor the resource usage of a single process in real time. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -pid &lt;span class="m"&gt;1234&lt;/span&gt;
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;In this article, we will see how to record and plot resource usage of a single process using &lt;code&gt;top&lt;/code&gt; and a Python package called psrecord&lt;sup id="fnref:psrecord"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/04/record-resource-usage-per-process.html#fn:psrecord"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;h4&gt;Record Resource Usage&lt;/h4&gt;
 &lt;p&gt;In some cases, we need to record the resource usage of a process to use it later. For example, we can use this data to find out the peak resource usage of a process. For this, we can use &lt;code&gt;top&lt;/code&gt; to log resource usage into a text file. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
-$ top -p &lt;span class="m"&gt;1234&lt;/span&gt; -b -d &lt;span class="m"&gt;1&lt;/span&gt; &amp;gt; top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On Linux, for a given pid&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-b&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# On Mac, for a given pid&lt;/span&gt;
-$ top -l &lt;span class="m"&gt;0&lt;/span&gt; -s &lt;span class="m"&gt;1&lt;/span&gt; -pid &lt;span class="m"&gt;32515&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; awk &lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt; &amp;gt; top.log
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;top&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-pid&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;32515&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;awk&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'NR%13==0; fflush(stdout)'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;top.log
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once we have the log file, we can view the raw data or we can plot the resource usage by using tools like &lt;code&gt;gnuplot&lt;/code&gt; or &lt;code&gt;matplotlib&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Instead of using &lt;code&gt;top&lt;/code&gt; command, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;code&gt;psrecord&lt;/code&gt; is a Python package that can be installed all using &lt;code&gt;pip&lt;/code&gt;. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ python -m pip install psrecord
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;psrecord
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once installed, we can use &lt;code&gt;psrecord&lt;/code&gt; to record the resource usage of a process. &lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
-$ psrecord &lt;span class="m"&gt;1234&lt;/span&gt; --log top.log
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# record resource usage of a process with pid 1234&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1234&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--log&lt;span class="w"&gt; &lt;/span&gt;top.log
 
 &lt;span class="c1"&gt;# start and record resource usage of a process&lt;/span&gt;
-$ psrecord python script.py --plot graph.png
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;psrecord&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;script.py&lt;span class="w"&gt; &lt;/span&gt;--plot&lt;span class="w"&gt; &lt;/span&gt;graph.png
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can view the raw data in the log file.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
-$ head top.log
-$ head a.txt
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# view raw data&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;top.log
+$&lt;span class="w"&gt; &lt;/span&gt;head&lt;span class="w"&gt; &lt;/span&gt;a.txt
 &lt;span class="c1"&gt;# Elapsed time   CPU (%)     Real (MB)   Virtual (MB)&lt;/span&gt;
-       &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;0&lt;/span&gt;.000        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;93&lt;/span&gt;.700        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;96&lt;/span&gt;.300        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-       &lt;span class="m"&gt;0&lt;/span&gt;.000       &lt;span class="m"&gt;91&lt;/span&gt;.900        &lt;span class="m"&gt;5&lt;/span&gt;.000   &lt;span class="m"&gt;399461&lt;/span&gt;.438
-&lt;/pre&gt;
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;93&lt;/span&gt;.700&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;96&lt;/span&gt;.300&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;.000&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="m"&gt;91&lt;/span&gt;.900&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;.000&lt;span class="w"&gt;   &lt;/span&gt;&lt;span class="m"&gt;399461&lt;/span&gt;.438
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Here is the generated graph.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/single-proc-resource.png" alt="single-proc-resource"&gt;
@@ -405,19 +440,23 @@ $ head a.txt
 &lt;p&gt;k3d&lt;sup id="fnref:k3d"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html#fn:k3d"&gt;4&lt;/a&gt;&lt;/sup&gt; is a wrapper around k3s that allows you to run k3s on Docker. It is a great option for running Kubernetes on your local machine.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;k3d can be installed using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install k3d  &lt;span class="c1"&gt;# mac&lt;/span&gt;
-$ chocolatey install k3d  &lt;span class="c1"&gt;# windows&lt;/span&gt;
-$ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh &lt;span class="p"&gt;|&lt;/span&gt; bash &lt;span class="c1"&gt;# linux&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# mac&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;chocolatey&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# windows&lt;/span&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-s&lt;span class="w"&gt; &lt;/span&gt;https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;bash&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;# linux&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Once it is installed, we can create a cluster using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k3d cluster create demo
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;This will launch a cluster with a single node. We can also setup a multi-node cluster using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ k3d cluster create demo --servers &lt;span class="m"&gt;3&lt;/span&gt; --agents &lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;k3d&lt;span class="w"&gt; &lt;/span&gt;cluster&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;demo&lt;span class="w"&gt; &lt;/span&gt;--servers&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--agents&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can verify the cluster is up and running using the following command:&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ kubectl get nodes
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;nodes
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;We can also use GUI tools like Lens to manage and navigate the cluster. In the above video we have used Lens to create a Jenkins deployment as well.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we have seen how to set up Kubernetes on Docker. This is a great option for running Kubernetes on your local machine. We can also use this to run production setup for small applications.&lt;/p&gt;
@@ -439,37 +478,43 @@ $ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh &lt;span 
 &lt;/ol&gt;
 &lt;/div&gt;</description><category>devops</category><category>docker</category><category>kubernetes</category><guid>https://avilpage.com/2023/03/setup-k8s-anywhere-k3d.html</guid><pubDate>Fri, 03 Mar 2023 21:25:27 GMT</pubDate></item><item><title>Speed Up AMD64(Intel) VMs on ARM(M1 Mac) Host</title><link>https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;From 2020, Apple has transitioned from Intel to ARM based Apple Silicon M1. If we run &lt;code&gt;uname -mp&lt;/code&gt; on these devices, we can see the CPU architecture details.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ uname -mp
-arm64 arm
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
+arm64&lt;span class="w"&gt; &lt;/span&gt;arm
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Let's run the same command on a device using Intel x86 processor.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ uname -mp
-x86_64 x86_64
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;uname&lt;span class="w"&gt; &lt;/span&gt;-mp
+x86_64&lt;span class="w"&gt; &lt;/span&gt;x86_64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Many popular docker images&lt;sup id="fnref:dhub"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:dhub"&gt;1&lt;/a&gt;&lt;/sup&gt; doesn't have ARM64 support yet. When setting up a dev environment in M1 Mac, there are high chances that we stumble on these containers if we are using plain docker or ARM64 VM. So, there is a need to spin up x86_64 VMs.&lt;/p&gt;
 &lt;p&gt;In this article, lets see how the performance affects when running a cross architecture containers and how to speed it up.&lt;/p&gt;
 &lt;h4&gt;Setup&lt;/h4&gt;
 &lt;p&gt;Lima&lt;sup id="fnref:lima"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2022/10/speedup-amd64-containers-on-arm.html#fn:lima"&gt;2&lt;/a&gt;&lt;/sup&gt; can run foreign architecture(x6_64) VMs on Mac. Let's install lima, start a AMD64 VM &amp;amp; ARM64 VM and install k3s[^k3s] in them. k3s will run multiple process in the background and let's see how resource consumption varies in these VMs.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ brew install lima
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;brew&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;lima
 
-$ limactl start linux_arm64
-$ limactl start linux_amd64
-&lt;/pre&gt;
+$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
+$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;When starting a VM, we can edit &lt;code&gt;arch&lt;/code&gt; parameter in the configuration. Once VM starts, we can see the details by running &lt;code&gt;limactl list&lt;/code&gt;.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ limactl list
-NAME                ARCH
-linux_amd64         x86_64
-linux_arm64         aarch64
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;list
+NAME&lt;span class="w"&gt;                &lt;/span&gt;ARCH
+linux_amd64&lt;span class="w"&gt;         &lt;/span&gt;x86_64
+linux_arm64&lt;span class="w"&gt;         &lt;/span&gt;aarch64
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;Lets login to each VM &amp;amp; install k3s.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ limactl shell linux_arm64
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_arm64
 
-$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
-&lt;pre class="code literal-block"&gt;$ limactl shell linux_amd64
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
 
-$ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;limactl&lt;span class="w"&gt; &lt;/span&gt;shell&lt;span class="w"&gt; &lt;/span&gt;linux_amd64
+
+$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-sfL&lt;span class="w"&gt; &lt;/span&gt;https://get.k3s.io&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;If we look at resource consumption on the host machine, x86_84 VM is using way more resources than ARM64 VM. This is because of the emulation layer that is running on top of the VM.&lt;/p&gt;
 &lt;p align="center"&gt;
 &lt;img src="https://avilpage.com/images/arch-arm-docker.png"&gt;
@@ -479,9 +524,10 @@ $ curl -sfL https://get.k3s.io &lt;span class="p"&gt;|&lt;/span&gt; sh -
 &lt;h4&gt;Fast Mode&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;lima&lt;/code&gt; provides &lt;code&gt;fast-mode&lt;/code&gt; option for cross architecture VMs which will speed up the performance.&lt;/p&gt;
 &lt;p&gt;For that, we need to log in to VMs and install emulators.&lt;/p&gt;
-&lt;pre class="code literal-block"&gt;$ sudo systemctl start containerd
-$ sudo nerdctl run --privileged --rm tonistiigi/binfmt --install all
-&lt;/pre&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;start&lt;span class="w"&gt; &lt;/span&gt;containerd
+$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;nerdctl&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;--privileged&lt;span class="w"&gt; &lt;/span&gt;--rm&lt;span class="w"&gt; &lt;/span&gt;tonistiigi/binfmt&lt;span class="w"&gt; &lt;/span&gt;--install&lt;span class="w"&gt; &lt;/span&gt;all
+&lt;/pre&gt;&lt;/div&gt;
+
 &lt;p&gt;After that we can restart the VMs and monitor the resource consumption. On an average, we can see that the resource consumption is reduced by 50%.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;In this article, we saw how to run cross architecture VMs on M1 Mac and how to speed up the performance. We can use this technique to run cross-architecture containers on Linux as well.&lt;/p&gt;
