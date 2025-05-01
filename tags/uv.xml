@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about uv)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/uv.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 01 May 2025 04:17:41 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Python UV in 100 seconds</title><link>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;UV is a fast Python package manager that replaces tools like pip, pyenv, virtualenv, etc.&lt;/p&gt;
+&lt;h4&gt;Install uv&lt;/h4&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On macOS and Linux.&lt;/span&gt;
+curl&lt;span class="w"&gt; &lt;/span&gt;-LsSf&lt;span class="w"&gt; &lt;/span&gt;https://astral.sh/uv/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
+&lt;span class="c1"&gt;# On Windows.&lt;/span&gt;
+powershell&lt;span class="w"&gt; &lt;/span&gt;-ExecutionPolicy&lt;span class="w"&gt; &lt;/span&gt;ByPass&lt;span class="w"&gt; &lt;/span&gt;-c&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"irm https://astral.sh/uv/install.ps1 | iex"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Installing Python&lt;/h4&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;uv&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;list
+
+uv&lt;span class="w"&gt; &lt;/span&gt;python&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.13
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This makes it easy to install and manage multiple versions of Python on your system without needing of &lt;code&gt;pyenv&lt;/code&gt;.&lt;/p&gt;
+&lt;h4&gt;Managing Python virtual environments&lt;/h4&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;uv&lt;span class="w"&gt; &lt;/span&gt;venv&lt;span class="w"&gt; &lt;/span&gt;--seed&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;.13
+
+&lt;span class="nb"&gt;source&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;.venv/bin/activate
+
+uv&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is way faster than using any other tool to create virtual environments.&lt;/p&gt;
+&lt;h4&gt;Runs scripts with inline dependencies&lt;/h4&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# /// script&lt;/span&gt;
+&lt;span class="c1"&gt;# requires-python = "&amp;gt;=3.13"&lt;/span&gt;
+&lt;span class="c1"&gt;# dependencies = [&lt;/span&gt;
+&lt;span class="c1"&gt;#     "requests",&lt;/span&gt;
+&lt;span class="c1"&gt;# ]&lt;/span&gt;
+&lt;span class="c1"&gt;# ///&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;requests&lt;/span&gt;
+
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"https://avilpage.com"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;uv&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;script.py
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;uvx&lt;/h4&gt;
+&lt;p&gt;Similar to &lt;code&gt;pipx&lt;/code&gt;, it can install and run Python applications in isolated environments.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;uv&lt;span class="w"&gt; &lt;/span&gt;tool&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;glances
+
+uv&lt;span class="w"&gt; &lt;/span&gt;tool&lt;span class="w"&gt; &lt;/span&gt;run&lt;span class="w"&gt; &lt;/span&gt;glances
+
+&lt;span class="c1"&gt;# shortcut&lt;/span&gt;
+uvx&lt;span class="w"&gt; &lt;/span&gt;glances
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;UV speeds up Python development by providing a fast package manager, virtual environment management, and inline dependency management. It is a great alternative to traditional tools like pip, pyenv, and virtualenv.&lt;/p&gt;</description><category>python</category><category>uv</category><guid>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</guid><pubDate>Wed, 30 Apr 2025 17:46:24 GMT</pubDate></item></channel></rss>
