@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about automation)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/automation.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 04 Apr 2025 00:03:37 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Postman - Auto Login &amp; Renew OAuth2 Token</title><link>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about automation)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/automation.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 30 May 2025 16:31:59 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Migrating from Nginx to Caddy</title><link>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When deploying web apps in production, a web server is essential for serving static files, handling reverse proxying, 
+and managing SSL/TLS certificates. &lt;/p&gt;
+&lt;p&gt;I have been using Nginx for a long time, but I have recently switched to Caddy as it provides automatic HTTPS by default.
+In addition, Caddy has a simpler configuration syntax and is easier to set up for basic use cases.&lt;/p&gt;
+&lt;h4&gt;Nginx vs Caddy&lt;/h4&gt;
+&lt;p&gt;To illustrate the differences, here are some examples of how to configure a simple web server in both Nginx and Caddy.&lt;/p&gt;
+&lt;h5&gt;Nginx Configuration&lt;/h5&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;server&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kn"&gt;listen&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;80&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kn"&gt;server_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;avilpage.com&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kn"&gt;location&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="kn"&gt;root&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;/var/www/html&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="kn"&gt;index&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;index.html&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;index.htm&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="kn"&gt;location&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;/api&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="kn"&gt;proxy_pass&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;http://localhost:3000&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;With Nginx, you need to manually handle SSL/TLS certificates, which can be cumbersome. 
+You typically use tools like Certbot to obtain and renew certificates.&lt;/p&gt;
+&lt;h5&gt;Caddy Configuration&lt;/h5&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;avilpage&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;var&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;www&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;html&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;file_server&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;reverse_proxy&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;api&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;localhost&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;3000&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Caddy automatically manages SSL/TLS certificates for you, so you don't need to worry about obtaining or renewing them.
+It also provides default redirection from HTTP to HTTPS, making it easier to secure your site.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Caddy's automatic HTTPS and simpler configuration syntax make it a compelling choice for web servers, 
+especially for those who want to get started quickly without dealing with the complexities of SSL/TLS management.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</guid><pubDate>Fri, 30 May 2025 15:51:21 GMT</pubDate></item><item><title>Postman - Auto Login &amp; Renew OAuth2 Token</title><link>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When using Postman to interact with APIs behind an OAuth2 authentication, we need to login and renew the token manually. This can be automated using the following steps.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Set credentials in environment variables&lt;/li&gt;
@@ -419,45 +456,4 @@ sudo&lt;span class="w"&gt; &lt;/span&gt;find&lt;span class="w"&gt; &lt;/span&gt;
 
 &lt;p&gt;When the token expires, we just need to login again and csrf token gets updated automatically.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;</description><category>automation</category><category>django</category><category>python</category><guid>https://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item><item><title>How To Auto Reload Celery Workers In Development?</title><link>https://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;We can pass &lt;code&gt;--autoreload&lt;/code&gt; option when starting celery worker. This will restart worker when codebase changes.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo&lt;span class="w"&gt; &lt;/span&gt;--autoreload
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Unfortunately, it doesn't work as expected and &lt;a href="https://github.com/celery/celery/issues/1658"&gt;it is deprecated&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;During development, we will keep on changing the code base. Manually restarting  celery worker everytime is a tedious process. It would be handy if workers can be auto reloaded whenever there is a change in the codebase.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/watchdog"&gt;Watchdog&lt;/a&gt; provides Python API and shell utilities to monitor file system events. We can install it with&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;watchdog
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Watchdog provides &lt;code&gt;watchmedo&lt;/code&gt; a shell utilitiy to perform actions based on file events. It has &lt;code&gt;auto-restart&lt;/code&gt; subcommand to start a long-running subprocess and restart it. So, celery workers can be auto restarted using this.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo&lt;span class="w"&gt; &lt;/span&gt;auto-restart&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;By default it will watch for all files in current directory. These can be changed by passing corresponding parameters.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;watchmedo&lt;span class="w"&gt; &lt;/span&gt;auto-restart&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;.&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'*.py'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--&lt;span class="w"&gt; &lt;/span&gt;celery&lt;span class="w"&gt; &lt;/span&gt;worker&lt;span class="w"&gt; &lt;/span&gt;-l&lt;span class="w"&gt; &lt;/span&gt;info&lt;span class="w"&gt; &lt;/span&gt;-A&lt;span class="w"&gt; &lt;/span&gt;foo
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;If you are using django and don't want to depend on watchdog, there is a simple trick to achieve this. Django has autoreload utility which is used by &lt;code&gt;runserver&lt;/code&gt; to restart WSGI server when code changes.&lt;/p&gt;
-&lt;p&gt;The same functionality can be used to reload celery workers. Create a seperate management command called &lt;code&gt;celery&lt;/code&gt;. Write a function to kill existing worker and start new worker. Now hook this function to autoreload as follows.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;shlex&lt;/span&gt;
-&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;subprocess&lt;/span&gt;
-
-&lt;span class="kn"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;django.core.management.base&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseCommand&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nn"&gt;django.utils&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;autoreload&lt;/span&gt;
-
-
-&lt;span class="k"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
-    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'pkill -9 celery'&lt;/span&gt;
-    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-    &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'celery worker -l info -A foo'&lt;/span&gt;
-    &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;call&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;shlex&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-
-&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nc"&gt;Command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseCommand&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-
-    &lt;span class="k"&gt;def&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
-        &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'Starting celery worker with autoreload...'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;autoreload&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;restart_celery&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Now you can run celery worker with &lt;code&gt;python manage.py celery&lt;/code&gt; which will start a celery worker and autoreload it when codebase changes.&lt;/p&gt;</description><category>automation</category><category>celery</category><category>python</category><guid>https://avilpage.com/2017/05/how-to-auto-reload-celery-workers-in-development.html</guid><pubDate>Sun, 07 May 2017 04:22:47 GMT</pubDate></item></channel></rss>
+&lt;p&gt;In this article we have seen how to set and renew csrftoken automatically in Postman. We can follow similar techniques on other API clients like CURL or httpie to set csrf token.&lt;/p&gt;</description><category>automation</category><category>django</category><category>python</category><guid>https://avilpage.com/2019/02/django-tips-csrf-token-postman-curl.html</guid><pubDate>Thu, 28 Feb 2019 15:51:21 GMT</pubDate></item></channel></rss>
