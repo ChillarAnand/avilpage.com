@@ -52,6 +52,8 @@ def get_year_count_html():
 
 
 tag_cloud_file = 'output/assets/js/tag_cloud_data.json'
+print(tag_cloud_file)
+
 tag_data = json.load(open(tag_cloud_file))
 
 top_tags_html = get_top_tags_html(tag_data)
