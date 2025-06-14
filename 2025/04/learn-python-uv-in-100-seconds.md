@@ -31,7 +31,7 @@ uv python install 3.13
 This makes it easy to install and manage multiple versions of Python on your system without needing of `pyenv`.
 
 
-### Managing Python virtual environments
+### Using UV with existing requirements.txt
 
 ```bash
 uv venv --seed -p 3.13
@@ -42,6 +42,16 @@ uv pip install -r requirements.txt
 ```
 
 This is way faster than using any other tool to create virtual environments.
+
+### Managing virtual environments
+
+```bash
+uv init -p 3.13 --name demo
+
+uv add pandas
+```
+
+This creates a new virtual environment named `demo` with Python 3.13 and adds the `pandas` package to it.
 
 ### Runs scripts with inline dependencies
 
