@@ -1240,10 +1240,14 @@ for label in labels:
 CUSTOM_REDIRECTIONS = [
     ('/p/projects.html', '/projects.html'),
     ('/p/talks.html', '/talks.html'),
+
+    ('/gmt.html', '/gut-microbiome-test.html'),
+
     ('/mg.html', '/metagenomics-machine-learning.html'),
     ('/mml.html', '/metagenomics-machine-learning.html'),
     ('/mdl.html', '/metagenomics-deep-learning.html'),
     ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html'),
+
     ('/p/poor-mans-covered-call-india.html', '/poor-mans-covered-call-india.html'),
     ('/p/telugu-books-free-download-sites.html', '/telugu-books-free-download-sites.html'),
 ]
