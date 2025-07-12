@@ -790,23 +790,6 @@ LICENSE = ""
 # A small copyright notice for the page footer (in HTML).
 # (translatable)
 CONTENT_FOOTER = """
-<div class="full-article-footer">
-    <div class="article-footer">
-
-        <div class="avatar-module">
-            <img class="avatar" height="100px" src="/images/chillaranand.jpg">
-        </div>
-
-        <p class="avatar-module">
-            <b>Chillar Anand</b>
-            <br>
-            Improving Health & Wealth with Technology
-            <br>
-        </p>
-
-    </div>
-</div>
-
 <div class="container align-items-center justify-content-center d-flex">
 
 <footer class="footer">
