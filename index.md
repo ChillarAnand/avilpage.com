@@ -14,6 +14,6 @@
 </p>
 
 
-When I was in college, I started this blog to make notes of things I am learning. After a decade, it has grown into a collection of articles on various topics like software development, finance, & health.
+> "To improve health & wealth of every person on planet earth."
 
-If you are new here, you can [explore the guides](/guides.html) or [latest articles](/archive.html).
+With deep expertise in HealthCare & FinTech, we build quality products & provide services.
