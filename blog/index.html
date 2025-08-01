@@ -16,7 +16,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../rss.xml">
 <link rel="canonical" href="https://avilpage.com/blog/">
-<link rel="next" href="index-20.html" type="text/html">
+<link rel="next" href="index-21.html" type="text/html">
 <!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><style>
 
  h1 {
@@ -79,7 +79,46 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/06/raycast-replaced-10-macos-apps.html" class="u-url">Raycast replaced 10 macOS apps</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/07/setup-raspberry-pi-without-monitor-keyboard.html" class="u-url">Setup Raspberry Pi without Monitor &amp; Keyboard</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2025/07/setup-raspberry-pi-without-monitor-keyboard.html" rel="bookmark">
+            <time class="published dt-published" datetime="2025-07-31T09:20:56+05:30" itemprop="datePublished" title="2025-07-31">2025-07-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Requirements</h4>
+<ul>
+<li>Raspberry Pi (any model)</li>
+<li>MicroSD card (8GB or larger)</li>
+<li>Power supply</li>
+</ul>
+<h4>Setup</h4>
+<p>Download &amp; install Raspberry Pi Imager from <a href="https://www.raspberrypi.com/software/">here</a>.</p>
+<p><img alt="![Raspberry Pi Imager]" src="../images/rpi-setup0.png"></p>
+<p>After installation, connect SD Card to Computer, and start installation process.</p>
+<p>In the config step, setup WiFi credentials and enable ssh server as well.</p>
+<p><img alt="![Raspberry Pi Imager]" src="../images/rpi-setup.png"></p>
+<p>Once the installation is complete, insert the SD card into the Raspberry Pi and power it on.</p>
+<h4>Find the IP Address</h4>
+<p>You can find the IP address of your Raspberry Pi by checking your router's connected devices list or using a network scanning tool like <code>nmap</code> or <code>arp</code>.</p>
+<div class="code"><pre class="code literal-block">arp<span class="w"> </span>-an
+
+<span class="c1"># or using nmap</span>
+nmap<span class="w"> </span>-sn
+</pre></div>
+
+<p>Once you have the IP address, you can SSH into the Raspberry Pi.</p>
+<div class="code"><pre class="code literal-block">ssh<span class="w"> </span>pi@&lt;IP_ADDRESS&gt;
+</pre></div>
+
+<h4>Conclusion</h4>
+<p>When we don't have a monitor and/or keyboard, this process allows us to set up a Raspberry Pi headlessly. This is particularly useful for projects where the Pi will be used as a server or in a remote location.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/06/raycast-replaced-10-macos-apps.html" class="u-url">Raycast replaced 10 macOS apps</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Chillar Anand
@@ -608,81 +647,10 @@ Luckily, I got hired.</p>
 <p>I went for an interview at a web development company in Malleswaram, Bangalore. The CEO looked at my résumé, took out a cube from his desk. He handed the cube to me, showed an empty cubicle behind me and said, "If you solve the cube in a minute, that cubicle is yours."</p>
 <p>Just by learning the cube, I was able to land a job an at an MNC(Multi National Company) and a startup as well.</p>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" class="u-url">tailscale: Resolving CGNAT (100.x.y.z) Conflicts</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
-            </span></p>
-            <p class="dateline">
-            <a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-07T12:50:05+05:30" itemprop="datePublished" title="2024-09-07">2024-09-07</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>In an earlier blog post, I wrote about using tailscale to remotely access any device<sup id="fnref:ap"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ap">1</a></sup>. Tailscale uses 100.64.0.0/10 subnet<sup id="fnref:ts100"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ts100">2</a></sup> to assign unique IP addresses to each device.</p>
-<p>When a tailscale node joins another campus network<sup id="fnref:pn"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:pn">3</a></sup> (schools, universities, offices) that uses the same subnet, it will face conflicts. Let's see how to resolve this.</p>
-<h4>Private Network</h4>
-<p><img src="../images/tailscale-cgnat2.png" alt="tailscale dashboard"></p>
-<p>In the above scenario, node C1 will be able to connect C2 &amp; C3 as they are in the same network.</p>
-<p>Once we start tailscale on node C1, it will get a 100.x.y.z IP address from tailscale subnet. Now, node C1 will not be able to connect to node C2 &amp; C3.</p>
-<p>To avoid conflicts with the existing network, we can configure tailscale to use a "smaller" subnet using "ipPool".</p>
-<div class="code"><pre class="code literal-block"><span class="p">{</span>
-<span class="w">    </span><span class="nt">"acls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">"..."</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"nodeAttrs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="s2">"autogroup:admin"</span>
-<span class="w">            </span><span class="p">],</span>
-<span class="w">            </span><span class="nt">"ipPool"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="s2">"100.100.96.0/20"</span>
-<span class="w">            </span><span class="p">]</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>Once it is configured, taiscale will start assigning IP addresses from the new subnet. Even though ip address allocation is limited, we can't still access nodes in other subnets due to a bug<sup id="fnref:tsb"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:tsb">5</a></sup> in tailscale.</p>
-<p>As a workaround, we can manually update the iptables to route traffic to the correct subnet.</p>
-<p>Lets look at the iptables rules added by tailscale by stopping it and then starting it.</p>
-<p><img src="../images/tailscale-cgnat3.png" alt="tailscale iptables rules"></p>
-<p><img src="../images/tailscale-cgnat4.png" alt="tailscale iptables rules"></p>
-<p>The highlighted rule drops any incoming packet that doesn't originate from tailscale0 interface, and source IP is 100.64.0.0/10 (100.64.0.0 to 100.127.255.255).</p>
-<p>Let's delete this rule and add a new rule to restrict the source IP to 100.100.96.0/20 (100.100.96.1 to 100.100.111.254).</p>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--delete<span class="w"> </span>ts-input<span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.64.0.0/10<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
-$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--insert<span class="w"> </span>ts-input<span class="w"> </span><span class="m">3</span><span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.100.96.0/20<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
-</pre></div>
-
-<p><img src="../images/tailscale-cgnat5.png" alt="tailscale iptables rules"></p>
-<h4>Conclusion</h4>
-<p>By configuring tailscale to use a smaller subnet, we can avoid conflicts with existing networks. Even though there is a bug in tailscale, we can manually update iptables to route traffic to the correct subnet.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:ap">
-<p><a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html">tailscale: Remotely access any device</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ap" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:ts100">
-<p><a href="https://tailscale.com/kb/1015/100.x-addresses">https://tailscale.com/kb/1015/100.x-addresses</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ts100" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-<li id="fn:pn">
-<p><a href="https://en.wikipedia.org/wiki/Private_network">https://en.wikipedia.org/wiki/Private_network</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:pn" title="Jump back to footnote 3 in the text">↩</a></p>
-</li>
-<li id="fn:ip">
-<p><a href="https://tailscale.com/kb/1304/ip-pool">https://tailscale.com/kb/1304/ip-pool</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ip" title="Jump back to footnote 4 in the text">↩</a></p>
-</li>
-<li id="fn:tsb">
-<p><a href="https://github.com/tailscale/tailscale/issues/1381">https://github.com/tailscale/tailscale/issues/1381</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:tsb" title="Jump back to footnote 5 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
     </article>
 </div>
         <ul class="pager postindexpager clearfix">
-<li class="next"><a href="index-20.html" rel="next">Older posts</a></li>
+<li class="next"><a href="index-21.html" rel="next">Older posts</a></li>
         </ul>
 <!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
 
