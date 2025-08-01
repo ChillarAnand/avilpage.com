@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about raspberry_pi)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/raspberry_pi.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Fri, 01 Aug 2025 00:58:06 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Raspberry Pi without Monitor &amp; Keyboard</title><link>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Requirements&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Raspberry Pi (any model)&lt;/li&gt;
+&lt;li&gt;MicroSD card (8GB or larger)&lt;/li&gt;
+&lt;li&gt;Power supply&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;Setup&lt;/h4&gt;
+&lt;p&gt;Download &amp;amp; install Raspberry Pi Imager from &lt;a href="https://www.raspberrypi.com/software/"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="![Raspberry Pi Imager]" src="https://avilpage.com/images/rpi-setup0.png"&gt;&lt;/p&gt;
+&lt;p&gt;After installation, connect SD Card to Computer, and start installation process.&lt;/p&gt;
+&lt;p&gt;In the config step, setup WiFi credentials and enable ssh server as well.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="![Raspberry Pi Imager]" src="https://avilpage.com/images/rpi-setup.png"&gt;&lt;/p&gt;
+&lt;p&gt;Once the installation is complete, insert the SD card into the Raspberry Pi and power it on.&lt;/p&gt;
+&lt;h4&gt;Find the IP Address&lt;/h4&gt;
+&lt;p&gt;You can find the IP address of your Raspberry Pi by checking your router's connected devices list or using a network scanning tool like &lt;code&gt;nmap&lt;/code&gt; or &lt;code&gt;arp&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;arp&lt;span class="w"&gt; &lt;/span&gt;-an
+
+&lt;span class="c1"&gt;# or using nmap&lt;/span&gt;
+nmap&lt;span class="w"&gt; &lt;/span&gt;-sn
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Once you have the IP address, you can SSH into the Raspberry Pi.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@&amp;lt;IP_ADDRESS&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;When we don't have a monitor and/or keyboard, this process allows us to set up a Raspberry Pi headlessly. This is particularly useful for projects where the Pi will be used as a server or in a remote location.&lt;/p&gt;</description><category>headless</category><category>raspberry_pi</category><guid>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</guid><pubDate>Thu, 31 Jul 2025 03:50:56 GMT</pubDate></item><item><title>Remotely Access Raspberry Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
+&lt;h4&gt;Installation&lt;/h4&gt;
+&lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;curl&lt;span class="w"&gt; &lt;/span&gt;-fsSL&lt;span class="w"&gt; &lt;/span&gt;https://tailscale.com/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Setup&lt;/h4&gt;
+&lt;p&gt;Once the installation is done, I run &lt;code&gt;tailscale up&lt;/code&gt; to start the daemon. This opened a browser window and asked me to log in with email address. After I logged in, I can see all the devices in the tailscale dashboard.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="tailscale dashboard" src="https://avilpage.com/images/tailscale-pi.png"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;tailscale&lt;/code&gt; has CLI tool as well and status can be viewed with the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;status
+&lt;span class="m"&gt;100&lt;/span&gt;.81.13.75&lt;span class="w"&gt;   &lt;/span&gt;m1&lt;span class="w"&gt;                    &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;macOS&lt;span class="w"&gt;   &lt;/span&gt;-
+&lt;span class="m"&gt;100&lt;/span&gt;.12.12.92&lt;span class="w"&gt;   &lt;/span&gt;rpi1.tailscale.ts.net&lt;span class="w"&gt; &lt;/span&gt;avilpage@&lt;span class="w"&gt;  &lt;/span&gt;linux&lt;span class="w"&gt;   &lt;/span&gt;offline
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;I also set up a cron job to start tailscale daemon on boot.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;crontab&lt;span class="w"&gt; &lt;/span&gt;-e
+@reboot&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;up
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Access&lt;/h4&gt;
+&lt;p&gt;Now I can access the device from anywhere using the tailscale IP address. For example, if the IP address is &lt;code&gt;100.34.2.23&lt;/code&gt;. I can ssh into the device using the following command.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@100.81.12.92
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It also provides DNS names for each device. For example, I can ssh into the device using the following command as well.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;pi@raspberry3.tailscale.net
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Tailscale is a great tool to access devices remotely. It is easy to set up and works well with Raspberry Pi, Mac &amp;amp; Linux as well.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:tailscale"&gt;
+&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/Tailscale"&gt;https://en.wikipedia.org/wiki/Tailscale&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fnref:tailscale" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>devops</category><category>raspberry_pi</category><category>tailscale</category><guid>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</guid><pubDate>Mon, 25 Sep 2023 01:49:54 GMT</pubDate></item></channel></rss>

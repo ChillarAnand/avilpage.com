@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avil Page (old posts, page 21) | Avil Page</title>
+<link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../rss.xml">
+<link rel="canonical" href="https://avilpage.com/blog/index-21.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-20.html" type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><style>
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../guides.html" class="nav-link">Guides</a>
+                </li>
+<li class="nav-item">
+<a href="../archive.html" class="nav-link">Blog</a>
+                </li>
+<li class="nav-item">
+<a href="../books.html" class="nav-link">Books</a>
+                </li>
+<li class="nav-item">
+<a href="../talks.html" class="nav-link">Talks</a>
+                </li>
+<li class="nav-item">
+<a href="../projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    
+    
+<div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" class="u-url">tailscale: Resolving CGNAT (100.x.y.z) Conflicts</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Chillar Anand
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-07T12:50:05+05:30" itemprop="datePublished" title="2024-09-07">2024-09-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>In an earlier blog post, I wrote about using tailscale to remotely access any device<sup id="fnref:ap"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ap">1</a></sup>. Tailscale uses 100.64.0.0/10 subnet<sup id="fnref:ts100"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ts100">2</a></sup> to assign unique IP addresses to each device.</p>
+<p>When a tailscale node joins another campus network<sup id="fnref:pn"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:pn">3</a></sup> (schools, universities, offices) that uses the same subnet, it will face conflicts. Let's see how to resolve this.</p>
+<h4>Private Network</h4>
+<p><img src="../images/tailscale-cgnat2.png" alt="tailscale dashboard"></p>
+<p>In the above scenario, node C1 will be able to connect C2 &amp; C3 as they are in the same network.</p>
+<p>Once we start tailscale on node C1, it will get a 100.x.y.z IP address from tailscale subnet. Now, node C1 will not be able to connect to node C2 &amp; C3.</p>
+<p>To avoid conflicts with the existing network, we can configure tailscale to use a "smaller" subnet using "ipPool".</p>
+<div class="code"><pre class="code literal-block"><span class="p">{</span>
+<span class="w">    </span><span class="nt">"acls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"..."</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"nodeAttrs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"autogroup:admin"</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">"ipPool"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"100.100.96.0/20"</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Once it is configured, taiscale will start assigning IP addresses from the new subnet. Even though ip address allocation is limited, we can't still access nodes in other subnets due to a bug<sup id="fnref:tsb"><a class="footnote-ref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fn:tsb">5</a></sup> in tailscale.</p>
+<p>As a workaround, we can manually update the iptables to route traffic to the correct subnet.</p>
+<p>Lets look at the iptables rules added by tailscale by stopping it and then starting it.</p>
+<p><img src="../images/tailscale-cgnat3.png" alt="tailscale iptables rules"></p>
+<p><img src="../images/tailscale-cgnat4.png" alt="tailscale iptables rules"></p>
+<p>The highlighted rule drops any incoming packet that doesn't originate from tailscale0 interface, and source IP is 100.64.0.0/10 (100.64.0.0 to 100.127.255.255).</p>
+<p>Let's delete this rule and add a new rule to restrict the source IP to 100.100.96.0/20 (100.100.96.1 to 100.100.111.254).</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--delete<span class="w"> </span>ts-input<span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.64.0.0/10<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+$<span class="w"> </span>sudo<span class="w"> </span>iptables<span class="w"> </span>--insert<span class="w"> </span>ts-input<span class="w"> </span><span class="m">3</span><span class="w"> </span>--source<span class="w"> </span><span class="m">100</span>.100.96.0/20<span class="w"> </span>!<span class="w"> </span>-i<span class="w"> </span>tailscale0<span class="w"> </span>-j<span class="w"> </span>DROP
+</pre></div>
+
+<p><img src="../images/tailscale-cgnat5.png" alt="tailscale iptables rules"></p>
+<h4>Conclusion</h4>
+<p>By configuring tailscale to use a smaller subnet, we can avoid conflicts with existing networks. Even though there is a bug in tailscale, we can manually update iptables to route traffic to the correct subnet.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:ap">
+<p><a href="../2023/09/tailscale-remote-ssh-raspberry-pi.html">tailscale: Remotely access any device</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ap" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:ts100">
+<p><a href="https://tailscale.com/kb/1015/100.x-addresses">https://tailscale.com/kb/1015/100.x-addresses</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ts100" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+<li id="fn:pn">
+<p><a href="https://en.wikipedia.org/wiki/Private_network">https://en.wikipedia.org/wiki/Private_network</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:pn" title="Jump back to footnote 3 in the text">↩</a></p>
+</li>
+<li id="fn:ip">
+<p><a href="https://tailscale.com/kb/1304/ip-pool">https://tailscale.com/kb/1304/ip-pool</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:ip" title="Jump back to footnote 4 in the text">↩</a></p>
+</li>
+<li id="fn:tsb">
+<p><a href="https://github.com/tailscale/tailscale/issues/1381">https://github.com/tailscale/tailscale/issues/1381</a> <a class="footnote-backref" href="../2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:tsb" title="Jump back to footnote 5 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article>
+</div>
+        <ul class="pager postindexpager clearfix">
+<li class="previous"><a href="." rel="prev">Newer posts</a></li>
+            <li class="next"><a href="index-20.html" rel="next">Older posts</a></li>
+        </ul>
+<!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8127755709093749" crossorigin="anonymous"></script></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/popper.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
