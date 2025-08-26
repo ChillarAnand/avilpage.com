@@ -16,4 +16,8 @@
 
 > "To improve health & wealth of every person on planet earth."
 
-With deep expertise in HealthCare & FinTech, we build quality products & provide services.
+I started this blog when I was in college in 2013. 
+Health, wealth and technology are my three passions.
+I believe technology can help us improve our health and wealth.
+
+I want to share my learnings and experiences through this blog.
