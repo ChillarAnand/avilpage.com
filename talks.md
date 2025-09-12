@@ -1,11 +1,11 @@
 <!--
-.. title: Tech & Workshops
+.. title: Tech Talks & Workshops
 .. slug: talks
 .. date: 2017-08-24 13:29:59 UTC
 .. tags: tech
 .. category: talks
 .. link:
-.. description: Talks given by chillar anand at various conferences
+.. description: Talks & workshops by Anand Reddy Pandikunta at various conferences & events
 .. type: text
 -->
 
@@ -74,16 +74,19 @@ Code & Material: [Just Queue It](http://chillaranand.github.io/just-queue-it/)
 
 
 #### [How To Teach Neural Networks To Your Grandma?](https://chillaranand.github.io/neural-networks-101/) @BangPypers
+
 <br />
 
 
 
 
 #### [Getting Started With Python Pandas](http://chillaranand.github.io/pandas-101/) @BangPypers
+
 <br />
 
 
 #### [Emacs As Python IDE!](http://chillaranand.github.io/emacs-py-ide/) @PyConIndia OpenSpace
+
 <br />
 
 
