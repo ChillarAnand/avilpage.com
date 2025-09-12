@@ -12,36 +12,37 @@
 
 Here are some of the talks I have given at various conferences and events.
 
-### Metagenomics AI Workshop @ REVA University-2024
+### Metagenomics AI Workshop @ REVA University (2024)
 
 <img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
 
 Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-machine-learning.html)
 
-
-### Python Traceback For Humans @ PyCon India—2015
-
-<div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/EGhG8VEatBE" allowfullscreen>
-</iframe>
-</div>
-
-<br />
 <br />
 
+### Build your own blog @ Polytechnic Kamalapuram (2024)
 
-### Hot module reloading in Python @ Foss United Bangalore-2023
-
-<div class="embed-responsive embed-responsive-16by9">
-<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/7SnkgiI8-PU" allowfullscreen>
-</iframe>
-</div>
+<img src="/images/build-your-blog.jpeg" class="img-responsive" alt="Build your own blog" />
 
 <br />
+
+### Hot module reloading in Python @ Foss United Bangalore (2023)
+
+<img src="/images/hot-module-reloading.jpeg" class="img-responsive" alt="Build your own blog" />
+
+Video: [Hot module reloading in Python](https://www.youtube.com/watch?v=7SnkgiI8-PU)
+
+<br />
+
+### Up & Running With Django @ YIT College (2017)
+
+<img src="/images/django-yit.png" class="img-responsive" alt="Django Workshop at YIT College" />
+
+
 <br />
 
 
-### Supercharge Shell For Python Development @ BangPypers-2017
+### Supercharge Shell For Python Development @ BangPypers (2017)
 
 <div class="embed-responsive embed-responsive-16by9">
 <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/lvmJ0tWCjFA" allowfullscreen>
@@ -49,22 +50,23 @@ Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-m
 </div>
 
 <br />
-<br />
 
-### Build your own blog @ Polytechnic Kamalapuram-2024
+### Python Traceback For Humans @ PyCon India (2015)
 
-<img src="/images/build-your-blog.jpeg" class="img-responsive" alt="Build your own blog" />
-
-<br />
-<br />
-
-### Up & Running With Django @ YIT College-2017
-
-<img src="/images/django-yit.png" class="img-responsive" alt="Django Workshop at YIT College" />
-
+<div class="embed-responsive embed-responsive-16by9">
+<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/EGhG8VEatBE" allowfullscreen>
+</iframe>
+</div>
 
 <br />
+
+### Just Queue It - Queue Everything & Delight Everyone! @PyBelgaum (2015)
+
+Code & Material: [Just Queue It](http://chillaranand.github.io/just-queue-it/)
+
 <br />
+
+
 
 #### [Django Gotchas!](http://chillaranand.github.io/django-gotcha/) @BangaloreDjangoUserGroup
 
@@ -75,8 +77,6 @@ Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-m
 <br />
 
 
-#### [Just Queue It - Queue Everything & Delight Everyone!](http://chillaranand.github.io/just-queue-it/) @PyBelgaum-2015
-<br />
 
 
 #### [Getting Started With Python Pandas](http://chillaranand.github.io/pandas-101/) @BangPypers
@@ -91,12 +91,12 @@ Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-m
 <br />
 
 
-#### [What Made Emacs Different?](http://chillaranand.github.io/emacs-different/) @ BarcampBangalore-2015
+#### [What Made Emacs Different?](http://chillaranand.github.io/emacs-different/) @ BarcampBangalore
 <br />
 
 
 
-#### [Python For BioInformatics!](http://chillaranand.github.io/py-bio/) @PESIT - 2015
+#### [Python For BioInformatics!](http://chillaranand.github.io/py-bio/) @PESIT
 <br />
 
 
