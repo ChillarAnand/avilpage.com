@@ -2,7 +2,7 @@
 .. title: Record Resource Usage of Single Process
 .. slug: record-resource-usage-per-process
 .. date: 2023-04-14 06:18:37 UTC+05:30
-.. tags: devops, mac, linux
+.. tags: devops, macbook, linux
 .. category: DevOps
 .. link: 
 .. description: How to monitor and save CPU, RAM, network and disk usage of a single process on Linux, Mac or Windows?
