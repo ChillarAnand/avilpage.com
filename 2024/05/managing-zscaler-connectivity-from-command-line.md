@@ -2,7 +2,7 @@
 .. title: Automating Zscaler Connectivity on macOS
 .. slug: managing-zscaler-connectivity-from-command-line
 .. date: 2024-05-14 07:49:53 UTC+05:30
-.. tags: automation, macos
+.. tags: automation, macbook
 .. category: programming
 .. link: 
 .. description: How to automate Zscaler connectivity on macOS using shell scripts or apple script or command line.
