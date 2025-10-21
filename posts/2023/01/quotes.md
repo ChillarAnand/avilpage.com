@@ -9,8 +9,6 @@
 .. type: text
 -->
 
-Write your post here.
-
 
 "A great work is made out of a combination of obedience and liberty."
 

@@ -1229,6 +1229,7 @@ CUSTOM_REDIRECTIONS = [
     ('/mg.html', '/metagenomics-machine-learning.html'),
     ('/mml.html', '/metagenomics-machine-learning.html'),
     ('/mdl.html', '/metagenomics-deep-learning.html'),
+    ('/mf-bts.html', '/2025/08/mutual-funds-behind-the-scenes.html'),
     ('/metagenomics-classification-workshop.html', '/metagenomics-machine-learning.html'),
 
     ('/p/poor-mans-covered-call-india.html', '/poor-mans-covered-call-india.html'),
