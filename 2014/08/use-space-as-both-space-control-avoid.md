@@ -3,7 +3,7 @@
 .. slug: use-space-as-both-space-control-avoid
 .. date: 2014-08-29 17:27:00
 .. category: programming
-.. tags: emacs, ubuntu, macbook
+.. tags: emacs, ubuntu, mac
 .. description: How to bind space bar to Control or any other modifier key in Ubuntu or Mac or Windows.
 .. link:
 .. type: text

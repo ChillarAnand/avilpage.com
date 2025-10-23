@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tailscale)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/tailscale.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 10 Aug 2025 09:39:10 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>tailscale: Resolving CGNAT (100.x.y.z) Conflicts</title><link>https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about tailscale)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/tailscale.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 23 Oct 2025 04:11:34 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>TailScale - Use Exit Node for Specific Domains only</title><link>https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Problem&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/tags/tailscale.html"&gt;Tailscale&lt;/a&gt;&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt; provides zero-config mesh VPN built on top of Wiregaurd.&lt;/p&gt;
+&lt;p&gt;It provides an option to use an exit node for routing all traffic through it. 
+But it can't route only specific domains through the exit node.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tailscale Exit Node Option" src="https://avilpage.com/images/tailscale-exit-node-option.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;p&gt;Setup a SOCKS proxy using &lt;code&gt;ssh&lt;/code&gt; command line tool.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;-D&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1080&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;-q&lt;span class="w"&gt; &lt;/span&gt;-N&lt;span class="w"&gt; &lt;/span&gt;user@exit-node-ip
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;-D 1080&lt;/code&gt; : Specifies the local port to listen on for SOCKS connections.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-f&lt;/code&gt; : Requests ssh to go to background just before command execution.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-C&lt;/code&gt; : Enables compression.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-q&lt;/code&gt; : Quiet mode.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-N&lt;/code&gt; : Do not execute remote commands.&lt;/p&gt;
+&lt;p&gt;Once it is started, we can use &lt;a href="https://github.com/zero-peak/ZeroOmega"&gt;ZeroOmega&lt;/a&gt;&lt;sup id="fnref:zeroomega"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fn:zeroomega"&gt;2&lt;/a&gt;&lt;/sup&gt; browser extension to route specific domains through the SOCKS proxy.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ZeroOmega Config" src="https://avilpage.com/images/zeroomega-config.png"&gt;&lt;/p&gt;
+&lt;p&gt;In the &lt;code&gt;auto switch&lt;/code&gt; profile, we can setup specific domains which needs to be directed to the proxy. 
+For all other domains, it will use the direct connection.&lt;/p&gt;
+&lt;p&gt;This works only for the browser where the extension is installed.&lt;/p&gt;
+&lt;p&gt;To apply this at the system level, we can use &lt;code&gt;pac&lt;/code&gt; file and update the system proxy settings to use the &lt;code&gt;pac&lt;/code&gt; file.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Tailscale provides app connector feature to route specific apps through the exit node, but it is needs publicly reachable IPs &amp;amp; Linux based OS for now.&lt;/p&gt;
+&lt;p&gt;Setting up SOCKS proxy &amp;amp; using a browser extension or PAC file is much easy &amp;amp; straight forward solution to route specific domains through Tailscale exit node.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:tailscale"&gt;
+&lt;p&gt;&lt;a href="https://tailscale.com"&gt;https://tailscale.com&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fnref:tailscale" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:zeroomega"&gt;
+&lt;p&gt;&lt;a href="https://github.com/zero-peak/ZeroOmega"&gt;https://github.com/zero-peak/ZeroOmega&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fnref:zeroomega" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>how-to</category><category>tailscale</category><guid>https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html</guid><pubDate>Wed, 22 Oct 2025 22:20:58 GMT</pubDate></item><item><title>tailscale: Resolving CGNAT (100.x.y.z) Conflicts</title><link>https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;In an earlier blog post, I wrote about using tailscale to remotely access any device&lt;sup id="fnref:ap"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ap"&gt;1&lt;/a&gt;&lt;/sup&gt;. Tailscale uses 100.64.0.0/10 subnet&lt;sup id="fnref:ts100"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html#fn:ts100"&gt;2&lt;/a&gt;&lt;/sup&gt; to assign unique IP addresses to each device.&lt;/p&gt;
 &lt;p&gt;When a tailscale node joins another campus network&lt;sup id="fnref:pn"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html#fn:pn"&gt;3&lt;/a&gt;&lt;/sup&gt; (schools, universities, offices) that uses the same subnet, it will face conflicts. Let's see how to resolve this.&lt;/p&gt;
 &lt;h4&gt;Private Network&lt;/h4&gt;
@@ -57,7 +91,7 @@ $&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;ipt
 &lt;p&gt;&lt;a href="https://github.com/tailscale/tailscale/issues/1381"&gt;https://github.com/tailscale/tailscale/issues/1381&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html#fnref:tsb" title="Jump back to footnote 5 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>networking</category><category>tailscale</category><guid>https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html</guid><pubDate>Sat, 07 Sep 2024 07:20:05 GMT</pubDate></item><item><title>Remotely Access Raspberry Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+&lt;/div&gt;</description><category>networking</category><category>tailscale</category><guid>https://avilpage.com/2024/09/tailscale-cgnat-conflicts-resolution.html</guid><pubDate>Sat, 07 Sep 2024 07:20:05 GMT</pubDate></item><item><title>Remotely Access Raspberry Pi or Any Device</title><link>https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;I recently started using Raspberry Pi and I wanted to access it when I am outside of home as well. After trying out few solutions, I stumbled upon Tailscale&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2023/09/tailscale-remote-ssh-raspberry-pi.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
 &lt;p&gt;Tailscale is a mesh VPN that makes it easy to connect out devices, wherever they are. It is free for personal use and supports all major platforms like Linux, Windows, Mac, Android, iOS, etc.&lt;/p&gt;
 &lt;h4&gt;Installation&lt;/h4&gt;
 &lt;p&gt;I installed tailscale on Raspberry Pi using the following command.&lt;/p&gt;
