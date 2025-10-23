@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 07 Oct 2025 18:03:33 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>MacBook - Natural Scrolling for Mouse</title><link>https://avilpage.com/2025/09/macbook-natural-scrolling-mouse.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Problem&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page</title><link>https://avilpage.com/</link><description>Avil Page - Personal &amp; tech blog by Pandikunta Anand Reddy (aka Chillar Anand)</description><atom:link href="https://avilpage.com/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Thu, 23 Oct 2025 04:11:35 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>TailScale - Use Exit Node for Specific Domains only</title><link>https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Problem&lt;/h4&gt;
+&lt;p&gt;&lt;a href="https://avilpage.com/tags/tailscale.html"&gt;Tailscale&lt;/a&gt;&lt;sup id="fnref:tailscale"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fn:tailscale"&gt;1&lt;/a&gt;&lt;/sup&gt; provides zero-config mesh VPN built on top of Wiregaurd.&lt;/p&gt;
+&lt;p&gt;It provides an option to use an exit node for routing all traffic through it. 
+But it can't route only specific domains through the exit node.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Tailscale Exit Node Option" src="https://avilpage.com/images/tailscale-exit-node-option.png"&gt;&lt;/p&gt;
+&lt;h4&gt;Solution&lt;/h4&gt;
+&lt;p&gt;Setup a SOCKS proxy using &lt;code&gt;ssh&lt;/code&gt; command line tool.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ssh&lt;span class="w"&gt; &lt;/span&gt;-D&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;1080&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-C&lt;span class="w"&gt; &lt;/span&gt;-q&lt;span class="w"&gt; &lt;/span&gt;-N&lt;span class="w"&gt; &lt;/span&gt;user@exit-node-ip
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;-D 1080&lt;/code&gt; : Specifies the local port to listen on for SOCKS connections.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-f&lt;/code&gt; : Requests ssh to go to background just before command execution.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-C&lt;/code&gt; : Enables compression.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-q&lt;/code&gt; : Quiet mode.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-N&lt;/code&gt; : Do not execute remote commands.&lt;/p&gt;
+&lt;p&gt;Once it is started, we can use &lt;a href="https://github.com/zero-peak/ZeroOmega"&gt;ZeroOmega&lt;/a&gt;&lt;sup id="fnref:zeroomega"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fn:zeroomega"&gt;2&lt;/a&gt;&lt;/sup&gt; browser extension to route specific domains through the SOCKS proxy.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="ZeroOmega Config" src="https://avilpage.com/images/zeroomega-config.png"&gt;&lt;/p&gt;
+&lt;p&gt;In the &lt;code&gt;auto switch&lt;/code&gt; profile, we can setup specific domains which needs to be directed to the proxy. 
+For all other domains, it will use the direct connection.&lt;/p&gt;
+&lt;p&gt;This works only for the browser where the extension is installed.&lt;/p&gt;
+&lt;p&gt;To apply this at the system level, we can use &lt;code&gt;pac&lt;/code&gt; file and update the system proxy settings to use the &lt;code&gt;pac&lt;/code&gt; file.&lt;/p&gt;
+&lt;h4&gt;Conclusion&lt;/h4&gt;
+&lt;p&gt;Tailscale provides app connector feature to route specific apps through the exit node, but it is needs publicly reachable IPs &amp;amp; Linux based OS for now.&lt;/p&gt;
+&lt;p&gt;Setting up SOCKS proxy &amp;amp; using a browser extension or PAC file is much easy &amp;amp; straight forward solution to route specific domains through Tailscale exit node.&lt;/p&gt;
+&lt;div class="footnote"&gt;
+&lt;hr&gt;
+&lt;ol&gt;
+&lt;li id="fn:tailscale"&gt;
+&lt;p&gt;&lt;a href="https://tailscale.com"&gt;https://tailscale.com&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fnref:tailscale" title="Jump back to footnote 1 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li id="fn:zeroomega"&gt;
+&lt;p&gt;&lt;a href="https://github.com/zero-peak/ZeroOmega"&gt;https://github.com/zero-peak/ZeroOmega&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html#fnref:zeroomega" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;</description><category>how-to</category><category>tailscale</category><guid>https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html</guid><pubDate>Wed, 22 Oct 2025 22:20:58 GMT</pubDate></item><item><title>MacBook - Natural Scrolling for Mouse</title><link>https://avilpage.com/2025/09/macbook-natural-scrolling-mouse.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Problem&lt;/h4&gt;
 &lt;p&gt;If we connect a mouse to macOS, the scrolling direction changes to "unnatural" for the mouse. 
 This is because macOS has a single setting for natural scrolling that applies to both trackpad and mouse.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="macos mouse settings" src="https://avilpage.com/images/macos-mouse-natural-scrolling00.png"&gt;&lt;/p&gt;
@@ -11,7 +45,7 @@ This is because macOS has a single setting for natural scrolling that applies to
 &lt;p&gt;&lt;img alt="Karabiner-Elements Devices Tab" src="https://avilpage.com/images/macos-mouse-natural-scrolling11.png"&gt;&lt;/p&gt;
 &lt;p&gt;In the mouse settings, check the "Flip mouse vertical wheel" option.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Karabiner-Elements Devices Tab" src="https://avilpage.com/images/macos-mouse-natural-scrolling22.png"&gt;&lt;/p&gt;
-&lt;p&gt;Now, both trackpad and mouse will have natural scrolling.&lt;/p&gt;</description><category>how-to</category><category>macbook</category><guid>https://avilpage.com/2025/09/macbook-natural-scrolling-mouse.html</guid><pubDate>Tue, 30 Sep 2025 18:20:58 GMT</pubDate></item><item><title>Mutual Funds - Behind the scenes</title><link>https://avilpage.com/2025/08/mutual-funds-behind-the-scenes.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;As investors, we buy mutual funds from fund houses, platforms, or from distributors. 
+&lt;p&gt;Now, both trackpad and mouse will have natural scrolling.&lt;/p&gt;</description><category>how-to</category><category>macbook</category><guid>https://avilpage.com/2025/09/macbook-natural-scrolling-mouse.html</guid><pubDate>Tue, 30 Sep 2025 18:20:58 GMT</pubDate></item><item><title>Mutual Funds - Behind the scenes</title><link>https://avilpage.com/2025/08/mutual-funds-behind-the-scenes.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;As investors, we buy mutual funds from fund houses, platforms, or from distributors. 
 But have you ever wondered what happens behind the scenes? How do these funds operate, and what processes are involved in managing them? 
 In this post, we'll explore the behind-the-scenes operations of mutual funds.&lt;/p&gt;
 &lt;h4&gt;Structure of a Mutual Fund&lt;/h4&gt;
@@ -49,7 +83,7 @@ RTA(Registrar and Transfer Agent) plays a crucial role in maintaining investor r
 &lt;p&gt;These mutual funds can be stored in Demat account or in physical form as account statements.
 It depends on the platform or fund house you choose to invest with.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;This post provided a brief overview of the behind-the-scenes operations of mutual funds in India.&lt;/p&gt;</description><category>finance</category><category>investing</category><guid>https://avilpage.com/2025/08/mutual-funds-behind-the-scenes.html</guid><pubDate>Tue, 19 Aug 2025 02:32:52 GMT</pubDate></item><item><title>Setup Raspberry Pi without Monitor &amp; Keyboard</title><link>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Requirements&lt;/h4&gt;
+&lt;p&gt;This post provided a brief overview of the behind-the-scenes operations of mutual funds in India.&lt;/p&gt;</description><category>finance</category><category>investing</category><guid>https://avilpage.com/2025/08/mutual-funds-behind-the-scenes.html</guid><pubDate>Tue, 19 Aug 2025 02:32:52 GMT</pubDate></item><item><title>Setup Raspberry Pi without Monitor &amp; Keyboard</title><link>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Requirements&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;Raspberry Pi (any model)&lt;/li&gt;
 &lt;li&gt;MicroSD card (8GB or larger)&lt;/li&gt;
@@ -75,7 +109,7 @@ nmap&lt;span class="w"&gt; &lt;/span&gt;-sn
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;When we don't have a monitor and/or keyboard, this process allows us to set up a Raspberry Pi headlessly. This is particularly useful for projects where the Pi will be used as a server or in a remote location.&lt;/p&gt;</description><category>headless</category><category>raspberry_pi</category><guid>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</guid><pubDate>Thu, 31 Jul 2025 03:50:56 GMT</pubDate></item><item><title>Raycast replaced 10 macOS apps</title><link>https://avilpage.com/2025/06/raycast-replaced-10-macos-apps.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;Since I started using Raycast, I have replaced many macOS apps with it. 
+&lt;p&gt;When we don't have a monitor and/or keyboard, this process allows us to set up a Raspberry Pi headlessly. This is particularly useful for projects where the Pi will be used as a server or in a remote location.&lt;/p&gt;</description><category>headless</category><category>raspberry_pi</category><guid>https://avilpage.com/2025/07/setup-raspberry-pi-without-monitor-keyboard.html</guid><pubDate>Thu, 31 Jul 2025 03:50:56 GMT</pubDate></item><item><title>Raycast replaced 10 macOS apps</title><link>https://avilpage.com/2025/06/raycast-replaced-10-macos-apps.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;Since I started using Raycast, I have replaced many macOS apps with it. 
 Here is a list of those apps and their Raycast equivalents.&lt;/p&gt;
 &lt;h4&gt;Espanso&lt;/h4&gt;
 &lt;p&gt;Instead of using Espanso for text expansion, I now use Raycast's built-in text snippets feature.&lt;/p&gt;
@@ -101,7 +135,7 @@ Now, I use Raycast's built-in scripting capabilities to create custom commands a
 &lt;p&gt;For things like killing processes, installing packages, and running shell commands, I used to rely on Terminal.
 Now, I use Raycast's built-in terminal integration to run shell commands directly from the Raycast interface.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;With Raycast, I have been able to streamline my workflow by replacing multiple macOS apps with its powerful features.&lt;/p&gt;</description><category>macbook</category><category>productivity</category><guid>https://avilpage.com/2025/06/raycast-replaced-10-macos-apps.html</guid><pubDate>Mon, 30 Jun 2025 15:51:21 GMT</pubDate></item><item><title>Migrating from Nginx to Caddy</title><link>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;When deploying web apps in production, a web server is essential for serving static files, handling reverse proxying, 
+&lt;p&gt;With Raycast, I have been able to streamline my workflow by replacing multiple macOS apps with its powerful features.&lt;/p&gt;</description><category>macbook</category><category>productivity</category><guid>https://avilpage.com/2025/06/raycast-replaced-10-macos-apps.html</guid><pubDate>Mon, 30 Jun 2025 15:51:21 GMT</pubDate></item><item><title>Migrating from Nginx to Caddy</title><link>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;When deploying web apps in production, a web server is essential for serving static files, handling reverse proxying, 
 and managing SSL/TLS certificates. &lt;/p&gt;
 &lt;p&gt;I have been using Nginx for a long time, but I have recently switched to Caddy as it provides automatic HTTPS by default.
 In addition, Caddy has a simpler configuration syntax and is easier to set up for basic use cases.&lt;/p&gt;
@@ -138,7 +172,7 @@ You typically use tools like Certbot to obtain and renew certificates.&lt;/p&gt;
 It also provides default redirection from HTTP to HTTPS, making it easier to secure your site.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
 &lt;p&gt;Caddy's automatic HTTPS and simpler configuration syntax make it a compelling choice for web servers, 
-especially for those who want to get started quickly without dealing with the complexities of SSL/TLS management.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</guid><pubDate>Fri, 30 May 2025 15:51:21 GMT</pubDate></item><item><title>Python UV in 100 seconds</title><link>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;UV is a fast Python package manager that replaces tools like pip, pyenv, virtualenv, etc.&lt;/p&gt;
+especially for those who want to get started quickly without dealing with the complexities of SSL/TLS management.&lt;/p&gt;</description><category>automation</category><category>devops</category><guid>https://avilpage.com/2025/05/migrating-from-nginx-to-caddy.html</guid><pubDate>Fri, 30 May 2025 15:51:21 GMT</pubDate></item><item><title>Python UV in 100 seconds</title><link>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;UV is a fast Python package manager that replaces tools like pip, pyenv, virtualenv, etc.&lt;/p&gt;
 &lt;h4&gt;Install uv&lt;/h4&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# On macOS and Linux.&lt;/span&gt;
 curl&lt;span class="w"&gt; &lt;/span&gt;-LsSf&lt;span class="w"&gt; &lt;/span&gt;https://astral.sh/uv/install.sh&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sh
@@ -195,7 +229,7 @@ uvx&lt;span class="w"&gt; &lt;/span&gt;glances
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;UV speeds up Python development by providing a fast package manager, virtual environment management, and inline dependency management. It is a great alternative to traditional tools like pip, pyenv, and virtualenv.&lt;/p&gt;</description><category>python</category><category>uv</category><guid>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</guid><pubDate>Wed, 30 Apr 2025 17:46:24 GMT</pubDate></item><item><title>Autoscale k8s pods with queue size (KEDA)</title><link>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="keda-postgreql-scaling" src="https://avilpage.com/images/keda-postgresql-scaling1.png"&gt;&lt;/p&gt;
+&lt;p&gt;UV speeds up Python development by providing a fast package manager, virtual environment management, and inline dependency management. It is a great alternative to traditional tools like pip, pyenv, and virtualenv.&lt;/p&gt;</description><category>python</category><category>uv</category><guid>https://avilpage.com/2025/04/learn-python-uv-in-100-seconds.html</guid><pubDate>Wed, 30 Apr 2025 17:46:24 GMT</pubDate></item><item><title>Autoscale k8s pods with queue size (KEDA)</title><link>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;&lt;img alt="keda-postgreql-scaling" src="https://avilpage.com/images/keda-postgresql-scaling1.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;Kubernetes(k8s) is a popular container orchestration tool, and it provides Horizontal Pod Autoscaler(HPA) to scale pods based on CPU and Memory usage. &lt;/p&gt;
 &lt;p&gt;To scale pods based on the queue size we can use &lt;a href="https://keda.sh/"&gt;KEDA&lt;/a&gt;.&lt;/p&gt;
@@ -348,7 +382,7 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;On k8s dashboard, we can see the consumer pods scaling up and down based on the number of tasks in the PostgreSQL table.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="keda-postgreql-scaling" src="https://avilpage.com/images/keda-postgresql-scaling.png"&gt;&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;KEDA is a powerful tool to scale k8s pods based on custom metrics. In this post, we have used PostgreSQL but we can use KEDA with variety of other data stores as well. Full code for this post is &lt;a href="https://github.com/AvilPage/keda-postgresql-demo"&gt;available here&lt;/a&gt;.&lt;/p&gt;</description><category>kubernetes</category><guid>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</guid><pubDate>Thu, 27 Mar 2025 06:07:52 GMT</pubDate></item><item><title>Free DockerHub Alternative - ECR Public Gallery</title><link>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;p&gt;&lt;img alt="docker-rate-limits" src="https://avilpage.com/images/docker-rate-limits.png"&gt;&lt;/p&gt;
+&lt;p&gt;KEDA is a powerful tool to scale k8s pods based on custom metrics. In this post, we have used PostgreSQL but we can use KEDA with variety of other data stores as well. Full code for this post is &lt;a href="https://github.com/AvilPage/keda-postgresql-demo"&gt;available here&lt;/a&gt;.&lt;/p&gt;</description><category>kubernetes</category><guid>https://avilpage.com/2025/03/autoscale-k8s-pods-with-queue-size-keda.html</guid><pubDate>Thu, 27 Mar 2025 06:07:52 GMT</pubDate></item><item><title>Free DockerHub Alternative - ECR Public Gallery</title><link>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;p&gt;&lt;img alt="docker-rate-limits" src="https://avilpage.com/images/docker-rate-limits.png"&gt;&lt;/p&gt;
 &lt;p&gt;DockerHub started rate limiting&lt;sup id="fnref:rate"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:rate"&gt;1&lt;/a&gt;&lt;/sup&gt; anonymous docker pulls. When testing out a new CI/CD setup, I hit the rate limit and had to wait for an hour to pull the image. This was a good time to look for alternatives.&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://gallery.ecr.aws/"&gt;AWS ECR Public Gallery&lt;/a&gt;&lt;sup id="fnref:ecr"&gt;&lt;a class="footnote-ref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:ecr"&gt;2&lt;/a&gt;&lt;/sup&gt; is a good alternative to DockerHub as of today(2025 Feb). It is free and does not have rate limits even for anonymous users. &lt;/p&gt;
 &lt;p&gt;&lt;img alt="public-ecr-gallery" src="https://avilpage.com/images/public-ecr-gallery.png"&gt;&lt;/p&gt;
@@ -371,7 +405,7 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;&lt;a href="https://gallery.ecr.aws"&gt;AWS ECR Public Gallery&lt;/a&gt; &lt;a class="footnote-backref" href="https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html#fnref:ecr" title="Jump back to footnote 2 in the text"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/div&gt;</description><category>devops</category><category>docker</category><guid>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</guid><pubDate>Sun, 09 Feb 2025 16:08:34 GMT</pubDate></item><item><title>Postman - Auto Login &amp; Renew OAuth2 Token</title><link>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
+&lt;/div&gt;</description><category>devops</category><category>docker</category><guid>https://avilpage.com/2025/02/free-dockerhub-alternative-ecr-gallery.html</guid><pubDate>Sun, 09 Feb 2025 16:08:34 GMT</pubDate></item><item><title>Postman - Auto Login &amp; Renew OAuth2 Token</title><link>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
 &lt;p&gt;When using Postman to interact with APIs behind an OAuth2 authentication, we need to login and renew the token manually. This can be automated using the following steps.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Set credentials in environment variables&lt;/li&gt;
@@ -425,38 +459,4 @@ helm&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&
 &lt;p&gt;&lt;img alt="Cockpit" src="https://avilpage.com/images/postman-auto-login.png"&gt;&lt;/p&gt;
 &lt;p&gt;Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.&lt;/p&gt;
 &lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;This is a one time setup for Postman collection and it saves a lot of time in the long run. The script can be modified to handle different grant types and token renewal strategies.&lt;/p&gt;</description><category>automation</category><category>postman</category><guid>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</guid><pubDate>Fri, 31 Jan 2025 17:20:17 GMT</pubDate></item><item><title>Install Cockpit on Remote Linux VM</title><link>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</link><dc:creator>Chillar Anand</dc:creator><description>&lt;h4&gt;Introduction&lt;/h4&gt;
-&lt;p&gt;&lt;img alt="Cockpit" src="https://avilpage.com/images/cockpit-how-to.png"&gt;&lt;/p&gt;
-&lt;p&gt;Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.&lt;/p&gt;
-&lt;h4&gt;Setup&lt;/h4&gt;
-&lt;p&gt;Let's create a new Ubuntu VM and install Cockpit on it.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;update
-.&lt;span class="w"&gt; &lt;/span&gt;/etc/os-release
-sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION_CODENAME&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;-backports&lt;span class="w"&gt; &lt;/span&gt;cockpit
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.&lt;/p&gt;
-&lt;p&gt;It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an &lt;code&gt;A&lt;/code&gt; record in DNS settings to point &lt;code&gt;cockpit.avilpage.com&lt;/code&gt; to the public ip of the VM.&lt;/p&gt;
-&lt;h4&gt;Reverse Proxy&lt;/h4&gt;
-&lt;p&gt;Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;caddy
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Add the below configuration to &lt;code&gt;/etc/caddy/Caddyfile&lt;/code&gt;.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;cockpit.avilpage.com&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;{&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;reverse_proxy&lt;span class="w"&gt; &lt;/span&gt;localhost:9090
-&lt;span class="o"&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;We need &lt;code&gt;Origins&lt;/code&gt; to Cockpit configuration at &lt;code&gt;/etc/cockpit/cockpit.conf&lt;/code&gt; to allow requests from the subdomain.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="o"&gt;[&lt;/span&gt;WebService&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;span class="nv"&gt;Origins&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;https://cockpit.avilpage.com
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Restart both services and open &lt;a href="https://cockpit.avilpage.com"&gt;https://cockpit.avilpage.com&lt;/a&gt; in browser.&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;cockpit
-sudo&lt;span class="w"&gt; &lt;/span&gt;systemctl&lt;span class="w"&gt; &lt;/span&gt;restart&lt;span class="w"&gt; &lt;/span&gt;caddy
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4&gt;Conclusion&lt;/h4&gt;
-&lt;p&gt;Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server&lt;/p&gt;</description><category>linux</category><category>productivity</category><guid>https://avilpage.com/2024/12/install-cockpit-on-remote-linux-vm.html</guid><pubDate>Mon, 30 Dec 2024 22:54:07 GMT</pubDate></item></channel></rss>
+&lt;p&gt;This is a one time setup for Postman collection and it saves a lot of time in the long run. The script can be modified to handle different grant types and token renewal strategies.&lt;/p&gt;</description><category>automation</category><category>postman</category><guid>https://avilpage.com/2025/01/postman-auto-login-renew-oauth2-token.html</guid><pubDate>Fri, 31 Jan 2025 17:20:17 GMT</pubDate></item></channel></rss>

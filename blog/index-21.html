@@ -90,10 +90,57 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/11/mastering-partial-covered-calls.html" class="u-url">Mastering "Partial Covered Calls" - Part 1</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/12/install-cockpit-on-remote-linux-vm.html" class="u-url">Install Cockpit on Remote Linux VM</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2024/12/install-cockpit-on-remote-linux-vm.html" rel="bookmark">
+            <time class="published dt-published" datetime="2024-12-31T04:24:07+05:30" itemprop="datePublished" title="2025-12-31">2025-12-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p><img alt="Cockpit" src="../images/cockpit-how-to.png"></p>
+<p>Cockpit is an easy to use web-based interface(like a cPanel) for managing Linux servers. When we want to provide access to non-developers or people who are new to linux, it is a good idea to get them started with Cockpit. It provides a user-friendly interface to manage services, containers, storage, logs, and more.</p>
+<h4>Setup</h4>
+<p>Let's create a new Ubuntu VM and install Cockpit on it.</p>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>update
+.<span class="w"> </span>/etc/os-release
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span><span class="si">${</span><span class="nv">VERSION_CODENAME</span><span class="si">}</span>-backports<span class="w"> </span>cockpit
+</pre></div>
+
+<p>Once the installation is complete, we can get the public ip of the VM and access the Cockpit web interface running on port 9090.</p>
+<p>It will be difficult to remember the public ip of the VM. So, let's create a DNS record for the VM. Let's add an <code>A</code> record in DNS settings to point <code>cockpit.avilpage.com</code> to the public ip of the VM.</p>
+<h4>Reverse Proxy</h4>
+<p>Let's set up a reverse proxy to access the Cockpit web interface using a subdomain.</p>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>caddy
+</pre></div>
+
+<p>Add the below configuration to <code>/etc/caddy/Caddyfile</code>.</p>
+<div class="code"><pre class="code literal-block">cockpit.avilpage.com<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>reverse_proxy<span class="w"> </span>localhost:9090
+<span class="o">}</span>
+</pre></div>
+
+<p>We need <code>Origins</code> to Cockpit configuration at <code>/etc/cockpit/cockpit.conf</code> to allow requests from the subdomain.</p>
+<div class="code"><pre class="code literal-block"><span class="o">[</span>WebService<span class="o">]</span>
+<span class="nv">Origins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>https://cockpit.avilpage.com
+</pre></div>
+
+<p>Restart both services and open <a href="https://cockpit.avilpage.com">https://cockpit.avilpage.com</a> in browser.</p>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>cockpit
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>caddy
+</pre></div>
+
+<h4>Conclusion</h4>
+<p>Cockpit web UI is a great tool to manage Linux servers even for non-developers. Users can browse/manage logs, services, etc. It also provides a terminal to run commands on the server</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/11/mastering-partial-covered-calls.html" class="u-url">Mastering "Partial Covered Calls" - Part 1</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
             </span></p>
             <p class="dateline">
             <a href="../2024/11/mastering-partial-covered-calls.html" rel="bookmark">
@@ -123,7 +170,7 @@ h1,h2,h3,h4,h5,h6 {
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/10/cube-cubicle.html" class="u-url">Cube &amp; Cubicle</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
+                Anand Reddy Pandikunta
             </span></p>
             <p class="dateline">
             <a href="../2024/10/cube-cubicle.html" rel="bookmark">
@@ -147,7 +194,7 @@ Luckily, I got hired.</p>
     </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" class="u-url">tailscale: Resolving CGNAT (100.x.y.z) Conflicts</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Chillar Anand
+                Anand Reddy Pandikunta
             </span></p>
             <p class="dateline">
             <a href="../2024/09/tailscale-cgnat-conflicts-resolution.html" rel="bookmark">
