@@ -1,5 +1,5 @@
 <!--
-.. title: TailScale - Use Exit Node for Specific Domains only
+.. title: TailScale - Use Exit Node for Specific Websites only
 .. slug: tailscale-exit-node-specific-domains
 .. date: 2025-10-23 03:50:58 UTC+05:30
 .. tags: tailscale, how-to
