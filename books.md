@@ -1,10 +1,10 @@
 <!--
-.. title: Books by Chillar Anand
-.. slug:
+.. title: Books by Anand Reddy Pandikunta
+.. slug: books
 .. date: 2022-05-24 13:29:59 UTC
-.. updated: 2022-10-01 13:29:59 UTC
+.. updated: 2025-11-01 13:29:59 UTC
 .. tags:
-.. category: talks
+.. category: books
 .. link:
 .. description: Books by Chillar Anand. Emacsism. Mastering Django Admin.
 .. type: text
