@@ -89,7 +89,58 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/10/tailscale-exit-node-specific-domains.html" class="u-url">TailScale - Use Exit Node for Specific Domains only</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/11/tailscale-app-connectors-quick-setup.html" class="u-url">Setup Tailscale App Connector in 3 easy steps</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2025/11/tailscale-app-connectors-quick-setup.html" rel="bookmark">
+            <time class="published dt-published" datetime="2025-11-22T18:18:18+05:30" itemprop="datePublished" title="2025-11-22">2025-11-22</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem Statement</h4>
+<p>In the earlier post, we have seen how to <a href="../2025/10/tailscale-exit-node-specific-domains.html">route specific websites to an exit node</a> using a SOCKS proxy &amp; browser extension(or a PAC file).</p>
+<p>With this approach, when we need to work on multiple computers, we need to setup the SOCKS proxy &amp; browser extension individually.</p>
+<p>Instead we can use Tailscale's App Connectors to route specific websites through selected nodes.</p>
+<p>Tailscale docs are too complicated for this App connectors. Here is a simplified version of the steps.</p>
+<h4>Tailscale - App Connectors</h4>
+<p>Note: There is no need for publicily reachable IP address for the Tailscale node which is used as App Connector.
+(Thanks <a href="https://chameth.com">Chris Smith</a> for pointing it out. Tailscale docs are misleading in this regard.)</p>
+<ul>
+<li>In the Tailscale admin console, go to the "Access control" section &amp; add <code>tagOwners</code>.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"tagOwners"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"tag:home-connector"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"autogroup:member"</span><span class="p">,</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">    </span><span class="p">},</span>
+</pre></div>
+
+<p><img alt="tailscale app connector acl" src="../images/tailscale-app-connector-acl.png"></p>
+<ul>
+<li>Use any Linux machine (it doesn't need static IP) to setup the App Connector. Install Tailscale on it. Advertise it as an app connector.</li>
+</ul>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:home-connector<span class="w"> </span>--accept-routes
+</pre></div>
+
+<ul>
+<li>From the Tailscale admin console, create a new app connector.</li>
+</ul>
+<p><img alt="tailscale app connector" src="../images/tailscale-app-connector.png"></p>
+<p>In the "Target" field, we can select any existing app or we can use custom target so that we can route our desired websites.
+For now, I am adding <code>ip.me</code> domain so that we can verify if the traffic is routed through the connector.</p>
+<ul>
+<li>From the "Machines" page, select the device and approve the requested subnets.</li>
+</ul>
+<p><img alt="tailscale app connector subnet" src="../images/tailscale-app-connector-subnet.png"></p>
+<p>From browser, lets visit 2ip.io to see our device ip address. Next, lets visit ip.me to ensure we are seeing the connector's IP as this domain will be served by app connector.</p>
+<p><img alt="tailscale app connector verify" src="../images/tailscale-app-connector-verify.png"></p>
+<h4>Conclusion</h4>
+<p>We can use App Connectors to route specific websites through a Tailscale node without needing to setup SOCKS proxy or browser extensions on each device.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/10/tailscale-exit-node-specific-domains.html" class="u-url">TailScale - Use Exit Node for Specific Websites only</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Anand Reddy Pandikunta
@@ -611,73 +662,6 @@ helm<span class="w"> </span>install<span class="w"> </span>keda<span class="w"> 
 </li>
 </ol>
 </div>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/01/postman-auto-login-renew-oauth2-token.html" class="u-url">Postman - Auto Login &amp; Renew OAuth2 Token</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Anand Reddy Pandikunta
-            </span></p>
-            <p class="dateline">
-            <a href="../2025/01/postman-auto-login-renew-oauth2-token.html" rel="bookmark">
-            <time class="published dt-published" datetime="2025-01-31T22:50:17+05:30" itemprop="datePublished" title="2025-01-31">2025-01-31</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Introduction</h4>
-<p>When using Postman to interact with APIs behind an OAuth2 authentication, we need to login and renew the token manually. This can be automated using the following steps.</p>
-<ul>
-<li>Set credentials in environment variables</li>
-<li>Create a pre-request script to login and renew the token</li>
-<li>Use the token in the request headers</li>
-</ul>
-<h4>Automating Login &amp; Renewal</h4>
-<div class="code"><pre class="code literal-block"><span class="kd">var</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">;</span>
-<span class="kd">var</span><span class="w"> </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
-
-<span class="kd">var</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">);</span>
-<span class="kd">var</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mf">86400</span><span class="p">;</span>
-
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">loginTimestamp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">loginTimestamp</span><span class="p">;</span>
-<span class="w">  </span><span class="nx">isSessionExpired</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">loginDuration</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">isSessionExpired</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">({</span>
-<span class="w">    </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">"/auth/connect/token"</span><span class="p">,</span>
-<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span>
-<span class="w">    </span><span class="nx">header</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/x-www-form-urlencoded'</span><span class="p">,</span>
-<span class="w">      </span><span class="s1">'Accept'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/json'</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">mode</span><span class="o">:</span><span class="w"> </span><span class="s1">'urlencoded'</span><span class="p">,</span>
-<span class="w">        </span><span class="nx">urlencoded</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'username'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">)</span><span class="w"> </span><span class="p">},</span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"grant_type"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="s2">"password"</span><span class="w"> </span><span class="p">},</span>
-<span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"client_id"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"client_id"</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
-<span class="w">        </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nx">jsonData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
-
-<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">,</span><span class="w"> </span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="p">){</span>
-<span class="w">        </span><span class="nx">expiresInSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">expires_in</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"expiresInSeconds"</span><span class="p">,</span><span class="w"> </span><span class="nx">expiresInSeconds</span><span class="p">);</span>
-<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"loginTimestamp"</span><span class="p">,</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">())</span>
-<span class="w">  </span><span class="p">});</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>We can copy this script to the pre-request script of the collection. </p>
-<p><img alt="Cockpit" src="../images/postman-auto-login.png"></p>
-<p>Most of the script is self-explanatory. The script checks if the session is expired and sends a request to the token endpoint to get a new token. The token is stored in environment variables and used in the request headers.</p>
-<h4>Conclusion</h4>
-<p>This is a one time setup for Postman collection and it saves a lot of time in the long run. The script can be modified to handle different grant types and token renewal strategies.</p>
     </div>
     </article>
 </div>

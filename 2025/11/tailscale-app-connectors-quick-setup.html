@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="How to route specific websites through Tailscale devices using App Connectors">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup Tailscale App Connector in 3 easy steps | Avil Page</title>
+<link href="../../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../rss.xml">
+<link rel="canonical" href="https://avilpage.com/2025/11/tailscale-app-connectors-quick-setup.html">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="author" content="Anand Reddy Pandikunta">
+<link rel="prev" href="../10/tailscale-exit-node-specific-domains.html" title="TailScale - Use Exit Node for Specific Websites only" type="text/html">
+<meta property="og:site_name" content="Avil Page">
+<meta property="og:title" content="Setup Tailscale App Connector in 3 easy steps">
+<meta property="og:url" content="https://avilpage.com/2025/11/tailscale-app-connectors-quick-setup.html">
+<meta property="og:description" content="How to route specific websites through Tailscale devices using App Connectors">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2025-11-22T18:18:18+05:30">
+<meta property="article:tag" content="networking">
+<meta property="article:tag" content="tailscale">
+<style>
+    .full-article-footer {
+    border-top: 1px solid #E0DFDB;
+}
+
+
+.article-footer {
+    padding: 20px 10px 10px 10px;
+    min-height: 115px;
+    display:table;
+}
+
+
+.avatar-module {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+.avatar-module img {
+    border-radius: 50%!important;
+    height: 120px;
+    width: 120px;
+    float: left;
+    margin:0px 20px 0px 20px;
+}
+
+
+.article-footer p {
+    line-height:1.5em;
+    padding-left:15px;
+}
+
+
+@media (max-width:750px) {
+    .article-footer {
+        display:inherit;
+        margin:0px;
+    }
+
+    .avatar-module {
+        display:inherit;
+        vertical-align: none;
+    }
+
+    .avatar-module img {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        float:none;
+        margin-top:0px;
+    }
+
+    .article-footer p {
+        text-align:center;
+        padding-left:0px;
+    }
+}
+
+    </style>
+<style>
+@font-face {
+    font-family: 'LovelexieHandwritten';
+    src: url('../../files/LovelexieHandwritten.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'LovelexieHandwritten', serif;
+}
+
+ h1 {
+     font-weight: bold;
+     font-size: 25px;
+ }
+
+</style>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!-- Menubar -->
+    <nav class="navbar navbar-expand-md static-top mb-4
+                navbar-dark
+                bg-dark
+                "><div class="container">
+<!-- This keeps the margins nice -->
+            <a class="navbar-brand" href="../../">
+
+                    <span id="blog-title">Avil Page</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="bs-navbar">
+                <ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a href="../../guides.html" class="nav-link">Guides</a>
+                </li>
+<li class="nav-item">
+<a href="../../archive.html" class="nav-link">Blog</a>
+                </li>
+<li class="nav-item">
+<a href="../../books.html" class="nav-link">Books</a>
+                </li>
+<li class="nav-item">
+<a href="../../talks.html" class="nav-link">Talks</a>
+                </li>
+<li class="nav-item">
+<a href="../../projects.html" class="nav-link">Projects</a>
+                </li>
+<li class="nav-item">
+<a href="../../rss.xml" class="nav-link">RSS</a>
+
+                    
+                </li>
+</ul>
+<ul class="navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+        </div>
+<!-- /.container -->
+    </nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="row justify-content-md-center">
+        <div class="body-content col col-lg-6">
+            <!--Body content-->
+            
+    <article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="#" class="u-url">Setup Tailscale App Connector in 3 easy steps</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card">
+                <span class="byline-name fn p-name" itemprop="author">
+                    Anand Reddy Pandikunta
+                </span>
+            </p>
+
+            <p class="dateline">
+                    3 min read
+            </p>
+
+            <p class="dateline">
+                    <time class="published dt-published" datetime="2025-11-22T18:18:18+05:30" itemprop="datePublished" title="2025-11-22">2025-11-22</time></p>
+            <hr>
+</div>
+
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+            <h4>Problem Statement</h4>
+<p>In the earlier post, we have seen how to <a href="../10/tailscale-exit-node-specific-domains.html">route specific websites to an exit node</a> using a SOCKS proxy &amp; browser extension(or a PAC file).</p>
+<p>With this approach, when we need to work on multiple computers, we need to setup the SOCKS proxy &amp; browser extension individually.</p>
+<p>Instead we can use Tailscale's App Connectors to route specific websites through selected nodes.</p>
+<p>Tailscale docs are too complicated for this App connectors. Here is a simplified version of the steps.</p>
+<h4>Tailscale - App Connectors</h4>
+<p>Note: There is no need for publicily reachable IP address for the Tailscale node which is used as App Connector.
+(Thanks <a href="https://chameth.com">Chris Smith</a> for pointing it out. Tailscale docs are misleading in this regard.)</p>
+<ul>
+<li>In the Tailscale admin console, go to the "Access control" section &amp; add <code>tagOwners</code>.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"tagOwners"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"tag:home-connector"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"autogroup:member"</span><span class="p">,</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">    </span><span class="p">},</span>
+</pre></div>
+
+<p><img alt="tailscale app connector acl" src="../../images/tailscale-app-connector-acl.png"></p>
+<ul>
+<li>Use any Linux machine (it doesn't need static IP) to setup the App Connector. Install Tailscale on it. Advertise it as an app connector.</li>
+</ul>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:home-connector<span class="w"> </span>--accept-routes
+</pre></div>
+
+<ul>
+<li>From the Tailscale admin console, create a new app connector.</li>
+</ul>
+<p><img alt="tailscale app connector" src="../../images/tailscale-app-connector.png"></p>
+<p>In the "Target" field, we can select any existing app or we can use custom target so that we can route our desired websites.
+For now, I am adding <code>ip.me</code> domain so that we can verify if the traffic is routed through the connector.</p>
+<ul>
+<li>From the "Machines" page, select the device and approve the requested subnets.</li>
+</ul>
+<p><img alt="tailscale app connector subnet" src="../../images/tailscale-app-connector-subnet.png"></p>
+<p>From browser, lets visit 2ip.io to see our device ip address. Next, lets visit ip.me to ensure we are seeing the connector's IP as this domain will be served by app connector.</p>
+<p><img alt="tailscale app connector verify" src="../../images/tailscale-app-connector-verify.png"></p>
+<h4>Conclusion</h4>
+<p>We can use App Connectors to route specific websites through a Tailscale node without needing to setup SOCKS proxy or browser extensions on each device.</p>
+        </div>
+
+            <hr>
+            Need further help with this? <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">Feel free to send a message</a>.
+            <hr>
+<aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../tags/networking.html" rel="tag">networking</a></li>
+            <li><a class="tag p-category" href="../../tags/tailscale.html" rel="tag">tailscale</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../10/tailscale-exit-node-specific-domains.html" rel="prev" title="TailScale - Use Exit Node for Specific Websites only">Previous post</a>
+            </li>
+        </ul></nav></aside><div class="full-article-footer">
+            <div class="article-footer">
+
+                <div class="avatar-module">
+                    <img class="avatar" height="100px" src="../../images/chillaranand.jpg">
+</div>
+
+                <p class="avatar-module">
+                    <b>Anand Reddy Pandikunta (ChillarAnand)</b>
+                    <br>
+                    Improving Health &amp; Wealth with Technology
+                    <br></p>
+
+            </div>
+        </div>
+
+        
+    </article><!--End of body content--><footer id="footer"><div class="container align-items-center justify-content-center d-flex">
+
+<footer class="footer"><a href="https://github.com/ChillarAnand">
+<img src="../../images/icons8-github.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<img src="../../images/icons8-so.svg" alt="github-chillar-anand" height="30"></a>
+
+  
+
+<a href="https://youtube.com/@avilpage">
+<img src="../../images/icons8-youtube.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://linkedin.com/in/chillaranand">
+<img src="../../images/icons8-linkedin.svg" alt="github-chillar-anand" height="34"></a>
+
+  
+
+<a href="https://twitter.com/chillaranand">
+<img src="../../images/icons8-twitter.svg" alt="github-chillar-anand" height="34"></a>
+
+</footer>
+</div>
+
+<br><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8127755709093749" crossorigin="anonymous"></script></footer>
+</div>
+    </div>
+    </div>
+
+                <script src="../../assets/js/jquery.min.js"></script><script src="../../assets/js/popper.min.js"></script><script src="../../assets/js/bootstrap.min.js"></script><script src="../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
