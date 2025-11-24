@@ -43,6 +43,22 @@ Note: There is no need for publicily reachable IP address for the Tailscale node
 $ sudo tailscale up --advertise-tags=tag:home-connector --accept-routes
 ```
 
+Enable IP forwarding on the machine. If your Linux system has a `/etc/sysctl.d` directory, run
+
+```bash
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+```
+
+Otherwise, run
+
+```commandline
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
+```
+
 - From the Tailscale admin console, create a new app connector.
 
 ![tailscale app connector](/images/tailscale-app-connector.png)
