@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about networking)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/networking.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Sun, 23 Nov 2025 05:24:01 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Tailscale App Connector in 3 easy steps</title><link>https://avilpage.com/2025/11/tailscale-app-connectors-quick-setup.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Avil Page (Posts about networking)</title><link>https://avilpage.com/</link><description></description><atom:link href="https://avilpage.com/tags/networking.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Mon, 24 Nov 2025 03:20:28 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Setup Tailscale App Connector in 3 easy steps</title><link>https://avilpage.com/2025/11/tailscale-app-connectors-quick-setup.html</link><dc:creator>Anand Reddy Pandikunta</dc:creator><description>&lt;h4&gt;Problem Statement&lt;/h4&gt;
 &lt;p&gt;In the earlier post, we have seen how to &lt;a href="https://avilpage.com/2025/10/tailscale-exit-node-specific-domains.html"&gt;route specific websites to an exit node&lt;/a&gt; using a SOCKS proxy &amp;amp; browser extension(or a PAC file).&lt;/p&gt;
 &lt;p&gt;With this approach, when we need to work on multiple computers, we need to setup the SOCKS proxy &amp;amp; browser extension individually.&lt;/p&gt;
 &lt;p&gt;Instead we can use Tailscale's App Connectors to route specific websites through selected nodes.&lt;/p&gt;
@@ -22,6 +22,18 @@
 &lt;li&gt;Use any Linux machine (it doesn't need static IP) to setup the App Connector. Install Tailscale on it. Advertise it as an app connector.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;$&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;tailscale&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;--advertise-tags&lt;span class="o"&gt;=&lt;/span&gt;tag:home-connector&lt;span class="w"&gt; &lt;/span&gt;--accept-routes
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Enable IP forwarding on the machine. If your Linux system has a &lt;code&gt;/etc/sysctl.d&lt;/code&gt; directory, run&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'net.ipv4.ip_forward = 1'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;tee&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;/etc/sysctl.d/99-tailscale.conf
+&lt;span class="nb"&gt;echo&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'net.ipv6.conf.all.forwarding = 1'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;tee&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;/etc/sysctl.d/99-tailscale.conf
+sudo&lt;span class="w"&gt; &lt;/span&gt;sysctl&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;/etc/sysctl.d/99-tailscale.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Otherwise, run&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
 &lt;/pre&gt;&lt;/div&gt;
 
 &lt;ul&gt;

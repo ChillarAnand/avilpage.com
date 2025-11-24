@@ -125,6 +125,18 @@ h1,h2,h3,h4,h5,h6 {
 <div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:home-connector<span class="w"> </span>--accept-routes
 </pre></div>
 
+<p>Enable IP forwarding on the machine. If your Linux system has a <code>/etc/sysctl.d</code> directory, run</p>
+<div class="code"><pre class="code literal-block"><span class="nb">echo</span><span class="w"> </span><span class="s1">'net.ipv4.ip_forward = 1'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
+<span class="nb">echo</span><span class="w"> </span><span class="s1">'net.ipv6.conf.all.forwarding = 1'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
+sudo<span class="w"> </span>sysctl<span class="w"> </span>-p<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
+</pre></div>
+
+<p>Otherwise, run</p>
+<div class="code"><pre class="code literal-block">echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
+</pre></div>
+
 <ul>
 <li>From the Tailscale admin console, create a new app connector.</li>
 </ul>
