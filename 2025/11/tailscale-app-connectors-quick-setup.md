@@ -21,7 +21,7 @@ Tailscale docs are too complicated for this App connectors. Here is a simplified
 
 ### Tailscale - App Connectors
 
-Note: There is no need for publicily reachable IP address for the Tailscale node which is used as App Connector.
+Note: There is no need for publicly reachable IP address for the Tailscale node which is used as App Connector.
 (Thanks [Chris Smith](https://chameth.com) for pointing it out. Tailscale docs are misleading in this regard.)
 
 - In the Tailscale admin console, go to the "Access control" section & add `tagOwners`.
