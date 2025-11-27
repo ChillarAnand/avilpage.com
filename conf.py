@@ -794,31 +794,31 @@ CONTENT_FOOTER = """
 
 <footer class="footer">
 
-<a href="https://github.com/ChillarAnand">
+<a href="https://github.com/ChillarAnand" rel="me">
 <img src="/images/icons8-github.svg" alt="github-chillar-anand" height="34" />
 </a>
 
 &nbsp;&nbsp;
 
-<a href="https://stackoverflow.com/users/2698552/chillar-anand">
+<a href="https://stackoverflow.com/users/2698552/chillar-anand" rel="me">
 <img src="/images/icons8-so.svg" alt="github-chillar-anand" height="30" />
 </a>
 
 &nbsp;&nbsp;
 
-<a href="https://youtube.com/@avilpage">
+<a href="https://youtube.com/@avilpage" rel="me">
 <img src="/images/icons8-youtube.svg" alt="github-chillar-anand" height="34" />
 </a>
 
 &nbsp;&nbsp;
 
-<a href="https://linkedin.com/in/chillaranand">
+<a href="https://linkedin.com/in/chillaranand" rel="me">
 <img src="/images/icons8-linkedin.svg" alt="github-chillar-anand" height="34" />
 </a>
 
 &nbsp;&nbsp;
 
-<a href="https://twitter.com/chillaranand">
+<a href="https://twitter.com/chillaranand" rel="me">
 <img src="/images/icons8-twitter.svg" alt="github-chillar-anand" height="34" />
 </a>
 
@@ -826,9 +826,6 @@ CONTENT_FOOTER = """
 </div>
 
 <br />
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8127755709093749"
-     crossorigin="anonymous"></script>
 """
 
 # Things that will be passed to CONTENT_FOOTER.format().  This is done
