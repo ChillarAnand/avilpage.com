@@ -2,7 +2,7 @@
 .. title: Adding Fuzzy Search To Frappe Framework
 .. slug: fuzzy-search-frappe-framework
 .. date: 2022-03-31 21:30:33 UTC+05:30
-.. tags: frappe-framework, javascript
+.. tags: frappe-framework, ERPNext, javascript
 .. category: programming
 .. link:
 .. description: How to add smart search to frappe framework awesome bar.
@@ -54,6 +54,7 @@ After that, we can search for anything in just few key strokes. For example to o
 
 <img src="/images/frappe-fuzzy-search-4.png" />
 
+This change is now [merged into Frappe framework](https://github.com/frappe/frappe/pull/16478) and will be available in the next release.
 
 ### Conclusion
 
