@@ -56,19 +56,13 @@ h1,h2,h3,h4,h5,h6 {
             <div class="collapse navbar-collapse" id="bs-navbar">
                 <ul class="navbar-nav mr-auto">
 <li class="nav-item">
-<a href="../guides.html" class="nav-link">Guides</a>
+<a href="../products.html" class="nav-link">Products</a>
                 </li>
 <li class="nav-item">
 <a href="../archive.html" class="nav-link">Blog</a>
                 </li>
 <li class="nav-item">
-<a href="../books.html" class="nav-link">Books</a>
-                </li>
-<li class="nav-item">
-<a href="../talks.html" class="nav-link">Talks</a>
-                </li>
-<li class="nav-item">
-<a href="../projects.html" class="nav-link">Projects</a>
+<a href="../guides.html" class="nav-link">Guides</a>
                 </li>
 <li class="nav-item">
 <a href="../rss.xml" class="nav-link">RSS</a>
@@ -89,7 +83,59 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/11/tailscale-app-connectors-quick-setup.html" class="u-url">Setup Tailscale App Connector in 3 easy steps</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/12/remote-access-to-k3d-k3s-cluster.html" class="u-url">Remote Access to k3d/k3s Kubernetes cluster</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2025/12/remote-access-to-k3d-k3s-cluster.html" rel="bookmark">
+            <time class="published dt-published" datetime="2025-12-17T08:40:39+05:30" itemprop="datePublished" title="2025-12-17">2025-12-17</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Introduction</h4>
+<p>We learnt how to <a href="../2023/03/setup-k8s-anywhere-k3d.html">deploy kubernetes cluster anywhere with a single k3d command</a>. 
+By default, k3d cluster is accessible only from the host machine.</p>
+<h4>Remote Access</h4>
+<p><img alt="k3d-remote-access" src="../images/k3s-remote-access.png"></p>
+<p>Create new cluster with</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k3d<span class="w"> </span>cluster<span class="w"> </span>create<span class="w"> </span>cloud-k8s<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--api-port<span class="w"> </span><span class="m">6443</span>:6443@loadbalancer<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--k3s-arg<span class="w"> </span><span class="s2">"--tls-san=&lt;remote-ip&gt;@server:*"</span>
+</pre></div>
+
+<ul>
+<li>
+<p><code>--api-port 6443:6443@loadbalancer</code> maps port 6443 on the host machine to the cluster's API server load balancer. 
+This can be changed (e.g., 8080:6443) if 6443 is taken on the host.</p>
+</li>
+<li>
+<p><code>--k3s-arg "--tls-san=..."</code>  adds the host's public IP to the certificate, preventing SSL errors later.</p>
+</li>
+<li>
+<p>Ensure remote server firewall allows incoming traffic on the chosen port (e.g., 6443 or 8080). 
+To verify, run <code>telnet &lt;remote-ip&gt; 6443</code> from local machine.</p>
+</li>
+</ul>
+<p>On the remote server, get kubeconfig:</p>
+<div class="code"><pre class="code literal-block">$<span class="w"> </span>k3d<span class="w"> </span>kubeconfig<span class="w"> </span>get<span class="w"> </span>cloud-k8s
+---
+apiVersion:<span class="w"> </span>v1
+clusters:
+-<span class="w"> </span>cluster:
+<span class="w">    </span>server:<span class="w"> </span>https://0.0.0.0:6443
+<span class="w">  </span>name:<span class="w"> </span>k3d-rk
+<span class="w">   </span>...<span class="w"> </span><span class="c1"># truncated for brevity</span>
+</pre></div>
+
+<p>Copy this kubeconfig, replace <code>0.0.0.0</code> with the remote server's public IP.</p>
+<p>Open <a href="https://github.com/freelensapp/freelens">Free Lens</a>, paste this config and connect to the remote k3d cluster.</p>
+<p><img alt="k3d-remote-access" src="../images/k3s-remote-access-freelens.png"></p>
+<h4>Conclusion</h4>
+<p>You can use your favorite Kubernetes tools (kubectl, FreeLens, k9s, etc.) to manage the remote k8s cluster.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/11/tailscale-app-connectors-quick-setup.html" class="u-url">Setup Tailscale App Connector in 3 easy steps</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Anand Reddy Pandikunta
@@ -638,42 +684,6 @@ helm<span class="w"> </span>install<span class="w"> </span>keda<span class="w"> 
 <p><img alt="keda-postgreql-scaling" src="../images/keda-postgresql-scaling.png"></p>
 <h4>Conclusion</h4>
 <p>KEDA is a powerful tool to scale k8s pods based on custom metrics. In this post, we have used PostgreSQL but we can use KEDA with variety of other data stores as well. Full code for this post is <a href="https://github.com/AvilPage/keda-postgresql-demo">available here</a>.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/02/free-dockerhub-alternative-ecr-gallery.html" class="u-url">Free DockerHub Alternative - ECR Public Gallery</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Anand Reddy Pandikunta
-            </span></p>
-            <p class="dateline">
-            <a href="../2025/02/free-dockerhub-alternative-ecr-gallery.html" rel="bookmark">
-            <time class="published dt-published" datetime="2025-02-09T21:38:34+05:30" itemprop="datePublished" title="2025-02-09">2025-02-09</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p><img alt="docker-rate-limits" src="../images/docker-rate-limits.png"></p>
-<p>DockerHub started rate limiting<sup id="fnref:rate"><a class="footnote-ref" href="../2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:rate">1</a></sup> anonymous docker pulls. When testing out a new CI/CD setup, I hit the rate limit and had to wait for an hour to pull the image. This was a good time to look for alternatives.</p>
-<p><a href="https://gallery.ecr.aws/">AWS ECR Public Gallery</a><sup id="fnref:ecr"><a class="footnote-ref" href="../2025/02/free-dockerhub-alternative-ecr-gallery.html#fn:ecr">2</a></sup> is a good alternative to DockerHub as of today(2025 Feb). It is free and does not have rate limits even for anonymous users. </p>
-<p><img alt="public-ecr-gallery" src="../images/public-ecr-gallery.png"></p>
-<p>Once we find the required image from the gallery, we can simply change the image name in the <code>docker pull</code> command to pull the image from ECR Gallery.</p>
-<div class="code"><pre class="code literal-block">docker<span class="w"> </span>pull<span class="w"> </span>public.ecr.aws/ubuntu/ubuntu
-</pre></div>
-
-<p>In <code>Dockerfile</code>, we can use the image from ECR Gallery as follows:</p>
-<div class="code"><pre class="code literal-block"><span class="k">FROM</span><span class="w"> </span><span class="s">public.ecr.aws/ubuntu/ubuntu</span>
-</pre></div>
-
-<p>That is a quick way to avoid DockerHub rate limits.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:rate">
-<p><a href="https://docs.docker.com/docker-hub/usage/">DockerHub Limits</a> <a class="footnote-backref" href="../2025/02/free-dockerhub-alternative-ecr-gallery.html#fnref:rate" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:ecr">
-<p><a href="https://gallery.ecr.aws">AWS ECR Public Gallery</a> <a class="footnote-backref" href="../2025/02/free-dockerhub-alternative-ecr-gallery.html#fnref:ecr" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
     </div>
     </article>
 </div>
