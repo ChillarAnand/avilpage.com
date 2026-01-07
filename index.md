@@ -23,9 +23,11 @@ With 12+ years of experience in full-stack software & hardware development, I ha
 
 I advocate FOSS & major chunk of [my work is open source](/projects.html).
 
-Occasionally, I give [talks & workshops](/talks.html) at various developer conferences. 
+Occasionally, I give [talks & workshops](/talks.html) at developer conferences. 
 
 I have written 2 [short books on Django Admin & Emacs](/books.html). 
+
+I make [mosaic art with Rubik's cubes](/rubik-cube-mosaics.html).
 
 To reach out, you can [send a message here](https://forms.gle/Hre4z4aLqJA5zYWe6). I reply to each message personally.
 

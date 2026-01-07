@@ -12,19 +12,12 @@
 <div class="postlist">
 
 <a href="2015/03/a-slice-of-python-intelligence-behind.html" class="listtitle">The Intelligence Behind Python Slices</a>
-<br><time class="listdate" datetime="2015-03-22T16:01:00+05:30" title="2015-03-22">
-2015-03-22
-</time>
-10+ min read
-<br><br>
+<br><time class="listdate" datetime="2015-03-22T16:01:00+05:30" title="2015-03-22">2015-03-22</time>10+ min read<br><br>
 
 
 <a href="2016/11/detect-correct-skew-images-python.html" class="listtitle">Detect &amp; Correct Skew In Images Using Python</a>
-<br><time class="listdate" datetime="2016-11-12T12:11:17Z" title="2016-11-12">
-2016-11-12
-</time>
-8 min read
-<br><br>
+<br><time class="listdate" datetime="2016-11-12T12:11:17Z" title="2016-11-12">2016-11-12</time>8 min read<br><br>
+
 
 <a href="2016/12/the-meaning-of-life.html" class="listtitle">What Is The Meaning Of Life?</a>
 <br><time class="listdate" datetime="2016-12-25T18:29:23Z" title="2016-12-25">2016-12-25</time>1 min read<br><br>
