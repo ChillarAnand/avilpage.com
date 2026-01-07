@@ -12,7 +12,7 @@
 
 #### Mutual Fund Compass
 
-[Mutual Fund Compass](https://mutualfundcompass.avilpage.com) is a web application that helps you to find right mutual funds 
+[Mutual Fund Compass](https://mutual-fund-compass.avilpage.com/) is a web application that helps you to find right mutual funds 
 quickly by making it easy to search/sort through all mutual funds.
 
 
@@ -24,5 +24,5 @@ with verified profit & loss statements.
 
 #### Project Chalam
 
-[Project Chalam](https://chalam.avilpage.com) is a curation of each & every public domain book in Telugu language. 
+[Project Chalam](https://projectchalam.avilpage.com) is a curation of each & every public domain book in Telugu language. 
 It provides easy access to download or read online these books.
