@@ -20,11 +20,15 @@
 
 - [appknox/pyaxmlparser](https://github.com/appknox/pyaxmlparser) - Minimalistic Android XML parser in Python.
 
+
+### Personal Projects
+
 - [StockTrends](https://github.com/ChillarAnand/stocktrends) - Python package to calculate trends in stocks.
 
 - [real-auto-save](https://github.com/ChillarAnand/real-auto-save) - Auto save buffers at regular intervals in Emacs.
 
 - [fadapa](https://github.com/ChillarAnand/fadapa) - Python package to parse FastQC output data.
+
 
 ### OSS Contributions
 
