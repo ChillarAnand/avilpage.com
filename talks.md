@@ -12,6 +12,13 @@
 
 Here are some of the talks I have given at various conferences and events.
 
+### Classify Billion base pairs per Second @ BangPypers & SciPy India (2026)
+<img src="/images/anand-talk-kraken.png" class="img-responsive" alt="Anand's talk on Kraken" />
+
+Blog post: [Classify Billion base pairs per Second](/2026/02/classify-billion-base-pairs-per-second.html)
+
+<br />
+
 ### Metagenomics AI Workshop @ REVA University (2024)
 
 <img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
