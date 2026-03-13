@@ -13,7 +13,7 @@ During 25th Feb 2026, a [joint meetup](https://www.meetup.com/bangpypers/events/
 
 There was a slot for lightning talk & I gave a talk on Kraken2 performance optimisations titled as "Classify billion base pairs per second".
 
-I didn't had time to polish the slides. During the talk, I briefly covered:
+Since it was a lightning talk, I didn't had time to polish the slides. During the talk, I briefly covered:
 
 - What is metagenomics?
 - Overview of open source classification tools 
