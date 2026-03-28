@@ -1,6 +1,6 @@
 <!--
 .. title: Uses
-.. slug: Uses
+.. slug: uses
 .. date: 2022-05-14 11:16:41 UTC+05:30
 .. tags: home
 .. category: meta
