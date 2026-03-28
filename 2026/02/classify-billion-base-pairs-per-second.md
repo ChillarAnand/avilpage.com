@@ -2,10 +2,10 @@
 .. title: Talk: Classify Billion base pairs per Second
 .. slug: classify-billion-base-pairs-per-second
 .. date: 2026-02-28 06:57:43 UTC+05:30
-.. tags: 
-.. category: 
+.. tags: talks
+.. category: conferences
 .. link: 
-.. description: 
+.. description: How to classify billion base pairs per second using Kraken2 performance optimizations
 .. type: text
 -->
 
