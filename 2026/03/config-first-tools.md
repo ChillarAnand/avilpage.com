@@ -1,7 +1,7 @@
 <!--
 .. title: Build/Deploy Full Stack Web Apps with only Config
 .. slug: config-first-tools
-.. date: 2026-03-16 11:47:29 UTC+05:30
+.. date: 2026-03-28 11:47:29 UTC+05:30
 .. tags: web development, devops, ai
 .. category: programming
 .. link: 
