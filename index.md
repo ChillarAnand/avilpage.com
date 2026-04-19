@@ -23,7 +23,7 @@ With 12+ years of experience in full-stack software & hardware development, I ha
 
 I advocate FOSS & major chunk of [my work is open source](/projects.html).
 
-Occasionally, I give [talks & workshops at developer conferences](/talks.html) . 
+Occasionally, I give [talks & workshops at developer conferences](/talks.html). 
 
 I have written 2 [short books on Django Admin & Emacs](/books.html). 
 
