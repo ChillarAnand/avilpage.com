@@ -1,3 +1,12 @@
+#!/usr/bin/env -S /Users/anand/.local/bin/uv run --script
+
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "requests",
+# ]
+# ///
+
 import json
 import os
 from datetime import datetime
