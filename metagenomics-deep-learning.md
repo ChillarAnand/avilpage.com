@@ -10,6 +10,8 @@
 .. type: text
 -->
 
+<img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
+
 ### Introduction
 
 This is the reference material for the "Deep Learning in Metagenomics" workshop. By the end of workshop, you will be able to understand what is deep learning and how to apply to metagenomics taxanomic classification.
