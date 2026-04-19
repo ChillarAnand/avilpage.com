@@ -10,6 +10,8 @@
 .. type: text
 -->
 
+<img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
+
 ### Introduction
 
 This is the reference material for the "Machine Learning in Metagenomics" workshop. By the end of workshop, you will be able to classify metagenomic samples using Kraken2 and predict the source organism of the sample with simple ML methods.
