@@ -23,7 +23,7 @@ Blog post: [Classify Billion base pairs per Second](/2026/02/classify-billion-ba
 
 <img src="/images/metagenomics-ai-workshop.jpeg" class="img-responsive" alt="Metagenomics AI Workshop" />
 
-Code & Material: [Metagenomics AI Workshop](http://localhost:8000/metagenomics-machine-learning.html)
+Code & Material: [Metagenomics AI Workshop](/metagenomics-machine-learning.html)
 
 <br />
 
