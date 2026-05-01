@@ -14,8 +14,6 @@
 </p>
 
 
-> "A technical blog with a focus on health & wealth."
-
 I am an indie open source developer. I work with high talent density teams to build/scale products that solve real world problems.
 
 With 12+ years of experience in full-stack software & hardware development, I have primarily worked on Healthcare & Finance domains.
