@@ -20,7 +20,7 @@ Photo by Kaboompics on Pexels
 
 In 2018, I decided to write at least one blog post per month throughout the year. Even though I tried to write posts every month, I couldn't publish anything in few months.
 
-In 2019, I went a step ahead and made a legal(?) agreement with a friend. I paid him 1,00,000 rupees and told him that he could keep the money as a reward if I failed to write a blog post every month.
+In 2019, I went a step ahead and made a legal(?) agreement with a friend. I paid him 1,00,000 rupees (~1,200$) and told him that he could keep the money as a reward if I failed to write a blog post every month.
 
 This agreement kept me on my toes. I didn't miss writing a single month in 2019. I stayed awake on the last days of the month to finish and publish the post before midnight.
 
