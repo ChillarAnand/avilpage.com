@@ -9,20 +9,24 @@
 .. type: text
 -->
 
+#### [Historical Option Chain](https://historical-option-chain.avilpage.com/)
 
-#### Mutual Fund Compass
-
-[Mutual Fund Compass](https://mutual-fund-compass.avilpage.com/) is a web application that helps you to find right mutual funds 
-quickly by making it easy to search/sort through all mutual funds.
+Web application to view option chain history for all stocks & indices in India stock market.
 
 
-#### PnL Rank
+#### [Mutual Fund Compass](https://mutual-fund-compass.avilpage.com/) 
 
-[PnL Rank](https://pnlrank.avilpage.com) is a web application that shows leader board and ranking of Indian traders 
+Web application that helps you to find right mutual funds 
+quickly by making it easy to search/sort through all mutual funds in India.
+
+
+#### [PnL Rank](https://pnlrank.avilpage.com)
+
+Web application that shows leader board and ranking of Indian traders 
 with verified profit & loss statements.
 
 
-#### Project Chalam
+#### [Project Chalam](https://projectchalam.avilpage.com)
 
-[Project Chalam](https://projectchalam.avilpage.com) is a curation of each & every public domain book in Telugu language. 
+Web application to curate each & every public domain book in Telugu language. 
 It provides easy access to download or read online these books.
