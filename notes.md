@@ -5,10 +5,30 @@ Dispersion index
 https://www.math.nyu.edu/~avellane/Lecture10Quant.pdf
 
 
+# blog posts
 
-### Sites
+Tailscale Tips & Tricks
 
-avilpage.com
+Tailscale status
+tailscale clush
+
+
+scaling database
+mysql binlogs
+
+mysql engine - memory engine
+
+ATGC Health
+
+100ProductsChallenge
+
+Prefect
+
+dvc
+
+Ferarri or Freedom
+
+### Sites to promote blog
 
 youtube.com
 twitter.com
@@ -23,17 +43,3 @@ medium.com
 
 spotify.com
 apple.com
-
-
-# blog posts
-
-scaling database
-mysql binlogs
-
-mysql engine - memory engine
-
-ATGC Health
-
-100ProductsChallenge
-
-Prefect

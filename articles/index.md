@@ -14,8 +14,6 @@
 </p>
 
 
-> "A technical blog with a focus on health & wealth."
-
 I am an indie open source developer. I work with high talent density teams to build/scale products that solve real world problems.
 
 With 12+ years of experience in full-stack software & hardware development, I have primarily worked on Healthcare & Finance domains.
@@ -29,8 +27,9 @@ I have written 2 [short books on Django Admin & Emacs](/books.html).
 
 I make [mosaic art with Rubik's cubes](/rubik-cube-mosaics.html).
 
-To reach out, you can [send a message here](https://forms.gle/Hre4z4aLqJA5zYWe6). I reply to each message personally.
+To contact, [send a message here](https://forms.gle/Hre4z4aLqJA5zYWe6). I reply to each message personally.
 
+If I miss writing blog post any month, you can [win 1000+$ cash prize](2022/01/resuming-writing-challenge.html).
 
 <div class="full-article-footer">
     <div class="article-footer">
