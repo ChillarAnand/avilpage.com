@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph HARNESS["Harness"]
+        direction TB
+        pi([Pi])
+        omp([oh-my-pi])
+        oc([OpenCode])
+        pi ~~~ omp ~~~ oc
+    end
+
+    subgraph SERVER["Inference Server"]
+        direction TB
+        llama([llama.cpp])
+        omlx([omlx])
+        rmlx([rapid-mlx])
+        llama ~~~ omlx ~~~ rmlx
+    end
+
+    subgraph MODELS["Models"]
+        direction TB
+        m1([Qwen3.6-35B-A3B])
+        m2([Qwen3.8-27B])
+        b4([Bonsai-27b-mlx])
+        m1 ~~~ m2 ~~~ b4
+    end
+
+    HARNESS <-->|API| SERVER
+    SERVER -->|serves| MODELS
+
+    style HARNESS fill:#fff3cd,stroke:#856404,stroke-width:2px
+    style SERVER fill:#d1ecf1,stroke:#0c5460,stroke-width:2px
+    style MODELS fill:#e2d9f3,stroke:#4b2e83,stroke-width:2px
