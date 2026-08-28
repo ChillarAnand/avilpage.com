@@ -27,8 +27,6 @@ I have written 2 [short books on Django Admin & Emacs](/books.html).
 
 I make [mosaic art with Rubik's cubes](/rubik-cube-mosaics.html).
 
-I keep a track of [my software & hardware setup](/uses.html) .
-
 To contact, [send a message here](https://forms.gle/Hre4z4aLqJA5zYWe6). I reply to each message personally.
 
 If I miss writing blog post any month, you can [win 1000+$ cash prize](2022/01/resuming-writing-challenge.html).

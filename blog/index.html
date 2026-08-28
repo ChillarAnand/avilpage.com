@@ -83,7 +83,37 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/07/handy-stt-dictation-cross-platform.html" class="u-url">Handy - Best cross platform Dictation app (Free)</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/08/how-i-run-llms-locally-on-mac.html" class="u-url">How I run LLMs locally on Mac</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2026/08/how-i-run-llms-locally-on-mac.html" rel="bookmark">
+            <time class="published dt-published" datetime="2026-08-27T22:33:44+05:30" itemprop="datePublished" title="2026-08-27">2026-08-27</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><img alt="Harness, Server, and Models" src="../images/mac-local-llms.svg"></p>
+<h4>Harness</h4>
+<p>OpenCode &amp; oh-my-pi come with batteries included and works out of the box.</p>
+<p>Pi is barebones &amp; lightweight. 
+There are quality plugins available to extend the functionality &amp; customise the behaviour.
+It is extremely extensible.</p>
+<h4>Inference Server</h4>
+<p>Ollama MLX doesn't generate tokens efficiently.</p>
+<p>Rapix-MLX, omlx are excellent at utilizing resources and generating tokens efficiently.
+With M5 Pro 48GB RAM, they are able to generate ~50 tokens/second with <code>Qwen3.6-35B-A3B-4bit</code> model.</p>
+<p>Llama.cpp is cross-platform and it is extremely fast as well.</p>
+<h4>Local LLMs</h4>
+<p><img alt="dense vs moe" src="../images/dense-vs-moe-llm.svg"></p>
+<p>Qwen3.6-35B-A3B model made locall LLMs usable on decent hardware. </p>
+<p>Qwen3.6-35B-A3B - has 35B parameters &amp; only 3B are active at a time. I use 4bit quantized model as it provides
+a better tradeoff between speed and accuracy. It fits in 48GB RAM with some headroom for other applications.</p>
+<p>Bonsai has highest intelligent densisty and it can run on ~5 GB RAM.</p>
+<p>It is surprising how fast &amp; powerful the local LLMs have become.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/07/handy-stt-dictation-cross-platform.html" class="u-url">Handy - Best cross platform Dictation app (Free)</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Anand Reddy Pandikunta
@@ -479,53 +509,6 @@ For now, I am adding <code>ip.me</code> domain so that we can verify if the traf
 <h4>Conclusion</h4>
 <p>We can use App Connectors to route specific websites through a Tailscale node without needing to setup SOCKS proxy or browser extensions on each device.</p>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/10/tailscale-exit-node-specific-domains.html" class="u-url">TailScale - Use Exit Node for Specific Websites only</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Anand Reddy Pandikunta
-            </span></p>
-            <p class="dateline">
-            <a href="../2025/10/tailscale-exit-node-specific-domains.html" rel="bookmark">
-            <time class="published dt-published" datetime="2025-10-23T03:50:58+05:30" itemprop="datePublished" title="2025-10-23">2025-10-23</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Problem</h4>
-<p><a href="../tags/tailscale.html">Tailscale</a><sup id="fnref:tailscale"><a class="footnote-ref" href="../2025/10/tailscale-exit-node-specific-domains.html#fn:tailscale">1</a></sup> provides zero-config mesh VPN built on top of Wiregaurd.</p>
-<p>It provides an option to use an exit node for routing all traffic through it. 
-But it can't route only specific domains through the exit node.</p>
-<p><img alt="Tailscale Exit Node Option" src="../images/tailscale-exit-node-option.png"></p>
-<h4>Solution</h4>
-<p>Setup a SOCKS proxy using <code>ssh</code> command line tool.</p>
-<div class="code"><pre class="code literal-block">ssh<span class="w"> </span>-D<span class="w"> </span><span class="m">1080</span><span class="w"> </span>-f<span class="w"> </span>-C<span class="w"> </span>-q<span class="w"> </span>-N<span class="w"> </span>user@exit-node-ip
-</pre></div>
-
-<p><code>-D 1080</code> : Specifies the local port to listen on for SOCKS connections.</p>
-<p><code>-f</code> : Requests ssh to go to background just before command execution.</p>
-<p><code>-C</code> : Enables compression.</p>
-<p><code>-q</code> : Quiet mode.</p>
-<p><code>-N</code> : Do not execute remote commands.</p>
-<p>Once it is started, we can use <a href="https://github.com/zero-peak/ZeroOmega">ZeroOmega</a><sup id="fnref:zeroomega"><a class="footnote-ref" href="../2025/10/tailscale-exit-node-specific-domains.html#fn:zeroomega">2</a></sup> browser extension to route specific domains through the SOCKS proxy.</p>
-<p><img alt="ZeroOmega Config" src="../images/zeroomega-config.png"></p>
-<p>In the <code>auto switch</code> profile, we can setup specific domains which needs to be directed to the proxy. 
-For all other domains, it will use the direct connection.</p>
-<p>This works only for the browser where the extension is installed.</p>
-<p>To apply this at the system level, we can use <code>pac</code> file and update the system proxy settings to use the <code>pac</code> file.</p>
-<h4>Conclusion</h4>
-<p>Tailscale provides app connector feature to route specific apps through the exit node, but it is needs publicly reachable IPs &amp; Linux based OS for now.</p>
-<p>Setting up SOCKS proxy &amp; using a browser extension or PAC file is much easy &amp; straight forward solution to route specific domains through Tailscale exit node.</p>
-<div class="footnote">
-<hr>
-<ol>
-<li id="fn:tailscale">
-<p><a href="https://tailscale.com">https://tailscale.com</a> <a class="footnote-backref" href="../2025/10/tailscale-exit-node-specific-domains.html#fnref:tailscale" title="Jump back to footnote 1 in the text">↩</a></p>
-</li>
-<li id="fn:zeroomega">
-<p><a href="https://github.com/zero-peak/ZeroOmega">https://github.com/zero-peak/ZeroOmega</a> <a class="footnote-backref" href="../2025/10/tailscale-exit-node-specific-domains.html#fnref:zeroomega" title="Jump back to footnote 2 in the text">↩</a></p>
-</li>
-</ol>
-</div>
-    </div>
     </article>
 </div>
         <ul class="pager postindexpager clearfix">
@@ -564,11 +547,7 @@ For all other domains, it will use the direct connection.</p>
     </div>
     </div>
 
-                <script src="../assets/js/baguetteBox.min.js"></script><script>
-    document.querySelector('.navbar-toggler').addEventListener('click', function () {
-        document.getElementById('bs-navbar').classList.toggle('show');
-    });
-    </script><script>
+                <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/popper.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script>
     baguetteBox.run('div#content', {
         ignoreClass: 'islink',
         captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});

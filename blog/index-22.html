@@ -84,7 +84,54 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/09/macbook-natural-scrolling-mouse.html" class="u-url">MacBook - Natural Scrolling for Mouse</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/10/tailscale-exit-node-specific-domains.html" class="u-url">TailScale - Use Exit Node for Specific Websites only</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2025/10/tailscale-exit-node-specific-domains.html" rel="bookmark">
+            <time class="published dt-published" datetime="2025-10-23T03:50:58+05:30" itemprop="datePublished" title="2025-10-23">2025-10-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <h4>Problem</h4>
+<p><a href="../tags/tailscale.html">Tailscale</a><sup id="fnref:tailscale"><a class="footnote-ref" href="../2025/10/tailscale-exit-node-specific-domains.html#fn:tailscale">1</a></sup> provides zero-config mesh VPN built on top of Wiregaurd.</p>
+<p>It provides an option to use an exit node for routing all traffic through it. 
+But it can't route only specific domains through the exit node.</p>
+<p><img alt="Tailscale Exit Node Option" src="../images/tailscale-exit-node-option.png"></p>
+<h4>Solution</h4>
+<p>Setup a SOCKS proxy using <code>ssh</code> command line tool.</p>
+<div class="code"><pre class="code literal-block">ssh<span class="w"> </span>-D<span class="w"> </span><span class="m">1080</span><span class="w"> </span>-f<span class="w"> </span>-C<span class="w"> </span>-q<span class="w"> </span>-N<span class="w"> </span>user@exit-node-ip
+</pre></div>
+
+<p><code>-D 1080</code> : Specifies the local port to listen on for SOCKS connections.</p>
+<p><code>-f</code> : Requests ssh to go to background just before command execution.</p>
+<p><code>-C</code> : Enables compression.</p>
+<p><code>-q</code> : Quiet mode.</p>
+<p><code>-N</code> : Do not execute remote commands.</p>
+<p>Once it is started, we can use <a href="https://github.com/zero-peak/ZeroOmega">ZeroOmega</a><sup id="fnref:zeroomega"><a class="footnote-ref" href="../2025/10/tailscale-exit-node-specific-domains.html#fn:zeroomega">2</a></sup> browser extension to route specific domains through the SOCKS proxy.</p>
+<p><img alt="ZeroOmega Config" src="../images/zeroomega-config.png"></p>
+<p>In the <code>auto switch</code> profile, we can setup specific domains which needs to be directed to the proxy. 
+For all other domains, it will use the direct connection.</p>
+<p>This works only for the browser where the extension is installed.</p>
+<p>To apply this at the system level, we can use <code>pac</code> file and update the system proxy settings to use the <code>pac</code> file.</p>
+<h4>Conclusion</h4>
+<p>Tailscale provides app connector feature to route specific apps through the exit node, but it is needs publicly reachable IPs &amp; Linux based OS for now.</p>
+<p>Setting up SOCKS proxy &amp; using a browser extension or PAC file is much easy &amp; straight forward solution to route specific domains through Tailscale exit node.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:tailscale">
+<p><a href="https://tailscale.com">https://tailscale.com</a> <a class="footnote-backref" href="../2025/10/tailscale-exit-node-specific-domains.html#fnref:tailscale" title="Jump back to footnote 1 in the text">↩</a></p>
+</li>
+<li id="fn:zeroomega">
+<p><a href="https://github.com/zero-peak/ZeroOmega">https://github.com/zero-peak/ZeroOmega</a> <a class="footnote-backref" href="../2025/10/tailscale-exit-node-specific-domains.html#fnref:zeroomega" title="Jump back to footnote 2 in the text">↩</a></p>
+</li>
+</ol>
+</div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/09/macbook-natural-scrolling-mouse.html" class="u-url">MacBook - Natural Scrolling for Mouse</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Anand Reddy Pandikunta
@@ -238,11 +285,7 @@ nmap<span class="w"> </span>-sn
     </div>
     </div>
 
-                <script src="../assets/js/baguetteBox.min.js"></script><script>
-    document.querySelector('.navbar-toggler').addEventListener('click', function () {
-        document.getElementById('bs-navbar').classList.toggle('show');
-    });
-    </script><script>
+                <script src="../assets/js/jquery.min.js"></script><script src="../assets/js/popper.min.js"></script><script src="../assets/js/bootstrap.min.js"></script><script src="../assets/js/baguetteBox.min.js"></script><script>
     baguetteBox.run('div#content', {
         ignoreClass: 'islink',
         captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
