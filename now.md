@@ -10,9 +10,14 @@
 .. type: text
 -->
 
-Last Updated: 11 November 2025
+Last Updated: 01 September 2026
 
 Living in Bangalore, India.
+
+### Building
+
+[https://slashindex.fyi/](https://slashindex.fyi/)
+
 
 ### Writing
 
@@ -23,8 +28,3 @@ Book: Musings of a mediocore software engineer
 - Reminiscences of a Neurosurgeon
 - Letters from a Self-Made Merchant to His Son
 - చివరి గుడిసె
-
-
-### Building
-
-[Mutual Fund Compass](https://mutual-fund-compass.avilpage.com)
