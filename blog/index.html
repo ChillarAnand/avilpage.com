@@ -83,7 +83,29 @@ h1,h2,h3,h4,h5,h6 {
     
     
 <div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/08/how-i-run-llms-locally-on-mac.html" class="u-url">How I run LLMs locally on Mac</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/09/raycast-open-source-tinycast.html" class="u-url">Moving from RayCast to TinyCast</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                Anand Reddy Pandikunta
+            </span></p>
+            <p class="dateline">
+            <a href="../2026/09/raycast-open-source-tinycast.html" rel="bookmark">
+            <time class="published dt-published" datetime="2026-09-19T15:03:06+05:30" itemprop="datePublished" title="2026-09-19">2026-09-19</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I have been <a href="../2025/06/raycast-replaced-10-macos-apps.html">using RayCast</a> from ~4 years. I built 2 extensions, ~20 custom scripts, contributed to existing extensions. </p>
+<p>I raised support tickets related to automating RayCast exports &amp; settings. Unfortunately, there was no good resolution.</p>
+<h4>FOSS Alternatives</h4>
+<p>When looking at open source alternatives I stumbled on <a href="https://github.com/vicinaehq/vicinae">Vicinae</a>, <a href="https://github.com/MystikoLab/rustcast">RustCast</a> long back but they were not drop in replacements.</p>
+<p><img alt="raycast-drop-in-replacement" src="../images/tinycast-raycast-open-source-alt.png"></p>
+<p>Recently <a href="https://github.com/abue-ammar/tinycast">TinyCast</a> came out and I am using it as a primary launcher on one of the Mac. It is working well as a drop-in replacement so far without any major issues.</p>
+<p>It is just ~6MB app and consumes only a fraction of CPU/Memory compared to other tools.</p>
+<h4>Software as Moat</h4>
+<p>With AI, it is getting easy to build &amp; customise software. There is a growing trend where users are shifting towards open source alternatives(since I am in FOSS space, I might be biased).</p>
+<p>If you think software only is a moat, it is time to re-think again!</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2026/08/how-i-run-llms-locally-on-mac.html" class="u-url">How I run LLMs locally on Mac</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 Anand Reddy Pandikunta
@@ -445,69 +467,6 @@ clusters:
 <p><img alt="k3d-remote-access" src="../images/k3s-remote-access-freelens.png"></p>
 <h4>Conclusion</h4>
 <p>You can use your favorite Kubernetes tools (kubectl, FreeLens, k9s, etc.) to manage the remote k8s cluster.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../2025/11/tailscale-app-connectors-quick-setup.html" class="u-url">Setup Tailscale App Connector in 3 easy steps</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                Anand Reddy Pandikunta
-            </span></p>
-            <p class="dateline">
-            <a href="../2025/11/tailscale-app-connectors-quick-setup.html" rel="bookmark">
-            <time class="published dt-published" datetime="2025-11-22T18:18:18+05:30" itemprop="datePublished" title="2025-11-22">2025-11-22</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <h4>Problem Statement</h4>
-<p>In the earlier post, we have seen how to <a href="../2025/10/tailscale-exit-node-specific-domains.html">route specific websites to an exit node</a> using a SOCKS proxy &amp; browser extension(or a PAC file).</p>
-<p>With this approach, when we need to work on multiple computers, we need to setup the SOCKS proxy &amp; browser extension individually.</p>
-<p>Instead we can use Tailscale's App Connectors to route specific websites through selected nodes.</p>
-<p>Tailscale docs are too complicated for this App connectors. Here is a simplified version of the steps.</p>
-<h4>Tailscale - App Connectors</h4>
-<p>Note: There is no need for publicly reachable IP address for the Tailscale node which is used as App Connector.
-(Thanks <a href="https://chameth.com">Chris Smith</a> for pointing it out. Tailscale docs are misleading in this regard.)</p>
-<ul>
-<li>In the Tailscale admin console, go to the "Access control" section &amp; add <code>tagOwners</code>.</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="nt">"tagOwners"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">"tag:home-connector"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="s2">"autogroup:member"</span><span class="p">,</span>
-<span class="w">        </span><span class="p">],</span>
-<span class="w">    </span><span class="p">},</span>
-</pre></div>
-
-<p><img alt="tailscale app connector acl" src="../images/tailscale-app-connector-acl.png"></p>
-<ul>
-<li>Use any Linux machine (it doesn't need static IP) to setup the App Connector. Install Tailscale on it. Advertise it as an app connector.</li>
-</ul>
-<div class="code"><pre class="code literal-block">$<span class="w"> </span>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:home-connector<span class="w"> </span>--accept-routes
-</pre></div>
-
-<p>Enable IP forwarding on the machine. If your Linux system has a <code>/etc/sysctl.d</code> directory, run</p>
-<div class="code"><pre class="code literal-block"><span class="nb">echo</span><span class="w"> </span><span class="s1">'net.ipv4.ip_forward = 1'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
-<span class="nb">echo</span><span class="w"> </span><span class="s1">'net.ipv6.conf.all.forwarding = 1'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
-sudo<span class="w"> </span>sysctl<span class="w"> </span>-p<span class="w"> </span>/etc/sysctl.d/99-tailscale.conf
-</pre></div>
-
-<p>Otherwise, run</p>
-<div class="code"><pre class="code literal-block">echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf
-echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p /etc/sysctl.conf
-</pre></div>
-
-<ul>
-<li>From the Tailscale admin console, create a new app connector.</li>
-</ul>
-<p><img alt="tailscale app connector" src="../images/tailscale-app-connector.png"></p>
-<p>In the "Target" field, we can select any existing app or we can use custom target so that we can route our desired websites.
-For now, I am adding <code>ip.me</code> domain so that we can verify if the traffic is routed through the connector.</p>
-<ul>
-<li>From the "Machines" page, select the device and approve the requested subnets.</li>
-</ul>
-<p><img alt="tailscale app connector subnet" src="../images/tailscale-app-connector-subnet.png"></p>
-<p>From browser, lets visit 2ip.io to see our device ip address. Next, lets visit ip.me to ensure we are seeing the connector's IP as this domain will be served by app connector.</p>
-<p><img alt="tailscale app connector verify" src="../images/tailscale-app-connector-verify.png"></p>
-<h4>Conclusion</h4>
-<p>We can use App Connectors to route specific websites through a Tailscale node without needing to setup SOCKS proxy or browser extensions on each device.</p>
     </div>
     </article>
 </div>

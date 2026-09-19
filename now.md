@@ -2,7 +2,7 @@
 .. title: Now
 .. slug: now
 .. date: 2025-11-20 13:29:59 UTC
-.. updated: 2025-11-20 13:29:59 UTC
+.. updated: 2026-09-19 13:29:59 UTC
 .. tags:
 .. category: pages
 .. link:
@@ -10,13 +10,13 @@
 .. type: text
 -->
 
-Last Updated: 01 September 2026
+Last Updated: 19 September 2026
 
 Living in Bangalore, India.
 
 ### Building
 
-[https://slashindex.fyi/](https://slashindex.fyi/)
+[https://slashindex.fyi](https://slashindex.fyi/) - [https://github.com/AvilPage/SlashIndex.fyi](https://github.com/AvilPage/SlashIndex.fyi)
 
 
 ### Writing
