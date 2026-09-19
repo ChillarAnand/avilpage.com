@@ -1,0 +1,34 @@
+flowchart LR
+    subgraph HARNESS["Harness"]
+        direction TB
+        pi(['<img src="../../../assets/icons/raspberrypi.svg" width="20" style="vertical-align:middle;margin-right:6px"/> Pi'])
+        oc(['<img src="../../../assets/icons/visualstudiocode.svg" width="20" style="vertical-align:middle;margin-right:6px"/> OpenCode'])
+        pi ~~~ oc
+    end
+
+    subgraph SERVER["Inference Server"]
+        direction TB
+        omlx(['<img src="/assets/icons/docker.svg" width="20" style="vertical-align:middle;margin-right:6px"/> omlx'])
+        rmlx(['<img src="/assets/icons/pytorch.svg" width="20" style="vertical-align:middle;margin-right:6px"/> rapid-mlx'])
+        omlx ~~~ rmlx
+    end
+
+    subgraph MODELS["Models"]
+        direction TB
+        m1(['<img src="/assets/icons/tensorflow.svg" width="20" style="vertical-align:middle;margin-right:6px"/> Qwen3.8-27B-4bit'])
+        m2(['<img src="/assets/icons/pytorch.svg" width="20" style="vertical-align:middle;margin-right:6px"/> Qwen3.6-35B-A3B-4bit'])
+        m1 ~~~ m2
+    end
+
+    HARNESS <-->|API| SERVER
+    SERVER -->|serves| MODELS
+
+    style omlx fill:#e6f0ff,stroke:#007bff,stroke-width:2px
+    style pi fill:#ffffff,stroke:#212529
+    style oc fill:#ffffff,stroke:#212529
+    style m1 fill:#f1f1f1,stroke:#6c757d
+    style m2 fill:#f1f1f1,stroke:#6c757d
+
+    style HARNESS fill:#fff3cd,stroke:#856404,stroke-width:2px
+    style SERVER fill:#d1ecf1,stroke:#0c5460,stroke-width:2px
+    style MODELS fill:#e2d9f3,stroke:#4b2e83,stroke-width:2px

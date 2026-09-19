@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local LLM stack · Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #fafafa;
+      --color-ink:     #212529;
+      --color-muted:   #6c757d;
+      --color-accent:  #007bff;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1000px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 760px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · Local LLMs</p>
+    <h1>How I run LLMs locally on Mac</h1>
+
+    <svg viewBox="0 0 920 376" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#6c757d"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0056b3"/></marker>
+        <marker id="arrow-link-start" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto-start-reverse"><polygon points="0 0, 8 3, 0 6" fill="#0056b3"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#fafafa"/>
+
+      <!-- Zone: Harness -->
+      <rect x="40" y="60" width="240" height="240" rx="8"
+            fill="rgba(33,37,41,0.02)" stroke="rgba(33,37,41,0.10)" stroke-width="0.8"/>
+      <rect x="120" y="64" width="80" height="12" rx="2" fill="#fafafa"/>
+      <text x="160" y="73" fill="rgba(33,37,41,0.40)" font-size="7" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">HARNESS</text>
+
+      <!-- Zone: Inference Server -->
+      <rect x="340" y="60" width="240" height="240" rx="8"
+            fill="rgba(0,123,255,0.03)" stroke="rgba(0,123,255,0.25)" stroke-width="0.8"/>
+      <rect x="400" y="64" width="120" height="12" rx="2" fill="#fafafa"/>
+      <text x="460" y="73" fill="#007bff" font-size="7" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">INFERENCE SERVER</text>
+
+      <!-- Zone: Models -->
+      <rect x="640" y="60" width="240" height="240" rx="8"
+            fill="rgba(33,37,41,0.02)" stroke="rgba(33,37,41,0.10)" stroke-width="0.8"/>
+      <rect x="720" y="64" width="80" height="12" rx="2" fill="#fafafa"/>
+      <text x="760" y="73" fill="rgba(33,37,41,0.40)" font-size="7" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">MODELS</text>
+
+      <!-- Arrow: Harness <-> Inference Server -->
+      <line x1="280" y1="180" x2="340" y2="180" stroke="#0056b3" stroke-width="1.2"
+            marker-start="url(#arrow-link-start)" marker-end="url(#arrow-link)"/>
+      <rect x="294" y="160" width="32" height="12" rx="2" fill="#fafafa"/>
+      <text x="310" y="169" fill="#0056b3" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">API</text>
+
+      <!-- Arrow: Inference Server -> Models -->
+      <line x1="580" y1="180" x2="640" y2="180" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="588" y="160" width="44" height="12" rx="2" fill="#fafafa"/>
+      <text x="610" y="169" fill="#6c757d" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SERVES</text>
+
+      <!-- Pill: Pi -->
+      <rect x="80" y="120" width="160" height="40" rx="20" fill="#ffffff" stroke="#212529" stroke-width="1"/>
+      <svg x="118" y="130" width="20" height="20" viewBox="0 0 800 800">
+        <path fill="#212529" fill-rule="evenodd" d="M165.29 165.29H517.36V400H400V517.36H282.65V634.72H165.29Z M282.65 282.65V400H400V282.65Z"/>
+        <path fill="#212529" d="M517.36 400H634.72V634.72H517.36Z"/>
+      </svg>
+      <text x="146" y="144" fill="#212529" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="start">Pi</text>
+
+      <!-- Pill: OpenCode -->
+      <rect x="80" y="200" width="160" height="40" rx="20" fill="#ffffff" stroke="#212529" stroke-width="1"/>
+      <svg x="90" y="207" width="140" height="25.16" viewBox="0 0 640 115" preserveAspectRatio="xMidYMid meet">
+        <path d="M49.2308 32.8573H16.4103V82.143H49.2308V32.8573ZM65.641 98.5716H0V16.4287H65.641V98.5716Z" fill="#212529"/>
+        <path d="M98.4649 82.143H131.285V32.8573H98.4649V82.143ZM147.696 98.5716H98.4649V115H82.0547V16.4287H147.696V98.5716Z" fill="#212529"/>
+        <path d="M229.743 65.7144H180.512V82.143H229.743V98.5716H164.102V16.4287H229.743V65.7144ZM180.512 49.2859H213.332V32.8573H180.512V49.2859Z" fill="#212529"/>
+        <path d="M295.387 32.8573H262.567V98.5716H246.156V16.4287H295.387V32.8573ZM311.797 98.5716H295.387V32.8573H311.797V98.5716Z" fill="#212529"/>
+        <path d="M393.844 32.8573H344.613V82.143H393.844V98.5716H328.203V16.4287H393.844V32.8573Z" fill="#212529"/>
+        <path d="M459.489 32.8573H426.668V82.143H459.489V32.8573ZM475.899 98.5716H410.258V16.4287H475.899V98.5716Z" fill="#212529"/>
+        <path d="M541.535 32.8571H508.715V82.1428H541.535V32.8571ZM557.946 98.5714H492.305V16.4286H541.535V0H557.946V98.5714Z" fill="#212529"/>
+        <path d="M590.77 32.8573V49.2859H623.59V32.8573H590.77ZM640 65.7144H590.77V82.143H640V98.5716H574.359V16.4287H640V65.7144Z" fill="#212529"/>
+      </svg>
+
+      <!-- Pill: omlx (focal) -->
+      <rect x="380" y="160" width="160" height="40" rx="20" fill="rgba(0,123,255,0.08)" stroke="#007bff" stroke-width="1.2"/>
+      <text x="460" y="184" fill="#212529" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">omlx</text>
+
+      <!-- Pill: Qwen3.8-27B-4bit -->
+      <rect x="680" y="120" width="160" height="40" rx="20" fill="rgba(33,37,41,0.05)" stroke="#6c757d" stroke-width="1"/>
+      <text x="760" y="144" fill="#212529" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Qwen3.8-27B-4bit</text>
+
+      <!-- Pill: Qwen3.6-35B-A3B-4bit -->
+      <rect x="680" y="200" width="160" height="40" rx="20" fill="rgba(33,37,41,0.05)" stroke="#6c757d" stroke-width="1"/>
+      <text x="760" y="224" fill="#212529" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Qwen3.6-35B-A3B</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="316" x2="880" y2="316" stroke="rgba(33,37,41,0.10)" stroke-width="0.8"/>
+      <text x="40" y="332" fill="#6c757d" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="344" width="14" height="10" rx="5" fill="rgba(0,123,255,0.08)" stroke="#007bff" stroke-width="1"/>
+      <text x="60" y="352" fill="#6c757d" font-size="8.5" font-family="'Geist', sans-serif">Focal / server</text>
+
+      <rect x="200" y="344" width="14" height="10" rx="5" fill="#ffffff" stroke="#212529" stroke-width="1"/>
+      <text x="220" y="352" fill="#6c757d" font-size="8.5" font-family="'Geist', sans-serif">Harness</text>
+
+      <rect x="320" y="344" width="14" height="10" rx="5" fill="rgba(33,37,41,0.05)" stroke="#6c757d" stroke-width="1"/>
+      <text x="340" y="352" fill="#6c757d" font-size="8.5" font-family="'Geist', sans-serif">Model</text>
+
+      <line x1="440" y1="349" x2="468" y2="349" stroke="#0056b3" stroke-width="1.2"
+            marker-start="url(#arrow-link-start)" marker-end="url(#arrow-link)"/>
+      <text x="476" y="352" fill="#6c757d" font-size="8.5" font-family="'Geist', sans-serif">API call</text>
+
+      <line x1="580" y1="349" x2="608" y2="349" stroke="#6c757d" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="616" y="352" fill="#6c757d" font-size="8.5" font-family="'Geist', sans-serif">Serves</text>
+    </svg>
+  </div>
+</body>
+</html>
