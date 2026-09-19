@@ -21,7 +21,7 @@ When looking at open source alternatives I stumbled on [Vicinae](https://github.
 
 Recently [TinyCast](https://github.com/abue-ammar/tinycast) came out and I am using it as a primary launcher on one of the Mac. It is working well as a drop-in replacement so far without any major issues.
 
-It is just ~6MB app and consumes only a fraction of CPU/Memory compared to other tools.
+It is just ~6MB(Raycast ~250MB) app and consumes ~60MB RAM (RayCast ~600MB).
 
 ### Software as Moat
 
