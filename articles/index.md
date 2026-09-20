@@ -18,33 +18,32 @@ I am an indie open source developer. I work with high talent density teams to bu
 
 With 12+ years of experience in full-stack software & hardware development, I have primarily worked on Healthcare & Finance domains.
 
+<img src="/images/opensource-logo.png" height="16px" style="vertical-align: middle;"> [OpenSource](/projects.html)
 
-I advocate FOSS & major chunk of [my work is open source](/projects.html).
+<img src="/images/books-logo.png" height="16px" style="vertical-align: middle;"> [Books](/books.html)
 
-Occasionally, I give [talks & workshops at developer conferences](/talks.html). 
+<img src="/images/talks-logo.png" height="16px" style="vertical-align: middle;"> [Talks](/talks.html) 
 
-I have written 2 [short books on Django Admin & Emacs](/books.html). 
+[Blog Bounty](2022/01/resuming-writing-challenge.html)
 
-I make [mosaic art with Rubik's cubes](/rubik-cube-mosaics.html).
+[Rubik's cube mosaic art](/rubik-cube-mosaics.html)
 
-To contact, [send a message here](https://forms.gle/Hre4z4aLqJA5zYWe6). I reply to each message personally.
-
-If I miss writing blog post any month, you can [win 1000+$ cash prize](2022/01/resuming-writing-challenge.html).
+[Contact](https://forms.gle/Hre4z4aLqJA5zYWe6)
 
 <div class="full-article-footer">
     <div class="article-footer">
 
-<div class="avatar-module">
-<img class="avatar" height="100px" src="/images/chillaranand.jpg">
-</div>
-
-<p class="avatar-module">
-<b>Anand Reddy Pandikunta (ChillarAnand)</b>
-<br>
-Improving Health & Wealth with Technology
-<br>
-</p>
-
-</div>
+        <div class="avatar-module">
+        <img class="avatar" height="100px" src="/images/chillaranand.jpg">
+        </div>
+        
+        <p class="avatar-module">
+        <b>Anand Reddy Pandikunta (ChillarAnand)</b>
+        <br>
+        Improving Health & Wealth with Technology
+        <br>
+        </p>
+    
+    </div>
 </div>
 
