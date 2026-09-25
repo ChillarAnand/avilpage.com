@@ -18,17 +18,14 @@ I am an indie open source developer. I work with high talent density teams to bu
 
 With 12+ years of experience in full-stack software & hardware development, I have primarily worked on Healthcare & Finance domains.
 
-<img src="/images/opensource-logo.png" height="16px" style="vertical-align: middle;"> [OpenSource](/projects.html)
-
-<img src="/images/books-logo.png" height="16px" style="vertical-align: middle;"> [Books](/books.html)
-
-<img src="/images/talks-logo.png" height="16px" style="vertical-align: middle;"> [Talks](/talks.html) 
-
-[Blog Bounty](2022/01/resuming-writing-challenge.html)
-
-[Rubik's cube mosaic art](/rubik-cube-mosaics.html)
-
-[Contact](https://forms.gle/Hre4z4aLqJA5zYWe6)
+<div style="display: grid; grid-template-columns: repeat(2, auto); gap: 8px 24px; margin-top: 8px;">
+<div><img src="/images/opensource-logo.png" height="16px" style="vertical-align: middle;"> <a href="/projects.html">OpenSource</a></div>
+<div><img src="/images/books-logo.png" height="16px" style="vertical-align: middle;"> <a href="/books.html">Books</a></div>
+<div><img src="/images/talks-logo.png" height="16px" style="vertical-align: middle;"> <a href="/talks.html">Talks</a></div>
+<div><img src="/images/icons8-trophy.svg" height="16px" style="vertical-align: middle;"> <a href="2022/01/resuming-writing-challenge.html">Blog Bounty</a></div>
+<div><img src="/images/icons8-cube.svg" height="16px" style="vertical-align: middle;"> <a href="/rubik-cube-mosaics.html">Rubik's Cube Mosaics</a></div>
+<div><img src="/images/icons8-mail.svg" height="16px" style="vertical-align: middle;"> <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">Contact</a></div>
+</div>
 
 <div class="full-article-footer">
     <div class="article-footer">

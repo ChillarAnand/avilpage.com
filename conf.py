@@ -1029,7 +1029,7 @@ SHOW_SOURCELINK = False
 # FEED_PLAIN = False
 
 # Number of posts in Atom and RSS feeds.
-# FEED_LENGTH = 10
+FEED_LENGTH = 10000
 
 # Include preview image as a <figure><img></figure> at the top of the entry.
 # Requires FEED_PLAIN = False. If the preview image is found in the content,
