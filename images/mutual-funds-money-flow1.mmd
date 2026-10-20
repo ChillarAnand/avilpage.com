@@ -1,0 +1,41 @@
+graph TD
+    %% Investor Purchase Pathways
+    Investor[Investors] --> RIA[Registered Investment Advisors]
+    Investor --> MFDs[Mutual Fund Distributors]
+    Investor --> AMC[Fund Houses]
+    Investor --> RTAs[RTAs - CAMS, KFintech]
+    Investor --> Banks[Partner / Custodian Banks]
+    Investor --> Brokers[Brokers<br>Zerodha, Groww, etc.]
+
+    %% AMC Breakdown: Online vs Offline
+    AMC --> AMC_Online[AMC Online Purchase]
+    AMC --> AMC_Offline[AMC Branch Office Purchase]
+
+    %% Fund Execution Channels
+    RIA --> Direct[Direct Mutual Funds]
+    AMC_Online --> Direct
+    AMC_Offline --> Direct
+    RTAs --> Direct
+    MFDs --> Regular[Regular Mutual Funds]
+    Brokers --> Direct
+    Brokers --> Regular
+
+    %% Cash flow to Banks
+    Direct --> Banks
+    Regular --> Banks
+
+    %% Ops Team Balance Flow
+    Banks -- Account Balances / Net Receipts --> Ops[Operations Team]
+    Ops -- Reconciles Balances & Cash Positions --> PM[Portfolio Manager]
+
+    classDef direct fill:#d1e7dd,stroke:#0f5132,stroke-width:2px;
+    classDef regular fill:#f8d7da,stroke:#842029,stroke-width:2px;
+    classDef main fill:#cfe2ff,stroke:#084298,stroke-width:2px;
+    classDef sub fill:#e2e3e5,stroke:#41464b,stroke-width:1.5px;
+    classDef ops fill:#fff3cd,stroke:#664d03,stroke-width:2px;
+
+    class Direct direct;
+    class Regular regular;
+    class RIA,MFDs,AMC,RTAs,Banks,Brokers,Investor main;
+    class AMC_Online,AMC_Offline sub;
+    class Ops,PM ops;

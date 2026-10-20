@@ -9,21 +9,17 @@
 .. type: text
 -->
 
-### Systems Decoded - Mutual Funds
+### Mutual Funds Decoded
 
 1. [Mutual Funds Decoded - Structure of MF](/2025/08/mutual-funds-behind-the-scenes.html) (you are here)
 
-2. [Mutual Funds Decoded - How money flows]()
+2. [Mutual Funds Decoded - From Order to NAV](/2026/10/mutual-funds-decoded-order-to-nav.html) 
 
 As investors, we buy mutual funds(MF) from fund houses, RTA platforms, or from distributors. 
 But have you ever wondered what happens behind the scenes? How do these funds operate, and what processes are involved in managing them? 
 In Mutual Funds Decoded series, we'll explore about these in detail.
 
-
-
 In this article, we will see structure of MF & various institutions involved in MF.
-
-
 
 ### Structure of a Mutual Fund
 
