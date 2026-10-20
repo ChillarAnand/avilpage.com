@@ -5,9 +5,17 @@
 .. tags: investing, wealth
 .. category: wealth
 .. link: 
-.. description: 
+.. description: How does money flow from investors to AMCs and how it gets converted to NAV? What are the various processes involved in this?
 .. type: text
 -->
+
+### Mutual Funds Decoded
+
+As investors, we buy mutual funds(MF) from various platforms and receive units. 
+But have you ever wondered what happens behind the scenes? 
+How do these funds operate, function and what processes are involved in managing them? 
+
+In Mutual Funds Decoded series, we'll explore about these in detail.
 
 1. [Mutual Funds Decoded - Structure of MF](/2025/08/mutual-funds-behind-the-scenes.html)
 
