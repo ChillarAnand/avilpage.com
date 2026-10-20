@@ -1,17 +1,29 @@
 <!--
-.. title: Mutual Funds - Behind the scenes
+.. title: Mutual Funds Decoded - Structure of MF
 .. slug: mutual-funds-behind-the-scenes
 .. date: 2025-08-19 08:02:52 UTC+05:30
 .. tags: investing, finance
-.. category: 
+.. category: wealth
 .. link: 
 .. description: How does mutual funds work behind the scenes? What are the various organizations involved in the process?
 .. type: text
 -->
 
-As investors, we buy mutual funds from fund houses, platforms, or from distributors. 
+### Systems Decoded - Mutual Funds
+
+1. [Mutual Funds Decoded - Structure of MF](/2025/08/mutual-funds-behind-the-scenes.html) (you are here)
+
+2. [Mutual Funds Decoded - How money flows]()
+
+As investors, we buy mutual funds(MF) from fund houses, RTA platforms, or from distributors. 
 But have you ever wondered what happens behind the scenes? How do these funds operate, and what processes are involved in managing them? 
-In this post, we'll explore the behind-the-scenes operations of mutual funds.
+In Mutual Funds Decoded series, we'll explore about these in detail.
+
+
+
+In this article, we will see structure of MF & various institutions involved in MF.
+
+
 
 ### Structure of a Mutual Fund
 
@@ -22,8 +34,8 @@ In India, mutual funds have 3-tier structure consisting of the Sponsor, the Trus
 - The sponsor establishes the mutual fund and is responsible for its operations. 
 
 - The trust & trustees are responsible for safeguarding investor interests, supervising the AMC's operations,
-and ensuring compliance with regulations.
-Custodians are appointed to hold the securities of the mutual fund and ensure their safekeeping.
+  and ensuring compliance with regulations.
+  Custodians are appointed to hold the securities of the mutual fund and ensure their safekeeping.
 
 - AMC is the core entity responsible for the day-to-day management of the mutual fund. 
 
@@ -34,7 +46,6 @@ All AMCs are registered with the Securities and Exchange Board of India (SEBI) a
 We can look at SBI MF details from AMFI to understand the structure better.
 
 ![Mutual Fund Structure](/images/mutual-fund-structure2.png)
-
 
 ### Mutual Fund Transactions
 
@@ -61,4 +72,3 @@ It depends on the platform or fund house you choose to invest with.
 ### Conclusion
 
 This post provided a brief overview of the behind-the-scenes operations of mutual funds in India.
-
