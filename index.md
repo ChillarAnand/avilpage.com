@@ -25,6 +25,7 @@ With 12+ years of experience in full-stack software & hardware development, I ha
 <div><img src="/images/icons8-trophy.svg" height="16px" style="vertical-align: middle;"> <a href="2022/01/resuming-writing-challenge.html">Blog Bounty</a></div>
 <div><img src="/images/icons8-cube.svg" height="16px" style="vertical-align: middle;"> <a href="/rubik-cube-mosaics.html">Rubik's Cube Mosaics</a></div>
 <div><img src="/images/icons8-mail.svg" height="16px" style="vertical-align: middle;"> <a href="https://forms.gle/Hre4z4aLqJA5zYWe6">Contact</a></div>
+<div><img src="/images/icons8-globe.svg" height="16px" style="vertical-align: middle;"> <a href="/slashes.html">Slashes</a></div>
 </div>
 
 <div class="full-article-footer">

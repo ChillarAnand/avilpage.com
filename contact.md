@@ -13,30 +13,6 @@
 <img height="250px" src="/images/avil-page.png">
 </p>
 
+<a href="mailto:anand@avilpage.com">anand@avilpage.com</a> - Email is the easiest way to reach me.
 
-#### The Story
-
-When I was in college, I started this blog to make notes of things I am learning. After a decade, it has grown into a collection of articles on various topics like software development, finance, & health.
-
-If you are new here, you can [explore the guides]() or [latest articles](latest.html).
-
-<hr>
-
-<div class="full-article-footer">
-<div class="article-footer">
-
-<div class="avatar-module">
-    <img class="avatar" height="100px" src="/images/chillaranand.jpg">
-</div>
-
-<p class="avatar-module">
-    <b>Chillar Anand (Pandikunta Anand Reddy)</b>
-    <br>
-    <a href="rubik-cube-mosaics.html">Artist</a>,
-    <a href="books.html">Author</a>, 
-    <a href="talks.html">Speaker</a>, 
-    <a href="projects.html">Software Engineer</a>
-</p>
-
-</div>
-</div>
+[Google Form](https://forms.gle/Hre4z4aLqJA5zYWe6) is also available for you to reach me. Please fill out the form below and I will get back to you as soon as possible.

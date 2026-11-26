@@ -39,3 +39,10 @@ You can [read it online here](https://mastering-django-admin.avilpage.com/en/lat
 My musings as a software developer.
 
 Coming soon.
+
+
+## Reading
+
+Books I read. Reviews, quotes & notes.
+
+- [Beware of Pity](link://slug/beware-of-pity) - Stefan Zweig
